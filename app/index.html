@@ -627,7 +627,9 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="grid2">
         <div><label for="tp-kelas">Kelas</label><select id="tp-kelas"><option value="1">Kelas 1 (Fase A)</option><option value="2">Kelas 2 (Fase A)</option><option value="3">Kelas 3 (Fase B)</option><option value="4">Kelas 4 (Fase B)</option><option value="5">Kelas 5 (Fase C)</option><option value="6">Kelas 6 (Fase C)</option></select></div>
         <div><label for="tp-semester">Semester</label><select id="tp-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
-        <div class="aksi"><button class="btn ghost small" type="button" id="tp-unduh" title="Satu berkas per mapel, semester 1 dan 2, siap diimpor ke e-Rapor Kemendikdasmen">Unduh TP kelas ini (format e-Rapor)</button></div>
+        <div class="aksi"><button class="btn ghost small" type="button" id="tp-unduh" title="Satu berkas per mapel, semester 1 dan 2, siap diimpor ke e-Rapor Kemendikdasmen">Unduh TP kelas ini (format e-Rapor)</button>
+          <button class="btn ghost small" type="button" id="tp-kode" title="Pilih berkas f_tp (….xlsx) yang diunduh dari e-Rapor sekolah Anda; kode mapel di sel C2 disimpan untuk unduhan berikutnya">Ambil kode dari template e-Rapor</button>
+          <input type="file" id="tp-kode-berkas" accept=".xlsx" multiple hidden></div>
       </div>
       <div class="msg" id="tpu-msg"></div>
     </div>
@@ -2826,6 +2828,35 @@ async function berkasErapor(b){
   }
   return wb.xlsx.writeBuffer();
 }
+/* Kode mapel e-Rapor berbeda per sekolah: dibaca dari template f_tp yang diunduh dari e-Rapor sekolah itu
+   (A1 "FORMAT IMPORT TP  <JUDUL MAPEL> , JENJANG SD", C2 = kode), lalu disimpan di server. */
+$('#tp-kode').addEventListener('click', () => $('#tp-kode-berkas').click());
+$('#tp-kode-berkas').addEventListener('change', e => sibuk($('#tp-kode'), async () => {
+  const berkas = [...e.target.files]; e.target.value = '';
+  if (!berkas.length) return;
+  pesan('#tpu-msg', 'Membaca template…', true);
+  const daftar = [], gagal = [];
+  try {
+    await muatPustaka('ExcelJS');
+    for (const f of berkas) {
+      try {
+        const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await f.arrayBuffer());
+        const ws = wb.worksheets[0];
+        const judul = String(ws.getCell('A1').value || '').replace(/^\s*FORMAT IMPORT TP\s*/i, '').replace(/\s*,\s*JENJANG\s+\w+\s*$/i, '').trim();
+        const kode = String(ws.getCell('C2').value ?? '').trim();
+        if (judul && /^\d{5,15}$/.test(kode)) daftar.push({ judul, kode }); else gagal.push(f.name);
+      } catch (err) { gagal.push(f.name); }
+    }
+  } catch (err) { return pesan('#tpu-msg', err.message, false); }
+  const catatGagal = gagal.length ? ['Tidak terbaca sebagai template TP e-Rapor: ' + gagal.join(', ')] : [];
+  if (!daftar.length) return pesan('#tpu-msg', catatGagal[0] || 'Tidak ada kode yang terbaca.', false);
+  const res = await api({ aksi:'simpanKodeErapor', daftar });
+  if (res.sesiHabis) return;
+  if (!res.ok) return pesan('#tpu-msg', res.pesan, false);
+  const rinci = res.tersimpan.map(d => d.judul + ': ' + d.kode);
+  pesan('#tpu-msg', res.pesan, true, [res.pesan].concat(rinci, catatGagal));
+}));
+
 $('#tp-unduh').addEventListener('click', e => sibuk(e.target, async () => {
   if (TP_UBAH && !confirm('Ada TP yang belum disimpan dan tidak ikut terunduh. Lanjutkan?')) return;
   pesan('#tpu-msg', 'Menyiapkan berkas…', true);
