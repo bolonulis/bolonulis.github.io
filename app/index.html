@@ -92,6 +92,9 @@ table.mapel .na{color:#c9bfa8}
 .mapel-pil{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
 .mapel-pil button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:13.5px;font-weight:700;color:var(--blue);cursor:pointer}
 .mapel-pil button.on{background:var(--blue);border-color:var(--blue);color:#fff}.mapel-pil button .n{font-weight:800;margin-left:6px;opacity:.75}
+.tag.baru{background:#fde8e8;color:var(--red);margin-left:6px}
+.b-tpbaru{margin:0 0 14px}
+.b-tpbaru-daftar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;width:100%}
 .mapel-pil button .baru{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-left:7px;vertical-align:middle;box-shadow:0 0 0 2px #fff}
 .tp-baru{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#fff3c0;border:1px solid #f0d77a;color:#5c4400;border-radius:14px;padding:12px 14px;margin:0 0 12px;font-size:14px;line-height:1.5}.tp-baru span{flex:1 1 260px}
 .mapel-pil button.kosong .n{color:var(--bad);opacity:1}.mapel-pil button.on.kosong .n{color:#ffd0cc}
@@ -324,9 +327,11 @@ table.leger td.j{text-align:center;font-weight:800}
       <div><h2 id="b-nama">Sekolah</h2><div class="sub" id="b-sub"></div></div>
       <button class="btn ghost" id="b-keluar" type="button">Keluar</button>
     </div>
+    <div class="tp-baru b-tpbaru hidden" id="b-tpbaru" role="status"><span>🔔 <b>Ada pembaruan TP bawaan dari pengembang.</b> TP sekolah Anda tidak berubah sebelum Anda memilih. Klik untuk melihat:</span>
+      <div class="b-tpbaru-daftar" id="b-tpbaru-daftar"></div></div>
     <div class="menu">
       <button class="tile" type="button" id="t-data"><b>Data Sekolah &amp; Siswa</b><span>Profil sekolah, rombel kelas 1–6, wali kelas, dan daftar siswa.</span><div class="tag on">Buka →</div></button>
-      <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa diunduh dalam format impor e-Rapor.</span><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa diunduh dalam format impor e-Rapor.</span><div class="tag on">Buka →</div><div class="tag baru hidden" id="t-tp-baru"></div></button>
       <button class="tile" type="button" id="t-nilai"><b>Input Nilai</b><span>Sumatif lingkup materi dan sumatif akhir semester per rombel dan mapel, lengkap dengan nilai rapor dan deskripsinya.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-kok"><b>Kokurikuler</b><span>Subdimensi profil lulusan per kelas, capaian Mahir/Cakap/Berkembang, dan deskripsi otomatis.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-wk"><b>Wali Kelas</b><span>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus.</span><div class="tag on">Buka →</div></button>
@@ -882,6 +887,7 @@ async function muatStatistik(){
 let TAMPIL = '';
 function tampil(v){
   TAMPIL = v;
+  if (v === 'beranda' && typeof renderPembaruanTp === 'function') renderPembaruanTp();
   VIEWS.forEach(x => $('#v-' + x).classList.toggle('hidden', x !== v));
   const akun = ['masuk','daftar','lupa'].includes(v);
   $('#tab-akun').classList.toggle('hidden', !akun);
@@ -931,7 +937,48 @@ function masukBeranda(sekolah){
   const lgn = tampilLangganan(sekolah.langganan);
   $('#b-sub').textContent = 'NPSN ' + sekolah.npsn + ' · ' + sekolah.email + (lgn ? ' · ' + lgn : '');
   tampil('beranda');
+  cekPembaruanTp();
 }
+
+/* Pembaruan TP bawaan di Beranda: guru tahu tanpa harus membuka menu TP. Butir yang sudah dipakai atau
+   dipilih "Tetap pakai TP saya" (kunci tp-abaikan: yang sama dengan layar TP) tidak ditampilkan. */
+var PB_TP = null;
+async function cekPembaruanTp(){
+  const res = await api({ aksi:'tpPembaruan' });
+  PB_TP = res.ok ? res : null;
+  renderPembaruanTp();
+}
+function daftarPembaruanTp(){
+  if (!PB_TP) return [];
+  const hasil = [];
+  Object.keys(PB_TP.kelas).sort().forEach(k => Object.keys(PB_TP.kelas[k]).forEach(kunci => {
+    const sidik = PB_TP.kelas[k][kunci];
+    if (ls.get('tp-abaikan:' + k + '|' + PB_TP.semester + '|' + kunci) === sidik) return;
+    const [mapel, varian] = kunci.split('|');
+    hasil.push({ kelas: Number(k), mapel, varian, kunci });
+  }));
+  return hasil;
+}
+function renderPembaruanTp(){
+  const d = daftarPembaruanTp();
+  $('#b-tpbaru').classList.toggle('hidden', !d.length);
+  $('#t-tp-baru').classList.toggle('hidden', !d.length);
+  $('#t-tp-baru').textContent = '🔔 ' + d.length + ' pembaruan';
+  $('#b-tpbaru-daftar').innerHTML = d.map(x => '<button class="btn ghost small" type="button" data-kelas="' + x.kelas + '" data-mapel="' + esc(x.mapel) +
+    '" data-varian="' + esc(x.varian) + '">Kelas ' + x.kelas + ' · ' + esc(PB_TP.nama[x.mapel] || x.mapel) + (x.varian ? ' (' + esc(x.varian) + ')' : '') + ' →</button>').join('');
+}
+/* Dipanggil layar TP setelah satu mapel memakai TP terbaru, agar Beranda ikut bersih tanpa memuat ulang. */
+function selesaiPembaruanTp(kelas, semester, kunci){
+  if (PB_TP && PB_TP.semester === semester && PB_TP.kelas[kelas]) delete PB_TP.kelas[kelas][kunci];
+}
+$('#b-tpbaru-daftar').addEventListener('click', async e => {
+  const b = e.target.closest('[data-kelas]');
+  if (!b) return;
+  tampil('tp');
+  $('#tp-kelas').value = b.dataset.kelas;
+  await muatTp(PB_TP.semester);
+  if (TPD && TPD.mapel.some(m => m.kode === b.dataset.mapel)) pilihMapelTp(b.dataset.mapel, b.dataset.varian);
+});
 
 /* ---------- formulir ---------- */
 $('#f-gerbang').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
@@ -2674,7 +2721,7 @@ $('#tp-simpan').addEventListener('click', e => sibuk(e.target, async () => {
   if (!res.ok) return renderTp();
   TPD.tp[kunciTp()] = res.tp;
   TP_LIST = res.tp.map(t => ({ ...t }));
-  if (TP_DARI_BAWAAN === kunciTp() && TPD.perbarui) delete TPD.perbarui[kunciTp()]; // sudah memakai versi terbaru
+  if (TP_DARI_BAWAAN === kunciTp() && TPD.perbarui) { delete TPD.perbarui[kunciTp()]; selesaiPembaruanTp(TPD.kelas, TPD.semester, kunciTp()); } // sudah memakai versi terbaru
   TP_UBAH = false; renderTp(); renderMapelTp(); tandaiBaru();
 }));
 $('#tp-bawaan').addEventListener('click', e => sibuk(e.target, async () => {
