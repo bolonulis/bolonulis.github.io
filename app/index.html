@@ -93,6 +93,7 @@ table.mapel .na{color:#c9bfa8}
 .mapel-pil button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:13.5px;font-weight:700;color:var(--blue);cursor:pointer}
 .mapel-pil button.on{background:var(--blue);border-color:var(--blue);color:#fff}.mapel-pil button .n{font-weight:800;margin-left:6px;opacity:.75}
 .t-bantu-tombol{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.t-bantu-tombol .btn{text-decoration:none;width:auto}
+.tp-salin{margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fffdf6}.tp-salin ol{margin:8px 0 12px;padding-left:20px;font-size:14px;line-height:1.6}.baris-salin{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.baris-salin em{color:var(--red);font-style:normal}.baris-salin .btn{width:auto;flex:none}
 .tag.baru{background:#fde8e8;color:var(--red);margin-left:6px}
 .b-tpbaru{margin:0 0 14px}
 .b-tpbaru-daftar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;width:100%}
@@ -332,7 +333,7 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="b-tpbaru-daftar" id="b-tpbaru-daftar"></div></div>
     <div class="menu">
       <button class="tile" type="button" id="t-data"><b>Data Sekolah &amp; Siswa</b><span>Profil sekolah, rombel kelas 1–6, wali kelas, dan daftar siswa.</span><div class="tag on">Buka →</div></button>
-      <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa diunduh dalam format impor e-Rapor.</span><div class="tag on">Buka →</div><div class="tag baru hidden" id="t-tp-baru"></div></button>
+      <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa disalin ke template impor TP e-Rapor.</span><div class="tag on">Buka →</div><div class="tag baru hidden" id="t-tp-baru"></div></button>
       <button class="tile" type="button" id="t-nilai"><b>Input Nilai</b><span>Sumatif lingkup materi dan sumatif akhir semester per rombel dan mapel, lengkap dengan nilai rapor dan deskripsinya.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-kok"><b>Kokurikuler</b><span>Subdimensi profil lulusan per kelas, capaian Mahir/Cakap/Berkembang, dan deskripsi otomatis.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-wk"><b>Wali Kelas</b><span>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus.</span><div class="tag on">Buka →</div></button>
@@ -627,11 +628,19 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="grid2">
         <div><label for="tp-kelas">Kelas</label><select id="tp-kelas"><option value="1">Kelas 1 (Fase A)</option><option value="2">Kelas 2 (Fase A)</option><option value="3">Kelas 3 (Fase B)</option><option value="4">Kelas 4 (Fase B)</option><option value="5">Kelas 5 (Fase C)</option><option value="6">Kelas 6 (Fase C)</option></select></div>
         <div><label for="tp-semester">Semester</label><select id="tp-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
-        <div class="aksi"><button class="btn ghost small" type="button" id="tp-unduh" title="Satu berkas per mapel, semester 1 dan 2, siap diimpor ke e-Rapor Kemendikdasmen">Unduh TP kelas ini (format e-Rapor)</button>
-          <button class="btn ghost small" type="button" id="tp-kode" title="Pilih berkas f_tp (….xlsx) yang diunduh dari e-Rapor sekolah Anda; kode mapel di sel C2 disimpan untuk unduhan berikutnya">Ambil kode dari template e-Rapor</button>
-          <input type="file" id="tp-kode-berkas" accept=".xlsx" multiple hidden></div>
+        <div class="aksi"><button class="btn ghost small" type="button" id="tp-unduh" title="Salin TP per mapel untuk ditempel ke template impor TP yang diunduh dari e-Rapor">Salin TP ke template e-Rapor</button></div>
       </div>
       <div class="msg" id="tpu-msg"></div>
+      <div class="tp-salin hidden" id="tp-salin">
+        <b id="tp-salin-judul">Salin TP ke template e-Rapor</b>
+        <ol>
+          <li>Di <b>e-Rapor</b>, unduh template impor TP untuk mapel dan kelas ini (berkas <i>f_tp (….xlsx)</i>). <b>Wajib</b> memakai template dari e-Rapor sekolah sendiri.</li>
+          <li>Klik <b>📋 Salin</b> pada mapel yang sama di bawah ini.</li>
+          <li>Buka template itu, klik sel <b>B4</b> (kolom TINGKAT, baris nomor 1), lalu tempel dengan <b>Ctrl+V</b>.</li>
+          <li>Simpan berkasnya, lalu impor ke e-Rapor.</li>
+        </ol>
+        <div id="tp-salin-daftar"></div>
+      </div>
     </div>
     <div class="mapel-pil" id="tp-mapel" role="tablist" aria-label="Mata pelajaran"></div>
     <p class="hint hidden" id="tp-baru-ringkas" style="margin:-4px 0 12px"></p>
@@ -2795,11 +2804,7 @@ document.querySelector('#v-tp [data-ke="beranda"]').addEventListener('click', e 
   TP_UBAH = false;
 });
 
-/* Unduh TP kelas: satu berkas .xlsx per mapel sesuai format impor e-Rapor, digabung dalam satu ZIP. */
-const PUSTAKA = {
-  ExcelJS: 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js',
-  JSZip: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
-};
+const PUSTAKA = { ExcelJS: 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js' };
 function muatPustaka(nama){
   if (window[nama]) return Promise.resolve();
   return new Promise((ok, gagal) => {
@@ -2808,76 +2813,40 @@ function muatPustaka(nama){
     document.head.appendChild(s);
   });
 }
-async function berkasErapor(b){
-  const wb = new ExcelJS.Workbook();
-  const ws = wb.addWorksheet('Worksheet');
-  ws.columns = [{ width: 5 }, { width: 12 }, { width: 12 }, { width: 12 }, { width: 100 }];
-  ws.getCell('A1').value = 'FORMAT IMPORT TP  ' + b.judul + ' , JENJANG SD';
-  if (b.kodeErapor) ws.getCell('C2').value = Number(b.kodeErapor);
-  ws.getCell('D2').value = 'SD';
-  ws.getRow(3).values = ['NO', 'TINGKAT', 'FASE', 'SEMESTER', 'TUJUAN PEMBELAJARAN (Maximal 100 Karakter)'];
-  ws.getRow(3).font = { bold: true };
-  for (let i = 0; i < 100; i++) {
-    const r = 4 + i, t = b.baris[i];
-    ws.getCell('A' + r).value = i + 1;
-    if (t) { ws.getCell('B' + r).value = t.tingkat; ws.getCell('C' + r).value = t.fase; ws.getCell('D' + r).value = t.semester; ws.getCell('E' + r).value = t.tp; }
-    ws.getCell('B' + r).dataValidation = { type: 'list', allowBlank: true, formulae: ['"1, 2, 3, 4, 5, 6"'] };
-    ws.getCell('C' + r).dataValidation = { type: 'list', allowBlank: true, formulae: ['"A, B, C"'] };
-    ws.getCell('D' + r).dataValidation = { type: 'list', allowBlank: true, formulae: ['"1, 2"'] };
-    ws.getCell('E' + r).dataValidation = { type: 'custom', allowBlank: true, formulae: ['LEN(E' + r + ')<=100'] };
-  }
-  return wb.xlsx.writeBuffer();
-}
-/* Kode mapel e-Rapor berbeda per sekolah: dibaca dari template f_tp yang diunduh dari e-Rapor sekolah itu
-   (A1 "FORMAT IMPORT TP  <JUDUL MAPEL> , JENJANG SD", C2 = kode), lalu disimpan di server. */
-$('#tp-kode').addEventListener('click', () => $('#tp-kode-berkas').click());
-$('#tp-kode-berkas').addEventListener('change', e => sibuk($('#tp-kode'), async () => {
-  const berkas = [...e.target.files]; e.target.value = '';
-  if (!berkas.length) return;
-  pesan('#tpu-msg', 'Membaca template…', true);
-  const daftar = [], gagal = [];
-  try {
-    await muatPustaka('ExcelJS');
-    for (const f of berkas) {
-      try {
-        const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await f.arrayBuffer());
-        const ws = wb.worksheets[0];
-        const judul = String(ws.getCell('A1').value || '').replace(/^\s*FORMAT IMPORT TP\s*/i, '').replace(/\s*,\s*JENJANG\s+\w+\s*$/i, '').trim();
-        const kode = String(ws.getCell('C2').value ?? '').trim();
-        if (judul && /^\d{5,15}$/.test(kode)) daftar.push({ judul, kode }); else gagal.push(f.name);
-      } catch (err) { gagal.push(f.name); }
-    }
-  } catch (err) { return pesan('#tpu-msg', err.message, false); }
-  const catatGagal = gagal.length ? ['Tidak terbaca sebagai template TP e-Rapor: ' + gagal.join(', ')] : [];
-  if (!daftar.length) return pesan('#tpu-msg', catatGagal[0] || 'Tidak ada kode yang terbaca.', false);
-  const res = await api({ aksi:'simpanKodeErapor', daftar });
-  if (res.sesiHabis) return;
-  if (!res.ok) return pesan('#tpu-msg', res.pesan, false);
-  const rinci = res.tersimpan.map(d => d.judul + ': ' + d.kode);
-  pesan('#tpu-msg', res.pesan, true, [res.pesan].concat(rinci, catatGagal));
-}));
 
+/* TP untuk e-Rapor: aplikasi TIDAK membuat berkas impor. Guru wajib memakai template yang diunduh dari e-Rapor
+   kelasnya sendiri, lalu menempelkan TP dari sini (kolom TINGKAT, FASE, SEMESTER, TUJUAN PEMBELAJARAN) mulai sel B4. */
+let TP_SALIN = null;
 $('#tp-unduh').addEventListener('click', e => sibuk(e.target, async () => {
-  if (TP_UBAH && !confirm('Ada TP yang belum disimpan dan tidak ikut terunduh. Lanjutkan?')) return;
-  pesan('#tpu-msg', 'Menyiapkan berkas…', true);
+  if (TP_UBAH && !confirm('Ada TP yang belum disimpan dan tidak ikut tersalin. Lanjutkan?')) return;
   const res = await api({ aksi:'tpEkspor', kelas: Number($('#tp-kelas').value) });
   if (res.sesiHabis) return;
-  if (!res.ok) return pesan('#tpu-msg', res.pesan, false);
-  try {
-    await muatPustaka('ExcelJS'); await muatPustaka('JSZip');
-    const zip = new JSZip();
-    for (const b of res.berkas) zip.file(b.namaBerkas, await berkasErapor(b));
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const nama = 'TP e-Rapor Kelas ' + res.kelas + ' ' + res.tahunAjaran.replace('/', '-') + '.zip';
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
-    const ok = nama + ' terunduh: ' + res.berkas.length + ' berkas (' + res.berkas.map(b => b.nama).join(', ') + ').';
-    pesan('#tpu-msg', ok, true, res.peringatan.length ? [ok].concat(res.peringatan) : null);
-  } catch (err) {
-    pesan('#tpu-msg', err.message, false);
-  }
+  if (!res.ok) { $('#tp-salin').classList.add('hidden'); return pesan('#tpu-msg', res.pesan, false); }
+  $('#tpu-msg').className = 'msg';
+  TP_SALIN = res;
+  $('#tp-salin-judul').textContent = 'Salin TP kelas ' + res.kelas + ' ke template e-Rapor';
+  $('#tp-salin-daftar').innerHTML = res.berkas.map((b, i) => '<div class="baris-salin"><span><b>' + esc(b.nama) + '</b> · ' + b.baris.length + ' TP' +
+    (b.baris.length > 100 ? ' <em>(lebih dari 100 baris template)</em>' : '') + '</span><button class="btn small" type="button" data-salin="' + i + '">📋 Salin</button></div>').join('');
+  $('#tp-salin').classList.remove('hidden');
+  $('#tp-salin').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }));
+$('#tp-salin-daftar').addEventListener('click', async e => {
+  const t = e.target.closest('[data-salin]');
+  if (!t) return;
+  const b = TP_SALIN.berkas[Number(t.dataset.salin)];
+  // Teks dipisah tab: Excel/Google Sheets menaruhnya di kolom B (Tingkat), C (Fase), D (Semester), E (TP).
+  const teks = b.baris.map(x => [x.tingkat, x.fase, x.semester, String(x.tp).replace(/[\t\r\n]+/g, ' ')].join('\t')).join('\n');
+  try {
+    await navigator.clipboard.writeText(teks);
+  } catch (err) {
+    const ta = document.createElement('textarea'); ta.value = teks; document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove();
+    if (!ok) return pesan('#tpu-msg', 'Gagal menyalin otomatis. Coba lagi dengan browser Chrome.', false);
+  }
+  $('#tp-salin-daftar').querySelectorAll('[data-salin]').forEach(x => { x.textContent = '📋 Salin'; });
+  t.textContent = '✓ Tersalin';
+  pesan('#tpu-msg', b.nama + ': ' + b.baris.length + ' TP tersalin. Buka template f_tp mapel ini dari e-Rapor, klik sel B4, lalu tempel (Ctrl+V).', true);
+});
 
 $('#b-unduh').addEventListener('click', e => sibuk(e.target, async () => {
   pesan('#u-msg', 'Menyiapkan berkas Excel…', true);
