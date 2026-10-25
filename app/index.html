@@ -94,6 +94,7 @@ table.mapel .na{color:#c9bfa8}
 .mapel-pil button.on{background:var(--blue);border-color:var(--blue);color:#fff}.mapel-pil button .n{font-weight:800;margin-left:6px;opacity:.75}
 .t-bantu-tombol{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.t-bantu-tombol .btn{text-decoration:none;width:auto}
 .tp-salin{margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fffdf6}.tp-salin ol{margin:8px 0 12px;padding-left:20px;font-size:14px;line-height:1.6}.baris-salin{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.baris-salin em{color:var(--red);font-style:normal}.baris-salin .btn{width:auto;flex:none}
+.satu-akun{background:#eef5fb;border:1px solid #c9dcee;border-radius:14px;padding:12px 14px;margin:0 0 16px;font-size:14px;color:var(--blue)}.satu-akun ul{margin:6px 0 0;padding-left:20px;line-height:1.55;color:var(--ink)}.satu-akun li{margin:3px 0}
 .tag.baru{background:#fde8e8;color:var(--red);margin-left:6px}
 .b-tpbaru{margin:0 0 14px}
 .b-tpbaru-daftar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;width:100%}
@@ -263,13 +264,22 @@ table.leger td.j{text-align:center;font-weight:800}
   <section id="v-daftar" class="card form hidden">
     <h2>Daftarkan sekolah</h2>
     <p>Gratis untuk semua SD. Diisi sekali oleh operator sekolah. Setelah email diverifikasi, spreadsheet rapor sekolah dibuat otomatis untuk kelas 1–6.</p>
+    <div class="satu-akun">
+      <b>📌 Satu sekolah, satu akun</b>
+      <ul>
+        <li>Akun ini dipakai <b>bersama</b> oleh operator, kepala sekolah, dan <b>semua guru</b> di sekolah Anda.</li>
+        <li>Sebelum mendaftar, tanyakan ke operator atau rekan guru: bila sekolah Anda <b>sudah terdaftar</b>, cukup minta email dan kata sandinya, lalu pilih <b>Masuk</b>.</li>
+        <li>Gunakan <b>email sekolah</b>, bukan email pribadi guru, agar akun tetap dipegang sekolah walaupun operator atau guru berganti.</li>
+      </ul>
+    </div>
     <form id="f-daftar">
-      <div class="field"><label for="d-npsn">NPSN</label><input id="d-npsn" type="text" inputmode="numeric" maxlength="8" required></div>
+      <div class="field"><label for="d-npsn">NPSN</label><input id="d-npsn" type="text" inputmode="numeric" maxlength="8" placeholder="8 angka, sesuai Dapodik" required>
+        <div class="hint">Satu NPSN hanya bisa didaftarkan <b>satu kali</b>, sehingga tidak ada akun ganda untuk sekolah yang sama.</div></div>
       <div class="field"><label for="d-nama">Nama sekolah</label><input id="d-nama" type="text" maxlength="100" placeholder="Contoh: SD NEGERI 1 SUKAMAJU" required></div>
       <div class="field"><label for="d-prov">Provinsi</label><select id="d-prov" required><option value="">Pilih provinsi…</option></select></div>
       <div class="field"><label for="d-kab">Kabupaten/Kota</label><select id="d-kab" required disabled><option value="">Pilih provinsi dulu…</option></select></div>
       <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocomplete="username" required>
-        <div class="hint">Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email untuk satu sekolah.</div></div>
+        <div class="hint"><b>Gunakan email sekolah</b>, bukan email pribadi guru. Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email hanya untuk satu sekolah.</div></div>
       <div class="field"><label for="d-sandi">Buat kata sandi aplikasi</label><input id="d-sandi" type="password" autocomplete="new-password" required>
         <div class="hint"><b>Jangan pakai kata sandi email Anda.</b> Kata sandi ini akan dibagikan ke semua guru. Minimal 8 karakter, campuran huruf dan angka.</div></div>
       <div class="field"><label for="d-ulangi">Ulangi kata sandi</label><input id="d-ulangi" type="password" autocomplete="new-password" required></div>
