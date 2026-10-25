@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RPP Flash | RPP Pembelajaran Mendalam SD dengan Bantuan AI</title>
+<meta name="description" content="RPP Flash menyusun RPP Pembelajaran Mendalam SD kelas 1–6 lengkap dengan asesmen bermodel TKA, LKPD, dan rubrik profil lulusan, dengan desain mundur dan bantuan AI Gemini.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{--hijau:#1b7f3e;--hijau-tua:#145c2d;--hijau-muda:#e8f5ed;--kuning:#ffd21f;--cream:#f7fbf8;--ink:#16202a;--muted:#5b6b7f;--line:#d6e6dc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+a{color:var(--hijau-tua)}
+.topline{height:6px;background:linear-gradient(90deg,var(--hijau) 0 60%,var(--kuning) 60% 80%,var(--hijau-tua) 80%)}
+.wrap{max-width:1040px;margin:auto;padding:0 18px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--hijau-tua);text-decoration:none;font-size:17px}
+.brand img{width:36px;height:36px}
+.nav-a{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:12px 18px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;background:var(--hijau);color:#fff;text-decoration:none}
+.btn:hover{background:var(--hijau-tua)}
+.btn.ghost{background:#fff;color:var(--hijau-tua);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--hijau)}
+.hero{margin:10px 0 0;padding:44px 34px;border-radius:28px;background:linear-gradient(135deg,var(--hijau),var(--hijau-tua));color:#fff;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
+.hero small{color:var(--kuning);font-weight:800;letter-spacing:.08em;font-size:12.5px}
+.hero h1{margin:8px 0 12px;font-size:clamp(1.9rem,4.6vw,3rem);line-height:1.12;letter-spacing:-.03em}
+.hero p{margin:0 0 22px;color:#d9efe0;font-size:16.5px}
+.hero .aksi{display:flex;gap:10px;flex-wrap:wrap}
+.hero .btn{background:#fff;color:var(--hijau-tua)}
+.hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.hero ul{margin:0;padding:18px 20px;list-style:none;background:rgba(255,255,255,.09);border-radius:18px}
+.hero li{padding:6px 0 6px 28px;position:relative;color:#eef8f1;font-size:15px}
+.hero li::before{content:"✓";position:absolute;left:4px;color:var(--kuning);font-weight:900}
+section{margin-top:46px}
+h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--hijau-tua);margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 10px 24px rgba(20,92,45,.06)}
+.card .ik{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:22px;background:var(--hijau-muda);margin-bottom:10px}
+.card h3{margin:0 0 6px;font-size:16.5px;color:var(--hijau-tua)}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.langkah{counter-reset:l;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.langkah .card{position:relative;padding-top:46px}
+.langkah .card::before{counter-increment:l;content:counter(l);position:absolute;top:16px;left:20px;width:26px;height:26px;border-radius:8px;background:var(--hijau);color:#fff;font-weight:800;display:grid;place-items:center;font-size:14px}
+.kotak{background:#fff;border:2px solid var(--hijau);border-radius:22px;padding:24px;display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:center}
+.kotak ul{padding-left:20px;margin:10px 0 0;font-size:14.5px}
+.kotak .kanan{display:flex;flex-direction:column;gap:10px}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--hijau-tua)}
+.faq p{margin:8px 0 0;color:var(--muted);font-size:14.5px}
+.cta{margin-top:46px;padding:30px;border-radius:24px;background:var(--hijau-muda);border:1px solid #a8d5b8;text-align:center}
+.cta h2{margin-bottom:8px}
+footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
+@media(max-width:760px){.hero,.kotak{grid-template-columns:1fr}.hero{padding:30px 22px}.nav-a .btn.ghost{display:none}}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="./"><img src="logo.svg" alt="">RPP Flash</a>
+    <div class="nav-a"><a class="btn ghost" href="../">Karya lain</a><a class="btn" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Buka RPP Flash</a></div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <small>RPP PEMBELAJARAN MENDALAM · SD KELAS 1–6</small>
+      <h1>RPP lengkap dalam hitungan menit.</h1>
+      <p>Cepat, aplikatif, dan kontekstual. Guru mengisi identitas, topik, dan keadaan kelas; RPP Flash menyusun RPP utuh beserta asesmen, LKPD, dan rubriknya. Hasil tetap ditinjau dan disunting guru.</p>
+      <div class="aksi"><a class="btn" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Buka RPP Flash</a><a class="btn ghost" href="#lisensi">Cara mendapatkan kode</a></div>
+    </div>
+    <ul>
+      <li>Acuan Panduan Pembelajaran dan Asesmen edisi revisi 2025</li>
+      <li>Desain mundur: soal dulu, baru langkah pembelajaran</li>
+      <li>Soal bermodel TKA: PG, PG kompleks, kategori, menjodohkan</li>
+      <li>LKPD yang bisa dikerjakan murid secara mandiri</li>
+      <li>Rubrik profil lulusan dikutip dari Kepka BSKAP 058/2025</li>
+      <li>1–3 pertemuan per tujuan pembelajaran</li>
+    </ul>
+  </header>
+
+  <section>
+    <h2>Isi RPP yang disusun</h2>
+    <p class="sub">Satu dokumen utuh, siap dicetak setelah diperiksa guru.</p>
+    <div class="grid">
+      <div class="card"><div class="ik">🧭</div><h3>Identifikasi murid &amp; CP</h3><p>Uraian Capaian Pembelajaran dicantumkan utuh sesuai elemen yang dipilih, beserta identifikasi kebutuhan murid di kelas.</p></div>
+      <div class="card"><div class="ik">🎯</div><h3>Tujuan pembelajaran ABCD</h3><p>Tulis sendiri dari ATP, atau minta 3 usulan TP yang disusun AI dari CP lalu pilih yang paling sesuai.</p></div>
+      <div class="card"><div class="ik">🧩</div><h3>Model &amp; sintaks lengkap</h3><p>13 model, antara lain PBL, PjBL, Discovery, Inkuiri, Jigsaw, dan STAD, dengan sintaks yang diuraikan otomatis.</p></div>
+      <div class="card"><div class="ik">🪜</div><h3>Langkah pembelajaran rinci</h3><p>Memahami, mengaplikasi, merefleksi; blok bernomor dengan pertanyaan pemantik siap ucap.</p></div>
+      <div class="card"><div class="ik">📝</div><h3>Asesmen bermodel TKA</h3><p>Pilihan ganda, PG kompleks, PG kategori Benar/Salah, dan menjodohkan, lengkap dengan kunci dan skor.</p></div>
+      <div class="card"><div class="ik">📄</div><h3>LKPD mandiri</h3><p>Pengantar, contoh terbimbing, latihan bertahap, dan menyimpulkan sendiri, selaras dengan soal asesmen.</p></div>
+      <div class="card"><div class="ik">💻</div><h3>Pemanfaatan digital</h3><p>Pilih sarana digital yang dipakai; uraiannya terisi otomatis dan masih bisa disunting.</p></div>
+      <div class="card"><div class="ik">✍️</div><h3>Siap tanda tangan</h3><p>Identitas sekolah, guru, kepala sekolah, NIP/NIY, dan lembar pengamatan sesuai jumlah murid.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cara memakai</h2>
+    <p class="sub">Cukup browser di laptop atau HP.</p>
+    <div class="langkah">
+      <div class="card"><h3>Dapatkan kode lisensi</h3><p>Hubungi pengembang lewat WhatsApp untuk mendapatkan kode lisensi RPP Flash.</p></div>
+      <div class="card"><h3>Siapkan kunci Gemini</h3><p>Buat kunci API Gemini gratis di Google AI Studio dengan akun Google Anda. Panduannya ada di dalam aplikasi.</p></div>
+      <div class="card"><h3>Isi formulir</h3><p>Identitas, topik, keadaan kelas, model pembelajaran, dan tujuan pembelajaran.</p></div>
+      <div class="card"><h3>Tinjau &amp; unduh</h3><p>Periksa hasilnya, sunting bila perlu, lalu unduh dan cetak RPP.</p></div>
+    </div>
+  </section>
+
+  <section id="lisensi">
+    <div class="kotak">
+      <div>
+        <h2>Kode lisensi RPP Flash</h2>
+        <p class="sub" style="margin:0">Setiap kode lisensi berisi jatah penyusunan RPP. Tersedia paket coba dulu untuk mencoba sebelum memakai lebih banyak.</p>
+        <ul><li>Kunci Gemini milik guru sendiri, tidak disimpan di server</li><li>Bantuan pemakaian lewat WhatsApp</li><li>Pembaruan aplikasi mengikuti regulasi terbaru</li></ul>
+      </div>
+      <div class="kanan">
+        <a class="btn" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20ingin%20mendapatkan%20kode%20lisensi%20RPP%20Flash." target="_blank" rel="noopener">Minta kode lewat WhatsApp</a>
+        <a class="btn ghost" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Sudah punya kode? Buka aplikasi</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Pertanyaan umum</h2>
+    <details><summary>Apakah RPP langsung jadi tanpa perlu diperiksa?</summary><p>Tidak. RPP Flash menyusun draf yang lengkap dan selaras, tetapi guru tetap meninjau, menyesuaikan dengan kelasnya, dan menyunting sebelum dipakai.</p></details>
+    <details><summary>Mengapa perlu kunci API Gemini?</summary><p>RPP Flash memakai AI Gemini dengan kunci milik guru sendiri, sehingga pemakaiannya memakai kuota gratis akun Google guru. Kunci tidak disimpan di server, dan satu RPP memakai tiga permintaan.</p></details>
+    <details><summary>Bolehkah menuliskan nama murid?</summary><p>Jangan. Tulis keadaan murid secara umum saja, misalnya "tiga murid masih kesulitan membaca". Pada paket gratis, Google dapat memakai isian untuk meningkatkan produknya.</p></details>
+    <details><summary>Mata pelajaran apa saja?</summary><p>Mata pelajaran SD kelas 1–6 Kurikulum Merdeka. Fase ditentukan otomatis dari kelas, dan uraian CP dipilih per elemen.</p></details>
+  </section>
+
+  <div class="cta">
+    <h2>Siap menyusun RPP?</h2>
+    <p class="sub" style="margin-bottom:16px">Minta kode lisensi, siapkan kunci Gemini, dan mulai.</p>
+    <a class="btn" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Buka RPP Flash</a>
+  </div>
+
+  <footer>
+    © <span id="tahun">2026</span> RPP Flash · dikembangkan oleh Admin ·
+    <a href="https://wa.me/6281196939694" target="_blank" rel="noopener">WhatsApp 0811-9693-9694</a> · <a href="../">Karya lain dari pengembang</a>
+  </footer>
+</div>
+<script>document.getElementById('tahun').textContent = new Date().getFullYear();</script>
+</body>
+</html>

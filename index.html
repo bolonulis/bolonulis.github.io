@@ -3,152 +3,141 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rapor Merdeka Digital | Rapor SD Kurikulum Merdeka Kelas 1–6</title>
-<meta name="description" content="Aplikasi rapor SD Kurikulum Merdeka kelas 1–6, gratis: input nilai, deskripsi otomatis, kokurikuler, cetak rapor A4, Excel siap e-Rapor, transkrip dan SKL.">
-<link rel="icon" type="image/svg+xml" href="logo.svg">
+<title>Karya Admin | Aplikasi untuk Guru SD</title>
+<meta name="description" content="Aplikasi untuk guru SD Kurikulum Merdeka, dibuat oleh guru: Rapor Merdeka Digital (rapor SD gratis) dan RPP Flash (RPP Pembelajaran Mendalam dengan bantuan AI).">
+<link rel="icon" type="image/svg+xml" href="karya.svg">
 <style>
-:root{--red:#d71920;--red-dark:#9e1117;--yellow:#ffd21f;--blue:#12314f;--blue2:#1f4f7a;--cream:#fffaf0;--ink:#16202a;--muted:#5b6b7f;--line:#eadfc7;--ok:#1d7a37}
+:root{--red:#d71920;--red-dark:#9e1117;--yellow:#ffd21f;--blue:#12314f;--blue2:#1f4f7a;--hijau:#1b7f3e;--hijau-tua:#145c2d;--cream:#fffaf0;--ink:#16202a;--muted:#5b6b7f;--line:#eadfc7}
 *{box-sizing:border-box}
 body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
 a{color:var(--blue)}
-.topline{height:6px;background:linear-gradient(90deg,var(--red) 0 42%,var(--yellow) 42% 68%,var(--blue) 68%)}
+.topline{height:6px;background:linear-gradient(90deg,var(--red) 0 34%,var(--yellow) 34% 52%,var(--hijau) 52% 76%,var(--blue) 76%)}
 .wrap{max-width:1040px;margin:auto;padding:0 18px}
 nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--blue);text-decoration:none;font-size:17px}
 .brand img{width:36px;height:36px}
-.nav-a{display:flex;gap:8px;align-items:center}
-.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:12px 18px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;background:var(--red);color:#fff;text-decoration:none}
-.btn:hover{background:var(--red-dark)}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:11px 16px;font:inherit;font-weight:800;font-size:14.5px;cursor:pointer;background:var(--blue);color:#fff;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.12)}
 .btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--line)}
-.btn.ghost:hover{border-color:var(--blue)}
-.hero{margin:10px 0 0;padding:44px 34px;border-radius:28px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
+.btn.merah{background:var(--red)}
+.btn.hijau{background:var(--hijau)}
+.hero{margin:10px 0 0;padding:44px 34px;border-radius:28px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
 .hero small{color:var(--yellow);font-weight:800;letter-spacing:.08em;font-size:12.5px}
-.hero h1{margin:8px 0 12px;font-size:clamp(1.9rem,4.6vw,3rem);line-height:1.12;letter-spacing:-.03em}
-.hero p{margin:0 0 22px;color:#d6e2ee;font-size:16.5px}
+.hero h1{margin:8px 0 12px;font-size:clamp(1.9rem,4.6vw,3rem);line-height:1.12;letter-spacing:-.03em;max-width:760px}
+.hero p{margin:0 0 22px;color:#d6e2ee;font-size:16.5px;max-width:700px}
 .hero .aksi{display:flex;gap:10px;flex-wrap:wrap}
+.hero .btn{background:var(--yellow);color:var(--blue)}
 .hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
-.hero ul{margin:0;padding:18px 20px;list-style:none;background:rgba(255,255,255,.08);border-radius:18px}
-.hero li{padding:6px 0 6px 28px;position:relative;color:#eaf1f8;font-size:15px}
-.hero li::before{content:"✓";position:absolute;left:4px;color:var(--yellow);font-weight:900}
 section{margin-top:46px}
 h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-spacing:-.02em}
 .sub{color:var(--muted);margin:0 0 20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 10px 24px rgba(18,49,79,.06)}
-.card .ik{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:22px;background:#fff3c0;margin-bottom:10px}
-.card h3{margin:0 0 6px;font-size:16.5px;color:var(--blue)}
-.card p{margin:0;color:var(--muted);font-size:14px}
-.langkah{counter-reset:l;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
-.langkah .card{position:relative;padding-top:46px}
-.langkah .card::before{counter-increment:l;content:counter(l);position:absolute;top:16px;left:20px;width:26px;height:26px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:grid;place-items:center;font-size:14px}
-.harga{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
-.paket{background:#fff;border:2px solid var(--line);border-radius:22px;padding:24px}
-.paket.utama{border-color:var(--blue);box-shadow:0 18px 36px rgba(18,49,79,.12)}
-.paket h3{margin:0;color:var(--blue)}
-.paket .angka{font-size:34px;font-weight:900;color:var(--ink);margin:8px 0 2px;letter-spacing:-.02em}
-.paket .angka small{font-size:15px;color:var(--muted);font-weight:600}
-.paket ul{padding-left:20px;margin:12px 0 18px;color:var(--ink);font-size:14.5px}
-.faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
-.faq summary{cursor:pointer;font-weight:700;color:var(--blue)}
-.faq p{margin:8px 0 0;color:var(--muted);font-size:14.5px}
-.cta{margin-top:46px;padding:30px;border-radius:24px;background:#fff8e1;border:1px solid #f0d77a;text-align:center}
-.cta h2{margin-bottom:8px}
+.karya{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.app{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 12px 28px rgba(18,49,79,.07);display:flex;flex-direction:column;border-top:6px solid var(--warna,var(--blue))}
+.app .kepala{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.app .kepala img{width:52px;height:52px}
+.app h3{margin:0;font-size:20px;color:var(--ink);letter-spacing:-.01em}
+.app .jenis{font-size:12.5px;font-weight:800;color:var(--warna,var(--blue));letter-spacing:.04em}
+.app p{margin:0 0 10px;color:var(--muted);font-size:14.5px}
+.app ul{margin:0 0 14px;padding-left:20px;font-size:14px}
+.app li{margin:2px 0}
+.app .lencana{display:inline-block;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;background:#e3f4e7;color:var(--hijau);margin-bottom:10px}
+.app .aksi{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+.app .aksi .btn{flex:1}
+.app.segera{background:transparent;border:2px dashed var(--line);box-shadow:none;border-top-width:2px;align-items:center;justify-content:center;text-align:center;color:var(--muted);min-height:220px}
+.app.segera b{display:block;font-size:17px;color:var(--blue);margin:6px 0 4px}
+.dev{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px}
+.dev .ava{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));color:var(--yellow);display:grid;place-items:center;font-size:30px;font-weight:900}
+.dev h3{margin:0;color:var(--blue);font-size:19px}
+.dev p{margin:4px 0 12px;color:var(--muted);font-size:14.5px}
+.dev .aksi{display:flex;gap:8px;flex-wrap:wrap}
+.kopi{margin-top:18px;padding:18px 20px;border-radius:18px;background:#fff8e1;border:1px solid #f0d77a;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.kopi .teks{flex:1 1 300px;color:#5c4400;font-size:14.5px}
+.kopi .no{display:flex;flex-direction:column;color:#5c4400}
+.kopi .no small{font-size:12.5px;font-weight:700}
+.kopi .no b{font-size:19px;white-space:nowrap}
 footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
-footer a{color:var(--blue)}
-@media(max-width:760px){.hero{grid-template-columns:1fr;padding:30px 22px}.harga{grid-template-columns:1fr}.nav-a .btn.ghost{display:none}}
+@media(max-width:600px){.hero{padding:30px 22px}.dev{grid-template-columns:1fr;text-align:center}.dev .ava{margin:auto}.dev .aksi{justify-content:center}}
 </style>
 </head>
 <body>
 <div class="topline"></div>
 <div class="wrap">
   <nav>
-    <a class="brand" href="./"><img src="logo.svg" alt="">Rapor Merdeka Digital</a>
-    <div class="nav-a"><a class="btn ghost" href="app/panduan.html">Panduan</a><a class="btn ghost" href="app/">Masuk</a><a class="btn" href="app/#daftar">Daftar gratis</a></div>
+    <a class="brand" href="./"><img src="karya.svg" alt="">Karya Admin</a>
+    <a class="btn ghost" href="https://wa.me/6281196939694" target="_blank" rel="noopener">WhatsApp</a>
   </nav>
 
   <header class="hero">
-    <div>
-      <small>RAPOR SD KURIKULUM MERDEKA · KELAS 1–6</small>
-      <h1>Rapor rapi, deskripsi otomatis, siap e-Rapor.</h1>
-      <p>Guru cukup mengisi angka. Nilai rapor, deskripsi capaian, kokurikuler, dan leger dihitung otomatis, lalu dicetak 2 halaman A4 atau diunduh ke Excel untuk e-Rapor.</p>
-      <div class="aksi"><a class="btn" href="app/#daftar">Daftar gratis</a><a class="btn ghost" href="#gratis">Kenapa gratis?</a></div>
-    </div>
-    <ul>
-      <li><b>Gratis</b> untuk semua SD, tanpa batas waktu</li>
-      <li>Tanpa instal, dibuka dari laptop atau HP</li>
-      <li>Satu akun untuk semua guru di sekolah</li>
-      <li>725 tujuan pembelajaran bawaan siap pakai</li>
-      <li>Transkrip nilai &amp; SKL kelas 6</li>
-      <li>Data tiap sekolah terpisah dan bisa diunduh kapan saja</li>
-    </ul>
+    <small>APLIKASI UNTUK GURU SD · KURIKULUM MERDEKA</small>
+    <h1>Dibuat oleh guru, untuk meringankan pekerjaan guru.</h1>
+    <p>Kumpulan aplikasi untuk administrasi pembelajaran SD: dari menyusun RPP sampai mencetak rapor. Tanpa instal, cukup dibuka dari laptop atau HP.</p>
+    <div class="aksi"><a class="btn" href="#karya">Lihat aplikasi</a><a class="btn ghost" href="#pengembang">Tentang pengembang</a></div>
   </header>
 
-  <section>
-    <h2>Semua yang dibutuhkan untuk rapor SD</h2>
-    <p class="sub">Disusun mengikuti Panduan Pembelajaran dan Asesmen serta format rapor Kurikulum Merdeka.</p>
-    <div class="grid">
-      <div class="card"><div class="ik">📋</div><h3>Data sekolah &amp; siswa</h3><p>Rombel kelas 1–6, wali kelas, dan siswa. Tempel langsung dari Excel atau Dapodik.</p></div>
-      <div class="card"><div class="ik">🎯</div><h3>Tujuan Pembelajaran</h3><p>TP per kelas, mapel, dan semester, termasuk TP bawaan. Unduh dalam format impor e-Rapor.</p></div>
-      <div class="card"><div class="ik">✏️</div><h3>Input nilai cepat</h3><p>Sumatif lingkup materi dan akhir semester. Nilai rapor dan deskripsi capaian langsung tampil.</p></div>
-      <div class="card"><div class="ik">🌱</div><h3>Kokurikuler</h3><p>Subdimensi profil lulusan, capaian Mahir/Cakap/Berkembang, dan narasi deskripsi otomatis.</p></div>
-      <div class="card"><div class="ik">🧑‍🏫</div><h3>Wali kelas</h3><p>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, serta keputusan naik kelas/lulus.</p></div>
-      <div class="card"><div class="ik">🖨️</div><h3>Cetak &amp; e-Rapor</h3><p>Rapor 2 halaman A4, sampul, leger, dan Excel berisi TP tertinggi/terendah untuk disalin ke e-Rapor.</p></div>
-      <div class="card"><div class="ik">🎓</div><h3>Transkrip &amp; SKL</h3><p>Rata-rata nilai kelas 5–6 ditambah praktik, nomor otomatis, dan cetak sesuai format.</p></div>
-      <div class="card"><div class="ik">🔒</div><h3>Aman &amp; rapi</h3><p>Kunci rapor setelah final, riwayat perubahan, dan cadangan saat pergantian tahun ajaran.</p></div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Mulai dalam 4 langkah</h2>
-    <p class="sub">Operator sekolah cukup mendaftar sekali.</p>
-    <div class="langkah">
-      <div class="card"><h3>Daftar</h3><p>Isi NPSN, nama sekolah, wilayah, dan email sekolah, lalu klik tautan aktivasi di email.</p></div>
-      <div class="card"><h3>Siapkan data</h3><p>Lengkapi profil sekolah, rombel, dan siswa. TP bawaan sudah terisi.</p></div>
-      <div class="card"><h3>Guru mengisi nilai</h3><p>Semua guru masuk dengan akun sekolah dan mengisi nilai sesuai mapelnya.</p></div>
-      <div class="card"><h3>Cetak rapor</h3><p>Periksa kelengkapan, cetak rapor, atau unduh Excel untuk e-Rapor.</p></div>
-    </div>
-  </section>
-
-  <section id="gratis">
-    <h2>Gratis untuk semua SD</h2>
-    <p class="sub">Semua fitur, kelas 1–6, guru tanpa batas, tanpa masa uji coba dan tanpa biaya langganan.</p>
-    <div class="harga">
-      <div class="paket utama">
-        <h3>Rapor Merdeka Digital</h3>
-        <div class="angka">Rp0 <small>selamanya</small></div>
-        <ul><li>Semua fitur terbuka</li><li>Pembaruan aplikasi sepanjang tahun</li><li>Bantuan lewat WhatsApp</li><li>Data sekolah bisa diunduh kapan saja</li></ul>
-        <a class="btn" href="app/#daftar">Daftar gratis</a>
-      </div>
-      <div class="paket" id="dukung">
-        <h3>☕ Traktir kopi pengembang</h3>
-        <p style="margin:10px 0 0;color:var(--muted);font-size:14.5px">Aplikasi ini dikembangkan secara mandiri. Jika Rapor Merdeka Digital meringankan pekerjaan Bapak/Ibu, boleh traktir kopi pengembang <b>seikhlasnya</b>, untuk biaya pemeliharaan dan pengembangan fitur baru.</p>
-        <div style="margin:14px 0;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-weight:800;color:#5c4400">DANA / OVO / GoPay: 0811-9693-9694<br><span style="font-weight:600">a.n. Admin</span></div>
-        <p style="margin:0;color:var(--muted);font-size:13px">Sepenuhnya sukarela. Tidak berkenan pun tidak apa-apa, aplikasi tetap bisa dipakai sepenuhnya. Mohon dari dana pribadi, bukan dana BOS/sekolah. Terima kasih. 🙏</p>
+  <section id="karya">
+    <h2>Aplikasi</h2>
+    <p class="sub">Pilih aplikasi yang Bapak/Ibu butuhkan.</p>
+    <div class="karya">
+      <article class="app" style="--warna:var(--red)">
+        <div class="kepala"><img src="logo.svg" alt=""><div><div class="jenis">RAPOR SD · KELAS 1–6</div><h3>Rapor Merdeka Digital</h3></div></div>
+        <div><span class="lencana">Gratis untuk semua SD</span></div>
+        <p>Guru cukup mengisi angka. Nilai rapor, deskripsi capaian, kokurikuler, dan leger dihitung otomatis.</p>
+        <ul><li>725 tujuan pembelajaran bawaan siap pakai</li><li>Cetak rapor A4 &amp; Excel siap e-Rapor</li><li>Transkrip nilai &amp; SKL kelas 6</li></ul>
+        <p id="st-rapor" hidden style="font-weight:700;color:var(--blue)"></p>
+        <div class="aksi"><a class="btn merah" href="app/">Buka aplikasi</a><a class="btn ghost" href="rapor/">Pelajari</a></div>
+      </article>
+      <article class="app" style="--warna:var(--hijau)">
+        <div class="kepala"><img src="rpp-flash/logo.svg" alt=""><div><div class="jenis">RPP · PEMBELAJARAN MENDALAM</div><h3>RPP Flash</h3></div></div>
+        <div><span class="lencana">Dengan bantuan AI Gemini</span></div>
+        <p>RPP utuh dalam hitungan menit: cepat, aplikatif, dan kontekstual. Hasil tetap ditinjau guru.</p>
+        <ul><li>Desain mundur: soal dulu, baru langkah</li><li>Asesmen bermodel TKA &amp; LKPD mandiri</li><li>Rubrik profil lulusan Kepka BSKAP 058/2025</li></ul>
+        <div class="aksi"><a class="btn hijau" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Buka aplikasi</a><a class="btn ghost" href="rpp-flash/">Pelajari</a></div>
+      </article>
+      <div class="app segera">
+        <div style="font-size:30px">✨</div>
+        <b>Karya berikutnya</b>
+        <span style="font-size:14px">Sedang disiapkan. Punya usulan aplikasi yang dibutuhkan guru?<br><a href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20punya%20usulan%20aplikasi%20untuk%20guru%3A%20" target="_blank" rel="noopener">Kirim usulan lewat WhatsApp</a></span>
       </div>
     </div>
   </section>
 
-  <section class="faq">
-    <h2>Pertanyaan umum</h2>
-    <details><summary>Apakah ini menggantikan e-Rapor Kemendikdasmen?</summary><p>Tidak. Rapor Merdeka Digital membantu guru mengolah nilai dan deskripsi dengan cepat, lalu hasilnya bisa diunduh dalam Excel untuk disalin ke e-Rapor. Sekolah juga bisa langsung mencetak rapor dari aplikasi.</p></details>
-    <details><summary>Benarkah gratis? Ada biaya tersembunyi?</summary><p>Gratis, tanpa masa uji coba dan tanpa biaya langganan. Dukungan "traktir kopi" sepenuhnya sukarela dan tidak memengaruhi fitur apa pun.</p></details>
-    <details><summary>Siapa yang bisa melihat data siswa kami?</summary><p>Hanya pengguna akun sekolah Anda. Data tiap sekolah disimpan terpisah. Rinciannya ada di <a href="privasi.html">Kebijakan Privasi</a>.</p></details>
-    <details><summary>Apakah perlu memasang aplikasi?</summary><p>Tidak. Cukup browser (disarankan Chrome) di laptop atau HP yang tersambung internet.</p></details>
-    <details><summary>Bagaimana cara mendukung pengembangan aplikasi ini?</summary><p>Cara terbaik: bagikan ke sekolah lain dan kirim masukan lewat WhatsApp. Bila berkenan, Bapak/Ibu juga bisa <a href="#dukung">traktir kopi pengembang</a> seikhlasnya.</p></details>
+  <section id="pengembang">
+    <h2>Tentang pengembang</h2>
+    <p class="sub">Semua aplikasi di halaman ini dikembangkan dan dikelola secara mandiri.</p>
+    <div class="dev">
+      <div class="ava">YP</div>
+      <div>
+        <h3>Admin</h3>
+        <p>Admin. Membuat aplikasi agar guru punya lebih banyak waktu untuk murid, bukan untuk administrasi.</p>
+        <div class="aksi">
+          <a class="btn hijau" href="https://wa.me/6281196939694" target="_blank" rel="noopener">WhatsApp 0811-9693-9694</a>
+          <a class="btn ghost" href="mailto:bolonulis@gmail.com">bolonulis@gmail.com</a>
+          <a class="btn ghost" href="#" target="_blank" rel="noopener">Admin</a>
+        </div>
+      </div>
+    </div>
+    <div class="kopi" id="dukung">
+      <div class="teks"><b>☕ Traktir kopi pengembang</b><br>Jika karya-karya ini meringankan pekerjaan Bapak/Ibu, boleh traktir kopi seikhlasnya untuk pemeliharaan dan pengembangan. Sepenuhnya sukarela; mohon dari dana pribadi, bukan dana BOS/sekolah. 🙏</div>
+      <div class="no"><small>DANA / OVO / GoPay</small><b>0811-9693-9694</b><small>a.n. Admin</small></div>
+    </div>
   </section>
-
-  <div class="cta">
-    <h2>Siap memakai?</h2>
-    <p class="sub" style="margin-bottom:16px">Daftar sekarang, gratis untuk semua SD.</p>
-    <a class="btn" href="app/#daftar">Daftar gratis</a>
-  </div>
 
   <footer>
-    © <span id="tahun">2026</span> Rapor Merdeka Digital · dikembangkan oleh Admin ·
-    <a href="https://wa.me/6281196939694" target="_blank" rel="noopener">WhatsApp 0811-9693-9694</a><br>
-    <a href="syarat.html">Syarat Layanan</a> · <a href="privasi.html">Kebijakan Privasi</a> · <a href="app/panduan.html">Panduan Guru</a>
+    © <span id="tahun">2026</span> Admin ·
+    <a href="syarat.html">Syarat Layanan</a> · <a href="privasi.html">Kebijakan Privasi</a> (Rapor Merdeka Digital)
   </footer>
 </div>
-<script>document.getElementById('tahun').textContent = new Date().getFullYear();</script>
+<script>
+document.getElementById('tahun').textContent = new Date().getFullYear();
+// Jumlah sekolah pemakai Rapor Merdeka Digital (hanya angka, tanpa nama sekolah). Gagal dimuat: tidak ditampilkan.
+fetch('https://script.google.com/macros/s/AKfycbzTAde0R7qTZ3V3Tk_bjI9ue7_lkdKxW4DygSKuoBnvlgKMlRcFBnithtKEhau92LPQ/exec',
+  { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ aksi: 'statistik' }) })
+  .then(r => r.json()).then(s => {
+    if (!s.ok || !s.sekolah) return;
+    const el = document.getElementById('st-rapor');
+    el.textContent = '🏫 Dipakai ' + s.sekolah + ' sekolah di ' + s.kabupaten + ' kabupaten/kota';
+    el.hidden = false;
+  }).catch(() => {});
+</script>
 </body>
 </html>
