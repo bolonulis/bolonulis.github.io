@@ -35,7 +35,10 @@ input:focus{outline:2px solid var(--yellow);border-color:var(--yellow)}
 dialog.profil{border:0;border-radius:22px;padding:0;max-width:440px;width:calc(100% - 32px);box-shadow:0 24px 60px rgba(18,49,79,.3)}dialog.profil::backdrop{background:rgba(18,49,79,.45)}
 .profil .kepala{background:linear-gradient(135deg,var(--blue),#1f4f7a);color:#fff;padding:20px 22px}.profil .kepala small{color:#d6e2ee;font-weight:700;letter-spacing:.06em;font-size:11.5px}.profil .kepala h3{margin:6px 0 2px;font-size:19px}.profil .kepala p{margin:0;color:#d6e2ee;font-size:13.5px}
 .profil dl{margin:0;padding:16px 22px;display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:14px}.profil dt{color:var(--muted)}.profil dd{margin:0;font-weight:600}.profil dd a{color:var(--blue)}
-.profil .tombol{display:flex;gap:8px;padding:0 22px 20px;flex-wrap:wrap}.profil .tombol .btn{width:auto;flex:1}.profil .dukung{margin:0 22px 16px;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-size:13px;line-height:1.55;color:#5c4400}.profil .dukung b{display:block;color:var(--blue);font-size:13.5px;margin-bottom:3px}.btn.wa{background:#1fa855}.btn.wa:hover{background:#178a45}
+.profil .tombol{display:flex;gap:8px;padding:0 22px 20px;flex-wrap:wrap}.profil .tombol .btn{width:auto;flex:1}.profil .dukung{margin:0 22px 16px;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-size:13px;line-height:1.55;color:#5c4400}.profil .dukung b{display:block;color:var(--blue);font-size:13.5px;margin-bottom:3px}.kopi .isi{padding:18px 22px 6px;font-size:14.5px;line-height:1.6}.kopi .nomor{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#fff8e1;border:1px solid #f0d77a;border-radius:14px;padding:12px 14px;margin:12px 0;font-weight:800;color:#5c4400}.kopi .nomor button{flex:none}.kopi small{display:block;color:var(--muted);font-size:12.5px;margin-top:8px}
+.ajak-kopi{position:fixed;right:16px;bottom:16px;z-index:50;max-width:340px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 18px 40px rgba(18,49,79,.22);font-size:14px;line-height:1.5}.ajak-kopi b{display:block;color:var(--blue);margin-bottom:4px}.ajak-kopi .aksi{margin-top:10px}
+@media print{.ajak-kopi{display:none!important}}
+.btn.wa{background:#1fa855}.btn.wa:hover{background:#178a45}
 .bantuan{max-width:460px;margin:12px auto 0;text-align:center;font-size:13.5px;color:var(--muted);line-height:1.7}.bantuan a,.bantuan button.link{color:var(--blue);font-weight:700;text-decoration:underline;white-space:nowrap;font-size:inherit}
 footer button.link{color:inherit;text-decoration:underline;font-size:inherit}
 .tab-akun{max-width:460px;margin:22px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:8px}.tab-akun a{display:block;text-align:center;padding:13px 10px;border-radius:14px;border:2px solid var(--blue);color:var(--blue);background:#fff;font-weight:800;font-size:15px;text-decoration:none}.tab-akun a:hover{background:#eef3f8}.tab-akun a.on{background:var(--blue);color:#fff}
@@ -738,7 +741,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <datalist id="dl-seni"></datalist>
   </section>
 
-  <footer>Rapor Merdeka Digital · dikembangkan oleh Admin · <a href="panduan.html" target="_blank" rel="noopener" style="color:inherit">Panduan guru</a> · <button type="button" class="link buka-profil">Profil pengembang &amp; narahubung</button> · <a href="../syarat.html" target="_blank" rel="noopener" style="color:inherit">Syarat</a> · <a href="../privasi.html" target="_blank" rel="noopener" style="color:inherit">Privasi</a> · <a href="../" style="color:inherit">Beranda</a></footer>
+  <footer>Rapor Merdeka Digital · dikembangkan oleh Admin · <a href="panduan.html" target="_blank" rel="noopener" style="color:inherit">Panduan guru</a> · <button type="button" class="link buka-kopi hidden">☕ Traktir kopi</button> · <button type="button" class="link buka-profil">Profil pengembang &amp; narahubung</button> · <a href="../syarat.html" target="_blank" rel="noopener" style="color:inherit">Syarat</a> · <a href="../privasi.html" target="_blank" rel="noopener" style="color:inherit">Privasi</a> · <a href="../" style="color:inherit">Beranda</a></footer>
 
   <dialog id="profil" class="profil" aria-labelledby="pf-nama">
     <div class="kepala"><small>PROFIL PENGEMBANG</small><h3 id="pf-nama">Admin</h3><p>Pengembang Rapor Merdeka Digital</p></div>
@@ -748,9 +751,23 @@ table.leger td.j{text-align:center;font-weight:800}
       <dt>Email</dt><dd><a href="mailto:bolonulis@gmail.com">bolonulis@gmail.com</a></dd>
       <dt>Media sosial</dt><dd>Instagram <a href="#" target="_blank" rel="noopener">@admin</a><br>Facebook: Admin</dd>
     </dl>
-    <p class="hint" style="margin:0;padding:0 22px 16px">Untuk pertanyaan, perpanjangan langganan, atau kendala penggunaan aplikasi, silakan hubungi melalui WhatsApp.</p>
-    <div class="tombol"><a class="btn wa" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Rapor%20Merdeka%20Digital." target="_blank" rel="noopener">Chat WhatsApp</a><button type="button" class="btn ghost" id="pf-tutup">Tutup</button></div>
+    <p class="hint" style="margin:0;padding:0 22px 16px">Untuk pertanyaan, masukan, atau kendala penggunaan aplikasi, silakan hubungi melalui WhatsApp.</p>
+    <div class="tombol"><a class="btn wa" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Rapor%20Merdeka%20Digital." target="_blank" rel="noopener">Chat WhatsApp</a><button type="button" class="btn ghost buka-kopi hidden">☕ Traktir kopi</button><button type="button" class="btn ghost" id="pf-tutup">Tutup</button></div>
   </dialog>
+
+  <dialog id="kopi" class="profil kopi" aria-labelledby="kopi-judul">
+    <div class="kepala"><small>DUKUNG PENGEMBANG</small><h3 id="kopi-judul">☕ Traktir kopi seikhlasnya</h3><p>Rapor Merdeka Digital gratis untuk semua SD, dan akan tetap gratis.</p></div>
+    <div class="isi">
+      Jika aplikasi ini meringankan pekerjaan Bapak/Ibu, boleh traktir kopi pengembang <b>seikhlasnya</b>, untuk biaya pemeliharaan dan pengembangan fitur baru.
+      Tidak berkenan pun tidak apa-apa: aplikasi tetap bisa dipakai sepenuhnya.
+      <div class="nomor"><span id="kopi-info"></span><button type="button" class="btn ghost small" id="kopi-salin">Salin nomor</button></div>
+      <small>Mohon dari dana pribadi, <b>bukan dana BOS/sekolah</b>. Terima kasih atas dukungannya. 🙏</small>
+    </div>
+    <div class="tombol"><button type="button" class="btn ghost" id="kopi-tutup">Tutup</button></div>
+  </dialog>
+
+  <div class="ajak-kopi hidden" id="ajak-kopi" role="status"><b>Rapor sudah dicetak 🎉</b>Semoga membantu. Jika berkenan, traktir kopi pengembang seikhlasnya. Aplikasi tetap gratis.
+    <div class="aksi"><button type="button" class="btn small buka-kopi">☕ Traktir kopi</button> <button type="button" class="btn ghost small" id="ajak-tutup">Nanti saja</button></div></div>
 </div>
 
 <script>
@@ -832,6 +849,9 @@ async function muatInfo(){
   if (!res.ok) return;
   INFO = res;
   tampilUmum(res);
+  // Ajakan dukungan sukarela: tampil hanya bila pengelola mengisi "Info Dukungan".
+  $('#kopi-info').textContent = res.dukungan || '';
+  document.querySelectorAll('.buka-kopi').forEach(b => b.classList.toggle('hidden', !res.dukungan));
   // Pendaftaran ditutup: tab Daftar dan statistik disembunyikan.
   $('#tab-daftar').classList.toggle('hidden', !res.daftarDibuka);
   $('#tab-akun').style.gridTemplateColumns = res.daftarDibuka ? '' : '1fr';
@@ -2490,6 +2510,7 @@ $('#ct-cetak-btn').addEventListener('click', () => {
   document.title = 'Rapor ' + CT.rombel.label + ' Semester ' + CT.semester + ' ' + CT.tahunAjaran.replace('/', '-');
   window.print();
   document.title = 'Rapor Merdeka Digital';
+  ajakKopi();
 });
 $('#ct-cetak-leger').addEventListener('click', () => {
   const R = CT;
@@ -2747,6 +2768,27 @@ document.querySelectorAll('[data-show]').forEach(cb => cb.addEventListener('chan
 }));
 
 document.querySelectorAll('.buka-profil').forEach(b => b.addEventListener('click', () => $('#profil').showModal()));
+document.querySelectorAll('.buka-kopi').forEach(b => b.addEventListener('click', () => {
+  if ($('#profil').open) $('#profil').close();
+  $('#ajak-kopi').classList.add('hidden');
+  $('#kopi').showModal();
+}));
+$('#kopi-tutup').addEventListener('click', () => $('#kopi').close());
+$('#kopi').addEventListener('click', e => { if (e.target === $('#kopi')) $('#kopi').close(); });
+$('#kopi-salin').addEventListener('click', async () => {
+  const nomor = ($('#kopi-info').textContent.match(/[\d\-\s]{9,}/) || [''])[0].replace(/\D/g, '');
+  try { await navigator.clipboard.writeText(nomor); $('#kopi-salin').textContent = 'Tersalin ✓'; } catch (e) { $('#kopi-salin').textContent = nomor; }
+  setTimeout(() => { $('#kopi-salin').textContent = 'Salin nomor'; }, 2500);
+});
+$('#ajak-tutup').addEventListener('click', () => $('#ajak-kopi').classList.add('hidden'));
+/* Setelah mencetak rapor: ajakan kecil, paling sering sekali per 30 hari per perangkat, bisa ditutup. */
+function ajakKopi(){
+  if (!INFO.dukungan) return;
+  const terakhir = Number(ls.get('rapor-ajak-kopi')) || 0;
+  if (Date.now() - terakhir < 30 * 86400000) return;
+  ls.set('rapor-ajak-kopi', String(Date.now()));
+  setTimeout(() => $('#ajak-kopi').classList.remove('hidden'), 800);
+}
 $('#pf-tutup').addEventListener('click', () => $('#profil').close());
 $('#profil').addEventListener('click', e => { if (e.target === $('#profil')) $('#profil').close(); });
 
