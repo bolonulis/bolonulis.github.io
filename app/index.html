@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#12314f">
+<meta name="robots" content="noindex">
+<title>Rapor Merdeka Digital | Pengolahan Nilai Kurikulum Merdeka</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{--red:#d71920;--red-dark:#9e1117;--yellow:#ffd21f;--blue:#12314f;--cream:#fffaf0;--ink:#16202a;--muted:#64748b;--line:#eadfc7;--ok:#1d7a37;--bad:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.topline{height:6px;background:linear-gradient(90deg,var(--red) 0 42%,var(--yellow) 42% 68%,var(--blue) 68%)}
+.wrap{max-width:960px;margin:auto;padding:22px 16px}
+header{padding:24px;border-radius:24px;background:linear-gradient(135deg,var(--blue),#1f4f7a);color:#fff;box-shadow:0 16px 34px rgba(18,49,79,.13)}
+h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.3rem);letter-spacing:-.03em}header p{margin:0;color:#d6e2ee;line-height:1.5;font-size:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 10px 24px rgba(18,49,79,.07)}
+.form{max-width:460px;margin:22px auto 0}.form h2{margin:0 0 6px}.form>p{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 16px}
+.field{margin-bottom:13px}label{display:block;font-size:13px;font-weight:700;margin:0 0 6px}.hint{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.45}
+input[type=text],input[type=email],input[type=password],input[type=date],input[type=number]{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1px solid #d9cfb8;border-radius:12px;background:#fff;color:var(--ink)}
+input:focus{outline:2px solid var(--yellow);border-color:var(--yellow)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:13.5px;line-height:1.5;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fffdf7;cursor:pointer}.check input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--red)}
+.show{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:-4px 0 12px;cursor:pointer}.show input{accent-color:var(--blue)}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;border:0;border-radius:12px;padding:13px 18px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;background:var(--red);color:#fff}.btn:hover{background:var(--red-dark)}.btn:disabled{opacity:.6;cursor:wait}
+.btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--line);width:auto}.btn.ghost:hover{border-color:var(--blue)}
+.links{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:16px;font-size:14px}
+.links a,.link{color:var(--blue);font-weight:700;text-decoration:none;background:none;border:0;padding:0;font:inherit;cursor:pointer}.links a:hover,.link:hover{color:var(--red)}
+.msg{font-size:14px;line-height:1.5;margin-top:12px}.msg:empty{display:none}.msg.err{color:var(--bad)}.msg.ok{color:var(--ok);background:#e9f6ec;border-radius:12px;padding:12px}
+.msg ul{margin:6px 0 0;padding-left:18px}
+.notice{background:#fff3c0;border:1px solid #f0d77a;color:#5c4400;padding:12px 14px;border-radius:14px;font-size:14px;line-height:1.5;margin-top:16px}
+.hidden{display:none!important}
+.umum{margin-top:14px;border-radius:14px;padding:12px 16px;font-size:14px;line-height:1.5;display:flex;gap:10px;align-items:flex-start}.umum b{flex:none}
+.umum.info{background:#eef3f8;border:1px solid #c9d8e6;color:#1d3550}.umum.rawat{background:#fff3c0;border:1px solid #f0d77a;color:#5c4400}
+@media print{.umum{display:none!important}}
+dialog.profil{border:0;border-radius:22px;padding:0;max-width:440px;width:calc(100% - 32px);box-shadow:0 24px 60px rgba(18,49,79,.3)}dialog.profil::backdrop{background:rgba(18,49,79,.45)}
+.profil .kepala{background:linear-gradient(135deg,var(--blue),#1f4f7a);color:#fff;padding:20px 22px}.profil .kepala small{color:#d6e2ee;font-weight:700;letter-spacing:.06em;font-size:11.5px}.profil .kepala h3{margin:6px 0 2px;font-size:19px}.profil .kepala p{margin:0;color:#d6e2ee;font-size:13.5px}
+.profil dl{margin:0;padding:16px 22px;display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:14px}.profil dt{color:var(--muted)}.profil dd{margin:0;font-weight:600}.profil dd a{color:var(--blue)}
+.profil .tombol{display:flex;gap:8px;padding:0 22px 20px;flex-wrap:wrap}.profil .tombol .btn{width:auto;flex:1}.profil .dukung{margin:0 22px 16px;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-size:13px;line-height:1.55;color:#5c4400}.profil .dukung b{display:block;color:var(--blue);font-size:13.5px;margin-bottom:3px}.btn.wa{background:#1fa855}.btn.wa:hover{background:#178a45}
+.bantuan{max-width:460px;margin:12px auto 0;text-align:center;font-size:13.5px;color:var(--muted);line-height:1.7}.bantuan a,.bantuan button.link{color:var(--blue);font-weight:700;text-decoration:underline;white-space:nowrap;font-size:inherit}
+footer button.link{color:inherit;text-decoration:underline;font-size:inherit}
+.tab-akun{max-width:460px;margin:22px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:8px}.tab-akun a{display:block;text-align:center;padding:13px 10px;border-radius:14px;border:2px solid var(--blue);color:var(--blue);background:#fff;font-weight:800;font-size:15px;text-decoration:none}.tab-akun a:hover{background:#eef3f8}.tab-akun a.on{background:var(--blue);color:#fff}
+.tab-akun+.form{margin-top:12px}
+.stat{max-width:460px;margin:16px auto 0;padding:18px 20px}.stat h3{margin:0 0 4px;font-size:15px;color:var(--blue)}.stat .angka{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.stat .angka div{background:#fff8e1;border-radius:12px;padding:10px 6px;text-align:center}.stat .angka b{display:block;font-size:24px;color:var(--red)}.stat .angka span{font-size:12px;color:var(--muted)}
+.stat details{border-top:1px solid var(--line);padding:8px 0;font-size:13.5px}.stat summary{cursor:pointer;font-weight:700;color:var(--blue)}.stat ul{margin:6px 0 0;padding-left:20px;color:var(--ink);line-height:1.6}.stat .sub{font-size:12px;color:var(--muted);margin-top:8px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 14px}.bar h2{margin:0;font-size:22px}.bar .sub{color:var(--muted);font-size:13px;margin-top:3px}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}.tile b{display:block;font-size:16px;color:var(--blue);margin-bottom:4px}.tile span{display:block;font-size:13px;color:var(--muted);line-height:1.5}
+.tag{display:inline-block;margin-top:10px;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:999px;background:#eef3f8;color:var(--blue)}
+.akun{margin-top:18px}.akun h3{margin:0 0 4px;font-size:17px}.akun>p{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
+.akun .btn{width:auto}
+button.tile{text-align:left;font:inherit;color:inherit;width:100%;cursor:pointer}button.tile:hover{border-color:var(--blue);box-shadow:0 8px 20px rgba(18,49,79,.08)}
+.tag.on{background:#e3f4e7;color:var(--ok)}
+.tabs{display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:14px}.tabs button{flex:1;border:0;background:none;font:inherit;font-weight:800;font-size:14px;padding:11px;border-radius:10px;color:var(--muted);cursor:pointer}.tabs button.on{background:var(--blue);color:#fff}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 16px}
+select{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1px solid #d9cfb8;border-radius:12px;background:#fff;color:var(--ink)}
+input:disabled{background:#f5f2ea;color:var(--muted)}
+.kelas{margin-bottom:18px}.kelas h3{font-size:15px;margin:0 0 8px;color:var(--blue)}
+.rombels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.rombel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.rombel b{font-size:18px}.rombel .sub{font-size:13px;color:var(--muted);margin:3px 0 10px;line-height:1.45}
+.aksi{display:flex;gap:6px;flex-wrap:wrap;align-items:end}
+.btn.small{padding:8px 12px;font-size:13px;width:auto}
+.btn.add{background:#fff;color:var(--blue);border:1px dashed #bcae8c;width:auto}.btn.add:hover{border-color:var(--blue);background:#fff}
+.btn.danger{background:#fff;color:var(--bad);border:1px solid #f1c7c2}.btn.danger:hover{background:#fde4e1}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}.toolbar .sub{font-size:13px;color:var(--muted)}
+.panduan{background:#eef3f8;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:#24384d}
+.tbl{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff;max-height:70vh}
+table.siswa{border-collapse:collapse;font-size:13px}
+table.siswa th{position:sticky;top:0;background:var(--blue);color:#fff;text-align:left;padding:9px 8px;font-size:12px;white-space:nowrap;z-index:1}
+table.siswa td{border-bottom:1px solid #efe6d2;padding:2px}
+table.siswa td.no{text-align:center;color:var(--ink);font-weight:700;min-width:64px;width:64px;font-size:13px}
+/* No dan Nama tetap terlihat saat tabel digeser ke kanan */
+table.siswa td:nth-child(-n+2){position:sticky;background:#fff;z-index:1}table.siswa th:nth-child(-n+2){position:sticky;z-index:2}
+table.siswa td:nth-child(1),table.siswa th:nth-child(1){left:0}table.siswa td:nth-child(1),table.siswa th:nth-child(1){min-width:64px;width:64px;max-width:64px;white-space:normal;text-align:center}
+table.siswa td:nth-child(2),table.siswa th:nth-child(2){left:64px;box-shadow:2px 0 0 #efe6d2}
+table.siswa input{width:100%;border:1px solid transparent;border-radius:8px;padding:7px 8px;font:inherit;font-size:13px;background:transparent;color:var(--ink)}
+table.siswa input:hover{border-color:#eadfc7}table.siswa input:focus{border-color:var(--yellow);outline:none;background:#fffdf3}
+table.siswa .hapus{border:0;background:none;color:var(--bad);font-size:18px;line-height:1;cursor:pointer;padding:6px 10px;border-radius:8px}table.siswa .hapus:hover{background:#fde4e1}
+.pilih-seni{display:flex;gap:8px;flex-wrap:wrap}.pilih-seni label{display:flex;align-items:center;gap:8px;margin:0;font-weight:600;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer}.pilih-seni input{width:17px;height:17px;accent-color:var(--red)}
+table.mapel{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+table.mapel th{background:var(--blue);color:#fff;padding:10px 8px;font-size:12.5px;text-align:center}table.mapel th:first-child{text-align:left}
+table.mapel td{border-bottom:1px solid #efe6d2;padding:8px;text-align:center;vertical-align:middle}table.mapel td:first-child{text-align:left}
+table.mapel input[type=checkbox]{width:20px;height:20px;accent-color:var(--red);cursor:pointer}table.mapel input[type=checkbox]:disabled{cursor:not-allowed;opacity:.55}
+table.mapel input[type=text]{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid #d9cfb8;border-radius:10px;margin-top:4px}
+table.mapel .jenis{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.jenis.wajib{background:#eef3f8;color:var(--blue)}.jenis.pilihan{background:#fff3c0;color:#6b4b00}
+table.mapel .na{color:#c9bfa8}
+.jml{font-weight:700}.jml.pas{color:var(--ok)}.jml.kurang{color:var(--bad)}
+.mapel-pil{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.mapel-pil button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:13.5px;font-weight:700;color:var(--blue);cursor:pointer}
+.mapel-pil button.on{background:var(--blue);border-color:var(--blue);color:#fff}.mapel-pil button .n{font-weight:800;margin-left:6px;opacity:.75}
+.mapel-pil button.kosong .n{color:var(--bad);opacity:1}.mapel-pil button.on.kosong .n{color:#ffd0cc}
+table.siswa.tp{width:100%}table.tp td.kar{font-size:12px;text-align:center;min-width:72px;color:var(--muted)}table.tp td.kar.lebih{color:var(--bad);font-weight:800}
+table.tp .dinilai{display:block;font-size:11px;color:var(--ok);font-weight:700;padding:0 8px 4px}
+table.nilai{width:100%}
+table.nilai td.angka input{width:62px;text-align:center;font-weight:600}
+table.nilai td.angka input.salah{border-color:var(--bad);background:#fde4e1;color:var(--bad)}
+table.nilai th.tp{text-align:center;min-width:66px;cursor:help}table.nilai th.sas{text-align:center;background:#1f4f7a;min-width:66px}
+table.nilai td.na{text-align:center;font-weight:800;font-size:15px;min-width:56px}table.nilai td.pr{min-width:96px;font-size:12.5px}
+table.nilai td.ket{min-width:340px;font-size:12.5px;line-height:1.45;color:var(--ink)}table.nilai td.ket .w{color:#9a6c00}
+table.nilai.tanpa-deskripsi .ds{display:none}
+table.nilai tr.basi td.na,table.nilai tr.basi td.pr,table.nilai tr.basi td.ket{opacity:.45}
+table.kok{width:100%}table.kok th.sd{min-width:150px;white-space:normal;line-height:1.3}table.kok th.sd small{display:block;font-weight:400;opacity:.8}
+table.kok th.sd select{margin-top:6px;padding:4px 6px;font-size:12px;border-radius:8px}
+table.kok td.lv select{padding:6px 8px;font-size:13px;border-radius:8px;min-width:132px;border-color:#e3d8c0}
+table.kok select.Mahir{background:#e3f4e7;color:var(--ok);font-weight:700}table.kok select.Cakap{background:#eef3f8;color:var(--blue);font-weight:700}table.kok select.Berkembang{background:#fff3c0;color:#6b4b00;font-weight:700}
+table.kok td.ket{min-width:360px;font-size:12.5px;line-height:1.45}table.kok td.ket .w{color:#9a6c00}
+table.kok tr.basi td.ket{opacity:.45}
+.sd-baris{display:flex;gap:8px;align-items:center;margin-bottom:8px}.sd-baris .urut{font-weight:800;color:var(--muted);min-width:20px}.sd-baris select{flex:1}
+.sd-baris .terisi{font-size:12px;color:var(--ok);white-space:nowrap}
+.narasi{margin-top:14px}.narasi h4{margin:14px 0 6px;font-size:14px;color:var(--blue)}
+.narasi .lv{display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:start;margin-bottom:8px}.narasi .lv b{font-size:13px;padding-top:9px}
+.narasi textarea{width:100%;font:inherit;font-size:13.5px;line-height:1.45;padding:9px 10px;border:1px solid #d9cfb8;border-radius:10px;resize:vertical;min-height:58px}
+.narasi textarea:focus{outline:2px solid var(--yellow);border-color:var(--yellow)}
+@media (max-width:560px){.narasi .lv{grid-template-columns:1fr}.narasi .lv b{padding-top:0}}
+.eks-daftar{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:12px}
+.eks-daftar label{display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--muted)}.eks-daftar label b{min-width:22px;text-align:right}
+.eks-daftar input{padding:9px 10px!important;font-size:14px!important}
+.eks{display:flex;flex-direction:column;gap:6px;padding:6px 4px;min-width:560px}
+.eks .e{display:grid;grid-template-columns:170px 130px 1fr 34px;gap:6px;align-items:center}
+.eks select,.eks input{padding:6px 8px!important;font-size:13px!important;border:1px solid #e3d8c0!important;border-radius:8px!important;background:#fff!important}
+.eks .tambah{align-self:flex-start;border:1px dashed #bcae8c;background:#fff;color:var(--blue);border-radius:8px;padding:4px 10px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+table.wk{width:100%}table.wk td.hari input{width:58px;text-align:center;font-weight:600}table.wk td.hari input.salah{border-color:var(--bad);background:#fde4e1;color:var(--bad)}
+table.wk th.hari{text-align:center;min-width:66px}
+table.wk td.cat textarea{width:100%;min-width:380px;font:inherit;font-size:13px;line-height:1.4;padding:6px 8px;border:1px solid #e3d8c0;border-radius:8px;resize:vertical;min-height:40px}
+table.wk td.naik select{padding:6px 8px;font-size:13px;border-radius:8px;min-width:150px}
+table.wk select.naik{background:#e3f4e7;color:var(--ok);font-weight:700}table.wk select.tinggal{background:#fde4e1;color:var(--bad);font-weight:700}
+table.wk td.w{font-size:12px;color:#9a6c00;min-width:200px;line-height:1.4}
+.kunci-bar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px;padding:14px 18px}
+.kunci-bar .st{font-size:14px;line-height:1.5}.kunci-bar.on{background:#eef3f8;border-color:#c9d6e3}
+.logo-isi{width:90px;height:90px;border:1px dashed #bcae8c;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;background:#fff;font-size:11px;color:var(--muted)}
+.logo-isi img{max-width:84px;max-height:84px}
+table.nilai td.akhir{text-align:center;font-weight:800;min-width:70px}
+.back{display:inline-block;margin-bottom:6px;font-size:14px}
+footer{text-align:center;color:var(--muted);font-size:13px;line-height:1.7;padding:28px 16px 8px}
+.cek-ok{color:var(--ok);font-weight:800}.cek-x{color:var(--bad);font-weight:800}
+table.cek td.rinci{font-size:12.5px;line-height:1.5;color:#7a5600;min-width:360px}table.cek td.rinci ul{margin:0;padding-left:16px}
+table.leger th.m,table.leger td.m{text-align:center;min-width:52px}table.leger td.m.sem{color:var(--muted);font-style:italic}
+table.leger td.j{text-align:center;font-weight:800}
+.pilih-siswa{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px;margin-top:10px}
+.pilih-siswa label{display:flex;gap:8px;align-items:center;font-weight:600;font-size:13.5px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;margin:0;cursor:pointer}
+.pilih-siswa input{width:17px;height:17px;accent-color:var(--red)}.pilih-siswa .st{margin-left:auto;font-size:12px}
+/* ---------- area cetak ---------- */
+#area-cetak{display:none}
+@page{size:A4 portrait;margin:12mm 14mm 12mm 16mm}
+@page leger{size:A4 landscape;margin:10mm}
+@page surat{size:A4 portrait;margin:20mm}
+@media print{
+  body{background:#fff}
+  body>*:not(#area-cetak){display:none!important}
+  #area-cetak{display:block!important}
+}
+#area-cetak{font-family:Arial,Helvetica,sans-serif;color:#000;font-size:10pt;line-height:1.3}
+#area-cetak .hal{break-after:page}#area-cetak .hal:last-child{break-after:auto}
+#area-cetak h1{text-align:center;font-size:13pt;margin:0 0 10pt;letter-spacing:.02em}
+#area-cetak table{border-collapse:collapse;width:100%}
+#area-cetak .id td{padding:1.5pt 3pt;vertical-align:top}#area-cetak .id td.t{width:2%}
+#area-cetak .kotak th,#area-cetak .kotak td{border:0.75pt solid #000;padding:3pt 5pt;vertical-align:top}
+#area-cetak .kotak th{background:#e8e8e8;text-align:center;font-weight:700;vertical-align:middle}
+#area-cetak .utuh{break-inside:avoid}
+#area-cetak .kotak tr{break-inside:avoid}
+#area-cetak .c{text-align:center}#area-cetak .sub{padding-left:16pt}
+#area-cetak .cap div+div{margin-top:3pt}
+#area-cetak h2{font-size:10.5pt;margin:10pt 0 4pt}
+#area-cetak .blok{border:0.75pt solid #000;padding:5pt 6pt;min-height:28pt}
+#area-cetak .dua{display:grid;grid-template-columns:42% 1fr;gap:10pt;margin-top:10pt;break-inside:avoid}
+#area-cetak .putusan{border:0.75pt solid #000;padding:6pt 8pt;margin:10pt 0 0 auto;width:62%;break-inside:avoid}
+#area-cetak .ttd{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8pt;margin-top:14pt;text-align:center;break-inside:avoid}
+#area-cetak .ttd .nm{margin-top:52pt;font-weight:700;text-decoration:underline}
+#area-cetak .sampul{display:flex;flex-direction:column;align-items:center;text-align:center;min-height:262mm;padding-top:18mm}
+#area-cetak .sampul .judul{font-size:20pt;font-weight:700;line-height:1.5;letter-spacing:.06em}
+#area-cetak .sampul .kotak-nama{border:1pt solid #000;padding:6pt 10pt;min-width:110mm;font-size:13pt;font-weight:700;margin:4pt 0 14pt}
+#area-cetak .sampul .logo{width:55mm;height:auto;margin:16mm 0 14mm}
+#area-cetak .sampul .label{font-size:11pt;margin-top:10pt}
+#area-cetak .sampul .bawah{margin-top:auto;font-size:12pt;font-weight:700;line-height:1.5}
+#area-cetak .identitas{min-height:262mm}
+#area-cetak .identitas h1{margin-bottom:16pt}
+#area-cetak .identitas table.isi td{padding:3.5pt 4pt;vertical-align:top;font-size:10.5pt}
+#area-cetak .identitas table.isi td.n{width:6%}#area-cetak .identitas table.isi td.k{width:36%}#area-cetak .identitas table.isi td.t{width:2%}
+#area-cetak .identitas table.isi td.sub{padding-left:18pt}
+#area-cetak .identitas .ttd-ks{display:flex;justify-content:flex-end;gap:22mm;margin-top:18pt;align-items:flex-start}
+#area-cetak .identitas .foto{width:30mm;height:40mm;border:0.75pt solid #000;display:flex;align-items:center;justify-content:center;font-size:8.5pt;color:#444}
+#area-cetak .identitas .ttd-ks .nm{margin-top:52pt;font-weight:700;text-decoration:underline}
+#area-cetak .surat{page:surat;font-family:Arial,Helvetica,sans-serif;font-size:12pt;line-height:1.15;color:#000;position:relative}
+#area-cetak .surat .kop{position:relative;text-align:center;border-bottom:3.5pt double #000;padding-bottom:2pt;margin-bottom:12pt;min-height:19mm}
+#area-cetak .surat .kop .l1{font-size:12pt}#area-cetak .surat .kop .l2{font-size:16pt;font-weight:700}#area-cetak .surat .kop .l3{font-size:10pt}
+#area-cetak .surat .kop img{position:absolute;top:0.4mm;object-fit:contain}
+#area-cetak .surat .kop .kiri{left:1.3mm;width:14.1mm;height:18.5mm}#area-cetak .surat .kop .kanan{right:0;width:20.2mm;height:18mm}
+#area-cetak .surat .judul{text-align:center;font-size:14pt;font-weight:700;line-height:1.72}
+#area-cetak .surat .nomor{text-align:center;line-height:1.72}
+#area-cetak .surat table.idn{width:auto;margin:20.6pt 0 0 7.5mm;line-height:1.72}#area-cetak .surat table.idn td{padding:0;vertical-align:top}
+#area-cetak .surat table.idn td.k{width:62.5mm}#area-cetak .surat table.idn td.t{width:5mm}
+#area-cetak .surat table.nilai{width:100%;border-collapse:collapse;margin-top:2pt}
+#area-cetak .surat table.nilai th,#area-cetak .surat table.nilai td{border:0.75pt solid #000;padding:4.4pt 5pt;font-weight:400;font-size:12pt;background:none}
+#area-cetak .surat table.nilai th{text-align:center;padding-top:7.4pt;padding-bottom:7.4pt}#area-cetak .surat table.nilai .c{text-align:center}
+#area-cetak .surat .p{text-align:justify;line-height:1.72;margin:8pt 0}
+#area-cetak .surat .ttd-surat{position:relative;margin-left:88.5mm;margin-top:27pt;line-height:1.72}
+#area-cetak .surat .ttd-surat .spasi{height:61.8pt}
+#area-cetak .surat div,#area-cetak .surat td,#area-cetak .surat th{font-size:12pt}
+#area-cetak .surat .kop .l1{font-size:12pt}#area-cetak .surat .kop .l2{font-size:16pt}#area-cetak .surat .kop .l3{font-size:10pt}
+#area-cetak .surat .judul{font-size:14pt}
+#area-cetak .surat .foto{position:absolute;left:-43.9mm;top:12.7mm;width:22.8mm;height:29.6mm;border:1pt solid #1f3864}
+#area-cetak .surat.halaman{break-after:page}#area-cetak .surat.halaman:last-child{break-after:auto}
+#area-cetak .leger{page:leger;font-size:8.5pt}#area-cetak .leger th,#area-cetak .leger td{padding:2pt 3pt}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div class="wrap">
+  <header>
+    <h1>Rapor Merdeka Digital</h1>
+    <p>Pengolahan nilai dan rapor Kurikulum Merdeka kelas 1–6. Satu akun untuk satu sekolah, dipakai bersama semua guru.</p>
+  </header>
+
+  <div id="u-rawat" class="umum rawat hidden" role="alert"><b>🔧 Pemeliharaan</b><span id="u-rawat-teks"></span></div>
+  <div id="u-lgn" class="umum rawat hidden" role="alert"><b>⏳ Langganan</b><span id="u-lgn-teks"></span></div>
+  <div id="u-info" class="umum info hidden" role="status"><b>📢 Pengumuman</b><span id="u-info-teks"></span></div>
+
+  <div id="cfg-notice" class="notice hidden">Sistem belum tersambung. Isi <code>API_URL</code> di berkas <code>app/index.html</code> dengan URL Aplikasi web dari Apps Script (lihat <code>README.md</code>).</div>
+
+  <!-- GERBANG: kode akses -->
+  <section id="v-gerbang" class="card form hidden">
+    <h2>Kode akses</h2>
+    <p>Aplikasi ini saat ini khusus untuk sekolah tertentu. Masukkan kode akses dari operator sekolah untuk melanjutkan.</p>
+    <form id="f-gerbang">
+      <div class="field"><label for="g-kode">Kode akses</label><input id="g-kode" type="password" autocomplete="off" required></div>
+      <label class="show"><input type="checkbox" data-show="g-kode"> Tampilkan kode</label>
+      <button class="btn" type="submit">Lanjut</button>
+      <div class="msg" id="g-msg"></div>
+    </form>
+  </section>
+
+  <nav id="tab-akun" class="tab-akun hidden" aria-label="Masuk atau daftar">
+    <a href="#masuk" id="tab-masuk">Masuk</a>
+    <a href="#daftar" id="tab-daftar">Daftar akun baru</a>
+  </nav>
+
+  <!-- MASUK -->
+  <section id="v-masuk" class="card form hidden">
+    <h2>Masuk</h2>
+    <p>Gunakan email dan kata sandi akun sekolah. Tanyakan kepada operator sekolah jika belum tahu.</p>
+    <form id="f-masuk">
+      <div class="field"><label for="m-email">Email sekolah</label><input id="m-email" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="m-sandi">Kata sandi</label><input id="m-sandi" type="password" autocomplete="current-password" required></div>
+      <label class="show"><input type="checkbox" data-show="m-sandi"> Tampilkan kata sandi</label>
+      <button class="btn" type="submit">Masuk</button>
+      <div class="msg" id="m-msg"></div>
+    </form>
+    <div class="links"><a href="#lupa">Lupa kata sandi?</a></div>
+  </section>
+
+  <!-- DAFTAR -->
+  <section id="v-daftar" class="card form hidden">
+    <h2>Daftarkan sekolah</h2>
+    <p>Gratis untuk semua SD. Diisi sekali oleh operator sekolah. Setelah email diverifikasi, spreadsheet rapor sekolah dibuat otomatis untuk kelas 1–6.</p>
+    <form id="f-daftar">
+      <div class="field"><label for="d-npsn">NPSN</label><input id="d-npsn" type="text" inputmode="numeric" maxlength="8" required></div>
+      <div class="field"><label for="d-nama">Nama sekolah</label><input id="d-nama" type="text" maxlength="100" placeholder="Contoh: SD NEGERI 1 SUKAMAJU" required></div>
+      <div class="field"><label for="d-kab">Kabupaten/Kota</label><input id="d-kab" type="text" maxlength="60" placeholder="Contoh: Kabupaten Sukamaju atau Kota Semarang" required></div>
+      <div class="field"><label for="d-prov">Provinsi</label><select id="d-prov" required><option value="">Pilih provinsi…</option></select></div>
+      <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocomplete="username" required>
+        <div class="hint">Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email untuk satu sekolah.</div></div>
+      <div class="field"><label for="d-sandi">Buat kata sandi aplikasi</label><input id="d-sandi" type="password" autocomplete="new-password" required>
+        <div class="hint"><b>Jangan pakai kata sandi email Anda.</b> Kata sandi ini akan dibagikan ke semua guru. Minimal 8 karakter, campuran huruf dan angka.</div></div>
+      <div class="field"><label for="d-ulangi">Ulangi kata sandi</label><input id="d-ulangi" type="password" autocomplete="new-password" required></div>
+      <label class="show"><input type="checkbox" data-show="d-sandi,d-ulangi"> Tampilkan kata sandi</label>
+      <div class="field"><label class="check"><input id="d-setuju" type="checkbox">
+        <span>Saya, atas nama sekolah, menyetujui bahwa data sekolah, guru, dan siswa yang diisi disimpan di Google Drive pengelola aplikasi Rapor Merdeka Digital dan hanya dipakai untuk pengolahan nilai serta rapor sekolah ini, sesuai <a href="../privasi.html" target="_blank" rel="noopener">Kebijakan Privasi</a> dan <a href="../syarat.html" target="_blank" rel="noopener">Syarat Layanan</a>. Akun dipakai bersama semua guru, sehingga sekolah bertanggung jawab atas siapa saja yang diberi kata sandi dan atas perubahan data yang dilakukan dengan akun ini.</span></label></div>
+      <button class="btn" type="submit">Daftar</button>
+      <div class="msg" id="d-msg"></div>
+    </form>
+  </section>
+
+  <!-- LUPA -->
+  <section id="v-lupa" class="card form hidden">
+    <h2>Lupa kata sandi</h2>
+    <p>Masukkan email sekolah. Kami kirim tautan untuk membuat kata sandi baru.</p>
+    <form id="f-lupa">
+      <div class="field"><label for="l-email">Email sekolah</label><input id="l-email" type="email" autocomplete="username" required></div>
+      <button class="btn" type="submit">Kirim tautan</button>
+      <div class="msg" id="l-msg"></div>
+    </form>
+    <div class="links"><a href="#masuk">Kembali ke Masuk</a></div>
+  </section>
+
+  <section id="statistik" class="card stat hidden" aria-live="polite">
+    <h3>Dipakai sekolah di Indonesia</h3>
+    <div class="angka"><div><b id="st-sekolah">0</b><span>sekolah</span></div><div><b id="st-kab">0</b><span>kabupaten/kota</span></div><div><b id="st-prov">0</b><span>provinsi</span></div></div>
+    <div id="st-rincian"></div>
+    <div class="sub" id="st-waktu"></div>
+  </section>
+  <p class="bantuan hidden" id="bantuan"><a href="panduan.html" target="_blank" rel="noopener">Panduan guru</a> · Butuh bantuan? Narahubung: <b>Admin</b> · <a href="https://wa.me/6281196939694" target="_blank" rel="noopener">WA 0811-9693-9694</a> · <button type="button" class="link buka-profil">Profil pengembang</button></p>
+
+  <!-- RESET -->
+  <section id="v-reset" class="card form hidden">
+    <h2>Buat kata sandi baru</h2>
+    <p>Setelah disimpan, semua perangkat yang sedang masuk otomatis keluar. Beritahukan kata sandi baru kepada guru.</p>
+    <form id="f-reset">
+      <div class="field"><label for="r-sandi">Kata sandi baru</label><input id="r-sandi" type="password" autocomplete="new-password" required></div>
+      <div class="field"><label for="r-ulangi">Ulangi kata sandi baru</label><input id="r-ulangi" type="password" autocomplete="new-password" required></div>
+      <label class="show"><input type="checkbox" data-show="r-sandi,r-ulangi"> Tampilkan kata sandi</label>
+      <button class="btn" type="submit">Simpan kata sandi</button>
+      <div class="msg" id="r-msg"></div>
+    </form>
+    <div class="links"><a href="#masuk">Ke halaman Masuk</a></div>
+  </section>
+
+  <!-- VERIFIKASI -->
+  <section id="v-verifikasi" class="card form hidden">
+    <h2>Aktivasi akun sekolah</h2>
+    <p id="v-ket">Sedang mengaktifkan akun dan menyiapkan spreadsheet sekolah. Mohon tunggu, biasanya kurang dari satu menit…</p>
+    <div class="msg" id="v-msg"></div>
+    <div class="links"><a href="#masuk" id="v-lanjut" class="hidden">Lanjut ke Masuk →</a></div>
+  </section>
+
+  <!-- BERANDA -->
+  <section id="v-beranda" class="hidden">
+    <div class="bar">
+      <div><h2 id="b-nama">Sekolah</h2><div class="sub" id="b-sub"></div></div>
+      <button class="btn ghost" id="b-keluar" type="button">Keluar</button>
+    </div>
+    <div class="menu">
+      <button class="tile" type="button" id="t-data"><b>Data Sekolah &amp; Siswa</b><span>Profil sekolah, rombel kelas 1–6, wali kelas, dan daftar siswa.</span><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa diunduh dalam format impor e-Rapor.</span><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-nilai"><b>Input Nilai</b><span>Sumatif lingkup materi dan sumatif akhir semester per rombel dan mapel, lengkap dengan nilai rapor dan deskripsinya.</span><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-kok"><b>Kokurikuler</b><span>Subdimensi profil lulusan per kelas, capaian Mahir/Cakap/Berkembang, dan deskripsi otomatis.</span><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-wk"><b>Wali Kelas</b><span>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus.</span><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-lulus"><b>Transkrip &amp; SKL</b><span>Kelas 6: nilai rata-rata kelas 5–6 dan praktik, nomor ijazah, cetak transkrip nilai dan Surat Keterangan Lulus.</span><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-cetak"><b>Cek &amp; Cetak Rapor</b><span>Pemeriksaan kelengkapan, leger nilai, dan cetak rapor (bisa disimpan sebagai PDF).</span><div class="tag on">Buka →</div></button>
+    </div>
+
+    <div class="card akun">
+      <h3>Akun &amp; data sekolah</h3>
+      <div class="aksi">
+        <button class="btn ghost small" type="button" id="b-unduh" title="Unduh seluruh isi spreadsheet sekolah sebagai berkas Excel">Unduh salinan Excel</button>
+        <button class="btn ghost small" type="button" id="b-ganti" aria-expanded="false" aria-controls="ganti-wrap">Ganti kata sandi</button>
+        <a class="btn ghost small" href="panduan.html" target="_blank" rel="noopener" style="text-decoration:none">Panduan guru</a>
+      </div>
+      <div class="msg" id="u-msg"></div>
+      <div id="ganti-wrap" class="hidden" style="margin-top:16px">
+        <p class="hint" style="margin:0 0 12px">Lakukan jika ada guru yang pindah atau kata sandi tersebar. Semua perangkat lain otomatis keluar.</p>
+        <form id="f-ganti" class="grid3">
+          <div><label for="g-lama">Kata sandi lama</label><input id="g-lama" type="password" autocomplete="current-password" required></div>
+          <div><label for="g-baru">Kata sandi baru</label><input id="g-baru" type="password" autocomplete="new-password" required></div>
+          <div><label for="g-ulangi">Ulangi kata sandi baru</label><input id="g-ulangi" type="password" autocomplete="new-password" required></div>
+          <div class="aksi"><button class="btn small" type="submit">Simpan</button><button class="btn ghost small" type="button" id="g-batal">Batal</button></div>
+        </form>
+      </div>
+      <div class="msg" id="g-msg"></div>
+    </div>
+  </section>
+
+  <!-- INPUT NILAI -->
+  <section id="v-nilai" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Input Nilai</h2><div class="sub" id="nl-sub"></div></div>
+    </div>
+    <div class="card">
+      <div class="grid2">
+        <div><label for="nl-rombel">Rombel</label><select id="nl-rombel"></select></div>
+        <div><label for="nl-semester">Semester</label><select id="nl-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
+        <div id="nl-varian-wrap" class="hidden"><label for="nl-varian" id="nl-varian-label">Agama</label><select id="nl-varian"></select></div>
+      </div>
+    </div>
+    <div class="mapel-pil" id="nl-mapel" role="tablist" aria-label="Mata pelajaran"></div>
+    <div class="msg" id="nl-info"></div>
+    <div id="nl-editor" class="hidden">
+      <details class="panduan" id="nl-tp-daftar"><summary><b>Daftar TP</b> (klik untuk melihat)</summary><ol id="nl-tp-ol" style="margin:8px 0 0;padding-left:20px"></ol></details>
+      <div class="panduan" style="margin-top:10px">Isi angka 0–100 (koma desimal boleh, misalnya 85,5). Kosongkan jika belum dinilai. <b>Enter</b> pindah ke siswa berikutnya.
+        Bisa tempel satu blok angka dari Excel mulai dari kotak yang dipilih. Sumatif akhir semester: isi <b>Tes</b> dan/atau <b>Praktik</b> (keduanya dirata-rata).</div>
+      <div class="toolbar">
+        <button class="btn" type="button" id="nl-simpan" style="width:auto">Simpan nilai</button>
+        <label class="show bebas" style="margin:0"><input type="checkbox" id="nl-deskripsi" checked> Tampilkan deskripsi rapor</label>
+        <span class="sub" id="nl-status"></span>
+      </div>
+      <div class="msg" id="nl-msg"></div>
+      <div class="tbl"><table class="siswa nilai"><thead><tr id="nl-head"></tr></thead><tbody id="nl-body"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- KOKURIKULER -->
+  <section id="v-kok" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Kokurikuler</h2><div class="sub" id="kk-sub"></div></div>
+    </div>
+    <div class="card">
+      <div class="grid2">
+        <div><label for="kk-rombel">Rombel</label><select id="kk-rombel"></select></div>
+        <div><label for="kk-semester">Semester</label><select id="kk-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
+      </div>
+    </div>
+    <div class="msg" id="kk-info"></div>
+    <div id="kk-isi" class="hidden">
+      <details class="card" id="kk-dim-box" style="margin-top:14px">
+        <summary><b id="kk-dim-judul">Subdimensi yang dinilai</b> <span class="sub" id="kk-dim-ring"></span></summary>
+        <p class="hint" id="kk-dim-ket" style="margin:10px 0 12px"></p>
+        <div id="kk-dim"></div>
+        <div class="toolbar">
+          <button class="btn add small" type="button" id="kk-dim-tambah">+ Tambah subdimensi</button>
+          <button class="btn small" type="button" id="kk-dim-simpan">Simpan subdimensi</button>
+        </div>
+        <div class="msg" id="kk-dim-msg"></div>
+      </details>
+      <div id="kk-editor" class="hidden">
+        <div class="panduan" style="margin-top:14px">Pilih capaian tiap siswa: <b>Mahir</b>, <b>Cakap</b>, atau <b>Berkembang</b> (bisa juga mengetik huruf M, C, atau B di kotak pilihan).
+          Pilihan di judul kolom mengisi satu kolom sekaligus. Deskripsi rapor dibuat otomatis dari capaian tertinggi dan terendah.</div>
+        <div class="toolbar">
+          <button class="btn" type="button" id="kk-simpan" style="width:auto">Simpan capaian</button>
+          <span class="sub" id="kk-status"></span>
+        </div>
+        <div class="msg" id="kk-msg"></div>
+        <div class="tbl"><table class="siswa kok"><thead><tr id="kk-head"></tr></thead><tbody id="kk-body"></tbody></table></div>
+        <details class="card narasi" id="kk-narasi-box">
+          <summary><b>Narasi deskripsi</b> <span class="sub">— kalimat yang dipakai untuk tiap capaian; berlaku untuk semua kelas di sekolah</span></summary>
+          <p class="hint">Tulis dengan awalan kata kerja dan huruf kecil, misalnya "bekerja sama dengan teman…". Dalam rapor kalimatnya menjadi "…salah satunya mampu <i>narasi</i>". Kosongkan untuk kembali ke narasi bawaan.</p>
+          <div id="kk-narasi"></div>
+          <div class="toolbar"><button class="btn small" type="button" id="kk-narasi-simpan">Simpan narasi</button></div>
+          <div class="msg" id="kk-narasi-msg"></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- WALI KELAS -->
+  <section id="v-wk" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Wali Kelas</h2><div class="sub" id="wk-sub"></div></div>
+    </div>
+    <div class="card">
+      <div class="grid2">
+        <div><label for="wk-rombel">Rombel</label><select id="wk-rombel"></select></div>
+        <div><label for="wk-semester">Semester</label><select id="wk-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
+      </div>
+    </div>
+    <div class="msg" id="wk-info"></div>
+    <div id="wk-isi" class="hidden">
+      <div class="tabs" role="tablist" style="margin-top:14px">
+        <button type="button" data-wk="eks" class="on">Ekstrakurikuler</button>
+        <button type="button" data-wk="hadir">Ketidakhadiran &amp; Catatan</button>
+        <button type="button" data-wk="naik" id="wk-tab-naik">Kenaikan</button>
+      </div>
+
+      <div id="wk-eks">
+        <details class="card" id="wk-daftar-box">
+          <summary><b>Daftar ekstrakurikuler sekolah</b> <span class="sub" id="wk-daftar-ring"></span></summary>
+          <p class="hint" style="margin:10px 0">Isi jumlah ekstrakurikuler di sekolah, lalu tulis namanya di kotak bernomor (misalnya Pramuka, Drum Band, Tilawah). Daftar ini dipakai semua kelas. Kegiatan yang sudah diisi untuk siswa tidak bisa dihapus.</p>
+          <div style="max-width:240px"><label for="wk-jml">Jumlah ekstrakurikuler</label><input type="number" id="wk-jml" min="0" max="50" inputmode="numeric" placeholder="misalnya 10"></div>
+          <div class="eks-daftar" id="wk-daftar"></div>
+          <div class="toolbar"><button class="btn small" type="button" id="wk-daftar-simpan">Simpan daftar</button></div>
+          <div class="msg" id="wk-daftar-msg"></div>
+        </details>
+        <div id="wk-eks-editor">
+          <div class="panduan" style="margin-top:14px">Siswa boleh mengikuti lebih dari satu ekstrakurikuler (klik <b>+ ekstrakurikuler</b>). Pilih kegiatan dan predikatnya. Keterangan boleh dikosongkan; rapor akan memakai kalimat otomatis seperti yang tampil samar di kotak keterangan.</div>
+          <div class="toolbar">
+            <span class="sub">Tambahkan ke semua siswa:</span>
+            <select id="wk-massal-keg" style="width:auto"></select>
+            <select id="wk-massal-pred" style="width:auto"></select>
+            <button class="btn ghost small" type="button" id="wk-massal">Tambahkan</button>
+          </div>
+          <div class="toolbar">
+            <button class="btn" type="button" id="wk-eks-simpan" style="width:auto">Simpan ekstrakurikuler</button>
+            <span class="sub" id="wk-eks-status"></span>
+          </div>
+          <div class="msg" id="wk-eks-msg"></div>
+          <div class="tbl"><table class="siswa wk"><thead><tr><th>No. Absen</th><th style="min-width:200px">Nama</th><th>Ekstrakurikuler · predikat · keterangan</th></tr></thead><tbody id="wk-eks-body"></tbody></table></div>
+        </div>
+      </div>
+
+      <div id="wk-hadir" class="hidden">
+        <div class="panduan" style="margin-top:14px">Isi jumlah hari tidak hadir (0 jika selalu hadir). <b>Enter</b> pindah ke siswa berikutnya; satu blok angka Sakit/Izin/Tanpa keterangan bisa ditempel dari Excel.</div>
+        <div class="toolbar">
+          <button class="btn" type="button" id="wk-hadir-simpan" style="width:auto">Simpan ketidakhadiran &amp; catatan</button>
+          <button class="btn ghost small" type="button" id="wk-nol">Isi 0 pada kotak hari yang kosong</button>
+          <span class="sub" id="wk-hadir-status"></span>
+        </div>
+        <div class="msg" id="wk-hadir-msg"></div>
+        <div class="tbl"><table class="siswa wk"><thead><tr><th>No. Absen</th><th style="min-width:200px">Nama</th><th class="hari">Sakit</th><th class="hari">Izin</th><th class="hari">Tanpa Ket.</th><th>Catatan wali kelas</th></tr></thead><tbody id="wk-hadir-body"></tbody></table></div>
+      </div>
+
+      <div id="wk-naik" class="hidden">
+        <div class="panduan" style="margin-top:14px" id="wk-naik-ket"></div>
+        <div class="toolbar">
+          <button class="btn" type="button" id="wk-naik-simpan" style="width:auto">Simpan keputusan</button>
+          <button class="btn ghost small" type="button" id="wk-semua-naik"></button>
+          <span class="sub" id="wk-naik-status"></span>
+        </div>
+        <div class="msg" id="wk-naik-msg"></div>
+        <div class="tbl"><table class="siswa wk"><thead><tr><th>No. Absen</th><th style="min-width:200px">Nama</th><th>Keputusan</th><th>Di rapor</th></tr></thead><tbody id="wk-naik-body"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRANSKRIP & SKL -->
+  <section id="v-lulus" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Transkrip &amp; SKL Kelas 6</h2><div class="sub" id="ls-sub"></div></div>
+    </div>
+    <div class="msg" id="ls-info"></div>
+    <div id="ls-isi" class="hidden">
+      <details class="card" id="ls-atur-box">
+        <summary><b>Pengaturan surat</b> <span class="sub">— kop, nomor, tanggal, mapel, dan logo</span></summary>
+        <div class="grid2" style="margin-top:12px">
+          <div><label for="la-kop1">Kop baris 1</label><input type="text" id="la-kop1" placeholder="PEMERINTAH KABUPATEN …"></div>
+          <div><label for="la-tempat">Tempat surat</label><input type="text" id="la-tempat" placeholder="Kabupaten …"></div>
+          <div><label for="la-nomorTranskrip">Nomor transkrip siswa pertama</label><input type="text" id="la-nomorTranskrip" placeholder="400.3.11/060/SD"><div class="hint">Siswa berikutnya otomatis 061, 062, … (urut rombel dan nomor absen; yang tidak lulus dilewati).</div></div>
+          <div><label for="la-nomorSkl">Nomor SKL siswa pertama</label><input type="text" id="la-nomorSkl" placeholder="400.3.11/120/SD"></div>
+          <div><label for="la-nomorSk">Nomor SK penetapan kelulusan</label><input type="text" id="la-nomorSk" placeholder="400.3.11/059/SD"><div class="hint">Ditulis di SKL: "berdasarkan Keputusan Kepala … Nomor: …".</div></div>
+          <div><label for="la-tanggalLulus">Tanggal kelulusan</label><input type="date" id="la-tanggalLulus"></div>
+          <div><label for="la-tanggalTranskrip">Tanggal transkrip</label><input type="date" id="la-tanggalTranskrip"></div>
+          <div id="la-tambahan-wrap"><label>Mapel tambahan di transkrip &amp; SKL</label><div class="pilih-seni" id="la-tambahan"></div><div class="hint">Sesuai kebijakan dinas. Hanya mapel yang diajarkan di kelas 6.</div></div>
+        </div>
+        <div class="grid2" style="margin-top:12px">
+          <div><label>Logo pemerintah daerah (kiri)</label><div class="logo-isi" id="la-logoPemda-lihat"></div><input type="file" accept="image/png,image/jpeg" id="la-logoPemda"> <button class="link" type="button" data-hapus-logo="logoPemda">hapus</button></div>
+          <div><label>Logo sekolah (kanan)</label><div class="logo-isi" id="la-logoSekolah-lihat"></div><input type="file" accept="image/png,image/jpeg" id="la-logoSekolah"> <button class="link" type="button" data-hapus-logo="logoSekolah">hapus</button></div>
+        </div>
+        <div class="toolbar"><button class="btn small" type="button" id="la-simpan">Simpan pengaturan</button></div>
+        <div class="msg" id="la-msg"></div>
+      </details>
+      <div class="notice hidden" id="ls-umum"></div>
+      <div class="tabs" role="tablist" style="margin-top:14px">
+        <button type="button" data-ls="nilai" class="on">Nilai per mapel</button>
+        <button type="button" data-ls="ringkas">Ringkasan &amp; nomor ijazah</button>
+        <button type="button" data-ls="cetak">Cetak &amp; unduh</button>
+      </div>
+      <div id="ls-nilai">
+        <div class="panduan">Nilai rapor kelas 5 dan 6 <b>terisi otomatis</b> dari aplikasi (tampil samar). Ketik angka untuk mengisi yang kosong atau menimpanya; kosongkan lagi untuk kembali ke nilai aplikasi.
+          Nilai akhir = rata-rata semua kolom yang terisi (termasuk praktik), dua desimal.</div>
+        <div class="mapel-pil" id="ls-mapel" role="tablist" aria-label="Mata pelajaran"></div>
+        <div class="toolbar"><button class="btn" type="button" id="ls-simpan" style="width:auto">Simpan nilai</button><span class="sub" id="ls-status"></span></div>
+        <div class="msg" id="ls-msg"></div>
+        <div class="tbl"><table class="siswa nilai" style="width:100%"><thead><tr id="ls-head"></tr></thead><tbody id="ls-body"></tbody></table></div>
+      </div>
+      <div id="ls-ringkas" class="hidden">
+        <div class="toolbar"><button class="btn" type="button" id="ls-simpan-ij" style="width:auto">Simpan nomor ijazah</button><span class="sub">Nilai bercetak miring belum lengkap.</span></div>
+        <div class="msg" id="ls-ij-msg"></div>
+        <div class="tbl"><table class="siswa leger" style="width:100%"><thead><tr id="ls-rk-head"></tr></thead><tbody id="ls-rk-body"></tbody></table></div>
+      </div>
+      <div id="ls-cetak" class="hidden">
+        <div class="panduan">Pilih siswa, lalu cetak. Kertas A4 tegak, margin 2 cm, sesuai master. Siswa yang tidak lulus tidak dicetak.</div>
+        <div class="toolbar">
+          <button class="btn" type="button" id="ls-cetak-transkrip" style="width:auto">Cetak transkrip</button>
+          <button class="btn" type="button" id="ls-cetak-skl" style="width:auto">Cetak SKL</button>
+          <button class="btn ghost small" type="button" id="ls-excel">Unduh Excel (data mail merge)</button>
+          <span class="sub" id="ls-jumlah"></span>
+        </div>
+        <div class="msg" id="ls-cetak-msg"></div>
+        <div class="pilih-siswa" id="ls-pilih"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CEK & CETAK RAPOR -->
+  <section id="v-cetak" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Cek &amp; Cetak Rapor</h2><div class="sub" id="ct-sub"></div></div>
+    </div>
+    <div class="card">
+      <div class="grid2">
+        <div><label for="ct-rombel">Rombel</label><select id="ct-rombel"></select></div>
+        <div><label for="ct-semester">Semester</label><select id="ct-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
+      </div>
+    </div>
+    <div class="msg" id="ct-info"></div>
+    <div id="ct-isi" class="hidden">
+      <div class="notice hidden" id="ct-umum"></div>
+      <div class="card kunci-bar" id="ct-kunci-bar"><span class="st" id="ct-kunci-status"></span><button class="btn small" type="button" id="ct-kunci-btn"></button></div>
+      <div class="msg" id="ct-kunci-msg"></div>
+      <div class="tabs" role="tablist" style="margin-top:14px">
+        <button type="button" data-ct="cek" class="on">Kelengkapan</button>
+        <button type="button" data-ct="leger">Leger</button>
+        <button type="button" data-ct="cetak">Cetak Rapor</button>
+        <button type="button" data-ct="excel">Unduh Excel</button>
+      </div>
+      <div id="ct-cek">
+        <div class="toolbar"><span class="sub" id="ct-siap"></span><button class="btn ghost small" type="button" id="ct-segar">Periksa ulang</button></div>
+        <div class="tbl"><table class="siswa cek" style="width:100%"><thead><tr><th>No. Absen</th><th style="min-width:200px">Nama</th><th>Status</th><th>Yang perlu dilengkapi</th></tr></thead><tbody id="ct-cek-body"></tbody></table></div>
+      </div>
+      <div id="ct-leger" class="hidden">
+        <div class="toolbar"><button class="btn ghost small" type="button" id="ct-cetak-leger">Cetak leger</button><span class="sub">Nilai bercetak miring masih sementara (belum lengkap). Peringkat hanya untuk siswa yang nilainya lengkap.</span></div>
+        <div class="tbl"><table class="siswa leger" style="width:100%"><thead><tr id="ct-leger-head"></tr></thead><tbody id="ct-leger-body"></tbody></table></div>
+      </div>
+      <div id="ct-excel" class="hidden">
+        <div class="panduan">Satu berkas Excel untuk rombel dan semester ini, untuk disalin ke <b>e-Rapor</b>. Isinya:
+          <ul style="margin:6px 0 0;padding-left:18px">
+            <li><b>Daftar Siswa</b> — nomor absen, NISN, NIS, nama.</li>
+            <li><b>Rekap Nilai</b> — nilai akhir semua mapel, jumlah, rata-rata, peringkat.</li>
+            <li><b>Satu sheet per mapel</b> — nilai akhir, <b>TP tertinggi</b> dan <b>TP terendah</b> tiap siswa (kode dan isi TP, untuk dicentang di e-Rapor), serta deskripsi capaian.</li>
+            <li><b>Kokurikuler</b> serta <b>Ekskul &amp; Kehadiran</b> — deskripsi kokurikuler, ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas (semester 2).</li>
+          </ul></div>
+        <div class="toolbar"><button class="btn" type="button" id="ct-excel-btn" style="width:auto">Unduh Excel</button></div>
+        <div class="msg" id="ct-excel-msg"></div>
+      </div>
+      <div id="ct-cetak" class="hidden">
+        <div class="panduan">Pilih siswa, lalu klik <b>Cetak / Simpan PDF</b>. Di jendela cetak pilih printer, atau pilih <b>Simpan sebagai PDF</b> untuk menyimpan berkasnya. Ukuran kertas A4, tegak.</div>
+        <div class="toolbar">
+          <button class="btn" type="button" id="ct-cetak-btn" style="width:auto">Cetak / Simpan PDF</button>
+          <button class="btn ghost small" type="button" id="ct-sampul-btn">Cetak sampul &amp; identitas</button>
+          <button class="btn ghost small" type="button" id="ct-semua">Pilih semua</button>
+          <button class="btn ghost small" type="button" id="ct-lengkap">Hanya yang lengkap</button>
+          <span class="sub" id="ct-jumlah"></span>
+        </div>
+        <div class="msg" id="ct-msg"></div>
+        <div class="pilih-siswa" id="ct-pilih"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TUJUAN PEMBELAJARAN -->
+  <section id="v-tp" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Tujuan Pembelajaran</h2><div class="sub" id="tp-sub"></div></div>
+    </div>
+    <div class="card">
+      <div class="grid2">
+        <div><label for="tp-kelas">Kelas</label><select id="tp-kelas"><option value="1">Kelas 1 (Fase A)</option><option value="2">Kelas 2 (Fase A)</option><option value="3">Kelas 3 (Fase B)</option><option value="4">Kelas 4 (Fase B)</option><option value="5">Kelas 5 (Fase C)</option><option value="6">Kelas 6 (Fase C)</option></select></div>
+        <div><label for="tp-semester">Semester</label><select id="tp-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
+        <div class="aksi"><button class="btn ghost small" type="button" id="tp-unduh" title="Satu berkas per mapel, semester 1 dan 2, siap diimpor ke e-Rapor Kemendikdasmen">Unduh TP kelas ini (format e-Rapor)</button></div>
+      </div>
+      <div class="msg" id="tpu-msg"></div>
+    </div>
+    <div class="mapel-pil" id="tp-mapel" role="tablist" aria-label="Mata pelajaran"></div>
+    <div id="tp-editor" class="hidden">
+      <div class="toolbar" id="tp-varian-wrap"><label for="tp-varian" style="margin:0" id="tp-varian-label">Agama</label><select id="tp-varian" style="width:auto;min-width:220px"></select></div>
+      <div class="panduan">Tujuan pembelajaran maksimal <b>100 karakter</b> (batas e-Rapor). <i>Lingkup materi</i> boleh dikosongkan; isinya dipakai di kalimat deskripsi rapor (misalnya "…menunjukkan penguasaan yang sangat baik dalam <b>keliling bangun datar</b>"), dan jika kosong teks TP yang dipakai.
+        Bisa tempel dari Excel: kolom TP lalu kolom lingkup materi.</div>
+      <div class="toolbar">
+        <button class="btn add" type="button" id="tp-tambah">+ Tambah TP</button>
+        <button class="btn" type="button" id="tp-simpan" style="width:auto">Simpan TP</button>
+        <button class="btn ghost small hidden" type="button" id="tp-bawaan">Pakai TP bawaan</button>
+        <span class="sub" id="tp-jumlah"></span>
+      </div>
+      <div class="msg" id="tp-msg"></div>
+      <div class="tbl"><table class="siswa tp"><thead><tr><th>No.</th><th style="min-width:420px">Tujuan Pembelajaran *</th><th>Karakter</th><th style="min-width:260px">Lingkup materi (deskripsi rapor)</th><th></th></tr></thead><tbody id="tp-body"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- DATA SEKOLAH -->
+  <section id="v-data" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Data Sekolah &amp; Siswa</h2><div class="sub" id="d-sub"></div></div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button type="button" data-tab="profil" class="on">Profil Sekolah</button>
+      <button type="button" data-tab="mapel">Mata Pelajaran</button>
+      <button type="button" data-tab="rombel">Rombel &amp; Siswa</button>
+    </div>
+
+    <div id="p-profil">
+     <div class="card">
+      <form id="f-profil">
+        <div class="grid2" id="profil-isi"></div>
+        <div class="grid2" style="margin-top:12px">
+          <div><label for="p-semester">Semester yang sedang diisi</label>
+            <select id="p-semester"><option value="1">Semester 1 (Ganjil): rapor tanpa keterangan naik/lulus</option><option value="2">Semester 2 (Genap): rapor dengan keterangan naik/lulus</option></select></div>
+        </div>
+        <div class="field" style="margin-top:14px"><label>Seni yang diajarkan sekolah</label>
+          <div class="pilih-seni" id="p-seni"></div>
+          <div class="hint">Centang semua seni yang diajarkan. Jika siswa mengikuti lebih dari satu seni, nilai dan deskripsinya digabung menjadi satu baris "Seni dan Budaya" di rapor.</div></div>
+        <div class="toolbar"><button class="btn" type="submit" style="width:auto">Simpan profil</button></div>
+        <div class="msg" id="p-msg"></div>
+      </form>
+     </div>
+     <details class="card" id="ta-box" style="margin-top:14px">
+      <summary><b>Tahun ajaran baru</b> <span class="sub">— kenaikan kelas, kelulusan, dan mulai tahun ajaran berikutnya (sekali setahun)</span></summary>
+      <div class="panduan" style="margin-top:12px">Dilakukan <b>setelah rapor semester 2 dibagikan</b> dan keputusan naik/tinggal/lulus semua siswa diisi (menu Wali Kelas → Kenaikan).
+        Aplikasi akan: membuat <b>cadangan</b> data di Drive; menyiapkan rombel tahun baru dengan nama dan wali kelas yang sama;
+        memindahkan siswa yang naik ke kelas berikutnya (4A → 5A), siswa tinggal kelas tetap di kelasnya, dan kelas 6 yang lulus diberi status lulus;
+        menyalin mapel, TP, dan subdimensi kokurikuler; serta mengarsipkan nilai tahun lalu. Kelas 1 dikosongkan untuk siswa baru.</div>
+      <div class="toolbar"><button class="btn ghost small" type="button" id="ta-periksa">Periksa kesiapan</button></div>
+      <div id="ta-hasil"></div>
+      <div id="ta-jalan" class="hidden" style="margin-top:12px">
+        <label for="ta-konfirmasi" id="ta-label"></label>
+        <div class="aksi"><input type="text" id="ta-konfirmasi" autocomplete="off" style="max-width:260px"><button class="btn danger small" type="button" id="ta-mulai">Mulai tahun ajaran baru</button></div>
+      </div>
+      <div class="msg" id="ta-msg"></div>
+     </details>
+    </div>
+
+    <div id="p-mapel" class="hidden">
+      <div class="panduan">Centang mata pelajaran yang <b>benar-benar diajarkan</b> di tiap kelas. Hanya mapel yang dicentang yang muncul di input nilai dan di rapor.
+        Mapel yang belum diajarkan, misalnya Bahasa Inggris atau Koding dan Kecerdasan Artifisial, <b>tidak akan muncul sebagai baris kosong</b> di rapor. Mapel wajib selalu aktif.</div>
+      <div class="msg" id="m2-msg"></div>
+      <div class="tbl" style="margin-top:12px"><table class="mapel"><thead><tr><th>Mata pelajaran</th><th>Kelas 1</th><th>Kelas 2</th><th>Kelas 3</th><th>Kelas 4</th><th>Kelas 5</th><th>Kelas 6</th></tr></thead><tbody id="mapel-isi"></tbody></table></div>
+      <div class="toolbar">
+        <button class="btn" type="button" id="mp-simpan" style="width:auto">Simpan mata pelajaran</button>
+        <button class="btn add" type="button" id="mp-mulok">+ Tambah muatan lokal</button>
+      </div>
+    </div>
+
+    <div id="p-rombel" class="hidden">
+      <div class="card hidden" id="rf-wrap" style="margin-bottom:16px">
+        <h3 id="rf-judul" style="margin:0 0 12px">Tambah rombel</h3>
+        <form id="f-rombel" class="grid2">
+          <div><label for="rf-kelas">Kelas</label><select id="rf-kelas"><option value="1">Kelas 1</option><option value="2">Kelas 2</option><option value="3">Kelas 3</option><option value="4">Kelas 4</option><option value="5">Kelas 5</option><option value="6">Kelas 6</option></select></div>
+          <div><label for="rf-nama">Nama rombel <span style="font-weight:400;color:var(--muted)">(boleh dikosongkan)</span></label><input id="rf-nama" type="text" maxlength="20" placeholder="Kosongkan jika hanya 1 rombel">
+            <div class="hint">Hanya diisi jika kelas ini punya lebih dari satu rombel. Cukup ketik A, B, C… (otomatis menjadi <span id="rf-contoh">5A, 5B</span>).</div></div>
+          <div><label for="rf-wali">Wali kelas</label><input id="rf-wali" type="text" maxlength="100" placeholder="Nama lengkap dengan gelar"></div>
+          <div><label for="rf-nip">NIP wali kelas</label><input id="rf-nip" type="text" inputmode="numeric" maxlength="24" placeholder="Kosongkan jika tidak ada"></div>
+          <div><label for="rf-target">Jumlah siswa</label><input id="rf-target" type="number" min="1" max="100" inputmode="numeric" placeholder="Misalnya 28">
+            <div class="hint">Tabel siswa langsung disiapkan sebanyak ini, dan dipakai untuk memeriksa apakah semua siswa sudah terisi.</div></div>
+          <div class="aksi"><button class="btn small" type="submit">Simpan rombel</button><button class="btn ghost small" type="button" id="rf-batal">Batal</button></div>
+        </form>
+        <div class="msg" id="rf-msg"></div>
+      </div>
+      <div class="msg" id="rb-msg"></div>
+      <div id="daftar-rombel"></div>
+    </div>
+  </section>
+
+  <!-- SISWA SATU ROMBEL -->
+  <section id="v-siswa" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" id="s-kembali">← Rombel &amp; Siswa</button><h2 id="s-judul">Siswa</h2><div class="sub" id="s-sub"></div></div>
+    </div>
+    <div class="panduan"><b>Bisa langsung tempel dari Excel atau Dapodik.</b> Susun kolom di Excel sesuai urutan tabel di bawah, blok datanya, salin (Ctrl+C), klik kotak <i>Nama Lengkap</i> di baris pertama, lalu tempel (Ctrl+V).
+      Baris judul ikut tersalin? Tidak apa-apa, dilewati otomatis. Nama panggilan diisi dari kata pertama nama jika dikosongkan. Kolom bertanda * wajib.
+      Siswa mengikuti lebih dari satu seni? Tulis dipisah koma, misalnya <i>Musik, Rupa</i>.</div>
+    <div class="toolbar" id="s-seni-semua">
+      <span class="sub" style="color:var(--ink);font-weight:700">Seni untuk semua siswa:</span>
+      <span class="pilih-seni" id="s-seni-pilih"></span>
+      <button class="btn ghost small" type="button" id="s-seni-terapkan">Terapkan ke semua baris</button>
+    </div>
+    <div class="toolbar">
+      <label for="s-target" style="margin:0">Jumlah siswa rombel ini</label>
+      <input id="s-target" type="number" min="1" max="100" inputmode="numeric" style="width:90px;font:inherit;font-size:15px;padding:9px 10px;border:1px solid #d9cfb8;border-radius:12px">
+      <button class="btn ghost small" type="button" id="s-siapkan">Siapkan baris</button>
+      <button class="btn ghost small" type="button" id="s-urut" title="Urutkan nama A–Z; nomor absen mengikuti urutan baru">Urutkan nama A–Z</button>
+    </div>
+    <div class="toolbar">
+      <button class="btn add" type="button" id="s-tambah">+ Tambah baris</button>
+      <button class="btn" type="button" id="s-simpan" style="width:auto">Simpan daftar siswa</button>
+      <span class="sub" id="s-jumlah"></span>
+    </div>
+    <div class="msg" id="s-msg"></div>
+    <div class="tbl"><table class="siswa"><thead><tr id="s-head"></tr></thead><tbody id="s-body"></tbody></table></div>
+    <datalist id="dl-jk"><option value="L"><option value="P"></datalist>
+    <datalist id="dl-agama"><option value="Islam"><option value="Kristen"><option value="Katolik"><option value="Hindu"><option value="Buddha"><option value="Khonghucu"><option value="Kepercayaan terhadap Tuhan YME"></datalist>
+    <datalist id="dl-seni"></datalist>
+  </section>
+
+  <footer>Rapor Merdeka Digital · dikembangkan oleh Admin · <a href="panduan.html" target="_blank" rel="noopener" style="color:inherit">Panduan guru</a> · <button type="button" class="link buka-profil">Profil pengembang &amp; narahubung</button> · <a href="../syarat.html" target="_blank" rel="noopener" style="color:inherit">Syarat</a> · <a href="../privasi.html" target="_blank" rel="noopener" style="color:inherit">Privasi</a> · <a href="../" style="color:inherit">Beranda</a></footer>
+
+  <dialog id="profil" class="profil" aria-labelledby="pf-nama">
+    <div class="kepala"><small>PROFIL PENGEMBANG</small><h3 id="pf-nama">Admin</h3><p>Pengembang Rapor Merdeka Digital</p></div>
+    <dl>
+      <dt>Pengalaman</dt><dd>Admin</dd>
+      <dt>WhatsApp</dt><dd><a href="https://wa.me/6281196939694" target="_blank" rel="noopener">0811-9693-9694</a></dd>
+      <dt>Email</dt><dd><a href="mailto:bolonulis@gmail.com">bolonulis@gmail.com</a></dd>
+      <dt>Media sosial</dt><dd>Instagram <a href="#" target="_blank" rel="noopener">@admin</a><br>Facebook: Admin</dd>
+    </dl>
+    <p class="hint" style="margin:0;padding:0 22px 16px">Untuk pertanyaan, perpanjangan langganan, atau kendala penggunaan aplikasi, silakan hubungi melalui WhatsApp.</p>
+    <div class="tombol"><a class="btn wa" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Rapor%20Merdeka%20Digital." target="_blank" rel="noopener">Chat WhatsApp</a><button type="button" class="btn ghost" id="pf-tutup">Tutup</button></div>
+  </dialog>
+</div>
+
+<script>
+const API_URL = ''; // ← tempel URL Aplikasi web dari Apps Script (Deploy → Kelola deployment)
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls = { get:k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}, del:k=>{try{localStorage.removeItem(k)}catch(e){}} };
+const KUNCI_SESI = 'rapor-sesi';
+const KUNCI_KODE = 'rapor-kode';
+let INFO = { kodeAkses: false, daftarDibuka: true };
+const VIEWS = ['gerbang','masuk','daftar','lupa','reset','verifikasi','beranda','data','siswa','tp','nilai','kok','wk','cetak','lulus'];
+let TOKEN_RESET = '';
+let DATA = null, ROMBEL = null, SISWA = [], UBAH = false, SENI_SEKOLAH = [], TARGET = 0;
+const SEMUA_SENI = ['Seni Musik', 'Seni Rupa', 'Seni Tari', 'Seni Teater'];
+const KOLOM = [
+  { k:'nama', judul:'Nama Lengkap *', w:230 },
+  { k:'panggilan', judul:'Nama Panggilan', w:120 },
+  { k:'nis', judul:'NIS', w:100 },
+  { k:'nisn', judul:'NISN', w:120 },
+  { k:'jk', judul:'L/P *', w:60, list:'dl-jk' },
+  { k:'agama', judul:'Agama *', w:120, list:'dl-agama' },
+  { k:'seni', judul:'Seni Pilihan', w:190, list:'dl-seni' },
+  { k:'tempatLahir', judul:'Tempat Lahir', w:130 },
+  { k:'tanggalLahir', judul:'Tanggal Lahir', w:115, ph:'dd/mm/yyyy' },
+  { k:'ayah', judul:'Nama Ayah', w:180 },
+  { k:'ibu', judul:'Nama Ibu', w:180 },
+  { k:'wali', judul:'Nama Wali', w:180 },
+  { k:'alamat', judul:'Alamat', w:260 },
+  { k:'pendidikanSebelumnya', judul:'Pendidikan Sebelumnya', w:170, ph:'mis. TK Pertiwi' },
+  { k:'pekerjaanAyah', judul:'Pekerjaan Ayah', w:150 },
+  { k:'pekerjaanIbu', judul:'Pekerjaan Ibu', w:150 },
+  { k:'alamatOrtu', judul:'Alamat Orang Tua', w:260 },
+  { k:'pekerjaanWali', judul:'Pekerjaan Wali', w:150 },
+  { k:'alamatWali', judul:'Alamat Wali', w:260 }
+];
+/* "2016-03-15" → "15/03/2016" agar sama dengan kebiasaan guru; server menerima keduanya. */
+/* Kelas dengan satu rombel menyimpan nama rombel berupa nomor kelas ("5"); tampil sebagai "Kelas 5". */
+const labelRombel = r => r.nama === String(r.kelas) ? 'Kelas ' + r.kelas : r.nama;
+const tglTampil = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '') ? v.split('-').reverse().join('/') : (v || '');
+
+async function api(body){
+  if (!API_URL) return { ok:false, pesan:'Sistem belum tersambung ke Apps Script.' };
+  try {
+    const r = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ sesi: ls.get(KUNCI_SESI), kodeAkses: ls.get(KUNCI_KODE), ...body }) });
+    const res = await r.json();
+    if (res.sesiHabis) { ls.del(KUNCI_SESI); tampil('masuk'); pesan('#m-msg', res.pesan, false); }
+    if (res.pemeliharaan) tampilUmum({ pemeliharaan: true, pesanPemeliharaan: res.pesan });
+    if (res.langgananHabis) { $('#u-lgn-teks').textContent = res.pesan; $('#u-lgn').classList.remove('hidden'); }
+    if (res.kodeSalah && body.aksi !== 'cekKode') { ls.del(KUNCI_KODE); tampil('gerbang'); pesan('#g-msg', res.pesan, false); }
+    return res;
+  } catch (e) {
+    return { ok:false, pesan:'Tidak bisa terhubung ke server. Periksa koneksi internet lalu coba lagi.' };
+  }
+}
+
+const PROVINSI = ['Aceh','Sumatera Utara','Sumatera Barat','Riau','Kepulauan Riau','Jambi','Bengkulu','Sumatera Selatan',
+  'Kepulauan Bangka Belitung','Lampung','Banten','DKI Jakarta','Jawa Barat','Jawa Tengah','DI Yogyakarta','Jawa Timur','Bali',
+  'Nusa Tenggara Barat','Nusa Tenggara Timur','Kalimantan Barat','Kalimantan Tengah','Kalimantan Selatan','Kalimantan Timur',
+  'Kalimantan Utara','Sulawesi Utara','Gorontalo','Sulawesi Tengah','Sulawesi Barat','Sulawesi Selatan','Sulawesi Tenggara',
+  'Maluku','Maluku Utara','Papua','Papua Barat','Papua Barat Daya','Papua Tengah','Papua Pegunungan','Papua Selatan'];
+$('#d-prov').insertAdjacentHTML('beforeend', PROVINSI.map(p => '<option>' + esc(p) + '</option>').join(''));
+
+/* Statistik pengguna: dimuat sekali saat halaman masuk/daftar tampil; disembunyikan bila gagal atau masih kosong. */
+/* Pengumuman dan status pemeliharaan dari pengelola (spreadsheet Pusat → Pengaturan). */
+function tampilUmum(i){
+  if ('pemeliharaan' in i) {
+    $('#u-rawat-teks').textContent = i.pemeliharaan ? i.pesanPemeliharaan : '';
+    $('#u-rawat').classList.toggle('hidden', !i.pemeliharaan);
+  }
+  if ('pengumuman' in i) {
+    $('#u-info-teks').textContent = i.pengumuman || '';
+    $('#u-info').classList.toggle('hidden', !i.pengumuman);
+  }
+}
+async function muatInfo(){
+  if (!API_URL) return;
+  const res = await api({ aksi:'info' });
+  if (!res.ok) return;
+  INFO = res;
+  tampilUmum(res);
+  // Pendaftaran ditutup: tab Daftar dan statistik disembunyikan.
+  $('#tab-daftar').classList.toggle('hidden', !res.daftarDibuka);
+  $('#tab-akun').style.gridTemplateColumns = res.daftarDibuka ? '' : '1fr';
+  if (!res.daftarDibuka) { $('#statistik').classList.add('hidden'); if (TAMPIL === 'daftar') tampil('masuk'); }
+}
+
+let STAT_DIMUAT = false;
+async function muatStatistik(){
+  if (STAT_DIMUAT || !API_URL || !INFO.daftarDibuka) return;
+  STAT_DIMUAT = true;
+  const res = await api({ aksi:'statistik' });
+  if (!res.ok || !res.sekolah) return;
+  $('#st-sekolah').textContent = res.sekolah;
+  $('#st-kab').textContent = res.kabupaten;
+  $('#st-prov').textContent = res.provinsi;
+  $('#st-rincian').innerHTML = res.rincian.map(p => '<details><summary>' + esc(p.provinsi) + ' · ' + p.sekolah + ' sekolah</summary><ul>' +
+    p.kabupaten.map(k => '<li>' + esc(k.nama) + ': ' + k.sekolah + ' sekolah</li>').join('') + '</ul></details>').join('');
+  $('#st-waktu').textContent = res.diperbarui ? 'Diperbarui ' + res.diperbarui + ' WIB.' : '';
+  $('#statistik').classList.toggle('hidden', !['masuk','daftar','lupa'].includes(TAMPIL) || !INFO.daftarDibuka);
+}
+
+let TAMPIL = '';
+function tampil(v){
+  TAMPIL = v;
+  VIEWS.forEach(x => $('#v-' + x).classList.toggle('hidden', x !== v));
+  const akun = ['masuk','daftar','lupa'].includes(v);
+  $('#tab-akun').classList.toggle('hidden', !akun);
+  $('#tab-masuk').classList.toggle('on', v === 'masuk' || v === 'lupa');
+  $('#tab-daftar').classList.toggle('on', v === 'daftar');
+  $('#bantuan').classList.toggle('hidden', !akun);
+  $('#statistik').classList.toggle('hidden', !akun || !INFO.daftarDibuka || !Number($('#st-sekolah').textContent));
+  if (akun) muatStatistik();
+  const fokus = { masuk:'#m-email', daftar:'#d-npsn', lupa:'#l-email', reset:'#r-sandi' }[v];
+  if (v === 'gerbang') setTimeout(() => $('#g-kode').focus(), 0);
+  if (fokus) setTimeout(() => $(fokus).focus(), 0);
+}
+
+function pesan(sel, teks, ok, salah){
+  const el = $(sel);
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+  const daftar = (salah && salah.length > 1) ? '<ul>' + salah.map(s => '<li>' + esc(s) + '</li>').join('') + '</ul>' : '';
+  el.innerHTML = daftar || esc(teks || '');
+}
+
+/* Mencegah kirim ganda: tombol dimatikan selama permintaan berjalan. */
+async function kirim(form, fn){ return sibuk(form.querySelector('button[type=submit]'), fn); }
+async function sibuk(btn, fn){
+  if (btn.disabled) return;
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Memproses…';
+  try { await fn(); } finally { btn.disabled = false; btn.textContent = label; }
+}
+
+const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const tglPanjang = iso => { const p = String(iso || '').split('-'); return p.length === 3 ? Number(p[2]) + ' ' + BULAN[Number(p[1]) - 1] + ' ' + p[0] : ''; };
+
+/* Status langganan: ditulis di bawah nama sekolah; peringatan bila tinggal ≤ 14 hari atau sudah berakhir. */
+function tampilLangganan(l){
+  if (!l || l.tanpaBatas) { $('#u-lgn').classList.add('hidden'); return ''; }
+  const sampai = tglPanjang(l.sampai);
+  let teks = '';
+  if (l.habis) teks = 'Masa langganan berakhir pada ' + sampai + '. Data tetap bisa dilihat dan diunduh; fitur lain menunggu perpanjangan. Hubungi pengembang lewat menu Profil pengembang.';
+  else if (l.sisaHari <= 14) teks = 'Masa ' + (/uji/i.test(l.catatan || '') ? 'uji coba' : 'langganan') + ' tinggal ' + l.sisaHari + ' hari (sampai ' + sampai + '). Hubungi pengembang untuk memperpanjang agar tidak terputus.';
+  $('#u-lgn-teks').textContent = teks;
+  $('#u-lgn').classList.toggle('hidden', !teks);
+  return (/uji/i.test(l.catatan || '') ? 'Uji coba' : 'Langganan') + (l.habis ? ' berakhir ' : ' aktif sampai ') + sampai;
+}
+
+function masukBeranda(sekolah){
+  $('#b-nama').textContent = sekolah.nama;
+  const lgn = tampilLangganan(sekolah.langganan);
+  $('#b-sub').textContent = 'NPSN ' + sekolah.npsn + ' · ' + sekolah.email + (lgn ? ' · ' + lgn : '');
+  tampil('beranda');
+}
+
+/* ---------- formulir ---------- */
+$('#f-gerbang').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const kode = $('#g-kode').value.trim();
+  const res = await api({ aksi:'cekKode', kodeAkses: kode });
+  if (!res.ok) return pesan('#g-msg', res.pesan, false);
+  ls.set(KUNCI_KODE, kode);
+  $('#g-kode').value = ''; $('#g-msg').textContent = '';
+  const h = location.hash.slice(1);
+  tampil(['daftar','lupa'].includes(h) && INFO.daftarDibuka ? h : 'masuk');
+}); });
+
+$('#f-masuk').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const res = await api({ aksi:'masuk', email: $('#m-email').value, sandi: $('#m-sandi').value });
+  if (!res.ok) return pesan('#m-msg', res.pesan, false);
+  ls.set(KUNCI_SESI, res.sesi);
+  $('#m-sandi').value = ''; $('#m-msg').textContent = '';
+  masukBeranda(res.sekolah);
+}); });
+
+$('#f-daftar').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const res = await api({ aksi:'daftar', data: {
+    npsn: $('#d-npsn').value, nama: $('#d-nama').value, email: $('#d-email').value,
+    kabupaten: $('#d-kab').value, provinsi: $('#d-prov').value,
+    sandi: $('#d-sandi').value, ulangi: $('#d-ulangi').value, setuju: $('#d-setuju').checked } });
+  pesan('#d-msg', res.pesan, res.ok, res.salah);
+  if (res.ok) { $('#d-prov').value = ''; e.target.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; }); }
+}); });
+
+$('#f-lupa').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const res = await api({ aksi:'lupaSandi', email: $('#l-email').value });
+  pesan('#l-msg', res.pesan, res.ok);
+}); });
+
+$('#f-reset').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const res = await api({ aksi:'resetSandi', token: TOKEN_RESET, sandi: $('#r-sandi').value, ulangi: $('#r-ulangi').value });
+  pesan('#r-msg', res.pesan, res.ok, res.salah);
+  if (res.ok) { ls.del(KUNCI_SESI); e.target.querySelectorAll('input[type=password]').forEach(i => i.value = ''); }
+}); });
+
+$('#f-ganti').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const res = await api({ aksi:'gantiSandi', lama: $('#g-lama').value, baru: $('#g-baru').value, ulangi: $('#g-ulangi').value });
+  if (res.sesiHabis) return;
+  pesan('#g-msg', res.pesan, res.ok, res.salah);
+  if (res.ok) { ls.set(KUNCI_SESI, res.sesi); e.target.reset(); bukaGanti(false); }
+}); });
+function bukaGanti(buka){
+  $('#ganti-wrap').classList.toggle('hidden', !buka);
+  $('#b-ganti').setAttribute('aria-expanded', String(buka));
+  if (buka) { $('#g-msg').textContent = ''; $('#g-lama').focus(); }
+}
+$('#b-ganti').addEventListener('click', () => bukaGanti($('#ganti-wrap').classList.contains('hidden')));
+$('#g-batal').addEventListener('click', () => { $('#f-ganti').reset(); bukaGanti(false); });
+
+/* ---------- data sekolah ---------- */
+function pilihTab(tab){
+  document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  ['profil','mapel','rombel'].forEach(t => $('#p-' + t).classList.toggle('hidden', t !== tab));
+  if (tab === 'mapel' && !MAPEL) muatMapel();
+}
+
+/* ---------- mata pelajaran per kelas ---------- */
+let MAPEL = null, MAKS_MULOK = 7;
+async function muatMapel(){
+  $('#mapel-isi').innerHTML = '<tr><td colspan="7" class="sub">Memuat…</td></tr>';
+  const res = await api({ aksi:'mapelSekolah' });
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#mapel-isi').innerHTML = ''; return pesan('#m2-msg', res.pesan, false); }
+  MAPEL = res.mapel; MAKS_MULOK = res.maksMulok;
+  renderMapel();
+}
+const mulokDefault = m => /^Muatan Lokal \d+$/.test(m.nama);
+/* Nama muatan lokal di kotak isian: yang sedang diketik, atau nama tersimpan (nama bawaan "Muatan Lokal n" dikosongkan). */
+const namaMulok = m => m.namaBaru !== undefined ? m.namaBaru : (mulokDefault(m) ? '' : m.nama);
+function renderMapel(){
+  $('#mapel-isi').innerHTML = MAPEL.map((m, i) => '<tr><td><b>' + esc(m.nama) + '</b>' +
+    '<span class="jenis ' + (m.pilihan ? 'pilihan">Pilihan' : 'wajib">Wajib') + '</span>' +
+    (m.jenis === 'mulok' ? '<input type="text" data-mulok="' + i + '" maxlength="60" placeholder="Nama muatan lokal, misalnya Bahasa Jawa" value="' + esc(namaMulok(m)) + '" aria-label="Nama ' + esc(m.nama) + '">' : '') +
+    '</td>' + [1,2,3,4,5,6].map(k => k in m.kelas
+      ? '<td><input type="checkbox" data-i="' + i + '" data-k="' + k + '"' + (m.kelas[k] ? ' checked' : '') + (m.pilihan ? '' : ' disabled title="Mapel wajib"') +
+        ' aria-label="' + esc(m.nama) + ' kelas ' + k + '"></td>'
+      : '<td class="na" title="Tidak ada di kelas ini">—</td>').join('') + '</tr>').join('');
+  const jumlahMulok = MAPEL.filter(m => m.jenis === 'mulok').length;
+  $('#mp-mulok').classList.toggle('hidden', jumlahMulok >= MAKS_MULOK);
+}
+$('#mapel-isi').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.k) MAPEL[Number(t.dataset.i)].kelas[t.dataset.k] = t.checked;
+});
+$('#mapel-isi').addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.mulok !== undefined) MAPEL[Number(t.dataset.mulok)].namaBaru = t.value;
+});
+$('#mp-mulok').addEventListener('click', () => {
+  const nomor = MAPEL.filter(m => m.jenis === 'mulok').map(m => Number(m.kode.replace('MULOK', ''))).reduce((a, b) => Math.max(a, b), 0) + 1;
+  MAPEL.push({ kode: 'MULOK' + nomor, nama: 'Muatan Lokal ' + nomor, jenis: 'mulok', pilihan: true, kelas: { 1:false, 2:false, 3:false, 4:false, 5:false, 6:false } });
+  renderMapel();
+  document.querySelector('[data-mulok="' + (MAPEL.length - 1) + '"]').focus();
+});
+$('#mp-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const mapel = MAPEL.filter(m => m.pilihan).map(m => ({ kode: m.kode, kelas: m.kelas,
+    nama: m.jenis === 'mulok' ? namaMulok(m) : undefined }));
+  const res = await api({ aksi:'simpanMapel', mapel });
+  if (res.sesiHabis) return;
+  pesan('#m2-msg', res.pesan, res.ok, res.salah);
+  if (res.ok) { MAPEL = res.mapel; renderMapel(); }
+}));
+
+/* ---------- tahun ajaran baru ---------- */
+let TA_BARU = '';
+$('#ta-periksa').addEventListener('click', e => sibuk(e.target, async () => {
+  $('#ta-msg').textContent = ''; $('#ta-jalan').classList.add('hidden');
+  const res = await api({ aksi:'taBaruPratinjau' });
+  if (res.sesiHabis) return;
+  if (!res.ok) return pesan('#ta-msg', res.pesan, false);
+  TA_BARU = res.taBaru;
+  const r = res.ringkas;
+  $('#ta-hasil').innerHTML =
+    (res.salah.length ? '<div class="msg err"><b>Belum bisa dimulai:</b><ul>' + res.salah.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') +
+    (res.peringatan.length ? '<div class="notice">' + res.peringatan.map(esc).join('<br>') + '</div>' : '') +
+    '<p style="margin:14px 0 8px"><b>' + esc(res.taLama) + ' → ' + esc(res.taBaru) + '</b>: ' + r.naik + ' siswa naik kelas, ' + r.tinggal + ' tinggal kelas, ' +
+      r.lulus + ' lulus' + (r.tidakLulus ? ', ' + r.tidakLulus + ' tidak lulus (tetap kelas 6)' : '') + '.</p>' +
+    '<div class="tbl"><table class="mapel"><thead><tr><th>Rombel ' + esc(res.taBaru) + '</th><th>Wali kelas</th><th>Siswa naik dari</th><th>Tinggal kelas</th><th>Jumlah</th></tr></thead><tbody>' +
+    res.rombel.map(x => '<tr><td><b>' + esc(x.label) + '</b></td><td>' + (esc(x.wali) || '<span class="sub">belum diisi</span>') + '</td><td>' +
+      (Object.entries(x.asal).map(([a, n]) => esc(a) + ' (' + n + ')').join(', ') || (x.kelas === 1 ? '<span class="sub">siswa baru diisi sendiri</span>' : '–')) +
+      '</td><td>' + (x.tinggal || '–') + '</td><td><b>' + x.jumlah + '</b></td></tr>').join('') + '</tbody></table></div>' +
+    (res.lulus.length ? '<p class="hint" style="margin-top:8px"><b>Lulus:</b> ' + res.lulus.map(esc).join(', ') + '</p>' : '');
+  if (!res.salah.length) {
+    $('#ta-label').innerHTML = 'Untuk memulai, ketik <b>MULAI ' + esc(res.taBaru) + '</b>';
+    $('#ta-konfirmasi').value = '';
+    $('#ta-jalan').classList.remove('hidden');
+  }
+}));
+$('#ta-mulai').addEventListener('click', e => sibuk(e.target, async () => {
+  if ($('#ta-konfirmasi').value.trim().toUpperCase() !== 'MULAI ' + TA_BARU) return pesan('#ta-msg', 'Ketik MULAI ' + TA_BARU + ' persis seperti itu.', false);
+  if (!confirm('Mulai tahun ajaran ' + TA_BARU + ' sekarang? Data lama dicadangkan dulu, lalu semua halaman beralih ke tahun ajaran baru semester 1.')) return;
+  pesan('#ta-msg', 'Memproses… jangan tutup halaman ini.', true);
+  const res = await api({ aksi:'taBaruJalankan', konfirmasi: $('#ta-konfirmasi').value });
+  if (res.sesiHabis) return;
+  if (!res.ok) return pesan('#ta-msg', res.pesan, false, res.salah);
+  $('#ta-jalan').classList.add('hidden'); $('#ta-hasil').innerHTML = '';
+  await bukaData('profil');
+  $('#ta-box').open = true;
+  pesan('#ta-msg', res.pesan, true);
+}));
+
+async function bukaData(tab){
+  tampil('data');
+  pilihTab(tab || 'profil');
+  $('#profil-isi').innerHTML = '<div class="sub">Memuat data sekolah…</div>';
+  $('#daftar-rombel').innerHTML = '';
+  const res = await api({ aksi:'dataSekolah' });
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#profil-isi').innerHTML = ''; return pesan('#p-msg', res.pesan, false); }
+  DATA = res; MAPEL = null;
+  $('#d-sub').textContent = 'Tahun ajaran ' + res.tahunAjaran + ' · Semester ' + res.semester;
+  renderProfil();
+  renderRombel();
+}
+
+function renderProfil(){
+  $('#profil-isi').innerHTML = DATA.profil.map((p, i) => {
+    const tgl = p.kunci === 'Tanggal Pembagian Rapor';
+    return '<div class="field"><label for="pf-' + i + '">' + esc(p.kunci) + '</label>' +
+      '<input id="pf-' + i + '" type="' + (tgl ? 'date' : 'text') + '" data-kunci="' + esc(p.kunci) + '" value="' +
+      esc(tgl ? (/^\d{4}-\d{2}-\d{2}$/.test(p.nilai) ? p.nilai : '') : p.nilai) + '"' + (p.tetap ? ' disabled' : '') + '>' +
+      (p.tetap ? '<div class="hint">Tidak bisa diubah (identitas akun).</div>' : p.ket ? '<div class="hint">' + esc(p.ket) + '</div>' : '') + '</div>';
+  }).join('');
+  $('#p-semester').value = String(DATA.semester);
+  $('#p-seni').innerHTML = SEMUA_SENI.map(x => '<label><input type="checkbox" value="' + esc(x) + '"' + (DATA.seni.includes(x) ? ' checked' : '') + '> ' + esc(x) + '</label>').join('');
+  $('#p-msg').textContent = '';
+}
+
+$('#f-profil').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const profil = {};
+  document.querySelectorAll('#profil-isi input:not([disabled])').forEach(i => { profil[i.dataset.kunci] = i.value; });
+  const seni = [...document.querySelectorAll('#p-seni input:checked')].map(i => i.value);
+  const res = await api({ aksi:'simpanProfil', profil, semester: Number($('#p-semester').value), seni });
+  if (res.sesiHabis) return;
+  pesan('#p-msg', res.pesan, res.ok, res.salah);
+  if (res.ok) {
+    DATA.seni = seni; DATA.semester = Number($('#p-semester').value);
+    $('#d-sub').textContent = 'Tahun ajaran ' + DATA.tahunAjaran + ' · Semester ' + DATA.semester;
+  }
+}); });
+
+/* "28 dari 30 siswa" dengan warna: hijau bila pas, merah bila belum/lebih; tanpa target cukup "28 siswa". */
+function teksJumlah(isi, target){
+  if (!target) return isi + ' siswa';
+  const cls = isi === target ? 'pas' : 'kurang';
+  return '<span class="jml ' + cls + '">' + isi + ' dari ' + target + ' siswa' + (isi < target ? ' (kurang ' + (target - isi) + ')' : '') + '</span>';
+}
+
+function renderRombel(){
+  let html = '';
+  for (let k = 1; k <= 6; k++) {
+    const isi = DATA.rombel.filter(r => r.kelas === k);
+    html += '<div class="kelas"><h3>Kelas ' + k + '</h3><div class="rombels">' +
+      isi.map(r => '<div class="rombel"><b>' + esc(labelRombel(r)) + '</b><div class="sub">' +
+        (r.wali ? 'Wali kelas: ' + esc(r.wali) : '<i>Wali kelas belum diisi</i>') + '<br>' + teksJumlah(r.jumlah, r.target) + '</div>' +
+        '<div class="aksi"><button class="btn small" type="button" data-siswa="' + esc(r.id) + '">Data siswa</button>' +
+        '<button class="btn ghost small" type="button" data-ubah="' + esc(r.id) + '">Ubah</button>' +
+        (r.jumlah ? '' : '<button class="btn danger small" type="button" data-hapus="' + esc(r.id) + '">Hapus</button>') + '</div></div>').join('') +
+      '<div><button class="btn add small" type="button" data-tambah="' + k + '">+ Tambah rombel kelas ' + k + '</button></div>' +
+      '</div></div>';
+  }
+  $('#daftar-rombel').innerHTML = html;
+}
+
+function formRombel(r, kelas){
+  $('#rf-wrap').classList.remove('hidden');
+  $('#rf-wrap').dataset.id = r ? r.id : '';
+  $('#rf-judul').textContent = r ? 'Ubah rombel ' + labelRombel(r) : 'Tambah rombel kelas ' + kelas;
+  $('#rf-kelas').value = String(r ? r.kelas : kelas);
+  $('#rf-nama').value = r && r.nama !== String(r.kelas) ? r.nama : '';
+  contohRombel();
+  $('#rf-wali').value = r ? r.wali : '';
+  $('#rf-nip').value = r ? r.nip : '';
+  $('#rf-target').value = r && r.target ? r.target : '';
+  $('#rf-msg').textContent = '';
+  $('#rf-wrap').scrollIntoView({ behavior:'smooth', block:'start' });
+  $('#rf-nama').focus();
+}
+
+$('#daftar-rombel').addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.tambah) return formRombel(null, Number(b.dataset.tambah));
+  const r = DATA.rombel.find(x => x.id === (b.dataset.ubah || b.dataset.hapus || b.dataset.siswa));
+  if (!r) return;
+  if (b.dataset.ubah) return formRombel(r);
+  if (b.dataset.siswa) return bukaSiswa(r.id);
+  if (b.dataset.hapus) {
+    if (!confirm('Hapus rombel ' + labelRombel(r) + '?')) return;
+    await sibuk(b, async () => {
+      const res = await api({ aksi:'hapusRombel', id: r.id });
+      if (res.sesiHabis) return;
+      pesan('#rb-msg', res.pesan, res.ok);
+      if (res.ok) { DATA.rombel = DATA.rombel.filter(x => x.id !== r.id); renderRombel(); }
+    });
+  }
+});
+
+$('#f-rombel').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const rombel = { id: $('#rf-wrap').dataset.id || undefined, kelas: Number($('#rf-kelas').value),
+    nama: $('#rf-nama').value, wali: $('#rf-wali').value, nip: $('#rf-nip').value, target: $('#rf-target').value };
+  const res = await api({ aksi:'simpanRombel', rombel });
+  if (res.sesiHabis) return;
+  if (!res.ok) return pesan('#rf-msg', res.pesan, false, res.salah);
+  $('#rf-wrap').classList.add('hidden');
+  pesan('#rb-msg', res.pesan, true);
+  const lama = DATA.rombel.find(x => x.id === res.rombel.id);
+  if (lama) Object.assign(lama, res.rombel); else DATA.rombel.push({ ...res.rombel, jumlah: 0 });
+  DATA.rombel.sort((a, b) => a.kelas - b.kelas || a.nama.localeCompare(b.nama));
+  renderRombel();
+}); });
+function contohRombel(){ const k = $('#rf-kelas').value; $('#rf-contoh').textContent = k + 'A, ' + k + 'B'; }
+$('#rf-kelas').addEventListener('change', contohRombel);
+$('#rf-batal').addEventListener('click', () => $('#rf-wrap').classList.add('hidden'));
+
+/* ---------- siswa satu rombel ---------- */
+async function bukaSiswa(id){
+  tampil('siswa');
+  $('#s-judul').textContent = 'Memuat…';
+  $('#s-sub').textContent = ''; $('#s-msg').textContent = ''; $('#s-body').innerHTML = '';
+  const res = await api({ aksi:'siswaRombel', rombel: id });
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#s-judul').textContent = 'Siswa'; return pesan('#s-msg', res.pesan, false); }
+  ROMBEL = res.rombel;
+  $('#s-judul').textContent = 'Siswa ' + labelRombel(res.rombel);
+  $('#s-sub').textContent = 'Kelas ' + res.rombel.kelas + (res.rombel.wali ? ' · Wali kelas: ' + res.rombel.wali : '') + ' · Tahun ajaran ' + (DATA ? DATA.tahunAjaran : '');
+  SENI_SEKOLAH = res.seni;
+  $('#dl-seni').innerHTML = res.seni.map(s => '<option value="' + esc(s) + '">').join('');
+  // Satu seni saja: terisi otomatis oleh server, tidak perlu alat ini.
+  $('#s-seni-semua').classList.toggle('hidden', res.seni.length < 2);
+  $('#s-seni-pilih').innerHTML = res.seni.map(x => '<label><input type="checkbox" value="' + esc(x) + '"> ' + esc(x) + '</label>').join('');
+  TARGET = res.rombel.target || 0;
+  $('#s-target').value = TARGET || '';
+  SISWA = res.siswa.map(s => ({ ...s, tanggalLahir: tglTampil(s.tanggalLahir) }));
+  isiBarisKosong(TARGET || (SISWA.length ? 0 : 5));
+  UBAH = false;
+  renderTabel();
+}
+
+function renderTabel(){
+  $('#s-head').innerHTML = '<th title="Nomor absen/presensi, mengikuti urutan baris">No. Absen</th>' + KOLOM.map(c => '<th style="min-width:' + c.w + 'px">' + esc(c.judul) + '</th>').join('') + '<th></th>';
+  $('#s-body').innerHTML = SISWA.map((s, i) => '<tr><td class="no">' + (i + 1) + '</td>' +
+    KOLOM.map(c => '<td><input data-i="' + i + '" data-k="' + c.k + '" value="' + esc(s[c.k]) + '"' +
+      (c.list ? ' list="' + c.list + '"' : '') + (c.ph ? ' placeholder="' + c.ph + '"' : '') + ' aria-label="' + esc(c.judul) + ' baris ' + (i + 1) + '"></td>').join('') +
+    '<td><button class="hapus" type="button" data-hapus-baris="' + i + '" title="Hapus baris" aria-label="Hapus baris ' + (i + 1) + '">×</button></td></tr>').join('');
+  hitungJumlah();
+}
+
+const barisKosong = s => KOLOM.every(c => !String(s[c.k] || '').trim());
+function hitungJumlah(){
+  const isi = SISWA.filter(s => !barisKosong(s)).length;
+  $('#s-jumlah').innerHTML = 'Terisi ' + teksJumlah(isi, TARGET) + (UBAH ? ' · <b>belum disimpan</b>' : '');
+}
+/* Menambah baris kosong di akhir sampai jumlah baris = n (baris berisi tidak pernah dibuang). */
+function isiBarisKosong(n){
+  while (SISWA.length < n) SISWA.push({});
+  while (SISWA.length > Math.max(n, 1) && barisKosong(SISWA[SISWA.length - 1])) SISWA.pop();
+  if (!SISWA.length) SISWA.push({});
+}
+
+$('#s-body').addEventListener('input', e => {
+  const t = e.target;
+  if (!t.dataset.k) return;
+  SISWA[Number(t.dataset.i)][t.dataset.k] = t.value;
+  UBAH = true; hitungJumlah();
+});
+
+$('#s-body').addEventListener('click', e => {
+  const b = e.target.closest('[data-hapus-baris]');
+  if (!b) return;
+  SISWA.splice(Number(b.dataset.hapusBaris), 1);
+  if (!SISWA.length) SISWA.push({});
+  UBAH = true; renderTabel();
+});
+
+/* Tempel dari Excel: teks berpisah tab/baris diisikan mulai dari kotak yang sedang dipilih. */
+$('#s-body').addEventListener('paste', e => {
+  const t = e.target;
+  if (!t.dataset.k) return;
+  const teks = (e.clipboardData || window.clipboardData).getData('text');
+  if (!/[\t\n]/.test(teks.replace(/\s+$/, ''))) return;
+  e.preventDefault();
+  const baris = teks.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(r => r.split('\t'));
+  const JUDUL = /^(no\.?|nomor|nama( lengkap)?( siswa| peserta didik)?|nisn|nis|l\/p|jk|jenis kelamin|agama)$/i;
+  if (baris.length > 1 && baris[0].some(x => JUDUL.test(x.trim()))) baris.shift(); // baris judul ikut tersalin
+  const i0 = Number(t.dataset.i), k0 = KOLOM.findIndex(c => c.k === t.dataset.k);
+  baris.forEach((r, bi) => {
+    if (!SISWA[i0 + bi]) SISWA[i0 + bi] = {};
+    r.forEach((v, ki) => { const c = KOLOM[k0 + ki]; if (c) SISWA[i0 + bi][c.k] = v.trim(); });
+  });
+  UBAH = true; renderTabel();
+  pesan('#s-msg', baris.length + ' baris ditempel. Periksa lalu klik Simpan daftar siswa.', true);
+});
+
+$('#s-seni-terapkan').addEventListener('click', () => {
+  const pilih = [...document.querySelectorAll('#s-seni-pilih input:checked')].map(i => i.value);
+  if (!pilih.length) return pesan('#s-msg', 'Centang dulu seni yang diikuti semua siswa.', false);
+  const isi = SISWA.filter(s => !barisKosong(s));
+  if (!isi.length) return pesan('#s-msg', 'Isi dulu daftar siswanya.', false);
+  isi.forEach(s => { s.seni = pilih.join(', '); });
+  UBAH = true; renderTabel();
+  pesan('#s-msg', 'Seni ' + pilih.join(' dan ') + ' diterapkan ke ' + isi.length + ' siswa. Klik Simpan daftar siswa.', true);
+});
+
+$('#s-siapkan').addEventListener('click', () => {
+  const n = Number($('#s-target').value);
+  if (!(n >= 1 && n <= 100 && Math.floor(n) === n)) return pesan('#s-msg', 'Isi jumlah siswa dengan angka 1 sampai 100.', false);
+  const isi = SISWA.filter(s => !barisKosong(s)).length;
+  if (isi > n) return pesan('#s-msg', 'Sudah ada ' + isi + ' siswa terisi, lebih banyak dari ' + n + '. Hapus dulu baris yang tidak perlu.', false);
+  TARGET = n;
+  SISWA = SISWA.filter(s => !barisKosong(s));
+  isiBarisKosong(n);
+  UBAH = true; renderTabel();
+  pesan('#s-msg', n + ' baris siap diisi. Nomor absen mengikuti urutan baris.', true);
+});
+
+$('#s-urut').addEventListener('click', () => {
+  const isi = SISWA.filter(s => !barisKosong(s));
+  if (!isi.length) return;
+  isi.sort((a, b) => String(a.nama || '').localeCompare(String(b.nama || ''), 'id', { sensitivity: 'base' }));
+  SISWA = isi;
+  isiBarisKosong(TARGET);
+  UBAH = true; renderTabel();
+  pesan('#s-msg', 'Nama diurutkan A–Z. Nomor absen mengikuti urutan baru setelah disimpan.', true);
+});
+
+$('#s-tambah').addEventListener('click', () => {
+  SISWA.push({}); renderTabel();
+  const inp = document.querySelectorAll('#s-body tr:last-child input')[0];
+  if (inp) inp.focus();
+});
+
+$('#s-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  // Baris kosong dibuang dulu agar nomor baris di pesan kesalahan sama dengan nomor di tabel.
+  SISWA = SISWA.filter(s => !barisKosong(s));
+  renderTabel();
+  const res = await api({ aksi:'simpanSiswa', rombel: ROMBEL.id, siswa: SISWA, jumlah: TARGET || '' });
+  if (res.sesiHabis) return;
+  pesan('#s-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) { isiBarisKosong(TARGET); return renderTabel(); }
+  SISWA = res.siswa.map(s => ({ ...s, tanggalLahir: tglTampil(s.tanggalLahir) }));
+  isiBarisKosong(TARGET); // baris yang belum terisi tetap terlihat sampai jumlah siswa terpenuhi
+  UBAH = false; renderTabel();
+  const r = DATA && DATA.rombel.find(x => x.id === ROMBEL.id);
+  if (r) { r.jumlah = res.siswa.length; r.target = res.target; }
+}));
+
+$('#s-kembali').addEventListener('click', () => {
+  if (UBAH && !confirm('Perubahan daftar siswa belum disimpan. Tinggalkan halaman ini?')) return;
+  UBAH = false;
+  tampil('data'); pilihTab('rombel'); renderRombel();
+});
+window.addEventListener('beforeunload', e => { if (UBAH || TP_UBAH || NL_UBAH) { e.preventDefault(); e.returnValue = ''; } });
+
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => pilihTab(b.dataset.tab)));
+document.querySelectorAll('[data-ke="beranda"]').forEach(b => b.addEventListener('click', () => tampil('beranda')));
+$('#t-data').addEventListener('click', () => bukaData('profil'));
+$('#t-tp').addEventListener('click', () => bukaTp());
+$('#t-nilai').addEventListener('click', () => bukaNilai());
+
+/* ---------- input nilai ---------- */
+let NL = null, NL_ISI = {}, NL_UBAH = false, NL_BASI = {};
+const KOLOM_SAS = [{ k:'TES', judul:'Tes' }, { k:'PRAKTIK', judul:'Praktik' }];
+/* Pemeriksaan cepat di layar; server tetap memeriksa ulang dengan aturan yang sama (bacaNilai_). */
+function angkaSah(v){
+  const t = String(v ?? '').trim();
+  if (t === '' || t === '-') return true;
+  const b = t.replace(',', '.');
+  return /^\d+(\.\d+)?$/.test(b) && Number(b) <= 100;
+}
+function tinggalkanNilai(){ return !NL_UBAH || confirm('Nilai yang diubah belum disimpan. Tinggalkan?'); }
+
+async function bukaNilai(){
+  tampil('nilai');
+  if (!DATA) {
+    const d = await api({ aksi:'dataSekolah' });
+    if (d.sesiHabis) return;
+    if (!d.ok) return pesan('#nl-info', d.pesan, false);
+    DATA = d;
+  }
+  if (!DATA.rombel.length) {
+    $('#nl-rombel').innerHTML = ''; $('#nl-editor').classList.add('hidden'); $('#nl-mapel').innerHTML = '';
+    return pesan('#nl-info', 'Belum ada rombel. Buat dulu di Data Sekolah & Siswa → Rombel & Siswa.', false);
+  }
+  const pilih = $('#nl-rombel').value;
+  $('#nl-rombel').innerHTML = DATA.rombel.map(r => '<option value="' + esc(r.id) + '">' + esc(labelRombel(r)) + (r.wali ? ' — ' + esc(r.wali) : '') + '</option>').join('');
+  if (pilih && DATA.rombel.some(r => r.id === pilih)) $('#nl-rombel').value = pilih;
+  $('#nl-semester').value = String(NL ? NL.semester : DATA.semester);
+  await muatNilai({});
+}
+
+async function muatNilai(opsi){
+  $('#nl-info').textContent = '';
+  $('#nl-msg').textContent = '';
+  const res = await api({ aksi:'nilaiRombel', rombel: $('#nl-rombel').value, semester: Number($('#nl-semester').value),
+    mapel: opsi.mapel !== undefined ? opsi.mapel : (NL ? NL.mapel.kode : ''), varian: opsi.varian });
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#nl-editor').classList.add('hidden'); return pesan('#nl-info', res.pesan, false); }
+  NL = res; NL_UBAH = false; NL_BASI = {};
+  NL_ISI = {};
+  res.siswa.forEach(s => { NL_ISI[s.id] = {}; Object.entries(res.nilai[s.id] || {}).forEach(([k, v]) => { NL_ISI[s.id][k] = String(v).replace('.', ','); }); });
+  $('#nl-sub').textContent = 'Tahun ajaran ' + res.tahunAjaran + ' · ' + labelRombel(res.rombel) + ' · Semester ' + res.semester;
+  $('#nl-mapel').innerHTML = res.mapelKelas.map(m => '<button type="button" role="tab" data-mapel="' + esc(m.kode) + '"' + (m.kode === res.mapel.kode ? ' class="on"' : '') + '>' + esc(m.nama) + '</button>').join('');
+  const adaVarian = res.mapel.jenis === 'agama' || res.mapel.jenis === 'seni';
+  $('#nl-varian-wrap').classList.toggle('hidden', !adaVarian);
+  $('#nl-varian-label').textContent = res.mapel.jenis === 'agama' ? 'Agama' : 'Seni';
+  $('#nl-varian').innerHTML = res.varianAda.map(v => '<option value="' + esc(v) + '">' + esc(v) + '</option>').join('');
+  $('#nl-varian').value = res.varian;
+  if (!res.siswa.length) {
+    $('#nl-editor').classList.add('hidden');
+    return pesan('#nl-info', !res.jumlahRombel ? 'Rombel ini belum punya siswa. Isi dulu di Data Sekolah & Siswa → Rombel & Siswa.'
+      : 'Belum ada siswa rombel ini yang ' + (res.mapel.jenis === 'agama' ? 'agamanya diisi' : 'memilih seni') + '. Lengkapi di Data Sekolah & Siswa.', false);
+  }
+  if (!res.tp.length) {
+    $('#nl-editor').classList.add('hidden');
+    return pesan('#nl-info', 'Belum ada Tujuan Pembelajaran ' + res.mapel.nama + (res.varian ? ' (' + res.varian + ')' : '') + ' kelas ' + res.rombel.kelas + ' semester ' + res.semester + '. Susun dulu di menu Tujuan Pembelajaran.', false);
+  }
+  $('#nl-tp-ol').innerHTML = res.tp.map(t => '<li><b>' + esc(t.kode) + '</b> — ' + esc(t.tp) + (t.materi ? ' <span class="sub">(' + esc(t.materi) + ')</span>' : '') + '</li>').join('');
+  $('#nl-editor').classList.remove('hidden');
+  renderNilai();
+}
+
+function renderNilai(){
+  $('#nl-head').innerHTML = '<th title="Nomor absen">No. Absen</th><th style="min-width:200px">Nama</th>' +
+    NL.tp.map(t => '<th class="tp" title="' + esc(t.kode + ': ' + t.tp) + '">' + esc(t.kode) + '</th>').join('') +
+    KOLOM_SAS.map(c => '<th class="sas" title="Sumatif akhir semester">SAS ' + c.judul + '</th>').join('') +
+    '<th>Nilai</th><th>Predikat</th><th class="ds">Deskripsi rapor / catatan</th>';
+  const kolom = NL.tp.map(t => t.kode).concat(KOLOM_SAS.map(c => c.k));
+  $('#nl-body').innerHTML = NL.siswa.map((s, i) => {
+    const h = NL.hasil[s.id] || {}, isi = NL_ISI[s.id] || {};
+    const ket = [h.deskripsiTinggi, h.deskripsiRendah].filter(Boolean).map(esc).join('<br>') +
+      (h.peringatan && h.peringatan.length ? '<div class="w">⚠ ' + h.peringatan.map(esc).join('<br>⚠ ') + '</div>' : '');
+    return '<tr class="' + (NL_BASI[s.id] ? 'basi' : '') + '"><td class="no">' + s.no + '</td><td>' + esc(s.nama) + '</td>' +
+      kolom.map((k, j) => '<td class="angka"><input inputmode="decimal" data-s="' + i + '" data-c="' + j + '" data-k="' + k + '" value="' + esc(isi[k] || '') + '"' +
+        (angkaSah(isi[k]) ? '' : ' class="salah"') + ' aria-label="' + esc(k + ' ' + s.nama) + '"></td>').join('') +
+      '<td class="na">' + (h.nilai ?? '–') + '</td><td class="pr">' + esc(h.predikat || '') + '</td><td class="ket ds">' + ket + '</td></tr>';
+  }).join('');
+  $('table.nilai').classList.toggle('tanpa-deskripsi', !$('#nl-deskripsi').checked);
+  statusNilai();
+  kunciLayar('#nl-editor', NL.terkunci, '.bebas');
+}
+function statusNilai(){
+  const lengkap = NL.siswa.filter(s => (NL.hasil[s.id] || {}).lengkap).length;
+  $('#nl-status').innerHTML = 'Lengkap ' + teksJumlah(lengkap, NL.siswa.length) + (NL_UBAH ? ' · <b>belum disimpan</b>' : '');
+}
+
+$('#nl-body').addEventListener('input', e => {
+  const t = e.target;
+  if (!t.dataset.k) return;
+  const s = NL.siswa[Number(t.dataset.s)];
+  NL_ISI[s.id][t.dataset.k] = t.value;
+  t.classList.toggle('salah', !angkaSah(t.value));
+  NL_UBAH = true;
+  if (!NL_BASI[s.id]) { NL_BASI[s.id] = true; t.closest('tr').classList.add('basi'); }
+  statusNilai();
+});
+$('#nl-body').addEventListener('keydown', e => {
+  const t = e.target;
+  if (!t.dataset.k || e.key !== 'Enter') return;
+  e.preventDefault();
+  const bawah = document.querySelector('#nl-body input[data-s="' + (Number(t.dataset.s) + 1) + '"][data-c="' + t.dataset.c + '"]');
+  if (bawah) { bawah.focus(); bawah.select(); }
+});
+/* Tempel blok angka dari Excel mulai dari kotak yang dipilih (ke kanan = TP berikutnya, ke bawah = siswa berikutnya). */
+$('#nl-body').addEventListener('paste', e => {
+  const t = e.target;
+  if (!t.dataset.k) return;
+  const teks = (e.clipboardData || window.clipboardData).getData('text');
+  if (!/[\t\n]/.test(teks.replace(/\s+$/, ''))) return;
+  e.preventDefault();
+  const kolom = NL.tp.map(x => x.kode).concat(KOLOM_SAS.map(c => c.k));
+  const baris = teks.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(r => r.split('\t'));
+  const s0 = Number(t.dataset.s), c0 = Number(t.dataset.c);
+  let n = 0;
+  baris.forEach((r, bi) => {
+    const s = NL.siswa[s0 + bi];
+    if (!s) return;
+    r.forEach((v, ci) => { const k = kolom[c0 + ci]; if (k) { NL_ISI[s.id][k] = v.trim(); n++; } });
+    NL_BASI[s.id] = true;
+  });
+  NL_UBAH = true; renderNilai();
+  const lebih = s0 + baris.length - NL.siswa.length;
+  pesan('#nl-msg', n + ' angka ditempel.' + (lebih > 0 ? ' ' + lebih + ' baris terakhir diabaikan karena melebihi jumlah siswa.' : '') + ' Periksa lalu klik Simpan nilai.', lebih <= 0);
+});
+
+$('#nl-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const salah = document.querySelectorAll('#nl-body input.salah').length;
+  if (salah) return pesan('#nl-msg', salah + ' kotak berisi angka yang tidak valid (ditandai merah). Perbaiki dulu.', false);
+  const res = await api({ aksi:'simpanNilai', rombel: NL.rombel.id, semester: NL.semester, mapel: NL.mapel.kode, varian: NL.varian, nilai: NL_ISI });
+  if (res.sesiHabis) return;
+  pesan('#nl-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  NL.hasil = res.hasil; NL_UBAH = false; NL_BASI = {};
+  NL_ISI = {};
+  res.siswa.forEach(s => { NL_ISI[s.id] = {}; Object.entries(res.nilai[s.id] || {}).forEach(([k, v]) => { NL_ISI[s.id][k] = String(v).replace('.', ','); }); });
+  renderNilai();
+}));
+$('#nl-deskripsi').addEventListener('change', e => $('table.nilai').classList.toggle('tanpa-deskripsi', !e.target.checked));
+$('#nl-mapel').addEventListener('click', e => {
+  const b = e.target.closest('[data-mapel]');
+  if (!b || b.dataset.mapel === NL.mapel.kode || !tinggalkanNilai()) return;
+  muatNilai({ mapel: b.dataset.mapel });
+});
+$('#nl-varian').addEventListener('change', e => {
+  if (!tinggalkanNilai()) { e.target.value = NL.varian; return; }
+  muatNilai({ varian: e.target.value });
+});
+['nl-rombel', 'nl-semester'].forEach(id => {
+  let sebelum = '';
+  $('#' + id).addEventListener('focus', e => { sebelum = e.target.value; });
+  $('#' + id).addEventListener('change', e => {
+    if (!tinggalkanNilai()) { e.target.value = sebelum; return; }
+    // pindah ke rombel kelas lain: mapel yang sedang dipilih belum tentu ada di sana, jadi mulai dari mapel pertama
+    const baru = DATA.rombel.find(r => r.id === $('#nl-rombel').value);
+    muatNilai(id === 'nl-rombel' && NL && baru && baru.kelas !== NL.rombel.kelas ? { mapel: '' } : {});
+  });
+});
+document.querySelector('#v-nilai [data-ke="beranda"]').addEventListener('click', e => {
+  if (!tinggalkanNilai()) { tampil('nilai'); return; }
+  NL_UBAH = false;
+});
+
+/* ---------- kokurikuler ---------- */
+let KK = null, KK_ISI = {}, KK_DIM = [], KK_NAR = {}, KK_BASI = {};
+const KK_UBAH = { capaian:false, dimensi:false, narasi:false };
+$('#t-kok').addEventListener('click', () => bukaKok());
+function tinggalkanKok(){
+  const apa = [KK_UBAH.dimensi && 'subdimensi', KK_UBAH.capaian && 'capaian', KK_UBAH.narasi && 'narasi'].filter(Boolean);
+  if (apa.length && !confirm('Perubahan ' + apa.join(', ') + ' belum disimpan. Tinggalkan?')) return false;
+  KK_UBAH.capaian = KK_UBAH.dimensi = KK_UBAH.narasi = false;
+  return true;
+}
+
+async function bukaKok(){
+  tampil('kok');
+  if (!DATA) {
+    const d = await api({ aksi:'dataSekolah' });
+    if (d.sesiHabis) return;
+    if (!d.ok) return pesan('#kk-info', d.pesan, false);
+    DATA = d;
+  }
+  if (!DATA.rombel.length) {
+    $('#kk-rombel').innerHTML = ''; $('#kk-isi').classList.add('hidden');
+    return pesan('#kk-info', 'Belum ada rombel. Buat dulu di Data Sekolah & Siswa → Rombel & Siswa.', false);
+  }
+  const pilih = $('#kk-rombel').value;
+  $('#kk-rombel').innerHTML = DATA.rombel.map(r => '<option value="' + esc(r.id) + '">' + esc(labelRombel(r)) + (r.wali ? ' — ' + esc(r.wali) : '') + '</option>').join('');
+  if (pilih && DATA.rombel.some(r => r.id === pilih)) $('#kk-rombel').value = pilih;
+  $('#kk-semester').value = String(KK ? KK.semester : DATA.semester);
+  await muatKok();
+}
+
+function pakaiKok(res){
+  KK = res; KK_BASI = {};
+  KK_UBAH.capaian = KK_UBAH.dimensi = KK_UBAH.narasi = false;
+  KK_ISI = {};
+  res.siswa.forEach(s => { KK_ISI[s.id] = Object.assign({}, res.capaian[s.id] || {}); });
+  KK_DIM = res.dimensi.map(d => d.subdimensi);
+  KK_NAR = {};
+}
+
+async function muatKok(){
+  $('#kk-info').textContent = ''; $('#kk-msg').textContent = ''; $('#kk-dim-msg').textContent = ''; $('#kk-narasi-msg').textContent = '';
+  const res = await api({ aksi:'kokRombel', rombel: $('#kk-rombel').value, semester: Number($('#kk-semester').value) });
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#kk-isi').classList.add('hidden'); return pesan('#kk-info', res.pesan, false); }
+  pakaiKok(res);
+  $('#kk-sub').textContent = 'Tahun ajaran ' + res.tahunAjaran + ' · ' + labelRombel(res.rombel) + ' · Semester ' + res.semester;
+  $('#kk-isi').classList.remove('hidden');
+  $('#kk-dim-box').open = !res.dimensi.length;
+  renderKok();
+}
+
+function renderKok(){
+  renderDimKok();
+  const ada = KK.dimensi.length > 0;
+  $('#kk-editor').classList.toggle('hidden', !ada || !KK.siswa.length);
+  kunciLayar('#kk-isi', KK.terkunci);
+  if (!ada) return pesan('#kk-info', 'Pilih dulu subdimensi yang dinilai di kelas ' + KK.rombel.kelas + ' semester ' + KK.semester + ', lalu klik Simpan subdimensi.', false);
+  if (!KK.siswa.length) return pesan('#kk-info', 'Rombel ini belum punya siswa. Isi dulu di Data Sekolah & Siswa → Rombel & Siswa.', false);
+  $('#kk-info').textContent = '';
+  renderTabelKok();
+  renderNarasiKok();
+  kunciLayar('#kk-isi', KK.terkunci);
+}
+
+function opsiSubdimensi(pilih, dipakai){
+  return '<option value="">— pilih subdimensi —</option>' + KK.referensi.map(d => '<optgroup label="' + esc(d.dimensi) + '">' +
+    d.sub.map(s => '<option value="' + esc(s) + '"' + (s === pilih ? ' selected' : '') + (s !== pilih && dipakai.includes(s) ? ' disabled' : '') + '>' + esc(s) + '</option>').join('') +
+    '</optgroup>').join('');
+}
+function renderDimKok(){
+  $('#kk-dim-judul').textContent = 'Subdimensi yang dinilai — Kelas ' + KK.rombel.kelas + ', Semester ' + KK.semester;
+  $('#kk-dim-ring').textContent = KK.dimensi.length ? '(' + KK.dimensi.map(d => d.subdimensi).join(', ') + ')' : '(belum dipilih)';
+  $('#kk-dim-ket').textContent = 'Berlaku untuk semua rombel kelas ' + KK.rombel.kelas + '. Pilih 1–' + KK.maks +
+    ' subdimensi sesuai kegiatan kokurikuler semester ini; dimensinya mengikuti otomatis. Subdimensi yang sudah berisi capaian siswa tidak bisa dihapus.';
+  if (!KK_DIM.length) KK_DIM = [''];
+  $('#kk-dim').innerHTML = KK_DIM.map((s, i) => {
+    const n = KK.terisi[s] || 0;
+    return '<div class="sd-baris"><span class="urut">' + (i + 1) + '.</span><select data-i="' + i + '" aria-label="Subdimensi ' + (i + 1) + '">' + opsiSubdimensi(s, KK_DIM) + '</select>' +
+      (n ? '<span class="terisi">' + n + ' siswa terisi</span>' : '<button class="hapus btn danger small" type="button" data-hapus="' + i + '" title="Hapus">✕</button>') + '</div>';
+  }).join('');
+  $('#kk-dim-tambah').classList.toggle('hidden', KK_DIM.length >= KK.maks);
+}
+$('#kk-dim').addEventListener('change', e => {
+  if (!e.target.dataset.i) return;
+  KK_DIM[Number(e.target.dataset.i)] = e.target.value; KK_UBAH.dimensi = true; renderDimKok();
+});
+$('#kk-dim').addEventListener('click', e => {
+  const b = e.target.closest('[data-hapus]');
+  if (!b) return;
+  KK_DIM.splice(Number(b.dataset.hapus), 1); KK_UBAH.dimensi = true; renderDimKok();
+});
+$('#kk-dim-tambah').addEventListener('click', () => { KK_DIM.push(''); KK_UBAH.dimensi = true; renderDimKok(); });
+$('#kk-dim-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  if (KK_UBAH.capaian && !confirm('Capaian yang diubah belum disimpan dan akan hilang. Lanjutkan?')) return;
+  const res = await api({ aksi:'simpanDimensiKok', rombel: KK.rombel.id, semester: KK.semester, dimensi: KK_DIM.filter(Boolean) });
+  if (res.sesiHabis) return;
+  pesan('#kk-dim-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  pakaiKok(res);
+  renderKok();
+  pesan('#kk-dim-msg', res.pesan, true);
+}));
+
+function renderTabelKok(){
+  const lv = KK.level;
+  $('#kk-head').innerHTML = '<th title="Nomor absen">No. Absen</th><th style="min-width:200px">Nama</th>' +
+    KK.dimensi.map((d, j) => '<th class="sd"><small>' + esc(d.dimensi) + '</small>' + esc(d.subdimensi) +
+      '<select data-semua="' + j + '" aria-label="Isi semua ' + esc(d.subdimensi) + '"><option value="">isi semua…</option>' + lv.map(l => '<option>' + l + '</option>').join('') + '</select></th>').join('') +
+    '<th>Deskripsi rapor / catatan</th>';
+  $('#kk-body').innerHTML = KK.siswa.map((s, i) => {
+    const h = KK.hasil[s.id] || {}, isi = KK_ISI[s.id] || {};
+    const ket = esc(h.teks || '') + (h.peringatan && h.peringatan.length ? '<div class="w">⚠ ' + h.peringatan.map(esc).join('<br>⚠ ') + '</div>' : '');
+    return '<tr class="' + (KK_BASI[s.id] ? 'basi' : '') + '"><td class="no">' + s.no + '</td><td>' + esc(s.nama) + '</td>' +
+      KK.dimensi.map((d, j) => {
+        const v = isi[d.subdimensi] || '';
+        return '<td class="lv"><select data-s="' + i + '" data-c="' + j + '" class="' + v + '" aria-label="' + esc(d.subdimensi + ' ' + s.nama) + '"><option value="">–</option>' +
+          lv.map(l => '<option' + (l === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></td>';
+      }).join('') + '<td class="ket">' + ket + '</td></tr>';
+  }).join('');
+  statusKok();
+}
+function statusKok(){
+  const lengkap = KK.siswa.filter(s => KK.dimensi.every(d => (KK_ISI[s.id] || {})[d.subdimensi])).length;
+  $('#kk-status').innerHTML = 'Lengkap ' + teksJumlah(lengkap, KK.siswa.length) + (KK_UBAH.capaian ? ' · <b>belum disimpan</b>' : '');
+}
+function ubahCapaian(i, j, v){
+  const s = KK.siswa[i], sub = KK.dimensi[j].subdimensi;
+  if (v) KK_ISI[s.id][sub] = v; else delete KK_ISI[s.id][sub];
+  KK_BASI[s.id] = true; KK_UBAH.capaian = true;
+}
+$('#kk-body').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.s === undefined) return;
+  ubahCapaian(Number(t.dataset.s), Number(t.dataset.c), t.value);
+  t.className = t.value;
+  t.closest('tr').classList.add('basi');
+  statusKok();
+});
+$('#kk-head').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.semua === undefined || !t.value) return;
+  KK.siswa.forEach((s, i) => ubahCapaian(i, Number(t.dataset.semua), t.value));
+  renderTabelKok();
+});
+$('#kk-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const res = await api({ aksi:'simpanKok', rombel: KK.rombel.id, semester: KK.semester, capaian: KK_ISI });
+  if (res.sesiHabis) return;
+  pesan('#kk-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  const nar = KK_NAR, ubahNar = KK_UBAH.narasi, dim = KK_DIM, ubahDim = KK_UBAH.dimensi;
+  pakaiKok(res);
+  KK_NAR = nar; KK_UBAH.narasi = ubahNar; KK_DIM = dim; KK_UBAH.dimensi = ubahDim; // simpan capaian tidak membuang ketikan lain
+  renderTabelKok(); renderDimKok();
+}));
+
+function renderNarasiKok(){
+  $('#kk-narasi').innerHTML = KK.dimensi.map(d => '<h4>' + esc(d.subdimensi) + ' <span class="sub">(' + esc(d.dimensi) + ')</span></h4>' +
+    KK.level.map(l => {
+      const n = KK.narasi[d.subdimensi][l], k = d.subdimensi + '|' + l;
+      const v = k in KK_NAR ? KK_NAR[k] : n.teks;
+      return '<div class="lv"><b>' + l + '</b><textarea data-k="' + esc(k) + '" maxlength="300" placeholder="' + esc(n.bawaan) + '">' + esc(v) + '</textarea></div>';
+    }).join('')).join('');
+}
+$('#kk-narasi').addEventListener('input', e => {
+  if (!e.target.dataset.k) return;
+  KK_NAR[e.target.dataset.k] = e.target.value; KK_UBAH.narasi = true;
+});
+$('#kk-narasi-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const kunci = Object.keys(KK_NAR);
+  if (!kunci.length) return pesan('#kk-narasi-msg', 'Belum ada narasi yang diubah.', false);
+  const res = await api({ aksi:'simpanNarasi', narasi: kunci.map(k => { const [sub, l] = k.split('|'); return { subdimensi: sub, level: l, narasi: KK_NAR[k] }; }) });
+  if (res.sesiHabis) return;
+  pesan('#kk-narasi-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  KK_NAR = {}; KK_UBAH.narasi = false;
+  if (KK_UBAH.capaian) return pesan('#kk-narasi-msg', res.pesan + ' Simpan capaian untuk melihat deskripsi dengan narasi baru.', true);
+  const segar = await api({ aksi:'kokRombel', rombel: KK.rombel.id, semester: KK.semester });
+  if (!segar.ok) return;
+  const dim = KK_DIM, ubahDim = KK_UBAH.dimensi;
+  pakaiKok(segar); KK_DIM = dim; KK_UBAH.dimensi = ubahDim;
+  renderTabelKok(); renderNarasiKok();
+}));
+
+['kk-rombel', 'kk-semester'].forEach(id => {
+  let sebelum = '';
+  $('#' + id).addEventListener('focus', e => { sebelum = e.target.value; });
+  $('#' + id).addEventListener('change', e => {
+    if (!tinggalkanKok()) { e.target.value = sebelum; return; }
+    muatKok();
+  });
+});
+document.querySelector('#v-kok [data-ke="beranda"]').addEventListener('click', () => {
+  if (!tinggalkanKok()) tampil('kok');
+});
+
+/* ---------- wali kelas ---------- */
+let WK_DAFTAR = [];
+function renderDaftarEkskul(){
+  $('#wk-jml').value = WK_DAFTAR.length || '';
+  $('#wk-daftar').innerHTML = WK_DAFTAR.map((n, i) => '<label><b>' + (i + 1) + '.</b><input type="text" data-i="' + i + '" maxlength="60" value="' + esc(n) + '" aria-label="Ekstrakurikuler ' + (i + 1) + '"></label>').join('');
+}
+let WK = null, WK_TAB = 'eks', WK_EKS = {}, WK_HADIR = {}, WK_NAIK = {};
+const WK_UBAH = { eks:false, hadir:false, naik:false };
+const WK_HARI = [{ k:'sakit' }, { k:'izin' }, { k:'alpa' }];
+const hariSah = v => { const t = String(v ?? '').trim(); return t === '' || t === '-' || (/^\d+$/.test(t) && Number(t) <= 200); };
+$('#t-wk').addEventListener('click', () => bukaWali());
+function tinggalkanWali(){
+  const apa = [WK_UBAH.eks && 'ekstrakurikuler', WK_UBAH.hadir && 'ketidakhadiran/catatan', WK_UBAH.naik && 'kenaikan'].filter(Boolean);
+  if (apa.length && !confirm('Perubahan ' + apa.join(', ') + ' belum disimpan. Tinggalkan?')) return false;
+  WK_UBAH.eks = WK_UBAH.hadir = WK_UBAH.naik = false;
+  return true;
+}
+
+async function bukaWali(){
+  tampil('wk');
+  if (!DATA) {
+    const d = await api({ aksi:'dataSekolah' });
+    if (d.sesiHabis) return;
+    if (!d.ok) return pesan('#wk-info', d.pesan, false);
+    DATA = d;
+  }
+  if (!DATA.rombel.length) {
+    $('#wk-rombel').innerHTML = ''; $('#wk-isi').classList.add('hidden');
+    return pesan('#wk-info', 'Belum ada rombel. Buat dulu di Data Sekolah & Siswa → Rombel & Siswa.', false);
+  }
+  const pilih = $('#wk-rombel').value;
+  $('#wk-rombel').innerHTML = DATA.rombel.map(r => '<option value="' + esc(r.id) + '">' + esc(labelRombel(r)) + (r.wali ? ' — ' + esc(r.wali) : '') + '</option>').join('');
+  if (pilih && DATA.rombel.some(r => r.id === pilih)) $('#wk-rombel').value = pilih;
+  $('#wk-semester').value = String(WK ? WK.semester : DATA.semester);
+  await muatWali();
+}
+
+/* bagian: tab yang datanya diambil dari res; tab lain tetap memakai ketikan yang belum disimpan */
+function pakaiWali(res, bagian){
+  const lama = WK; WK = res;
+  const ambil = t => !lama || bagian.includes(t);
+  if (ambil('eks')) { WK_EKS = {}; res.siswa.forEach(s => { WK_EKS[s.id] = (res.ekskul[s.id] || []).map(e => ({ ...e })); }); WK_UBAH.eks = false; }
+  if (ambil('hadir')) {
+    WK_HADIR = {};
+    res.siswa.forEach(s => { const p = res.presensi[s.id] || {}; WK_HADIR[s.id] = { sakit: String(p.sakit ?? ''), izin: String(p.izin ?? ''), alpa: String(p.alpa ?? ''), catatan: p.catatan || '' }; });
+    WK_UBAH.hadir = false;
+  }
+  if (ambil('naik')) { WK_NAIK = {}; res.siswa.forEach(s => { WK_NAIK[s.id] = res.kenaikan[s.id] || ''; }); WK_UBAH.naik = false; }
+}
+
+async function muatWali(){
+  ['#wk-info', '#wk-eks-msg', '#wk-hadir-msg', '#wk-naik-msg', '#wk-daftar-msg'].forEach(x => { $(x).textContent = ''; });
+  const res = await api({ aksi:'waliRombel', rombel: $('#wk-rombel').value, semester: Number($('#wk-semester').value) });
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#wk-isi').classList.add('hidden'); return pesan('#wk-info', res.pesan, false); }
+  WK = null; pakaiWali(res, ['eks', 'hadir', 'naik']);
+  $('#wk-sub').textContent = 'Tahun ajaran ' + res.tahunAjaran + ' · ' + labelRombel(res.rombel) + ' · Semester ' + res.semester;
+  if (!res.siswa.length) { $('#wk-isi').classList.add('hidden'); return pesan('#wk-info', 'Rombel ini belum punya siswa. Isi dulu di Data Sekolah & Siswa → Rombel & Siswa.', false); }
+  $('#wk-isi').classList.remove('hidden');
+  WK_DAFTAR = res.ekskulSekolah.slice(); renderDaftarEkskul();
+  $('#wk-daftar-box').open = !res.ekskulSekolah.length;
+  renderWali();
+}
+
+function renderWali(){
+  document.querySelectorAll('[data-wk]').forEach(b => b.classList.toggle('on', b.dataset.wk === WK_TAB));
+  ['eks', 'hadir', 'naik'].forEach(t => $('#wk-' + t).classList.toggle('hidden', t !== WK_TAB));
+  renderEkskul(); renderHadir(); renderNaik();
+  kunciLayar('#wk-isi', WK.terkunci, '.tabs, #wk-daftar-box');
+}
+document.querySelectorAll('[data-wk]').forEach(b => b.addEventListener('click', () => { WK_TAB = b.dataset.wk; renderWali(); }));
+
+/* ekstrakurikuler */
+const opsi = (daftar, pilih, kosong) => (kosong !== undefined ? '<option value="">' + esc(kosong) + '</option>' : '') +
+  daftar.map(v => '<option' + (v === pilih ? ' selected' : '') + '>' + esc(v) + '</option>').join('');
+const ketOtomatis = e => e.kegiatan && e.predikat ? e.predikat.charAt(0) + e.predikat.slice(1).toLowerCase() + ' dalam mengikuti kegiatan ' + e.kegiatan + '.' : 'Keterangan (isi jika tanpa predikat)';
+/* Kegiatan yang sudah dipilih di baris lain siswa yang sama tidak bisa dipilih lagi. */
+function opsiKegiatan(daftar, isi, pilih){
+  const lain = isi.map(e => e.kegiatan).filter(k => k && k !== pilih);
+  const semua = !pilih || daftar.includes(pilih) ? daftar : daftar.concat(pilih);
+  return '<option value="">— kegiatan —</option>' + semua.map(v => '<option' + (v === pilih ? ' selected' : '') + (lain.includes(v) ? ' disabled' : '') + '>' + esc(v) + '</option>').join('');
+}
+function renderEkskul(){
+  const daftar = WK.ekskulSekolah;
+  $('#wk-daftar-ring').textContent = daftar.length ? '(' + daftar.join(', ') + ')' : '(belum ada — isi dulu)';
+  $('#wk-eks-editor').classList.toggle('hidden', !daftar.length);
+  $('#wk-massal-keg').innerHTML = opsi(daftar);
+  $('#wk-massal-pred').innerHTML = opsi(WK.predikat, 'Baik');
+  $('#wk-eks-body').innerHTML = WK.siswa.map((s, i) => {
+    const isi = WK_EKS[s.id] || [];
+    return '<tr><td class="no">' + s.no + '</td><td>' + esc(s.nama) + '</td><td><div class="eks">' +
+      isi.map((e, j) => '<div class="e"><select data-s="' + i + '" data-j="' + j + '" data-f="kegiatan" aria-label="Kegiatan">' + opsiKegiatan(daftar, isi, e.kegiatan) + '</select>' +
+        '<select data-s="' + i + '" data-j="' + j + '" data-f="predikat" aria-label="Predikat">' + opsi(WK.predikat, e.predikat, '— predikat —') + '</select>' +
+        '<input data-s="' + i + '" data-j="' + j + '" data-f="keterangan" maxlength="300" value="' + esc(e.keterangan || '') + '" placeholder="' + esc(ketOtomatis(e)) + '" aria-label="Keterangan">' +
+        '<button class="hapus" type="button" data-s="' + i + '" data-hapus="' + j + '" title="Hapus">✕</button></div>').join('') +
+      (isi.length < daftar.length ? '<button class="tambah" type="button" data-s="' + i + '" data-tambah="1">+ ekstrakurikuler</button>' : '') +
+      '</div></td></tr>';
+  }).join('');
+  statusEkskul();
+}
+function statusEkskul(){
+  const ada = WK.siswa.filter(s => (WK_EKS[s.id] || []).some(e => e.kegiatan)).length;
+  $('#wk-eks-status').innerHTML = 'Terisi ' + teksJumlah(ada, WK.siswa.length) + (WK_UBAH.eks ? ' · <b>belum disimpan</b>' : '');
+}
+$('#wk-eks-body').addEventListener('click', e => {
+  const t = e.target, s = t.dataset.s !== undefined ? WK.siswa[Number(t.dataset.s)] : null;
+  if (!s) return;
+  if (t.dataset.tambah) WK_EKS[s.id].push({ kegiatan:'', predikat:'', keterangan:'' });
+  else if (t.dataset.hapus !== undefined) WK_EKS[s.id].splice(Number(t.dataset.hapus), 1);
+  else return;
+  WK_UBAH.eks = true; renderEkskul();
+});
+['input', 'change'].forEach(ev => $('#wk-eks-body').addEventListener(ev, e => {
+  const t = e.target;
+  if (!t.dataset.f) return;
+  const en = WK_EKS[WK.siswa[Number(t.dataset.s)].id][Number(t.dataset.j)];
+  en[t.dataset.f] = t.value; WK_UBAH.eks = true;
+  if (t.dataset.f === 'kegiatan' && e.type === 'change') { renderEkskul(); return; }
+  if (t.dataset.f !== 'keterangan') t.closest('.e').querySelector('input').placeholder = ketOtomatis(en);
+  statusEkskul();
+}));
+$('#wk-massal').addEventListener('click', () => {
+  const keg = $('#wk-massal-keg').value, pred = $('#wk-massal-pred').value;
+  let n = 0;
+  WK.siswa.forEach(s => {
+    const isi = WK_EKS[s.id];
+    if (isi.some(e => e.kegiatan === keg)) return;
+    isi.push({ kegiatan: keg, predikat: pred, keterangan:'' }); n++;
+  });
+  WK_UBAH.eks = WK_UBAH.eks || n > 0; renderEkskul();
+  pesan('#wk-eks-msg', keg + ' ditambahkan ke ' + n + ' siswa' + (n < WK.siswa.length ? ' (siswa lain sudah mengikutinya)' : '') + '. Klik Simpan ekstrakurikuler.', true);
+});
+$('#wk-eks-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const res = await api({ aksi:'simpanEkskul', rombel: WK.rombel.id, semester: WK.semester, ekskul: WK_EKS });
+  if (res.sesiHabis) return;
+  pesan('#wk-eks-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  pakaiWali(res, ['eks']); renderWali();
+}));
+$('#wk-jml').addEventListener('change', e => {
+  const n = Math.max(0, Math.min(50, Math.floor(Number(e.target.value) || 0)));
+  if (n < WK_DAFTAR.length) {
+    const terisi = WK_DAFTAR.slice(n).map((x, i) => x.trim() ? n + i + 1 : 0).filter(Boolean);
+    if (terisi.length) {
+      e.target.value = WK_DAFTAR.length;
+      return pesan('#wk-daftar-msg', 'Kotak nomor ' + terisi.join(', ') + ' masih berisi. Kosongkan dulu jika memang ingin mengurangi jumlahnya.', false);
+    }
+  }
+  while (WK_DAFTAR.length < n) WK_DAFTAR.push('');
+  WK_DAFTAR.length = n;
+  $('#wk-daftar-msg').textContent = '';
+  renderDaftarEkskul();
+  const kosong = $('#wk-daftar input[value=""]');
+  if (kosong) kosong.focus();
+});
+$('#wk-daftar').addEventListener('input', e => { if (e.target.dataset.i !== undefined) WK_DAFTAR[Number(e.target.dataset.i)] = e.target.value; });
+$('#wk-daftar').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.target.dataset.i === undefined) return;
+  e.preventDefault();
+  const lanjut = $('#wk-daftar input[data-i="' + (Number(e.target.dataset.i) + 1) + '"]');
+  if (lanjut) lanjut.focus(); else $('#wk-daftar-simpan').focus();
+});
+$('#wk-daftar-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const res = await api({ aksi:'simpanEkskulSekolah', daftar: WK_DAFTAR });
+  if (res.sesiHabis) return;
+  pesan('#wk-daftar-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  WK.ekskulSekolah = res.ekskulSekolah; WK_DAFTAR = res.ekskulSekolah.slice(); renderDaftarEkskul();
+  renderEkskul();
+}));
+
+/* ketidakhadiran & catatan */
+function renderHadir(){
+  $('#wk-hadir-body').innerHTML = WK.siswa.map((s, i) => {
+    const p = WK_HADIR[s.id];
+    return '<tr><td class="no">' + s.no + '</td><td>' + esc(s.nama) + '</td>' +
+      WK_HARI.map((h, j) => '<td class="hari"><input inputmode="numeric" data-s="' + i + '" data-c="' + j + '" data-k="' + h.k + '" value="' + esc(p[h.k]) + '"' + (hariSah(p[h.k]) ? '' : ' class="salah"') + ' aria-label="' + h.k + ' ' + esc(s.nama) + '"></td>').join('') +
+      '<td class="cat"><textarea data-s="' + i + '" data-k="catatan" maxlength="500" rows="2" aria-label="Catatan ' + esc(s.nama) + '">' + esc(p.catatan) + '</textarea></td></tr>';
+  }).join('');
+  statusHadir();
+}
+function statusHadir(){
+  const ada = WK.siswa.filter(s => { const p = WK_HADIR[s.id]; return WK_HARI.every(h => String(p[h.k]).trim() !== '') && p.catatan.trim(); }).length;
+  $('#wk-hadir-status').innerHTML = 'Lengkap ' + teksJumlah(ada, WK.siswa.length) + (WK_UBAH.hadir ? ' · <b>belum disimpan</b>' : '');
+}
+$('#wk-hadir-body').addEventListener('input', e => {
+  const t = e.target;
+  if (!t.dataset.k) return;
+  WK_HADIR[WK.siswa[Number(t.dataset.s)].id][t.dataset.k] = t.value;
+  if (t.dataset.c !== undefined) t.classList.toggle('salah', !hariSah(t.value));
+  WK_UBAH.hadir = true; statusHadir();
+});
+$('#wk-hadir-body').addEventListener('keydown', e => {
+  const t = e.target;
+  if (t.dataset.c === undefined || e.key !== 'Enter') return;
+  e.preventDefault();
+  const bawah = document.querySelector('#wk-hadir-body input[data-s="' + (Number(t.dataset.s) + 1) + '"][data-c="' + t.dataset.c + '"]');
+  if (bawah) { bawah.focus(); bawah.select(); }
+});
+$('#wk-hadir-body').addEventListener('paste', e => {
+  const t = e.target;
+  if (t.dataset.c === undefined) return;
+  const teks = (e.clipboardData || window.clipboardData).getData('text');
+  if (!/[\t\n]/.test(teks.replace(/\s+$/, ''))) return;
+  e.preventDefault();
+  const baris = teks.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(r => r.split('\t'));
+  const s0 = Number(t.dataset.s), c0 = Number(t.dataset.c);
+  baris.forEach((r, bi) => { const s = WK.siswa[s0 + bi]; if (s) r.forEach((v, ci) => { const h = WK_HARI[c0 + ci]; if (h) WK_HADIR[s.id][h.k] = v.trim(); }); });
+  WK_UBAH.hadir = true; renderHadir();
+  pesan('#wk-hadir-msg', 'Angka ditempel. Periksa lalu klik Simpan.', true);
+});
+$('#wk-nol').addEventListener('click', () => {
+  WK.siswa.forEach(s => WK_HARI.forEach(h => { if (String(WK_HADIR[s.id][h.k]).trim() === '') { WK_HADIR[s.id][h.k] = '0'; WK_UBAH.hadir = true; } }));
+  renderHadir();
+});
+$('#wk-hadir-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const salah = document.querySelectorAll('#wk-hadir-body input.salah').length;
+  if (salah) return pesan('#wk-hadir-msg', salah + ' kotak hari tidak valid (ditandai merah). Isi bilangan bulat 0–200.', false);
+  const res = await api({ aksi:'simpanPresensi', rombel: WK.rombel.id, semester: WK.semester, presensi: WK_HADIR });
+  if (res.sesiHabis) return;
+  pesan('#wk-hadir-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  pakaiWali(res, ['hadir']); renderHadir();
+}));
+
+/* kenaikan */
+function renderNaik(){
+  const lulus = WK.rombel.kelas === 6, label = lulus ? { naik:'Lulus', tinggal:'Tidak Lulus' } : { naik:'Naik kelas', tinggal:'Tinggal kelas' };
+  $('#wk-tab-naik').textContent = lulus ? 'Kelulusan' : 'Kenaikan';
+  $('#wk-semua-naik').textContent = lulus ? 'Semua lulus' : 'Semua naik kelas';
+  $('#wk-naik-ket').innerHTML = (WK.semester === 1 ? '<b>Rapor semester 1 tidak memuat keterangan ' + (lulus ? 'lulus' : 'naik kelas') + '.</b> Keputusan ini baru tampil di rapor semester 2, tetapi boleh diisi kapan saja. ' : '') +
+    'Keputusan berlaku untuk tahun ajaran ' + esc(WK.tahunAjaran) + '.';
+  $('#wk-naik-body').innerHTML = WK.siswa.map((s, i) => {
+    const v = WK_NAIK[s.id], c = WK.cek[s.id] || {};
+    return '<tr><td class="no">' + s.no + '</td><td>' + esc(s.nama) + '</td><td class="naik"><select data-s="' + i + '" class="' + v + '" aria-label="Keputusan ' + esc(s.nama) + '"><option value="">— belum —</option>' +
+      ['naik', 'tinggal'].map(k => '<option value="' + k + '"' + (k === v ? ' selected' : '') + '>' + label[k] + '</option>').join('') + '</select></td>' +
+      '<td class="w">' + (WK.semester === 2 ? esc(c.kenaikan || '') : '<span class="sub">tidak tampil di semester 1</span>') + '</td></tr>';
+  }).join('');
+  const ada = WK.siswa.filter(s => WK_NAIK[s.id]).length;
+  $('#wk-naik-status').innerHTML = 'Terisi ' + teksJumlah(ada, WK.siswa.length) + (WK_UBAH.naik ? ' · <b>belum disimpan</b>' : '');
+}
+$('#wk-naik-body').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.s === undefined) return;
+  WK_NAIK[WK.siswa[Number(t.dataset.s)].id] = t.value; WK_UBAH.naik = true; renderNaik();
+});
+$('#wk-semua-naik').addEventListener('click', () => { WK.siswa.forEach(s => { WK_NAIK[s.id] = 'naik'; }); WK_UBAH.naik = true; renderNaik(); });
+$('#wk-naik-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const res = await api({ aksi:'simpanKenaikan', rombel: WK.rombel.id, semester: WK.semester, kenaikan: WK_NAIK });
+  if (res.sesiHabis) return;
+  pesan('#wk-naik-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  pakaiWali(res, ['naik']); renderNaik();
+}));
+
+['wk-rombel', 'wk-semester'].forEach(id => {
+  let sebelum = '';
+  $('#' + id).addEventListener('focus', e => { sebelum = e.target.value; });
+  $('#' + id).addEventListener('change', e => {
+    if (!tinggalkanWali()) { e.target.value = sebelum; return; }
+    muatWali();
+  });
+});
+document.querySelector('#v-wk [data-ke="beranda"]').addEventListener('click', () => {
+  if (!tinggalkanWali()) tampil('wk');
+});
+
+/* Rapor terkunci: tampilkan penanda dan matikan semua isian di wadah (kecuali yang ditandai bebas). */
+function kunciLayar(wadah, info, bebas){
+  const el = $(wadah);
+  let b = el.querySelector(':scope > .kunci-info');
+  if (!b) { b = document.createElement('div'); b.className = 'notice kunci-info'; b.style.marginTop = '14px'; el.prepend(b); }
+  b.classList.toggle('hidden', !info);
+  b.innerHTML = info ? '🔒 <b>Rapor rombel ini sudah dikunci</b> (' + esc(info.waktu) + '). Data hanya bisa dilihat. Jika memang perlu diubah, buka kunci di menu Cek &amp; Cetak Rapor.' : '';
+  el.querySelectorAll('input, select, textarea, button').forEach(x => {
+    if (bebas && x.closest(bebas)) return;
+    if (info) { x.disabled = true; x.dataset.dikunci = '1'; } else if (x.dataset.dikunci) { x.disabled = false; delete x.dataset.dikunci; }
+  });
+}
+function renderKunciCetak(){
+  const t = CT.terkunci;
+  $('#ct-kunci-bar').classList.toggle('on', !!t);
+  $('#ct-kunci-status').innerHTML = t ? '🔒 <b>Rapor terkunci</b> sejak ' + esc(t.waktu) + '. Nilai dan isian rombel ini tidak bisa diubah.'
+    : '🔓 <b>Belum dikunci.</b> Kunci setelah rapor final, agar tidak berubah karena salah ubah oleh pengguna akun sekolah.';
+  $('#ct-kunci-btn').textContent = t ? 'Buka kunci' : 'Kunci rapor';
+  $('#ct-kunci-btn').classList.toggle('ghost', !!t);
+}
+/* Tidak memakai sibuk(): label tombol berubah (Kunci ↔ Buka kunci) setelah selesai. */
+$('#ct-kunci-btn').addEventListener('click', async e => {
+  const btn = e.target;
+  if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = 'Memproses…';
+  try { await ubahKunci(); } finally { btn.disabled = false; renderKunciCetak(); }
+});
+async function ubahKunci(){
+  const label = CT.rombel.label + ' semester ' + CT.semester;
+  let res;
+  if (CT.terkunci) {
+    const alasan = prompt('Buka kunci rapor ' + label + '.\nTuliskan alasannya (dicatat di log sekolah):');
+    if (alasan === null) return;
+    res = await api({ aksi:'bukaKunciRapor', rombel: CT.rombel.id, semester: CT.semester, alasan });
+  } else {
+    const belum = CT.siswa.length - CT.siap;
+    if (!confirm('Kunci rapor ' + label + '?' + (belum ? '\n\nPerhatian: ' + belum + ' siswa belum lengkap.' : '') +
+      '\n\nSetelah dikunci, nilai, kokurikuler, ekstrakurikuler, ketidakhadiran, catatan, dan data siswa rombel ini tidak bisa diubah.')) return;
+    res = await api({ aksi:'kunciRapor', rombel: CT.rombel.id, semester: CT.semester });
+  }
+  if (res.sesiHabis) return;
+  pesan('#ct-kunci-msg', res.pesan, res.ok);
+  if (res.ok) CT.terkunci = res.terkunci;
+}
+
+/* ---------- transkrip & SKL kelas 6 ---------- */
+let LS = null, LS_TAB = 'nilai', LS_MAPEL = '', LS_ISI = {}, LS_IJ = {}, LS_UBAH = false, LS_LOGO = {};
+const KOLOM_LS = ['5-1', '5-2', '6-1', '6-2', 'PRAKTIK'];
+const dua = v => v === null || v === undefined || v === '' ? '' : Number(v).toFixed(2).replace('.', ',');
+const bulat2 = v => Math.round(v * 100 + 1e-9) / 100;
+$('#t-lulus').addEventListener('click', () => bukaLulus());
+function tinggalkanLulus(){ if (LS_UBAH && !confirm('Ada isian yang belum disimpan. Tinggalkan?')) return false; LS_UBAH = false; return true; }
+
+async function bukaLulus(){
+  tampil('lulus');
+  $('#ls-info').className = 'msg'; $('#ls-info').textContent = 'Memuat data kelas 6 (termasuk nilai kelas 5 tahun lalu)…';
+  const res = await api({ aksi:'lulusData' });
+  $('#ls-info').textContent = '';
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#ls-isi').classList.add('hidden'); return pesan('#ls-info', res.pesan, false); }
+  pakaiLulus(res);
+  if (!res.adaKelas6) { $('#ls-isi').classList.add('hidden'); return pesan('#ls-info', 'Belum ada siswa kelas 6 di tahun ajaran ' + res.tahunAjaran + '.', false); }
+  $('#ls-isi').classList.remove('hidden');
+  renderAturLulus();
+  renderLulus();
+}
+function pakaiLulus(res){
+  LS = res; LS_UBAH = false; LS_ISI = {}; LS_IJ = {};
+  res.siswa.forEach(s => {
+    LS_IJ[s.id] = s.ijazah || '';
+    LS_ISI[s.id] = {};
+    res.mapel.forEach(m => {
+      LS_ISI[s.id][m.kode] = {};
+      KOLOM_LS.forEach(k => { const v = s.nilai[m.kode].manual[k]; LS_ISI[s.id][m.kode][k] = v === undefined ? '' : String(v).replace('.', ','); });
+    });
+  });
+  if (!res.mapel.some(m => m.kode === LS_MAPEL)) LS_MAPEL = res.mapel.length ? res.mapel[0].kode : '';
+  $('#ls-sub').textContent = 'Tahun ajaran ' + res.tahunAjaran + ' · nilai kelas 5 dari ' + res.tahunLalu;
+  $('#ls-umum').classList.toggle('hidden', !res.masalahUmum.length);
+  $('#ls-umum').innerHTML = '<b>Perlu dilengkapi:</b> ' + res.masalahUmum.map(esc).join(' ');
+}
+
+/* pengaturan */
+function renderAturLulus(){
+  const a = LS.atur, S = LS.sekolah;
+  $('#la-kop1').value = a.kop1 || ''; $('#la-kop1').placeholder = 'PEMERINTAH ' + (/^(kab|kota)/i.test(S.kabupaten) ? S.kabupaten : 'KABUPATEN ' + S.kabupaten).toUpperCase();
+  $('#la-tempat').value = a.tempat || ''; $('#la-tempat').placeholder = /^(kab|kota)/i.test(S.kabupaten) ? S.kabupaten : 'Kabupaten ' + S.kabupaten;
+  ['nomorTranskrip', 'nomorSkl', 'nomorSk', 'tanggalLulus', 'tanggalTranskrip'].forEach(k => { $('#la-' + k).value = a[k] || ''; });
+  const tambah = String(a.mapelTambahan || '').split(',');
+  $('#la-tambahan-wrap').classList.toggle('hidden', !LS.mapelPilihan.length);
+  $('#la-tambahan').innerHTML = LS.mapelPilihan.map(m => '<label><input type="checkbox" value="' + esc(m.kode) + '"' + (tambah.includes(m.kode) ? ' checked' : '') + '> ' + esc(m.nama) + '</label>').join('');
+  LS_LOGO = {};
+  ['logoPemda', 'logoSekolah'].forEach(k => lihatLogo(k, a[k]));
+  $('#ls-atur-box').open = LS.masalahUmum.length > 0;
+}
+function lihatLogo(k, data){ $('#la-' + k + '-lihat').innerHTML = data ? '<img src="' + data + '" alt="">' : 'belum ada'; }
+/* Logo diperkecil di peramban (sisi terpanjang 320 px) agar muat di satu sel spreadsheet. */
+function kecilkanLogo(file){
+  return new Promise((ok, gagal) => {
+    const r = new FileReader();
+    r.onerror = () => gagal(new Error('Berkas tidak bisa dibaca.'));
+    r.onload = () => {
+      const img = new Image();
+      img.onerror = () => gagal(new Error('Berkas bukan gambar PNG/JPG.'));
+      img.onload = () => {
+        for (const sisi of [320, 260, 200, 160]) {
+          const skala = Math.min(1, sisi / Math.max(img.width, img.height));
+          const c = document.createElement('canvas'); c.width = Math.round(img.width * skala); c.height = Math.round(img.height * skala);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const png = c.toDataURL('image/png'); if (png.length <= 47000) return ok(png);
+          const g = c.getContext('2d'); g.globalCompositeOperation = 'destination-over'; g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+          const jpg = c.toDataURL('image/jpeg', 0.85); if (jpg.length <= 47000) return ok(jpg);
+        }
+        gagal(new Error('Gambar terlalu besar.'));
+      };
+      img.src = r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+['logoPemda', 'logoSekolah'].forEach(k => $('#la-' + k).addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { LS_LOGO[k] = await kecilkanLogo(f); lihatLogo(k, LS_LOGO[k]); pesan('#la-msg', 'Logo siap. Klik Simpan pengaturan.', true); }
+  catch (err) { pesan('#la-msg', err.message, false); }
+}));
+document.querySelectorAll('[data-hapus-logo]').forEach(b => b.addEventListener('click', () => { LS_LOGO[b.dataset.hapusLogo] = ''; lihatLogo(b.dataset.hapusLogo, ''); }));
+$('#la-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const atur = { kop1: $('#la-kop1').value, tempat: $('#la-tempat').value, mapelTambahan: [...document.querySelectorAll('#la-tambahan input:checked')].map(x => x.value) };
+  ['nomorTranskrip', 'nomorSkl', 'nomorSk', 'tanggalLulus', 'tanggalTranskrip'].forEach(k => { atur[k] = $('#la-' + k).value; });
+  Object.assign(atur, LS_LOGO);
+  const res = await api({ aksi:'simpanAturLulus', atur });
+  if (res.sesiHabis) return;
+  if (!res.ok) return pesan('#la-msg', res.pesan, false, res.salah);
+  const segar = await api({ aksi:'lulusData' });
+  if (segar.ok) { pakaiLulus(segar); renderAturLulus(); renderLulus(); $('#ls-atur-box').open = true; }
+  pesan('#la-msg', res.pesan, true);
+}));
+
+/* nilai */
+function nilaiPakai(s, kode, k){
+  const t = String(LS_ISI[s.id][kode][k] || '').trim();
+  if (t !== '') return angkaSah(t) ? Number(t.replace(',', '.')) : NaN;
+  const a = s.nilai[kode].auto[k];
+  return a === undefined ? null : a;
+}
+function akhirMapel(s, kode){
+  const v = KOLOM_LS.map(k => nilaiPakai(s, kode, k)).filter(x => x !== null);
+  if (v.some(x => Number.isNaN(x)) || !v.length) return null;
+  return bulat2(v.reduce((a, b) => a + b, 0) / v.length);
+}
+function renderLulus(){
+  document.querySelectorAll('[data-ls]').forEach(b => b.classList.toggle('on', b.dataset.ls === LS_TAB));
+  ['nilai', 'ringkas', 'cetak'].forEach(t => $('#ls-' + t).classList.toggle('hidden', t !== LS_TAB));
+  $('#ls-mapel').innerHTML = LS.mapel.map(m => '<button type="button" data-mapel="' + esc(m.kode) + '"' + (m.kode === LS_MAPEL ? ' class="on"' : '') + '>' + esc(m.jenis === 'agama' ? 'Pendidikan Agama' : m.nama) + '</button>').join('');
+  renderNilaiLulus(); renderRingkas(); renderPilihLulus();
+}
+function renderNilaiLulus(){
+  const kode = LS_MAPEL;
+  $('#ls-head').innerHTML = '<th>No.</th><th style="min-width:200px">Nama</th>' + KOLOM_LS.map(k => '<th class="tp">' + esc(LS.judulKolom[k]) + '</th>').join('') + '<th>Nilai akhir</th>';
+  $('#ls-body').innerHTML = LS.siswa.map((s, i) => '<tr><td class="no">' + (i + 1) + '</td><td>' + esc(s.nama) + ' <span class="sub">' + esc(s.rombel) + '</span></td>' +
+    KOLOM_LS.map((k, j) => {
+      const v = LS_ISI[s.id][kode][k], a = s.nilai[kode].auto[k];
+      return '<td class="angka"><input inputmode="decimal" data-s="' + i + '" data-c="' + j + '" data-k="' + k + '" value="' + esc(v) + '" placeholder="' + (a === undefined ? '' : esc(String(a))) + '"' + (angkaSah(v) ? '' : ' class="salah"') + ' aria-label="' + esc(LS.judulKolom[k] + ' ' + s.nama) + '"></td>';
+    }).join('') + '<td class="akhir" id="ls-akhir-' + i + '">' + dua(akhirMapel(s, kode)) + '</td></tr>').join('');
+  const lengkap = LS.siswa.filter(s => KOLOM_LS.slice(0, 4).every(k => nilaiPakai(s, kode, k) !== null)).length;
+  $('#ls-status').innerHTML = '4 semester lengkap: ' + teksJumlah(lengkap, LS.siswa.length) + (LS_UBAH ? ' · <b>belum disimpan</b>' : '');
+}
+$('#ls-body').addEventListener('input', e => {
+  const t = e.target; if (!t.dataset.k) return;
+  const s = LS.siswa[Number(t.dataset.s)];
+  LS_ISI[s.id][LS_MAPEL][t.dataset.k] = t.value; LS_UBAH = true;
+  t.classList.toggle('salah', !angkaSah(t.value));
+  $('#ls-akhir-' + t.dataset.s).textContent = dua(akhirMapel(s, LS_MAPEL));
+});
+$('#ls-body').addEventListener('keydown', e => {
+  const t = e.target; if (!t.dataset.k || e.key !== 'Enter') return;
+  e.preventDefault();
+  const b = document.querySelector('#ls-body input[data-s="' + (Number(t.dataset.s) + 1) + '"][data-c="' + t.dataset.c + '"]');
+  if (b) { b.focus(); b.select(); }
+});
+$('#ls-body').addEventListener('paste', e => {
+  const t = e.target; if (!t.dataset.k) return;
+  const teks = (e.clipboardData || window.clipboardData).getData('text');
+  if (!/[\t\n]/.test(teks.replace(/\s+$/, ''))) return;
+  e.preventDefault();
+  const s0 = Number(t.dataset.s), c0 = Number(t.dataset.c);
+  teks.replace(/\r/g, '').replace(/\n+$/, '').split('\n').forEach((r, bi) => {
+    const s = LS.siswa[s0 + bi]; if (!s) return;
+    r.split('\t').forEach((v, ci) => { const k = KOLOM_LS[c0 + ci]; if (k) LS_ISI[s.id][LS_MAPEL][k] = v.trim(); });
+  });
+  LS_UBAH = true; renderNilaiLulus();
+});
+$('#ls-mapel').addEventListener('click', e => { const b = e.target.closest('[data-mapel]'); if (!b) return; LS_MAPEL = b.dataset.mapel; renderLulus(); });
+document.querySelectorAll('[data-ls]').forEach(b => b.addEventListener('click', () => { LS_TAB = b.dataset.ls; renderLulus(); }));
+async function simpanIsianLulus(isian, msg){
+  const res = await api({ aksi:'simpanLulus', isian });
+  if (res.sesiHabis) return;
+  pesan(msg, res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  pakaiLulus(res); renderLulus();
+}
+$('#ls-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  if (document.querySelectorAll('#ls-body input.salah').length) return pesan('#ls-msg', 'Ada angka yang tidak valid (ditandai merah).', false);
+  const isian = {};
+  LS.siswa.forEach(s => { isian[s.id] = { nilai: { [LS_MAPEL]: LS_ISI[s.id][LS_MAPEL] } }; });
+  await simpanIsianLulus(isian, '#ls-msg');
+}));
+
+/* ringkasan */
+function renderRingkas(){
+  $('#ls-rk-head').innerHTML = '<th>No.</th><th style="min-width:200px">Nama</th><th>Status</th><th style="min-width:200px">Nomor ijazah</th>' +
+    LS.mapel.map(m => '<th class="m" title="' + esc(m.nama) + '">' + esc(m.kode) + '</th>').join('') + '<th class="m">Rata-rata</th><th>Catatan</th>';
+  $('#ls-rk-body').innerHTML = LS.siswa.map((s, i) => '<tr><td class="no">' + (i + 1) + '</td><td>' + esc(s.nama) + ' <span class="sub">' + esc(s.rombel) + '</span></td>' +
+    '<td><span class="' + (s.status === 'LULUS' ? 'cek-ok' : 'cek-x') + '">' + esc(s.status || 'belum diisi') + '</span></td>' +
+    '<td><input data-ij="' + esc(s.id) + '" value="' + esc(LS_IJ[s.id]) + '" maxlength="60" aria-label="Nomor ijazah ' + esc(s.nama) + '"></td>' +
+    LS.mapel.map(m => { const n = s.nilai[m.kode]; const ada = KOLOM_LS.slice(0, 4).every(k => n.manual[k] !== undefined || n.auto[k] !== undefined);
+      return '<td class="m' + (ada ? '' : ' sem') + '">' + (dua(n.akhir) || '–') + '</td>'; }).join('') +
+    '<td class="m j">' + (dua(s.rata) || '–') + '</td><td class="rinci" style="font-size:12px;color:#9a6c00;min-width:220px">' + (s.peringatan.length ? s.peringatan.length + ' catatan: ' + esc(s.peringatan[0]) : '') + '</td></tr>').join('');
+}
+$('#ls-rk-body').addEventListener('input', e => { if (e.target.dataset.ij) { LS_IJ[e.target.dataset.ij] = e.target.value; LS_UBAH = true; } });
+$('#ls-simpan-ij').addEventListener('click', e => sibuk(e.target, async () => {
+  const isian = {}; LS.siswa.forEach(s => { isian[s.id] = { ijazah: LS_IJ[s.id] }; });
+  await simpanIsianLulus(isian, '#ls-ij-msg');
+}));
+
+/* cetak */
+function renderPilihLulus(){
+  $('#ls-pilih').innerHTML = LS.siswa.map(s => '<label><input type="checkbox" value="' + esc(s.id) + '"' + (s.status === 'TIDAK LULUS' ? ' disabled' : ' checked') + '>' + esc(s.nama) +
+    '<span class="st ' + (s.status === 'LULUS' && !s.peringatan.length ? 'cek-ok">✓' : s.status === 'TIDAK LULUS' ? 'cek-x">tidak lulus' : 'cek-x">' + s.peringatan.length + ' catatan') + '</span></label>').join('');
+  $('#ls-jumlah').textContent = document.querySelectorAll('#ls-pilih input:checked').length + ' siswa dipilih';
+}
+$('#ls-pilih').addEventListener('change', () => { $('#ls-jumlah').textContent = document.querySelectorAll('#ls-pilih input:checked').length + ' siswa dipilih'; });
+function kopSurat(){
+  const S = LS.sekolah, a = LS.atur;
+  const kab = /^(kab|kota)/i.test(S.kabupaten) ? S.kabupaten : (S.kabupaten ? 'Kab. ' + S.kabupaten : '');
+  const alamat = [S.jalan, S.desa, S.kecamatan ? 'Kec. ' + S.kecamatan : '', kab, S.kodePos, S.telepon ? 'Telp. ' + S.telepon : ''].filter(Boolean).join(', ');
+  const laman = [S.website ? 'Laman ' + S.website.replace(/^https?:\/\//, '') : '', S.email ? 'Pos-el ' + S.email : ''].filter(Boolean).join(' ');
+  return '<div class="kop">' + (a.logoPemda ? '<img class="kiri" src="' + a.logoPemda + '" alt="">' : '') + (a.logoSekolah ? '<img class="kanan" src="' + a.logoSekolah + '" alt="">' : '') +
+    '<div class="l1">' + esc(a.kop1 || $('#la-kop1').placeholder) + '</div><div class="l2">' + esc(S.nama) + '</div><div class="l3">' + esc(alamat) + '</div><div class="l3">' + esc(laman) + '</div></div>';
+}
+function tabelNilaiLulus(s){
+  return '<table class="nilai"><colgroup><col style="width:1.04cm"><col style="width:11.43cm"><col style="width:4.43cm"></colgroup><thead><tr><th>No.</th><th>Mata Pelajaran</th><th>Nilai</th></tr></thead><tbody>' +
+    LS.mapel.map((m, i) => '<tr><td class="c">' + (i + 1) + '.</td><td>' + esc(m.jenis === 'agama' ? s.namaAgama : m.nama) + '</td><td class="c">' + dua(s.nilai[m.kode].akhir) + '</td></tr>').join('') +
+    '<tr><td class="c" colspan="2">Rata-rata</td><td class="c">' + dua(s.rata) + '</td></tr></tbody></table>';
+}
+function ttdLulus(tanggal, foto){
+  const S = LS.sekolah, tempat = LS.atur.tempat || $('#la-tempat').placeholder;
+  return '<div class="ttd-surat">' + (foto ? '<div class="foto"></div>' : '') + '<div>' + esc(tempat) + ', ' + esc(tanggal) + '</div><div>Kepala,</div><div class="spasi"></div><div>' + esc(S.kepala) + '</div><div>' + (S.nipKepala ? 'NIP. ' + esc(S.nipKepala) : '&nbsp;') + '</div></div>';
+}
+const nomorSurat = n => !n ? 'Nomor: ……' : /^nomor/i.test(n) ? n : 'Nomor: ' + n;
+function halamanTranskrip(s){
+  const S = LS.sekolah;
+  const idn = [['Satuan Pendidikan', S.nama], ['Nomor Pokok Sekolah Nasional', S.npsn], ['Nama Lengkap', s.nama], ['Tempat, Tanggal Lahir', s.ttl],
+    ['Nomor Induk Siswa Nasional', s.nisn], ['Nomor Ijazah', s.ijazah], ['Tanggal Kelulusan', LS.tanggalLulusPanjang]];
+  return '<div class="surat halaman">' + kopSurat() + '<div class="judul">TRANSKRIP NILAI</div><div class="nomor">' + esc(nomorSurat(s.nomorTranskrip)) + '</div>' +
+    '<table class="idn"><tbody>' + idn.map(([k, v]) => '<tr><td class="k">' + k + '</td><td class="t">:</td><td>' + (esc(v) || '&nbsp;') + '</td></tr>').join('') + '</tbody></table>' +
+    tabelNilaiLulus(s) + ttdLulus(LS.tanggalTranskripPanjang, true) + '</div>';
+}
+function halamanSkl(s){
+  const S = LS.sekolah;
+  const kab = /^(kab|kota)/i.test(S.kabupaten) ? S.kabupaten : 'Kabupaten ' + S.kabupaten;
+  const idn = [['Nama', s.nama], ['Tempat, tanggal lahir', s.ttl], ['Nomor Induk Siswa Nasional', s.nisn]];
+  return '<div class="surat halaman">' + kopSurat() + '<div class="judul">SURAT KETERANGAN LULUS</div><div class="nomor">' + esc(nomorSurat(s.nomorSkl)) + '</div>' +
+    '<div class="p">Yang bertanda tangan di bawah ini, Kepala ' + esc(S.nama) + ' Kecamatan ' + esc(S.kecamatan) + ' ' + esc(kab) + ' Provinsi ' + esc(S.provinsi) + ' menerangkan bahwa:</div>' +
+    '<table class="idn"><tbody>' + idn.map(([k, v]) => '<tr><td class="k">' + k + '</td><td class="t">:</td><td>' + (esc(v) || '&nbsp;') + '</td></tr>').join('') + '</tbody></table>' +
+    '<div class="p">dinyatakan <b>' + esc(s.status || 'LULUS') + '</b> dari ' + esc(S.nama) + ', Nomor Pokok Sekolah Nasional ' + esc(S.npsn) + ' berdasarkan Keputusan Kepala ' + esc(S.nama) +
+      ' Nomor: ' + esc(LS.atur.nomorSk || '……') + ' dengan nilai sebagai berikut:</div>' +
+    tabelNilaiLulus(s) +
+    '<div class="p">Surat Keterangan Lulus ini berlaku sementara sampai dengan diterbitkannya ijazah Tahun Ajaran ' + esc(LS.tahunAjaran) + ', untuk menjadikan maklum bagi yang berkepentingan.</div>' +
+    ttdLulus(LS.tanggalLulusPanjang, false) + '</div>';
+}
+async function cetakLulus(buat, nama){
+  const ids = new Set([...document.querySelectorAll('#ls-pilih input:checked')].map(x => x.value));
+  const siswa = LS.siswa.filter(s => ids.has(s.id) && s.status !== 'TIDAK LULUS');
+  if (!siswa.length) return pesan('#ls-cetak-msg', 'Pilih minimal satu siswa.', false);
+  const kurang = siswa.filter(s => s.peringatan.length).length;
+  if ((kurang || LS.masalahUmum.length) && !confirm((kurang ? kurang + ' siswa masih punya catatan (nilai/nomor ijazah/keputusan belum lengkap). ' : '') +
+    (LS.masalahUmum.length ? 'Pengaturan surat belum lengkap. ' : '') + 'Tetap cetak?')) return;
+  areaCetak().innerHTML = siswa.map(buat).join('');
+  await Promise.all([...areaCetak().querySelectorAll('img')].map(i => i.decode().catch(() => {})));
+  document.title = nama + ' ' + LS.tahunAjaran.replace('/', '-');
+  window.print();
+  document.title = 'Rapor Merdeka Digital';
+}
+$('#ls-cetak-transkrip').addEventListener('click', () => cetakLulus(halamanTranskrip, 'Transkrip Nilai'));
+$('#ls-cetak-skl').addEventListener('click', () => cetakLulus(halamanSkl, 'SKL'));
+/* Kolom sama dengan berkas input mail merge (Nomor Transkrip, NPSN, Nama Siswa, …, Jumlah, Rata-Rata, Agama Siswa). */
+const SINGKAT_LS = { PAB: 'PABP', PP: 'Pend. Pancasila', BIND: 'B. Indo', MTK: 'Matematika', IPAS: 'IPAS', PJOK: 'PJOK', SENI: 'Seni & Budaya', BING: 'B. Inggris', KKA: 'KKA' };
+$('#ls-excel').addEventListener('click', e => sibuk(e.target, async () => {
+  try {
+    await muatPustaka('ExcelJS');
+    const wb = new ExcelJS.Workbook();
+    const siswa = LS.siswa.filter(s => s.status !== 'TIDAK LULUS');
+    const nama = m => SINGKAT_LS[m.kode] || m.nama.replace(/^Muatan Lokal: /, '');
+    const ws = wb.addWorksheet('Sheet1');
+    ws.addRow(['No', 'Nomor Transkrip', 'NPSN', 'Nama Siswa', 'Tempat, Tanggal Lahir', 'NISN', 'Nomor Ijazah'].concat(LS.mapel.map(nama), ['Jumlah', 'Rata-Rata', 'Agama Siswa', 'Nomor SKL']));
+    siswa.forEach((s, i) => ws.addRow([i + 1, nomorSurat(s.nomorTranskrip), LS.sekolah.npsn, s.nama, s.ttl, s.nisn, s.ijazah]
+      .concat(LS.mapel.map(m => s.nilai[m.kode].akhir ?? ''), [s.jumlah ?? '', s.rata ?? '', s.namaAgama, nomorSurat(s.nomorSkl)])));
+    ws.getRow(1).font = { bold: true };
+    [3, 6, 7].forEach(c => { ws.getColumn(c).numFmt = '@'; });
+    ws.eachRow((r, i) => { if (i > 1) { r.getCell(3).value = String(r.getCell(3).value || ''); r.getCell(6).value = String(r.getCell(6).value || ''); } });
+    for (let c = 8; c <= 7 + LS.mapel.length + 2; c++) ws.getColumn(c).numFmt = '0.00';
+    ws.columns.forEach((c, i) => { c.width = [5, 26, 12, 28, 28, 14, 22][i] || 14; });
+    const rinci = wb.addWorksheet('Nilai Rinci');
+    rinci.addRow(['No', 'Nama Siswa', 'Rombel', 'Mata Pelajaran'].concat(KOLOM_LS.map(k => LS.judulKolom[k]), ['Nilai Akhir']));
+    siswa.forEach((s, i) => LS.mapel.forEach(m => {
+      const n = s.nilai[m.kode];
+      rinci.addRow([i + 1, s.nama, s.rombel, m.jenis === 'agama' ? s.namaAgama : m.nama].concat(KOLOM_LS.map(k => n.manual[k] ?? n.auto[k] ?? ''), [n.akhir ?? '']));
+    }));
+    rinci.getRow(1).font = { bold: true };
+    const buf = await wb.xlsx.writeBuffer();
+    const url = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'Transkrip SKL ' + LS.tahunAjaran.replace('/', '-') + '.xlsx'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    pesan('#ls-cetak-msg', 'Excel terunduh: sheet Sheet1 (kolom sama dengan berkas input mail merge) dan Nilai Rinci.', true);
+  } catch (err) { pesan('#ls-cetak-msg', err.message, false); }
+}));
+document.querySelector('#v-lulus [data-ke="beranda"]').addEventListener('click', () => { if (!tinggalkanLulus()) tampil('lulus'); });
+
+/* ---------- cek & cetak rapor ---------- */
+let CT = null, CT_TAB = 'cek';
+$('#t-cetak').addEventListener('click', () => bukaCetak());
+async function bukaCetak(){
+  tampil('cetak');
+  if (!DATA) {
+    const d = await api({ aksi:'dataSekolah' });
+    if (d.sesiHabis) return;
+    if (!d.ok) return pesan('#ct-info', d.pesan, false);
+    DATA = d;
+  }
+  if (!DATA.rombel.length) {
+    $('#ct-rombel').innerHTML = ''; $('#ct-isi').classList.add('hidden');
+    return pesan('#ct-info', 'Belum ada rombel. Buat dulu di Data Sekolah & Siswa → Rombel & Siswa.', false);
+  }
+  const pilih = $('#ct-rombel').value;
+  $('#ct-rombel').innerHTML = DATA.rombel.map(r => '<option value="' + esc(r.id) + '">' + esc(labelRombel(r)) + (r.wali ? ' — ' + esc(r.wali) : '') + '</option>').join('');
+  if (pilih && DATA.rombel.some(r => r.id === pilih)) $('#ct-rombel').value = pilih;
+  $('#ct-semester').value = String(CT ? CT.semester : DATA.semester);
+  await muatCetak();
+}
+async function muatCetak(){
+  $('#ct-info').textContent = ''; $('#ct-msg').textContent = '';
+  $('#ct-info').className = 'msg'; $('#ct-info').textContent = 'Memeriksa data rombel…';
+  const res = await api({ aksi:'rekapRombel', rombel: $('#ct-rombel').value, semester: Number($('#ct-semester').value) });
+  $('#ct-info').textContent = '';
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#ct-isi').classList.add('hidden'); return pesan('#ct-info', res.pesan, false); }
+  CT = res; $('#ct-kunci-msg').textContent = '';
+  $('#ct-sub').textContent = 'Tahun ajaran ' + res.tahunAjaran + ' · ' + res.rombel.label + ' · Semester ' + res.semester;
+  if (!res.siswa.length) { $('#ct-isi').classList.add('hidden'); return pesan('#ct-info', 'Rombel ini belum punya siswa.', false); }
+  $('#ct-isi').classList.remove('hidden');
+  $('#ct-umum').classList.toggle('hidden', !res.masalahUmum.length);
+  $('#ct-umum').innerHTML = '<b>Perlu dilengkapi sebelum mencetak:</b><ul style="margin:6px 0 0;padding-left:18px">' + res.masalahUmum.map(m => '<li>' + esc(m) + '</li>').join('') + '</ul>';
+  renderCetak();
+}
+function renderCetak(){
+  renderKunciCetak();
+  document.querySelectorAll('[data-ct]').forEach(b => b.classList.toggle('on', b.dataset.ct === CT_TAB));
+  ['cek', 'leger', 'cetak', 'excel'].forEach(t => $('#ct-' + t).classList.toggle('hidden', t !== CT_TAB));
+  const n = CT.siswa.length;
+  $('#ct-siap').innerHTML = 'Siap cetak ' + teksJumlah(CT.siap, n);
+  $('#ct-cek-body').innerHTML = CT.siswa.map(s => '<tr><td class="no">' + s.no + '</td><td>' + esc(s.nama) + '</td>' +
+    '<td>' + (s.masalah.length ? '<span class="cek-x">' + s.masalah.length + ' kekurangan</span>' : '<span class="cek-ok">✓ Lengkap</span>') + '</td>' +
+    '<td class="rinci">' + (s.masalah.length ? '<ul>' + s.masalah.map(m => '<li>' + esc(m) + '</li>').join('') + '</ul>' : '') + '</td></tr>').join('');
+  $('#ct-leger-head').innerHTML = '<th>No. Absen</th><th style="min-width:200px">Nama</th>' +
+    CT.mapel.map(m => '<th class="m" title="' + esc(m.nama) + '">' + esc(m.kode) + '</th>').join('') + '<th class="m">Jumlah</th><th class="m">Rata-rata</th><th class="m">Peringkat</th>';
+  $('#ct-leger-body').innerHTML = CT.siswa.map(s => '<tr><td class="no">' + s.no + '</td><td>' + esc(s.nama) + '</td>' +
+    s.mapel.map(m => '<td class="m' + (m.lengkap ? '' : ' sem') + '">' + (m.nilai ?? '–') + '</td>').join('') +
+    '<td class="m j">' + (s.jumlah ?? '–') + '</td><td class="m j">' + (s.rataRata ?? '–') + '</td><td class="m j">' + (s.peringkat ?? '–') + '</td></tr>').join('');
+  const dipilih = new Set([...document.querySelectorAll('#ct-pilih input:checked')].map(x => x.value));
+  const awal = !$('#ct-pilih').dataset.rombel || $('#ct-pilih').dataset.rombel !== CT.rombel.id + '|' + CT.semester;
+  $('#ct-pilih').dataset.rombel = CT.rombel.id + '|' + CT.semester;
+  $('#ct-pilih').innerHTML = CT.siswa.map(s => '<label><input type="checkbox" value="' + esc(s.id) + '"' + (awal || dipilih.has(s.id) ? ' checked' : '') + '>' +
+    s.no + '. ' + esc(s.nama) + '<span class="st ' + (s.masalah.length ? 'cek-x">belum lengkap' : 'cek-ok">✓') + '</span></label>').join('');
+  jumlahPilih();
+}
+function jumlahPilih(){ $('#ct-jumlah').textContent = document.querySelectorAll('#ct-pilih input:checked').length + ' siswa dipilih'; }
+$('#ct-pilih').addEventListener('change', jumlahPilih);
+$('#ct-semua').addEventListener('click', () => { document.querySelectorAll('#ct-pilih input').forEach(x => { x.checked = true; }); jumlahPilih(); });
+$('#ct-lengkap').addEventListener('click', () => {
+  const siap = new Set(CT.siswa.filter(s => !s.masalah.length).map(s => s.id));
+  document.querySelectorAll('#ct-pilih input').forEach(x => { x.checked = siap.has(x.value); }); jumlahPilih();
+});
+document.querySelectorAll('[data-ct]').forEach(b => b.addEventListener('click', () => { CT_TAB = b.dataset.ct; renderCetak(); }));
+$('#ct-segar').addEventListener('click', e => sibuk(e.target, muatCetak));
+['ct-rombel', 'ct-semester'].forEach(id => $('#' + id).addEventListener('change', () => muatCetak()));
+
+/* ---------- unduh excel rapor ---------- */
+async function excelRapor(R){
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Rapor Merdeka Digital';
+  const judul = R.rombel.label + ' · Semester ' + R.semester + ' · Tahun Ajaran ' + R.tahunAjaran + ' · ' + R.sekolah.nama;
+  /* kolom: [{ h: judul, w: lebar, teks: true (format teks, untuk NISN), bungkus: true }] */
+  const sheet = (nama, kolom, baris) => {
+    const ws = wb.addWorksheet(nama.replace(/[\\\/?*\[\]:]/g, ' ').slice(0, 31), { views: [{ state: 'frozen', ySplit: 2, xSplit: Math.min(3, kolom.length) }] });
+    ws.mergeCells(1, 1, 1, Math.max(kolom.length, 1));
+    ws.getCell(1, 1).value = nama + ' — ' + judul;
+    ws.getCell(1, 1).font = { bold: true, size: 12 };
+    ws.getRow(2).values = kolom.map(k => k.h);
+    ws.getRow(2).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    ws.getRow(2).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    kolom.forEach((k, i) => {
+      ws.getCell(2, i + 1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF12314F' } };
+      ws.getColumn(i + 1).width = k.w || 12;
+      if (k.teks) ws.getColumn(i + 1).numFmt = '@';
+    });
+    baris.forEach(r => {
+      const row = ws.addRow(r.map((v, i) => kolom[i] && kolom[i].teks && v !== '' && v !== null && v !== undefined ? String(v) : (v ?? '')));
+      row.alignment = { vertical: 'top', wrapText: true };
+    });
+    ws.eachRow((row, i) => { if (i >= 2) row.eachCell({ includeEmpty: true }, c => { c.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }; }); });
+    return ws;
+  };
+  const dasar = [{ h: 'No. Absen', w: 8 }, { h: 'NISN', w: 13, teks: true }, { h: 'Nama', w: 28 }];
+  const id = s => [s.no, s.nisn, s.nama];
+  sheet('Daftar Siswa', dasar.concat([{ h: 'NIS', w: 10, teks: true }]), R.siswa.map(s => id(s).concat(s.nis)));
+  sheet('Rekap Nilai', dasar.concat(R.mapel.map(m => ({ h: m.nama, w: 11 })), [{ h: 'Jumlah', w: 9 }, { h: 'Rata-rata', w: 9 }, { h: 'Peringkat', w: 9 }]),
+    R.siswa.map(s => id(s).concat(s.mapel.map(m => m.nilai ?? ''), [s.jumlah ?? '', s.rataRata ?? '', s.peringkat ?? ''])));
+  const tpTeks = d => d.map(t => (t.seni ? t.seni + ': ' : '') + t.kode + ' — ' + t.tp).join('\n');
+  R.mapel.forEach((m, j) => {
+    const varian = m.jenis === 'agama' ? [{ h: 'Agama', w: 12 }] : m.jenis === 'seni' ? [{ h: 'Seni', w: 14 }] : [];
+    const namaSheet = m.jenis === 'agama' ? 'Agama' : m.nama.length > 31 ? m.kode : m.nama;
+    sheet(namaSheet, dasar.concat(varian, [{ h: 'Nilai Akhir', w: 8 }, { h: 'TP Tertinggi', w: 46 }, { h: 'TP Terendah', w: 46 },
+      { h: 'Deskripsi Capaian Tertinggi', w: 46 }, { h: 'Deskripsi Capaian Terendah', w: 46 }, { h: 'Catatan', w: 30 }]),
+      R.siswa.map(s => {
+        const h = s.mapel[j];
+        const v = m.jenis === 'agama' ? [h.nama.replace(/^Pendidikan (Agama )?/, '').replace(/ dan Budi Pekerti$/, '')]
+          : m.jenis === 'seni' ? [h.tpTinggi.concat(h.tpRendah).map(t => t.seni).filter((x, i, a) => x && a.indexOf(x) === i).join(', ')] : [];
+        return id(s).concat(v, [h.nilai ?? '', tpTeks(h.tpTinggi), tpTeks(h.tpRendah), h.deskripsiTinggi || '', h.deskripsiRendah || '', h.lengkap ? '' : h.peringatan.join('; ')]);
+      }));
+  });
+  sheet('Kokurikuler', dasar.concat([{ h: 'Deskripsi Kokurikuler', w: 90 }]), R.siswa.map(s => id(s).concat(s.kokurikuler || '')));
+  const maksEks = Math.max(1, ...R.siswa.map(s => s.ekskul.length));
+  const kolEks = [];
+  for (let i = 1; i <= maksEks; i++) kolEks.push({ h: 'Ekstrakurikuler ' + i, w: 16 }, { h: 'Keterangan ' + i, w: 34 });
+  const kolLain = [{ h: 'Sakit', w: 7 }, { h: 'Izin', w: 7 }, { h: 'Tanpa Keterangan', w: 10 }, { h: 'Catatan Wali Kelas', w: 46 }]
+    .concat(R.semester === 2 ? [{ h: R.rombel.kelas === 6 ? 'Kelulusan' : 'Kenaikan Kelas', w: 24 }] : []);
+  sheet('Ekskul & Kehadiran', dasar.concat(kolEks, kolLain), R.siswa.map(s => {
+    const e = [];
+    for (let i = 0; i < maksEks; i++) e.push(s.ekskul[i] ? s.ekskul[i].kegiatan : '', s.ekskul[i] ? s.ekskul[i].keterangan : '');
+    const p = s.presensi;
+    return id(s).concat(e, [p.sakit, p.izin, p.alpa, p.catatan || ''], R.semester === 2 ? [s.kenaikan.teks || ''] : []);
+  }));
+  return wb.xlsx.writeBuffer();
+}
+$('#ct-excel-btn').addEventListener('click', e => sibuk(e.target, async () => {
+  try {
+    pesan('#ct-excel-msg', 'Menyiapkan berkas Excel…', true);
+    await muatPustaka('ExcelJS');
+    const buf = await excelRapor(CT);
+    const nama = 'Rapor ' + CT.rombel.label + ' Semester ' + CT.semester + ' ' + CT.tahunAjaran.replace('/', '-') + '.xlsx';
+    const url = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    const a = document.createElement('a'); a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    const belum = CT.siswa.length - CT.siap;
+    pesan('#ct-excel-msg', nama + ' terunduh.' + (belum ? ' Catatan: ' + belum + ' siswa belum lengkap; kekurangannya tertulis di kolom Catatan tiap sheet mapel.' : ''), true);
+  } catch (err) {
+    pesan('#ct-excel-msg', err.message, false);
+  }
+}));
+
+/* Satu rapor siswa dalam format cetak. */
+function halamanRapor(s){
+  const R = CT, sem = R.semester === 1 ? '1 (Ganjil)' : '2 (Genap)';
+  const kelas = R.rombel.nama === String(R.rombel.kelas) ? R.rombel.romawi : esc(R.rombel.nama);
+  const baris = (a, b, c, d) => '<tr><td>' + a + '</td><td class="t">:</td><td>' + b + '</td><td style="width:14%">' + c + '</td><td class="t">:</td><td style="width:18%">' + d + '</td></tr>';
+  const cap = m => '<td class="cap">' + (m.deskripsi.length ? m.deskripsi.map(d => '<div>' + esc(d) + '</div>').join('') : '') + '</td>';
+  let no = 0, huruf = 0, adaMulok = false;
+  const barisMapel = s.mapel.map(m => {
+    if (m.jenis === 'mulok') {
+      let kepala = '';
+      if (!adaMulok) { adaMulok = true; no++; kepala = '<tr><td class="c">' + no + '</td><td colspan="3"><b>Muatan Lokal</b></td></tr>'; }
+      return kepala + '<tr><td></td><td class="sub">' + String.fromCharCode(97 + huruf++) + '. ' + esc(m.nama) + '</td><td class="c">' + (m.nilai ?? '') + '</td>' + cap(m) + '</tr>';
+    }
+    no++;
+    return '<tr><td class="c">' + no + '</td><td>' + esc(m.nama) + '</td><td class="c">' + (m.nilai ?? '') + '</td>' + cap(m) + '</tr>';
+  }).join('');
+  const hari = v => (v === '' || v === null || v === undefined ? '-' : v) + ' hari';
+  const eks = s.ekskul.length ? s.ekskul.map((e, i) => '<tr><td class="c">' + (i + 1) + '</td><td>' + esc(e.kegiatan) + '</td><td>' + esc(e.keterangan) + '</td></tr>').join('')
+    : '<tr><td class="c">1</td><td>-</td><td>-</td></tr>';
+  const sekolah = R.sekolah;
+  return '<div class="hal"><h1>LAPORAN HASIL BELAJAR<br>(RAPOR)</h1>' +
+    '<table class="id">' + baris('Nama Murid', '<b>' + esc(s.nama) + '</b>', 'Kelas', kelas) +
+    baris('NISN / NIS', esc(s.nisn || '-') + ' / ' + esc(s.nis || '-'), 'Fase', R.rombel.fase) +
+    baris('Nama Sekolah', esc(sekolah.nama), 'Semester', sem) +
+    baris('Alamat Sekolah', esc(sekolah.alamat), 'Tahun Ajaran', esc(R.tahunAjaran)) + '</table>' +
+    '<table class="kotak" style="margin-top:8pt"><thead><tr><th style="width:5%">No</th><th style="width:27%">Muatan Pelajaran</th><th style="width:9%">Nilai Akhir</th><th>Capaian Kompetensi</th></tr></thead><tbody>' + barisMapel + '</tbody></table>' +
+    '<div class="utuh"><h2>KOKURIKULER</h2><div class="blok">' + esc(s.kokurikuler || '-') + '</div></div>' +
+    '<table class="kotak utuh" style="margin-top:10pt"><thead><tr><th style="width:5%">No</th><th style="width:32%">Ekstrakurikuler</th><th>Keterangan</th></tr></thead><tbody>' + eks + '</tbody></table>' +
+    '<div class="dua"><table class="kotak"><thead><tr><th colspan="2">Ketidakhadiran</th></tr></thead><tbody>' +
+      '<tr><td>Sakit</td><td>' + hari(s.presensi.sakit) + '</td></tr><tr><td>Izin</td><td>' + hari(s.presensi.izin) + '</td></tr><tr><td>Tanpa Keterangan</td><td>' + hari(s.presensi.alpa) + '</td></tr></tbody></table>' +
+      '<table class="kotak"><thead><tr><th>Catatan Wali Kelas</th></tr></thead><tbody><tr><td style="height:52pt">' + esc(s.presensi.catatan || '') + '</td></tr></tbody></table></div>' +
+    '<div class="utuh"><h2>Tanggapan Orang Tua/Wali Murid</h2><div class="blok" style="min-height:40pt"></div></div>' +
+    (s.kenaikan.tampil ? '<div class="putusan"><b>Keputusan:</b><br>Berdasarkan pencapaian seluruh kompetensi, ananda ' + esc(s.nama) + ' dinyatakan:<br><b>' + esc(s.kenaikan.teks || '..........................') + '</b></div>' : '') +
+    '<div class="ttd"><div>Mengetahui,<br>Orang Tua/Wali<div class="nm">' + '.'.repeat(30) + '</div></div>' +
+      '<div>Mengetahui,<br>Kepala Sekolah<div class="nm">' + esc(sekolah.kepala || '') + '</div>' + (sekolah.nipKepala ? 'NIP. ' + esc(sekolah.nipKepala) : '') + '</div>' +
+      '<div>' + esc(sekolah.tempat || '') + (sekolah.tanggal ? ', ' + esc(sekolah.tanggal) : '') + '<br>Wali Kelas<div class="nm">' + esc(R.rombel.wali || '') + '</div>' + (R.rombel.nip ? 'NIP. ' + esc(R.rombel.nip) : '') + '</div></div>' +
+    '</div>';
+}
+/* Sampul rapor (3 halaman): sampul depan, identitas sekolah, identitas peserta didik. */
+function halamanSampul(s){
+  const S = CT.sekolah, I = s.identitas || {}, isi = v => esc(v || '') || '&nbsp;';
+  const judul = '<div class="judul">R A P O R<br>PESERTA DIDIK<br>SEKOLAH DASAR<br>(SD)</div>';
+  const baris = (n, k, v, sub) => '<tr><td class="n">' + (n || '') + '</td><td class="k' + (sub ? ' sub' : '') + '">' + k + '</td><td class="t">:</td><td>' + isi(v) + '</td></tr>';
+  const depan = '<div class="hal sampul">' + judul + '<img class="logo" src="logo-tutwuri.png" alt="Tut Wuri Handayani">' +
+    '<div class="label">Nama Peserta Didik</div><div class="kotak-nama">' + isi(s.nama) + '</div>' +
+    '<div class="label">NISN / NIS</div><div class="kotak-nama">' + esc(s.nisn || '-') + ' / ' + esc(s.nis || '-') + '</div>' +
+    '<div class="bawah">KEMENTERIAN PENDIDIKAN DASAR DAN MENENGAH<br>REPUBLIK INDONESIA</div></div>';
+  const sekolah = '<div class="hal sampul"><div class="judul" style="font-size:16pt">RAPOR<br>PESERTA DIDIK<br>SEKOLAH DASAR (SD)</div><div style="height:22mm"></div>' +
+    '<table class="isi" style="width:auto;min-width:150mm;text-align:left;font-size:11pt"><tbody>' +
+    [['Nama Sekolah', S.nama], ['NPSN', S.npsn], ['Alamat Sekolah', S.jalan], ['Kode Pos', S.kodePos], ['Desa / Kelurahan', S.desa], ['Kecamatan', S.kecamatan],
+     ['Kabupaten / Kota', S.kabupaten], ['Provinsi', S.provinsi], ['Website', S.website], ['E-mail', S.email]]
+      .map(([k, v]) => '<tr><td style="padding:5pt 6pt;width:42%">' + k + '</td><td style="padding:5pt 2pt">:</td><td style="padding:5pt 6pt">' + isi(v) + '</td></tr>').join('') +
+    '</tbody></table></div>';
+  const ttl = [I.tempatLahir, I.tanggalLahirPanjang].filter(Boolean).join(', ');
+  const ident = '<div class="hal identitas"><h1>IDENTITAS PESERTA DIDIK</h1><table class="isi"><tbody>' +
+    baris(1, 'Nama Peserta Didik', s.nama) + baris(2, 'NISN / NIS', (s.nisn || '-') + ' / ' + (s.nis || '-')) + baris(3, 'Tempat, Tanggal Lahir', ttl) +
+    baris(4, 'Jenis Kelamin', I.jkPanjang) + baris(5, 'Agama', I.agama) + baris(6, 'Pendidikan Sebelumnya', I.pendidikanSebelumnya) +
+    baris(7, 'Alamat Peserta Didik', I.alamat) +
+    baris(8, 'Nama Orang Tua', ' ') + baris('', 'a. Ayah', I.ayah, 1) + baris('', 'b. Ibu', I.ibu, 1) +
+    baris(9, 'Pekerjaan Orang Tua', ' ') + baris('', 'a. Ayah', I.pekerjaanAyah, 1) + baris('', 'b. Ibu', I.pekerjaanIbu, 1) +
+    baris(10, 'Alamat Orang Tua', I.alamatOrtu) +
+    baris(11, 'Wali Peserta Didik', ' ') + baris('', 'a. Nama', I.wali, 1) + baris('', 'b. Pekerjaan', I.pekerjaanWali, 1) + baris('', 'c. Alamat', I.alamatWali, 1) +
+    '</tbody></table><div class="ttd-ks"><div class="foto">Pas foto<br>3 × 4</div><div>' + esc(S.tempat || '') + (S.tanggal ? ', ' + esc(S.tanggal) : '') +
+    '<br>Kepala Sekolah<div class="nm">' + esc(S.kepala || '') + '</div>' + (S.nipKepala ? 'NIP. ' + esc(S.nipKepala) : '') + '</div></div></div>';
+  return depan + sekolah + ident;
+}
+$('#ct-sampul-btn').addEventListener('click', async () => {
+  const ids = new Set([...document.querySelectorAll('#ct-pilih input:checked')].map(x => x.value));
+  const siswa = CT.siswa.filter(s => ids.has(s.id));
+  if (!siswa.length) return pesan('#ct-msg', 'Pilih minimal satu siswa.', false);
+  areaCetak().innerHTML = siswa.map(halamanSampul).join('');
+  // logo harus sudah termuat sebelum jendela cetak dibuka, kalau tidak halaman depan tercetak tanpa logo
+  await Promise.all([...areaCetak().querySelectorAll('img')].map(i => i.decode().catch(() => {})));
+  document.title = 'Sampul Rapor ' + CT.rombel.label + ' ' + CT.tahunAjaran.replace('/', '-');
+  window.print();
+  document.title = 'Rapor Merdeka Digital';
+});
+
+function areaCetak(){
+  let a = document.getElementById('area-cetak');
+  if (!a) { a = document.createElement('div'); a.id = 'area-cetak'; document.body.appendChild(a); }
+  return a;
+}
+$('#ct-cetak-btn').addEventListener('click', () => {
+  const ids = new Set([...document.querySelectorAll('#ct-pilih input:checked')].map(x => x.value));
+  const siswa = CT.siswa.filter(s => ids.has(s.id));
+  if (!siswa.length) return pesan('#ct-msg', 'Pilih minimal satu siswa.', false);
+  const belum = siswa.filter(s => s.masalah.length).length;
+  if ((belum || CT.masalahUmum.length) && !confirm((belum ? belum + ' rapor yang dipilih belum lengkap. ' : '') +
+    (CT.masalahUmum.length ? 'Profil sekolah/wali kelas belum lengkap. ' : '') + 'Tetap cetak?')) return;
+  areaCetak().innerHTML = siswa.map(halamanRapor).join('');
+  document.title = 'Rapor ' + CT.rombel.label + ' Semester ' + CT.semester + ' ' + CT.tahunAjaran.replace('/', '-');
+  window.print();
+  document.title = 'Rapor Merdeka Digital';
+});
+$('#ct-cetak-leger').addEventListener('click', () => {
+  const R = CT;
+  areaCetak().innerHTML = '<div class="leger"><h1>LEGER NILAI ' + esc(R.rombel.label.toUpperCase()) + ' — SEMESTER ' + R.semester + ' TAHUN AJARAN ' + esc(R.tahunAjaran) + '<br>' + esc(R.sekolah.nama) + '</h1>' +
+    '<table class="kotak"><thead><tr><th>No</th><th>Nama</th>' + R.mapel.map(m => '<th>' + esc(m.kode) + '</th>').join('') + '<th>Jumlah</th><th>Rata-rata</th><th>Peringkat</th></tr></thead><tbody>' +
+    R.siswa.map(s => '<tr><td class="c">' + s.no + '</td><td>' + esc(s.nama) + '</td>' + s.mapel.map(m => '<td class="c">' + (m.nilai ?? '') + (m.lengkap ? '' : '*') + '</td>').join('') +
+      '<td class="c">' + (s.jumlah ?? '') + '</td><td class="c">' + (s.rataRata ?? '') + '</td><td class="c">' + (s.peringkat ?? '') + '</td></tr>').join('') + '</tbody></table>' +
+    '<p style="font-size:8pt">Keterangan: ' + R.mapel.map(m => esc(m.kode) + ' = ' + esc(m.nama)).join('; ') + '. Tanda * = nilai belum lengkap.</p></div>';
+  window.print();
+});
+
+/* ---------- tujuan pembelajaran ---------- */
+let TPD = null, TP_MAPEL = '', TP_VARIAN = '', TP_LIST = [], TP_UBAH = false;
+const kunciTp = () => TP_MAPEL + '|' + TP_VARIAN;
+const tpKosong = t => !String(t.tp || '').trim() && !String(t.materi || '').trim();
+function tinggalkanTp(){ return !TP_UBAH || confirm('Perubahan TP belum disimpan. Tinggalkan?'); }
+
+async function bukaTp(){
+  tampil('tp');
+  if (!TPD) {
+    const kelasAwal = DATA && DATA.rombel && DATA.rombel.length ? DATA.rombel[0].kelas : 1;
+    $('#tp-kelas').value = String(kelasAwal);
+    return muatTp(0, true); // pertama kali: semester mengikuti semester sekolah yang berjalan
+  }
+  await muatTp();
+}
+
+async function muatTp(semester, semesterSekolah){
+  $('#tp-mapel').innerHTML = '<span class="sub">Memuat…</span>';
+  $('#tp-editor').classList.add('hidden');
+  const res = await api({ aksi:'tpKelas', kelas: Number($('#tp-kelas').value),
+    semester: semesterSekolah ? undefined : (semester || Number($('#tp-semester').value)) });
+  if (res.sesiHabis) return;
+  if (!res.ok) { $('#tp-mapel').innerHTML = ''; return pesan('#tpu-msg', res.pesan, false); }
+  TPD = res; TP_UBAH = false;
+  $('#tp-semester').value = String(res.semester);
+  $('#tp-sub').textContent = 'Tahun ajaran ' + res.tahunAjaran + ' · Kelas ' + res.kelas + ' (Fase ' + res.fase + ') · Semester ' + res.semester;
+  if (!res.mapel.some(m => m.kode === TP_MAPEL)) TP_MAPEL = res.mapel.length ? res.mapel[0].kode : '';
+  renderMapelTp();
+  pilihMapelTp(TP_MAPEL);
+}
+
+function jumlahTp(m){
+  return m.varian.reduce((n, v) => n + ((TPD.tp[m.kode + '|' + v] || []).length), 0);
+}
+function renderMapelTp(){
+  $('#tp-mapel').innerHTML = TPD.mapel.map(m => { const n = jumlahTp(m);
+    return '<button type="button" role="tab" data-mapel="' + esc(m.kode) + '" class="' + (m.kode === TP_MAPEL ? 'on ' : '') + (n ? '' : 'kosong') + '">' +
+      esc(m.nama) + '<span class="n">' + n + ' TP</span></button>'; }).join('') ||
+    '<span class="sub">Belum ada mapel aktif di kelas ini. Atur di Data Sekolah → Mata Pelajaran.</span>';
+}
+
+function pilihMapelTp(kode, varian){
+  const m = TPD.mapel.find(x => x.kode === kode);
+  TP_MAPEL = kode;
+  if (!m) return;
+  renderMapelTp();
+  // varian: agama terbanyak di kelas ini lebih dulu, atau seni pertama sekolah
+  if (varian === undefined) {
+    varian = m.varian[0];
+    if (m.jenis === 'agama') varian = Object.keys(TPD.agama).sort((a, b) => TPD.agama[b] - TPD.agama[a])[0] || 'Islam';
+  }
+  TP_VARIAN = varian;
+  $('#tp-varian-wrap').classList.toggle('hidden', m.varian.length < 2);
+  $('#tp-varian-label').textContent = m.jenis === 'agama' ? 'Agama' : 'Seni';
+  $('#tp-varian').innerHTML = m.varian.map(v => '<option value="' + esc(v) + '">' + esc(v) +
+    (m.jenis === 'agama' && TPD.agama[v] ? ' (' + TPD.agama[v] + ' siswa)' : '') + ((TPD.tp[m.kode + '|' + v] || []).length ? ' · ' + TPD.tp[m.kode + '|' + v].length + ' TP' : '') + '</option>').join('');
+  $('#tp-varian').value = TP_VARIAN;
+  TP_LIST = (TPD.tp[kunciTp()] || []).map(t => ({ ...t }));
+  if (!TP_LIST.length) TP_LIST = [{}, {}, {}];
+  TP_UBAH = false;
+  $('#tp-bawaan').classList.toggle('hidden', !TPD.adaBawaan);
+  $('#tp-msg').textContent = '';
+  $('#tp-editor').classList.remove('hidden');
+  renderTp();
+}
+
+function renderTp(){
+  const maks = TPD.maksKarakter;
+  $('#tp-body').innerHTML = TP_LIST.map((t, i) => {
+    const n = String(t.tp || '').trim().length, dinilai = t.kode && TPD.bernilai[TP_MAPEL + '|' + t.kode];
+    return '<tr><td class="no">' + (i + 1) + '</td>' +
+      '<td><input data-i="' + i + '" data-k="tp" maxlength="200" value="' + esc(t.tp) + '" aria-label="Tujuan pembelajaran ' + (i + 1) + '">' +
+        (dinilai ? '<span class="dinilai">✓ sudah dinilai</span>' : '') + '</td>' +
+      '<td class="kar' + (n > maks ? ' lebih' : '') + '" data-kar="' + i + '">' + n + '/' + maks + '</td>' +
+      '<td><input data-i="' + i + '" data-k="materi" maxlength="150" value="' + esc(t.materi) + '" placeholder="opsional" aria-label="Lingkup materi ' + (i + 1) + '"></td>' +
+      '<td>' + (dinilai ? '' : '<button class="hapus" type="button" data-hapus-tp="' + i + '" title="Hapus TP" aria-label="Hapus TP ' + (i + 1) + '">×</button>') + '</td></tr>';
+  }).join('');
+  const isi = TP_LIST.filter(t => !tpKosong(t)).length;
+  $('#tp-jumlah').innerHTML = isi + ' TP' + (TP_UBAH ? ' · <b>belum disimpan</b>' : '');
+}
+
+$('#tp-body').addEventListener('input', e => {
+  const t = e.target;
+  if (!t.dataset.k) return;
+  const i = Number(t.dataset.i);
+  TP_LIST[i][t.dataset.k] = t.value;
+  if (t.dataset.k === 'tp') {
+    const n = t.value.trim().length, sel = document.querySelector('[data-kar="' + i + '"]');
+    sel.textContent = n + '/' + TPD.maksKarakter; sel.classList.toggle('lebih', n > TPD.maksKarakter);
+  }
+  TP_UBAH = true;
+  $('#tp-jumlah').innerHTML = TP_LIST.filter(x => !tpKosong(x)).length + ' TP · <b>belum disimpan</b>';
+});
+$('#tp-body').addEventListener('click', e => {
+  const b = e.target.closest('[data-hapus-tp]');
+  if (!b) return;
+  TP_LIST.splice(Number(b.dataset.hapusTp), 1);
+  if (!TP_LIST.length) TP_LIST.push({});
+  TP_UBAH = true; renderTp();
+});
+$('#tp-body').addEventListener('paste', e => {
+  const t = e.target;
+  if (!t.dataset.k) return;
+  const teks = (e.clipboardData || window.clipboardData).getData('text');
+  if (!/[\t\n]/.test(teks.replace(/\s+$/, ''))) return;
+  e.preventDefault();
+  const baris = teks.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(r => r.split('\t'));
+  if (baris.length > 1 && /^(no\.?|tujuan pembelajaran.*|tp|lingkup materi)$/i.test(baris[0][0].trim())) baris.shift();
+  const i0 = Number(t.dataset.i), k0 = t.dataset.k === 'tp' ? 0 : 1, kolom = ['tp', 'materi'];
+  baris.forEach((r, bi) => {
+    if (!TP_LIST[i0 + bi]) TP_LIST[i0 + bi] = {};
+    r.forEach((v, ki) => { const k = kolom[k0 + ki]; if (k) TP_LIST[i0 + bi][k] = v.trim(); });
+  });
+  TP_UBAH = true; renderTp();
+  pesan('#tp-msg', baris.length + ' baris ditempel. Periksa lalu klik Simpan TP.', true);
+});
+$('#tp-tambah').addEventListener('click', () => {
+  TP_LIST.push({}); renderTp();
+  document.querySelector('#tp-body tr:last-child input').focus();
+});
+$('#tp-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  TP_LIST = TP_LIST.filter(t => !tpKosong(t));
+  renderTp();
+  const res = await api({ aksi:'simpanTp', kelas: TPD.kelas, semester: TPD.semester, mapel: TP_MAPEL, varian: TP_VARIAN, tp: TP_LIST });
+  if (res.sesiHabis) return;
+  pesan('#tp-msg', res.pesan, res.ok, res.salah);
+  if (!TP_LIST.length) TP_LIST.push({});
+  if (!res.ok) return renderTp();
+  TPD.tp[kunciTp()] = res.tp;
+  TP_LIST = res.tp.map(t => ({ ...t }));
+  TP_UBAH = false; renderTp(); renderMapelTp();
+}));
+$('#tp-bawaan').addEventListener('click', e => sibuk(e.target, async () => {
+  const ada = TP_LIST.filter(t => !tpKosong(t)).length;
+  if (ada && !confirm('Ganti ' + ada + ' TP yang ada di layar dengan TP bawaan? (Belum tersimpan sampai Anda klik Simpan TP.)')) return;
+  const res = await api({ aksi:'tpBawaan', kelas: TPD.kelas, semester: TPD.semester, mapel: TP_MAPEL, varian: TP_VARIAN });
+  if (res.sesiHabis) return;
+  pesan('#tp-msg', res.pesan, res.ok);
+  if (!res.ok) return;
+  // TP bawaan yang teksnya sama dengan TP lama memakai kode lama, agar nilai yang sudah ada tetap melekat.
+  const lama = {}; TP_LIST.forEach(t => { if (t.kode) lama[String(t.tp).trim().toLowerCase()] = t.kode; });
+  TP_LIST = res.tp.map(t => ({ ...t, kode: lama[t.tp.trim().toLowerCase()] }));
+  TP_UBAH = true; renderTp();
+}));
+$('#tp-mapel').addEventListener('click', e => {
+  const b = e.target.closest('[data-mapel]');
+  if (!b || b.dataset.mapel === TP_MAPEL || !tinggalkanTp()) return;
+  pilihMapelTp(b.dataset.mapel);
+});
+$('#tp-varian').addEventListener('change', e => {
+  if (!tinggalkanTp()) { e.target.value = TP_VARIAN; return; }
+  pilihMapelTp(TP_MAPEL, e.target.value);
+});
+['tp-kelas', 'tp-semester'].forEach(id => {
+  let sebelum = '';
+  $('#' + id).addEventListener('focus', e => { sebelum = e.target.value; });
+  $('#' + id).addEventListener('change', e => {
+    if (!tinggalkanTp()) { e.target.value = sebelum; return; }
+    muatTp(id === 'tp-semester' ? Number(e.target.value) : undefined);
+  });
+});
+document.querySelector('#v-tp [data-ke="beranda"]').addEventListener('click', e => {
+  if (!tinggalkanTp()) { e.stopImmediatePropagation(); tampil('tp'); return; }
+  TP_UBAH = false;
+});
+
+/* Unduh TP kelas: satu berkas .xlsx per mapel sesuai format impor e-Rapor, digabung dalam satu ZIP. */
+const PUSTAKA = {
+  ExcelJS: 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js',
+  JSZip: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+};
+function muatPustaka(nama){
+  if (window[nama]) return Promise.resolve();
+  return new Promise((ok, gagal) => {
+    const s = document.createElement('script');
+    s.src = PUSTAKA[nama]; s.onload = ok; s.onerror = () => gagal(new Error('Pustaka ' + nama + ' gagal dimuat. Periksa koneksi internet.'));
+    document.head.appendChild(s);
+  });
+}
+async function berkasErapor(b){
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet('Worksheet');
+  ws.columns = [{ width: 5 }, { width: 12 }, { width: 12 }, { width: 12 }, { width: 100 }];
+  ws.getCell('A1').value = 'FORMAT IMPORT TP  ' + b.judul + ' , JENJANG SD';
+  if (b.kodeErapor) ws.getCell('C2').value = Number(b.kodeErapor);
+  ws.getCell('D2').value = 'SD';
+  ws.getRow(3).values = ['NO', 'TINGKAT', 'FASE', 'SEMESTER', 'TUJUAN PEMBELAJARAN (Maximal 100 Karakter)'];
+  ws.getRow(3).font = { bold: true };
+  for (let i = 0; i < 100; i++) {
+    const r = 4 + i, t = b.baris[i];
+    ws.getCell('A' + r).value = i + 1;
+    if (t) { ws.getCell('B' + r).value = t.tingkat; ws.getCell('C' + r).value = t.fase; ws.getCell('D' + r).value = t.semester; ws.getCell('E' + r).value = t.tp; }
+    ws.getCell('B' + r).dataValidation = { type: 'list', allowBlank: true, formulae: ['"1, 2, 3, 4, 5, 6"'] };
+    ws.getCell('C' + r).dataValidation = { type: 'list', allowBlank: true, formulae: ['"A, B, C"'] };
+    ws.getCell('D' + r).dataValidation = { type: 'list', allowBlank: true, formulae: ['"1, 2"'] };
+    ws.getCell('E' + r).dataValidation = { type: 'custom', allowBlank: true, formulae: ['LEN(E' + r + ')<=100'] };
+  }
+  return wb.xlsx.writeBuffer();
+}
+$('#tp-unduh').addEventListener('click', e => sibuk(e.target, async () => {
+  if (TP_UBAH && !confirm('Ada TP yang belum disimpan dan tidak ikut terunduh. Lanjutkan?')) return;
+  pesan('#tpu-msg', 'Menyiapkan berkas…', true);
+  const res = await api({ aksi:'tpEkspor', kelas: Number($('#tp-kelas').value) });
+  if (res.sesiHabis) return;
+  if (!res.ok) return pesan('#tpu-msg', res.pesan, false);
+  try {
+    await muatPustaka('ExcelJS'); await muatPustaka('JSZip');
+    const zip = new JSZip();
+    for (const b of res.berkas) zip.file(b.namaBerkas, await berkasErapor(b));
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const nama = 'TP e-Rapor Kelas ' + res.kelas + ' ' + res.tahunAjaran.replace('/', '-') + '.zip';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    const ok = nama + ' terunduh: ' + res.berkas.length + ' berkas (' + res.berkas.map(b => b.nama).join(', ') + ').';
+    pesan('#tpu-msg', ok, true, res.peringatan.length ? [ok].concat(res.peringatan) : null);
+  } catch (err) {
+    pesan('#tpu-msg', err.message, false);
+  }
+}));
+
+$('#b-unduh').addEventListener('click', e => sibuk(e.target, async () => {
+  pesan('#u-msg', 'Menyiapkan berkas Excel…', true);
+  const res = await api({ aksi:'unduhExcel' });
+  if (res.sesiHabis) return;
+  if (!res.ok) return pesan('#u-msg', res.pesan, false);
+  const biner = atob(res.data), bytes = new Uint8Array(biner.length);
+  for (let i = 0; i < biner.length; i++) bytes[i] = biner.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([bytes], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  const a = document.createElement('a'); a.href = url; a.download = res.nama; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  pesan('#u-msg', 'Berkas ' + res.nama + ' sudah diunduh.', true);
+}));
+
+$('#b-keluar').addEventListener('click', async () => {
+  await api({ aksi:'keluar' });
+  ls.del(KUNCI_SESI);
+  $('#u-lgn').classList.add('hidden');
+  tampil('masuk');
+});
+
+document.querySelectorAll('[data-show]').forEach(cb => cb.addEventListener('change', () => {
+  cb.dataset.show.split(',').forEach(id => { $('#' + id).type = cb.checked ? 'text' : 'password'; });
+}));
+
+document.querySelectorAll('.buka-profil').forEach(b => b.addEventListener('click', () => $('#profil').showModal()));
+$('#pf-tutup').addEventListener('click', () => $('#profil').close());
+$('#profil').addEventListener('click', e => { if (e.target === $('#profil')) $('#profil').close(); });
+
+/* ---------- navigasi ---------- */
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+  const h = a.getAttribute('href').slice(1);
+  if (!['masuk','daftar','lupa'].includes(h)) return;
+  e.preventDefault();
+  history.replaceState(null, '', location.pathname + '#' + h);
+  tampil(h);
+}));
+
+async function mulai(){
+  if (!API_URL) $('#cfg-notice').classList.remove('hidden');
+  const infoSiap = muatInfo();
+  setInterval(muatInfo, 5 * 60 * 1000); // pengumuman/pemeliharaan baru ikut tampil tanpa memuat ulang halaman
+  const q = new URLSearchParams(location.search);
+  if (q.get('verifikasi') || q.get('reset')) history.replaceState(null, '', location.pathname); // token tidak tertinggal di riwayat
+
+  if (q.get('verifikasi')) {
+    tampil('verifikasi');
+    const res = await api({ aksi:'verifikasi', token: q.get('verifikasi') });
+    $('#v-ket').classList.add('hidden');
+    pesan('#v-msg', res.pesan, res.ok);
+    $('#v-lanjut').classList.remove('hidden');
+    return;
+  }
+  if (q.get('reset')) { TOKEN_RESET = q.get('reset'); tampil('reset'); return; }
+
+  if (ls.get(KUNCI_SESI)) {
+    const res = await api({ aksi:'sesi' });
+    if (res.ok) return masukBeranda(res.sekolah);
+    if (!res.sesiHabis) { tampil('masuk'); pesan('#m-msg', res.pesan, false); }
+    return;
+  }
+  await infoSiap;
+  if (INFO.kodeAkses && !ls.get(KUNCI_KODE)) return tampil('gerbang');
+  const h = location.hash.slice(1);
+  tampil(h === 'lupa' || (h === 'daftar' && INFO.daftarDibuka) ? h : 'masuk');
+}
+mulai();
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapor Merdeka Digital | Rapor SD Kurikulum Merdeka Kelas 1–6</title>
+<meta name="description" content="Aplikasi rapor SD Kurikulum Merdeka kelas 1–6: input nilai, deskripsi otomatis, kokurikuler, cetak rapor A4, Excel siap e-Rapor, transkrip dan SKL. Coba gratis 30 hari.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{--red:#d71920;--red-dark:#9e1117;--yellow:#ffd21f;--blue:#12314f;--blue2:#1f4f7a;--cream:#fffaf0;--ink:#16202a;--muted:#5b6b7f;--line:#eadfc7;--ok:#1d7a37}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+a{color:var(--blue)}
+.topline{height:6px;background:linear-gradient(90deg,var(--red) 0 42%,var(--yellow) 42% 68%,var(--blue) 68%)}
+.wrap{max-width:1040px;margin:auto;padding:0 18px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--blue);text-decoration:none;font-size:17px}
+.brand img{width:36px;height:36px}
+.nav-a{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:12px 18px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;background:var(--red);color:#fff;text-decoration:none}
+.btn:hover{background:var(--red-dark)}
+.btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--blue)}
+.hero{margin:10px 0 0;padding:44px 34px;border-radius:28px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
+.hero small{color:var(--yellow);font-weight:800;letter-spacing:.08em;font-size:12.5px}
+.hero h1{margin:8px 0 12px;font-size:clamp(1.9rem,4.6vw,3rem);line-height:1.12;letter-spacing:-.03em}
+.hero p{margin:0 0 22px;color:#d6e2ee;font-size:16.5px}
+.hero .aksi{display:flex;gap:10px;flex-wrap:wrap}
+.hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.hero ul{margin:0;padding:18px 20px;list-style:none;background:rgba(255,255,255,.08);border-radius:18px}
+.hero li{padding:6px 0 6px 28px;position:relative;color:#eaf1f8;font-size:15px}
+.hero li::before{content:"✓";position:absolute;left:4px;color:var(--yellow);font-weight:900}
+section{margin-top:46px}
+h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 10px 24px rgba(18,49,79,.06)}
+.card .ik{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:22px;background:#fff3c0;margin-bottom:10px}
+.card h3{margin:0 0 6px;font-size:16.5px;color:var(--blue)}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.langkah{counter-reset:l;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.langkah .card{position:relative;padding-top:46px}
+.langkah .card::before{counter-increment:l;content:counter(l);position:absolute;top:16px;left:20px;width:26px;height:26px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:grid;place-items:center;font-size:14px}
+.harga{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.paket{background:#fff;border:2px solid var(--line);border-radius:22px;padding:24px}
+.paket.utama{border-color:var(--blue);box-shadow:0 18px 36px rgba(18,49,79,.12)}
+.paket h3{margin:0;color:var(--blue)}
+.paket .angka{font-size:34px;font-weight:900;color:var(--ink);margin:8px 0 2px;letter-spacing:-.02em}
+.paket .angka small{font-size:15px;color:var(--muted);font-weight:600}
+.paket ul{padding-left:20px;margin:12px 0 18px;color:var(--ink);font-size:14.5px}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--blue)}
+.faq p{margin:8px 0 0;color:var(--muted);font-size:14.5px}
+.cta{margin-top:46px;padding:30px;border-radius:24px;background:#fff8e1;border:1px solid #f0d77a;text-align:center}
+.cta h2{margin-bottom:8px}
+footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
+footer a{color:var(--blue)}
+@media(max-width:760px){.hero{grid-template-columns:1fr;padding:30px 22px}.harga{grid-template-columns:1fr}.nav-a .btn.ghost{display:none}}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="./"><img src="logo.svg" alt="">Rapor Merdeka Digital</a>
+    <div class="nav-a"><a class="btn ghost" href="app/panduan.html">Panduan</a><a class="btn ghost" href="app/">Masuk</a><a class="btn" href="app/#daftar">Coba gratis</a></div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <small>RAPOR SD KURIKULUM MERDEKA · KELAS 1–6</small>
+      <h1>Rapor rapi, deskripsi otomatis, siap e-Rapor.</h1>
+      <p>Guru cukup mengisi angka. Nilai rapor, deskripsi capaian, kokurikuler, dan leger dihitung otomatis, lalu dicetak 2 halaman A4 atau diunduh ke Excel untuk e-Rapor.</p>
+      <div class="aksi"><a class="btn" href="app/#daftar">Coba gratis 30 hari</a><a class="btn ghost" href="#harga">Lihat harga</a></div>
+    </div>
+    <ul>
+      <li>Tanpa instal, dibuka dari laptop atau HP</li>
+      <li>Satu akun untuk semua guru di sekolah</li>
+      <li>725 tujuan pembelajaran bawaan siap pakai</li>
+      <li>Transkrip nilai &amp; SKL kelas 6</li>
+      <li>Data tiap sekolah terpisah dan bisa diunduh kapan saja</li>
+    </ul>
+  </header>
+
+  <section>
+    <h2>Semua yang dibutuhkan untuk rapor SD</h2>
+    <p class="sub">Disusun mengikuti Panduan Pembelajaran dan Asesmen serta format rapor Kurikulum Merdeka.</p>
+    <div class="grid">
+      <div class="card"><div class="ik">📋</div><h3>Data sekolah &amp; siswa</h3><p>Rombel kelas 1–6, wali kelas, dan siswa. Tempel langsung dari Excel atau Dapodik.</p></div>
+      <div class="card"><div class="ik">🎯</div><h3>Tujuan Pembelajaran</h3><p>TP per kelas, mapel, dan semester, termasuk TP bawaan. Unduh dalam format impor e-Rapor.</p></div>
+      <div class="card"><div class="ik">✏️</div><h3>Input nilai cepat</h3><p>Sumatif lingkup materi dan akhir semester. Nilai rapor dan deskripsi capaian langsung tampil.</p></div>
+      <div class="card"><div class="ik">🌱</div><h3>Kokurikuler</h3><p>Subdimensi profil lulusan, capaian Mahir/Cakap/Berkembang, dan narasi deskripsi otomatis.</p></div>
+      <div class="card"><div class="ik">🧑‍🏫</div><h3>Wali kelas</h3><p>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, serta keputusan naik kelas/lulus.</p></div>
+      <div class="card"><div class="ik">🖨️</div><h3>Cetak &amp; e-Rapor</h3><p>Rapor 2 halaman A4, sampul, leger, dan Excel berisi TP tertinggi/terendah untuk disalin ke e-Rapor.</p></div>
+      <div class="card"><div class="ik">🎓</div><h3>Transkrip &amp; SKL</h3><p>Rata-rata nilai kelas 5–6 ditambah praktik, nomor otomatis, dan cetak sesuai format.</p></div>
+      <div class="card"><div class="ik">🔒</div><h3>Aman &amp; rapi</h3><p>Kunci rapor setelah final, riwayat perubahan, dan cadangan saat pergantian tahun ajaran.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Mulai dalam 4 langkah</h2>
+    <p class="sub">Operator sekolah cukup mendaftar sekali.</p>
+    <div class="langkah">
+      <div class="card"><h3>Daftar</h3><p>Isi NPSN, nama sekolah, wilayah, dan email sekolah, lalu klik tautan aktivasi di email.</p></div>
+      <div class="card"><h3>Siapkan data</h3><p>Lengkapi profil sekolah, rombel, dan siswa. TP bawaan sudah terisi.</p></div>
+      <div class="card"><h3>Guru mengisi nilai</h3><p>Semua guru masuk dengan akun sekolah dan mengisi nilai sesuai mapelnya.</p></div>
+      <div class="card"><h3>Cetak rapor</h3><p>Periksa kelengkapan, cetak rapor, atau unduh Excel untuk e-Rapor.</p></div>
+    </div>
+  </section>
+
+  <section id="harga">
+    <h2>Harga sederhana</h2>
+    <p class="sub">Satu harga untuk satu sekolah, semua kelas 1–6 dan semua guru.</p>
+    <div class="harga">
+      <div class="paket">
+        <h3>Uji coba</h3>
+        <div class="angka">Gratis <small>30 hari</small></div>
+        <ul><li>Semua fitur terbuka</li><li>Tanpa kartu kredit atau pembayaran di muka</li><li>Data tetap tersimpan saat lanjut berlangganan</li></ul>
+        <a class="btn ghost" href="app/#daftar">Mulai uji coba</a>
+      </div>
+      <div class="paket utama">
+        <h3>Langganan tahunan</h3>
+        <div class="angka">Rp250.000 <small>/ sekolah / tahun</small></div>
+        <ul><li>Semua fitur, kelas 1–6, guru tanpa batas</li><li>Pembaruan aplikasi sepanjang tahun</li><li>Bantuan lewat WhatsApp</li><li>Kuitansi pembayaran untuk administrasi sekolah</li></ul>
+        <a class="btn" href="https://wa.me/6281196939694?text=Halo%2C%20saya%20ingin%20berlangganan%20Rapor%20Merdeka%20Digital." target="_blank" rel="noopener">Berlangganan lewat WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Pertanyaan umum</h2>
+    <details><summary>Apakah ini menggantikan e-Rapor Kemendikdasmen?</summary><p>Tidak. Rapor Merdeka Digital membantu guru mengolah nilai dan deskripsi dengan cepat, lalu hasilnya bisa diunduh dalam Excel untuk disalin ke e-Rapor. Sekolah juga bisa langsung mencetak rapor dari aplikasi.</p></details>
+    <details><summary>Bagaimana jika masa langganan berakhir?</summary><p>Data sekolah tidak dihapus. Sekolah tetap bisa masuk, melihat data, dan mengunduh salinan Excel. Fitur lain aktif kembali setelah perpanjangan.</p></details>
+    <details><summary>Siapa yang bisa melihat data siswa kami?</summary><p>Hanya pengguna akun sekolah Anda. Data tiap sekolah disimpan terpisah. Rinciannya ada di <a href="privasi.html">Kebijakan Privasi</a>.</p></details>
+    <details><summary>Apakah perlu memasang aplikasi?</summary><p>Tidak. Cukup browser (disarankan Chrome) di laptop atau HP yang tersambung internet.</p></details>
+    <details><summary>Bagaimana cara membayar?</summary><p>Setelah uji coba, hubungi kami lewat WhatsApp. Kami kirim tagihan dan cara transfer; akun diperpanjang setelah pembayaran dikonfirmasi.</p></details>
+  </section>
+
+  <div class="cta">
+    <h2>Siap mencoba?</h2>
+    <p class="sub" style="margin-bottom:16px">Daftar sekarang, gratis 30 hari, tanpa pembayaran di muka.</p>
+    <a class="btn" href="app/#daftar">Coba gratis 30 hari</a>
+  </div>
+
+  <footer>
+    © <span id="tahun">2026</span> Rapor Merdeka Digital · dikembangkan oleh Admin ·
+    <a href="https://wa.me/6281196939694" target="_blank" rel="noopener">WhatsApp 0811-9693-9694</a><br>
+    <a href="syarat.html">Syarat Layanan</a> · <a href="privasi.html">Kebijakan Privasi</a> · <a href="app/panduan.html">Panduan Guru</a>
+  </footer>
+</div>
+<script>document.getElementById('tahun').textContent = new Date().getFullYear();</script>
+</body>
+</html>
