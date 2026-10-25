@@ -265,8 +265,8 @@ table.leger td.j{text-align:center;font-weight:800}
     <form id="f-daftar">
       <div class="field"><label for="d-npsn">NPSN</label><input id="d-npsn" type="text" inputmode="numeric" maxlength="8" required></div>
       <div class="field"><label for="d-nama">Nama sekolah</label><input id="d-nama" type="text" maxlength="100" placeholder="Contoh: SD NEGERI 1 SUKAMAJU" required></div>
-      <div class="field"><label for="d-kab">Kabupaten/Kota</label><input id="d-kab" type="text" maxlength="60" placeholder="Contoh: Kabupaten Sukamaju atau Kota Semarang" required></div>
       <div class="field"><label for="d-prov">Provinsi</label><select id="d-prov" required><option value="">Pilih provinsi…</option></select></div>
+      <div class="field"><label for="d-kab">Kabupaten/Kota</label><select id="d-kab" required disabled><option value="">Pilih provinsi dulu…</option></select></div>
       <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocomplete="username" required>
         <div class="hint">Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email untuk satu sekolah.</div></div>
       <div class="field"><label for="d-sandi">Buat kata sandi aplikasi</label><input id="d-sandi" type="password" autocomplete="new-password" required>
@@ -797,6 +797,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <div class="aksi"><button type="button" class="btn small buka-kopi">☕ Traktir kopi</button> <button type="button" class="btn ghost small" id="ajak-tutup">Nanti saja</button></div></div>
 </div>
 
+<script src="wilayah.js"></script>
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbzTAde0R7qTZ3V3Tk_bjI9ue7_lkdKxW4DygSKuoBnvlgKMlRcFBnithtKEhau92LPQ/exec';
 
@@ -857,6 +858,14 @@ const PROVINSI = ['Aceh','Sumatera Utara','Sumatera Barat','Riau','Kepulauan Ria
   'Kalimantan Utara','Sulawesi Utara','Gorontalo','Sulawesi Tengah','Sulawesi Barat','Sulawesi Selatan','Sulawesi Tenggara',
   'Maluku','Maluku Utara','Papua','Papua Barat','Papua Barat Daya','Papua Tengah','Papua Pegunungan','Papua Selatan'];
 $('#d-prov').insertAdjacentHTML('beforeend', PROVINSI.map(p => '<option>' + esc(p) + '</option>').join(''));
+/* Kabupaten/kota mengikuti provinsi yang dipilih (daftar di wilayah.js). */
+function isiKabupaten(){
+  const daftar = (typeof WILAYAH !== 'undefined' && WILAYAH[$('#d-prov').value]) || [];
+  $('#d-kab').innerHTML = '<option value="">' + (daftar.length ? 'Pilih kabupaten/kota…' : 'Pilih provinsi dulu…') + '</option>' +
+    daftar.map(k => '<option>' + esc(k) + '</option>').join('');
+  $('#d-kab').disabled = !daftar.length;
+}
+$('#d-prov').addEventListener('change', isiKabupaten);
 
 /* Statistik pengguna: dimuat sekali saat halaman masuk/daftar tampil; disembunyikan bila gagal atau masih kosong. */
 /* Pengumuman dan status pemeliharaan dari pengelola (spreadsheet Pusat → Pengaturan). */
@@ -1021,7 +1030,7 @@ $('#f-daftar').addEventListener('submit', e => { e.preventDefault(); kirim(e.tar
     kabupaten: $('#d-kab').value, provinsi: $('#d-prov').value,
     sandi: $('#d-sandi').value, ulangi: $('#d-ulangi').value, setuju: $('#d-setuju').checked } });
   pesan('#d-msg', res.pesan, res.ok, res.salah);
-  if (res.ok) { $('#d-prov').value = ''; e.target.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; }); }
+  if (res.ok) { $('#d-prov').value = ''; isiKabupaten(); e.target.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; }); }
 }); });
 
 $('#f-lupa').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
