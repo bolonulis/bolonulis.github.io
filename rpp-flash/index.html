@@ -6,8 +6,9 @@
 <title>RPP Flash | RPP Pembelajaran Mendalam SD dengan Bantuan AI</title>
 <meta name="description" content="RPP Flash menyusun RPP Pembelajaran Mendalam SD kelas 1–6 lengkap dengan asesmen bermodel TKA, LKPD, dan rubrik profil lulusan, dengan desain mundur dan bantuan AI Gemini.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="stylesheet" href="../bersama.css">
 <style>
-:root{--hijau:#1b7f3e;--hijau-tua:#145c2d;--hijau-muda:#e8f5ed;--kuning:#ffd21f;--cream:#f7fbf8;--ink:#16202a;--muted:#5b6b7f;--line:#d6e6dc}
+:root{--aksen:#145c2d;--hijau:#1b7f3e;--hijau-tua:#145c2d;--hijau-muda:#e8f5ed;--kuning:#ffd21f;--cream:#f7fbf8;--ink:#16202a;--muted:#5b6b7f;--line:#d6e6dc}
 *{box-sizing:border-box}
 body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
 a{color:var(--hijau-tua)}
@@ -28,6 +29,7 @@ nav{display:flex;align-items:center;justify-content:space-between;gap:12px;paddi
 .hero .aksi{display:flex;gap:10px;flex-wrap:wrap}
 .hero .btn{background:#fff;color:var(--hijau-tua)}
 .hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.pid-hero{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:10px 14px;margin:0 0 18px!important;color:#fff!important;font-size:15px!important}
 .hero ul{margin:0;padding:18px 20px;list-style:none;background:rgba(255,255,255,.09);border-radius:18px}
 .hero li{padding:6px 0 6px 28px;position:relative;color:#eef8f1;font-size:15px}
 .hero li::before{content:"✓";position:absolute;left:4px;color:var(--kuning);font-weight:900}
@@ -45,13 +47,14 @@ h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--hijau-tua);margin:0 0 6px;lett
 .kotak{background:#fff;border:2px solid var(--hijau);border-radius:22px;padding:24px;display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:center}
 .kotak ul{padding-left:20px;margin:10px 0 0;font-size:14.5px}
 .kotak .kanan{display:flex;flex-direction:column;gap:10px}
+.paket-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.paket{background:#fff;border:2px solid var(--line);border-radius:22px;padding:22px}.paket.utama{border-color:var(--hijau);box-shadow:0 18px 36px rgba(20,92,45,.12)}.paket h3{margin:0;color:var(--hijau-tua)}.paket .angka{font-size:30px;font-weight:900;margin:6px 0 2px;letter-spacing:-.02em}.paket .angka small{font-size:14px;color:var(--muted);font-weight:600}.paket ul{padding-left:20px;margin:10px 0 0;font-size:14.5px}
 .faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
 .faq summary{cursor:pointer;font-weight:700;color:var(--hijau-tua)}
 .faq p{margin:8px 0 0;color:var(--muted);font-size:14.5px}
 .cta{margin-top:46px;padding:30px;border-radius:24px;background:var(--hijau-muda);border:1px solid #a8d5b8;text-align:center}
 .cta h2{margin-bottom:8px}
 footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
-@media(max-width:760px){.hero,.kotak{grid-template-columns:1fr}.hero{padding:30px 22px}.nav-a .btn.ghost{display:none}}
+@media(max-width:760px){.hero,.kotak,.paket-grid{grid-template-columns:1fr}.hero{padding:30px 22px}.nav-a .btn.ghost{display:none}}
 </style>
 </head>
 <body>
@@ -67,7 +70,9 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
       <small>RPP PEMBELAJARAN MENDALAM · SD KELAS 1–6</small>
       <h1>RPP lengkap dalam hitungan menit.</h1>
       <p>Cepat, aplikatif, dan kontekstual. Guru mengisi identitas, topik, dan keadaan kelas; RPP Flash menyusun RPP utuh beserta asesmen, LKPD, dan rubriknya. Hasil tetap ditinjau dan disunting guru.</p>
-      <div class="aksi"><a class="btn" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Buka RPP Flash</a><a class="btn ghost" href="#lisensi">Cara mendapatkan kode</a></div>
+      <p class="pid-hero">🖥️ <b>Lengkap dengan Media Pembelajaran Interaktif</b> untuk Papan Interaktif Digital (PID) di kelas.</p>
+      <div class="aksi"><a class="btn" href="#lisensi">Coba gratis 5 RPP</a><a class="btn ghost" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Sudah punya kode? Buka</a></div>
+      <p class="pemakai" id="st-rpp" hidden style="--aksen:#ffd21f;margin:16px 0 0"></p>
     </div>
     <ul>
       <li>Acuan Panduan Pembelajaran dan Asesmen edisi revisi 2025</li>
@@ -89,7 +94,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
       <div class="card"><div class="ik">🪜</div><h3>Langkah pembelajaran rinci</h3><p>Memahami, mengaplikasi, merefleksi; blok bernomor dengan pertanyaan pemantik siap ucap.</p></div>
       <div class="card"><div class="ik">📝</div><h3>Asesmen bermodel TKA</h3><p>Pilihan ganda, PG kompleks, PG kategori Benar/Salah, dan menjodohkan, lengkap dengan kunci dan skor.</p></div>
       <div class="card"><div class="ik">📄</div><h3>LKPD mandiri</h3><p>Pengantar, contoh terbimbing, latihan bertahap, dan menyimpulkan sendiri, selaras dengan soal asesmen.</p></div>
-      <div class="card"><div class="ik">💻</div><h3>Pemanfaatan digital</h3><p>Pilih sarana digital yang dipakai; uraiannya terisi otomatis dan masih bisa disunting.</p></div>
+      <div class="card"><div class="ik">🖥️</div><h3>Media interaktif untuk PID</h3><p>Media pembelajaran interaktif yang siap ditampilkan di Papan Interaktif Digital kelas, selaras dengan langkah pembelajaran.</p></div>
       <div class="card"><div class="ik">✍️</div><h3>Siap tanda tangan</h3><p>Identitas sekolah, guru, kepala sekolah, NIP/NIY, dan lembar pengamatan sesuai jumlah murid.</p></div>
     </div>
   </section>
@@ -98,7 +103,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <h2>Cara memakai</h2>
     <p class="sub">Cukup browser di laptop atau HP.</p>
     <div class="langkah">
-      <div class="card"><h3>Dapatkan kode lisensi</h3><p>Hubungi pengembang lewat WhatsApp untuk mendapatkan kode lisensi RPP Flash.</p></div>
+      <div class="card"><h3>Dapatkan kode lisensi</h3><p>Isi formulir di bawah. WhatsApp terbuka dengan pesan yang sudah tersusun, tinggal kirim.</p></div>
       <div class="card"><h3>Siapkan kunci Gemini</h3><p>Buat kunci API Gemini gratis di Google AI Studio dengan akun Google Anda. Panduannya ada di dalam aplikasi.</p></div>
       <div class="card"><h3>Isi formulir</h3><p>Identitas, topik, keadaan kelas, model pembelajaran, dan tujuan pembelajaran.</p></div>
       <div class="card"><h3>Tinjau &amp; unduh</h3><p>Periksa hasilnya, sunting bila perlu, lalu unduh dan cetak RPP.</p></div>
@@ -106,17 +111,51 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   </section>
 
   <section id="lisensi">
-    <div class="kotak">
-      <div>
-        <h2>Kode lisensi RPP Flash</h2>
-        <p class="sub" style="margin:0">Setiap kode lisensi berisi jatah penyusunan RPP. Tersedia paket coba dulu untuk mencoba sebelum memakai lebih banyak.</p>
-        <ul><li>Kunci Gemini milik guru sendiri, tidak disimpan di server</li><li>Bantuan pemakaian lewat WhatsApp</li><li>Pembaruan aplikasi mengikuti regulasi terbaru</li></ul>
+    <h2>Paket kode lisensi</h2>
+    <p class="sub">Satu kode boleh dipakai guru maupun sekolah. Kunci Gemini tetap milik pengguna sendiri.</p>
+    <div class="paket-grid">
+      <div class="paket">
+        <h3>Coba Dulu</h3>
+        <div class="angka">Gratis</div>
+        <ul><li>Jatah <b>5 RPP</b></li><li>Semua fitur, termasuk media interaktif PID</li><li>Cocok untuk mencoba sebelum berlangganan</li></ul>
       </div>
-      <div class="kanan">
-        <a class="btn" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20ingin%20mendapatkan%20kode%20lisensi%20RPP%20Flash." target="_blank" rel="noopener">Minta kode lewat WhatsApp</a>
-        <a class="btn ghost" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Sudah punya kode? Buka aplikasi</a>
+      <div class="paket utama">
+        <h3>Langganan Setahun</h3>
+        <div class="angka">Rp49.000 <small>/ tahun</small></div>
+        <ul><li>RPP <b>tanpa batas jumlah</b> selama 1 tahun</li><li>Semua fitur dan pembaruan</li><li>Bantuan lewat WhatsApp</li></ul>
+      </div>
+      <div class="paket">
+        <h3>Tahun berikutnya</h3>
+        <div class="angka">Seikhlasnya</div>
+        <ul><li>Hubungi pengembang untuk mendapatkan <b>kode baru</b></li><li>Kode yang tidak diperpanjang tertutup otomatis setelah 1 tahun</li></ul>
       </div>
     </div>
+
+    <div class="kotak" style="margin-top:18px;display:block">
+      <h3 style="margin:0 0 4px;color:var(--hijau-tua)">Minta kode lewat WhatsApp</h3>
+      <p class="sub" style="margin:0 0 14px">Isi data di bawah, lalu klik tombolnya. WhatsApp terbuka dengan pesan yang sudah tersusun rapi, tinggal tekan Kirim.</p>
+      <form class="form-wa" id="form-kode" novalidate>
+        <label class="penuh">Paket
+          <select name="paket">
+            <option value="coba">Coba Dulu (gratis, 5 RPP)</option>
+            <option value="setahun">Langganan Setahun (Rp49.000)</option>
+            <option value="perpanjang">Perpanjang tahun berikutnya (seikhlasnya)</option>
+          </select></label>
+        <label>Nama lengkap<input name="nama" required data-label="nama" maxlength="60" placeholder="Sri Wahyuni, S.Pd."></label>
+        <label>Sekolah<input name="sekolah" required data-label="nama sekolah" maxlength="80" placeholder="SD Negeri 1 …"></label>
+        <label>NPSN<input name="npsn" inputmode="numeric" maxlength="8" placeholder="8 angka"></label>
+        <label>Kabupaten/Kota<input name="kabupaten" required data-label="kabupaten/kota" maxlength="60" placeholder="Kabupaten Kendal"></label>
+        <label class="penuh">Kode lama (khusus perpanjangan)<input name="kodelama" maxlength="30" placeholder="FLASH-XXXX-XXXX"></label>
+        <div class="penuh salah"></div>
+        <div class="penuh"><button class="btn" type="submit">📲 Kirim lewat WhatsApp</button></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="testimoni" hidden>
+    <h2>Kata para guru</h2>
+    <p class="sub">Testimoni dari pemakai RPP Flash.</p>
+    <div class="daftar-testi" id="daftar-testi"></div>
   </section>
 
   <section class="faq">
@@ -124,13 +163,15 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <details><summary>Apakah RPP langsung jadi tanpa perlu diperiksa?</summary><p>Tidak. RPP Flash menyusun draf yang lengkap dan selaras, tetapi guru tetap meninjau, menyesuaikan dengan kelasnya, dan menyunting sebelum dipakai.</p></details>
     <details><summary>Mengapa perlu kunci API Gemini?</summary><p>RPP Flash memakai AI Gemini dengan kunci milik guru sendiri, sehingga pemakaiannya memakai kuota gratis akun Google guru. Kunci tidak disimpan di server, dan satu RPP memakai tiga permintaan.</p></details>
     <details><summary>Bolehkah menuliskan nama murid?</summary><p>Jangan. Tulis keadaan murid secara umum saja, misalnya "tiga murid masih kesulitan membaca". Pada paket gratis, Google dapat memakai isian untuk meningkatkan produknya.</p></details>
+    <details><summary>Apa yang terjadi setelah satu tahun?</summary><p>Kode berhenti otomatis. Untuk tahun berikutnya, hubungi pengembang lewat formulir di atas (pilih "Perpanjang"), beri dukungan seikhlasnya, dan Anda akan menerima kode baru.</p></details>
+    <details><summary>Bisakah dibayar dari dana BOS?</summary><p>Langganan ini dimaksudkan sebagai pembelian pribadi guru. Bila sekolah memerlukan pembelian resmi, hubungi pengembang terlebih dahulu.</p></details>
     <details><summary>Mata pelajaran apa saja?</summary><p>Mata pelajaran SD kelas 1–6 Kurikulum Merdeka. Fase ditentukan otomatis dari kelas, dan uraian CP dipilih per elemen.</p></details>
   </section>
 
   <div class="cta">
     <h2>Siap menyusun RPP?</h2>
-    <p class="sub" style="margin-bottom:16px">Minta kode lisensi, siapkan kunci Gemini, dan mulai.</p>
-    <a class="btn" href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec" target="_blank" rel="noopener">Buka RPP Flash</a>
+    <p class="sub" style="margin-bottom:16px">Coba gratis 5 RPP dulu, lalu lanjutkan bila cocok.</p>
+    <a class="btn" href="#lisensi">Minta kode coba gratis</a>
   </div>
 
   <footer>
@@ -138,6 +179,26 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <a href="https://wa.me/6281196939694" target="_blank" rel="noopener">WhatsApp 0811-9693-9694</a> · <a href="../">Karya lain dari pengembang</a>
   </footer>
 </div>
-<script>document.getElementById('tahun').textContent = new Date().getFullYear();</script>
+<script src="../bersama.js"></script>
+<script>
+document.getElementById('tahun').textContent = new Date().getFullYear();
+tampilPemakai('rpp', 'st-rpp');
+tampilTestimoni(['rpp'], 'daftar-testi', 'testimoni');
+const PAKET = {
+  coba: 'mencoba RPP Flash dengan paket *Coba Dulu* (gratis, 5 RPP)',
+  setahun: 'berlangganan RPP Flash paket *Langganan Setahun* (Rp49.000)',
+  perpanjang: 'memperpanjang kode RPP Flash untuk tahun berikutnya (seikhlasnya)'
+};
+pasangFormWa('form-kode', d => [
+  'Halo Admin, saya ingin ' + PAKET[d.paket] + '.',
+  '',
+  'Nama: ' + d.nama,
+  'Sekolah: ' + d.sekolah + (d.npsn ? ' (NPSN ' + d.npsn + ')' : ''),
+  'Kabupaten/Kota: ' + d.kabupaten,
+  d.paket === 'perpanjang' && d.kodelama ? 'Kode lama: ' + d.kodelama : '',
+  '',
+  'Mohon dikirimkan kode lisensinya. Terima kasih.'
+].filter((x, i, a) => x !== '' || a[i - 1] !== '').join('\n'));
+</script>
 </body>
 </html>

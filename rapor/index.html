@@ -6,6 +6,7 @@
 <title>Rapor Merdeka Digital | Rapor SD Kurikulum Merdeka Kelas 1–6</title>
 <meta name="description" content="Aplikasi rapor SD Kurikulum Merdeka kelas 1–6, gratis: input nilai, deskripsi otomatis, kokurikuler, cetak rapor A4, Excel siap e-Rapor, transkrip dan SKL.">
 <link rel="icon" type="image/svg+xml" href="../logo.svg">
+<link rel="stylesheet" href="../bersama.css">
 <style>
 :root{--red:#d71920;--red-dark:#9e1117;--yellow:#ffd21f;--blue:#12314f;--blue2:#1f4f7a;--cream:#fffaf0;--ink:#16202a;--muted:#5b6b7f;--line:#eadfc7;--ok:#1d7a37}
 *{box-sizing:border-box}
@@ -72,6 +73,7 @@ footer a{color:var(--blue)}
       <h1>Rapor rapi, deskripsi otomatis, siap e-Rapor.</h1>
       <p>Guru cukup mengisi angka. Nilai rapor, deskripsi capaian, kokurikuler, dan leger dihitung otomatis, lalu dicetak 2 halaman A4 atau diunduh ke Excel untuk e-Rapor.</p>
       <div class="aksi"><a class="btn" href="../app/#daftar">Daftar gratis</a><a class="btn ghost" href="#gratis">Kenapa gratis?</a></div>
+      <p class="pemakai" id="st-rapor" hidden style="--aksen:#ffd21f;margin:16px 0 0"></p>
     </div>
     <ul>
       <li><b>Gratis</b> untuk semua SD, tanpa batas waktu</li>
@@ -128,6 +130,12 @@ footer a{color:var(--blue)}
     </div>
   </section>
 
+  <section id="testimoni" hidden>
+    <h2>Kata para guru</h2>
+    <p class="sub">Testimoni dari sekolah pemakai Rapor Merdeka Digital.</p>
+    <div class="daftar-testi" id="daftar-testi"></div>
+  </section>
+
   <section class="faq">
     <h2>Pertanyaan umum</h2>
     <details><summary>Apakah ini menggantikan e-Rapor Kemendikdasmen?</summary><p>Tidak. Rapor Merdeka Digital membantu guru mengolah nilai dan deskripsi dengan cepat, lalu hasilnya bisa diunduh dalam Excel untuk disalin ke e-Rapor. Sekolah juga bisa langsung mencetak rapor dari aplikasi.</p></details>
@@ -149,6 +157,11 @@ footer a{color:var(--blue)}
     <a href="../syarat.html">Syarat Layanan</a> · <a href="../privasi.html">Kebijakan Privasi</a> · <a href="../app/panduan.html">Panduan Guru</a> · <a href="../">Karya lain dari pengembang</a>
   </footer>
 </div>
-<script>document.getElementById('tahun').textContent = new Date().getFullYear();</script>
+<script src="../bersama.js"></script>
+<script>
+document.getElementById('tahun').textContent = new Date().getFullYear();
+tampilPemakai('rapor', 'st-rapor');
+tampilTestimoni(['rapor'], 'daftar-testi', 'testimoni');
+</script>
 </body>
 </html>

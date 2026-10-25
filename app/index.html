@@ -35,7 +35,7 @@ input:focus{outline:2px solid var(--yellow);border-color:var(--yellow)}
 dialog.profil{border:0;border-radius:22px;padding:0;max-width:440px;width:calc(100% - 32px);box-shadow:0 24px 60px rgba(18,49,79,.3)}dialog.profil::backdrop{background:rgba(18,49,79,.45)}
 .profil .kepala{background:linear-gradient(135deg,var(--blue),#1f4f7a);color:#fff;padding:20px 22px}.profil .kepala small{color:#d6e2ee;font-weight:700;letter-spacing:.06em;font-size:11.5px}.profil .kepala h3{margin:6px 0 2px;font-size:19px}.profil .kepala p{margin:0;color:#d6e2ee;font-size:13.5px}
 .profil dl{margin:0;padding:16px 22px;display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:14px}.profil dt{color:var(--muted)}.profil dd{margin:0;font-weight:600}.profil dd a{color:var(--blue)}
-.profil .tombol{display:flex;gap:8px;padding:0 22px 20px;flex-wrap:wrap}.profil .tombol .btn{width:auto;flex:1 1 auto;white-space:nowrap;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center}.profil .dukung{margin:0 22px 16px;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-size:13px;line-height:1.55;color:#5c4400}.profil .dukung b{display:block;color:var(--blue);font-size:13.5px;margin-bottom:3px}.kopi .isi{padding:18px 22px 6px;font-size:14.5px;line-height:1.6}.kopi .nomor{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#fff8e1;border:1px solid #f0d77a;border-radius:14px;padding:12px 14px;margin:12px 0;font-weight:800;color:#5c4400}.kopi .nomor button{flex:none}.kopi #kopi-info{display:flex;flex-direction:column;gap:2px;min-width:0}.kopi #kopi-info .dompet{margin:0;color:#7a5c00;font-size:12.5px;font-weight:700}.kopi #kopi-info .no{font-size:19px;white-space:nowrap;letter-spacing:.3px;color:#5c4400}.kopi #kopi-info .an{margin:0;color:#7a5c00;font-size:12.5px;font-weight:600}.kopi small{display:block;color:var(--muted);font-size:12.5px;margin-top:8px}
+.profil .tombol{display:flex;gap:8px;padding:0 22px 20px;flex-wrap:wrap}.profil .tombol .btn{width:auto;flex:1 1 auto;white-space:nowrap;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center}.profil .dukung{margin:0 22px 16px;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-size:13px;line-height:1.55;color:#5c4400}.profil .dukung b{display:block;color:var(--blue);font-size:13.5px;margin-bottom:3px}.kopi .isi{padding:18px 22px 6px;font-size:14.5px;line-height:1.6}.kopi .nomor{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#fff8e1;border:1px solid #f0d77a;border-radius:14px;padding:12px 14px;margin:12px 0;font-weight:800;color:#5c4400}.kopi .nomor button{flex:none}.kopi #kopi-info{display:flex;flex-direction:column;gap:2px;min-width:0}.kopi #kopi-info .dompet{margin:0;color:#7a5c00;font-size:12.5px;font-weight:700}.kopi #kopi-info .no{font-size:19px;white-space:nowrap;letter-spacing:.3px;color:#5c4400}.kopi #kopi-info .an{margin:0;color:#7a5c00;font-size:12.5px;font-weight:600}#f-testi label{display:block;margin-top:8px}#f-testi textarea{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1px solid #d9cfb8;border-radius:12px;resize:vertical}#f-testi textarea:focus{outline:2px solid var(--yellow);border-color:var(--yellow)}#f-testi label.show{display:flex}#f-testi .tombol .btn{flex:1}.kopi small{display:block;color:var(--muted);font-size:12.5px;margin-top:8px}
 .ajak-kopi{position:fixed;right:16px;bottom:16px;z-index:50;max-width:340px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 18px 40px rgba(18,49,79,.22);font-size:14px;line-height:1.5}.ajak-kopi b{display:block;color:var(--blue);margin-bottom:4px}.ajak-kopi .aksi{margin-top:10px}
 @media print{.ajak-kopi{display:none!important}}
 .btn.wa{background:#1fa855}.btn.wa:hover{background:#178a45}
@@ -338,8 +338,8 @@ table.leger td.j{text-align:center;font-weight:800}
       <button class="tile" type="button" id="t-wk"><b>Wali Kelas</b><span>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-lulus"><b>Transkrip &amp; SKL</b><span>Kelas 6: nilai rata-rata kelas 5–6 dan praktik, nomor ijazah, cetak transkrip nilai dan Surat Keterangan Lulus.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-cetak"><b>Cek &amp; Cetak Rapor</b><span>Pemeriksaan kelengkapan, leger nilai, dan cetak rapor (bisa disimpan sebagai PDF).</span><div class="tag on">Buka →</div></button>
-      <div class="tile t-bantu"><b>Bantuan</b><span>Panduan pemakaian, profil pengembang, dan narahubung.</span>
-        <div class="t-bantu-tombol"><a class="btn ghost small" href="panduan.html" target="_blank" rel="noopener">📘 Panduan</a><button type="button" class="btn ghost small buka-profil">👤 Narahubung</button><button type="button" class="btn ghost small buka-kopi hidden">☕ Traktir kopi</button></div></div>
+      <div class="tile t-bantu"><b>Bantuan</b><span>Panduan, narahubung, dan testimoni untuk aplikasi ini.</span>
+        <div class="t-bantu-tombol"><a class="btn ghost small" href="panduan.html" target="_blank" rel="noopener">📘 Panduan</a><button type="button" class="btn ghost small buka-profil">👤 Narahubung</button><button type="button" class="btn ghost small" id="buka-testi">⭐ Beri testimoni</button><button type="button" class="btn ghost small buka-kopi hidden">☕ Traktir kopi</button></div></div>
     </div>
 
     <div class="card akun">
@@ -767,6 +767,19 @@ table.leger td.j{text-align:center;font-weight:800}
     </dl>
     <p class="hint" style="margin:0;padding:0 22px 16px">Untuk pertanyaan, masukan, atau kendala penggunaan aplikasi, silakan hubungi melalui WhatsApp.</p>
     <div class="tombol"><a class="btn wa" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Rapor%20Merdeka%20Digital." target="_blank" rel="noopener">Chat WhatsApp</a><button type="button" class="btn ghost buka-kopi hidden">☕ Traktir kopi</button><button type="button" class="btn ghost" id="pf-tutup">Tutup</button></div>
+  </dialog>
+
+  <dialog id="testi" class="profil kopi" aria-labelledby="testi-judul">
+    <div class="kepala"><small>TESTIMONI PEMAKAI</small><h3 id="testi-judul">⭐ Bagikan pengalaman Anda</h3><p>Testimoni membantu sekolah lain mengenal aplikasi ini.</p></div>
+    <form id="f-testi" class="isi" novalidate>
+      <label for="ts-nama">Nama</label><input type="text" id="ts-nama" maxlength="60" placeholder="misalnya Sri Wahyuni, S.Pd." required>
+      <label for="ts-jabatan">Jabatan</label><input type="text" id="ts-jabatan" maxlength="60" placeholder="misalnya Guru Kelas 4 / Operator / Kepala Sekolah">
+      <label for="ts-isi">Testimoni</label><textarea id="ts-isi" maxlength="400" rows="4" placeholder="Apa yang paling membantu dari aplikasi ini?" required></textarea>
+      <small id="ts-hitung">0/400 karakter</small>
+      <label class="show" style="margin-top:10px;align-items:flex-start"><input type="checkbox" id="ts-izin" checked> <span>Boleh ditampilkan di halaman depan beserta nama, jabatan, dan nama sekolah.</span></label>
+      <div class="msg" id="ts-msg"></div>
+      <div class="tombol" style="padding:12px 0 18px"><button class="btn" type="submit">Kirim testimoni</button><button type="button" class="btn ghost" id="testi-tutup">Tutup</button></div>
+    </form>
   </dialog>
 
   <dialog id="kopi" class="profil kopi" aria-labelledby="kopi-judul">
@@ -2857,6 +2870,16 @@ document.querySelectorAll('.buka-kopi').forEach(b => b.addEventListener('click',
   $('#kopi').showModal();
 }));
 $('#kopi-tutup').addEventListener('click', () => $('#kopi').close());
+/* Testimoni: masuk ke sheet Testimoni di Pusat, tampil di halaman depan setelah disetujui pengembang. */
+$('#buka-testi').addEventListener('click', () => { $('#ts-msg').className = 'msg'; $('#testi').showModal(); });
+$('#testi-tutup').addEventListener('click', () => $('#testi').close());
+$('#ts-isi').addEventListener('input', e => { $('#ts-hitung').textContent = e.target.value.length + '/400 karakter'; });
+$('#f-testi').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+  const res = await api({ aksi:'kirimTestimoni', data: { nama: $('#ts-nama').value, jabatan: $('#ts-jabatan').value, isi: $('#ts-isi').value, izin: $('#ts-izin').checked } });
+  if (res.sesiHabis) return $('#testi').close();
+  pesan('#ts-msg', res.pesan, res.ok);
+  if (res.ok) { $('#ts-isi').value = ''; $('#ts-hitung').textContent = '0/400 karakter'; }
+}); });
 $('#kopi').addEventListener('click', e => { if (e.target === $('#kopi')) $('#kopi').close(); });
 /* "DANA / OVO / GoPay: 0811-9693-9694 (a.n. Nama)" → dompet, nomor, dan atas nama di baris sendiri-sendiri. */
 function tulisKopi(t){

@@ -1,0 +1,15 @@
+/* Testimoni dan formulir WhatsApp, dipakai halaman depan, /rapor/, dan /rpp-flash/. Warna mengikuti --aksen halaman. */
+.daftar-testi{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.testi{margin:0;background:#fff;border:1px solid var(--line,#eadfc7);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 20px rgba(0,0,0,.04)}
+.testi blockquote{margin:0;font-size:15px;line-height:1.6;color:var(--ink,#16202a)}
+.testi figcaption{display:flex;flex-direction:column;font-size:13px;color:var(--muted,#5b6b7f);margin-top:auto}
+.testi figcaption b{color:var(--aksen,#12314f);font-size:14px}
+.testi figcaption em{font-style:normal;font-weight:700;font-size:12px;color:var(--aksen,#12314f);margin-top:4px}
+.pemakai{font-weight:700;color:var(--aksen,#12314f);margin:0 0 10px}
+.form-wa{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-wa label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:var(--ink,#16202a)}
+.form-wa input,.form-wa select{font:inherit;font-size:15px;font-weight:400;padding:10px 12px;border:1px solid var(--line,#eadfc7);border-radius:12px;background:#fff;color:var(--ink,#16202a);width:100%}
+.form-wa input:focus,.form-wa select:focus{outline:2px solid var(--aksen,#12314f);outline-offset:-1px}
+.form-wa .penuh{grid-column:1/-1}
+.form-wa .salah{color:#c5221f;font-size:13.5px;font-weight:600;min-height:1em}
+@media(max-width:600px){.form-wa{grid-template-columns:1fr}}
