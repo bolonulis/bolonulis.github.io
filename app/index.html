@@ -35,7 +35,7 @@ input:focus{outline:2px solid var(--yellow);border-color:var(--yellow)}
 dialog.profil{border:0;border-radius:22px;padding:0;max-width:440px;width:calc(100% - 32px);box-shadow:0 24px 60px rgba(18,49,79,.3)}dialog.profil::backdrop{background:rgba(18,49,79,.45)}
 .profil .kepala{background:linear-gradient(135deg,var(--blue),#1f4f7a);color:#fff;padding:20px 22px}.profil .kepala small{color:#d6e2ee;font-weight:700;letter-spacing:.06em;font-size:11.5px}.profil .kepala h3{margin:6px 0 2px;font-size:19px}.profil .kepala p{margin:0;color:#d6e2ee;font-size:13.5px}
 .profil dl{margin:0;padding:16px 22px;display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:14px}.profil dt{color:var(--muted)}.profil dd{margin:0;font-weight:600}.profil dd a{color:var(--blue)}
-.profil .tombol{display:flex;gap:8px;padding:0 22px 20px;flex-wrap:wrap}.profil .tombol .btn{width:auto;flex:1 1 auto;white-space:nowrap;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center}.profil .dukung{margin:0 22px 16px;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-size:13px;line-height:1.55;color:#5c4400}.profil .dukung b{display:block;color:var(--blue);font-size:13.5px;margin-bottom:3px}.kopi .isi{padding:18px 22px 6px;font-size:14.5px;line-height:1.6}.kopi .nomor{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#fff8e1;border:1px solid #f0d77a;border-radius:14px;padding:12px 14px;margin:12px 0;font-weight:800;color:#5c4400}.kopi .nomor button{flex:none}.kopi small{display:block;color:var(--muted);font-size:12.5px;margin-top:8px}
+.profil .tombol{display:flex;gap:8px;padding:0 22px 20px;flex-wrap:wrap}.profil .tombol .btn{width:auto;flex:1 1 auto;white-space:nowrap;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center}.profil .dukung{margin:0 22px 16px;padding:12px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f0d77a;font-size:13px;line-height:1.55;color:#5c4400}.profil .dukung b{display:block;color:var(--blue);font-size:13.5px;margin-bottom:3px}.kopi .isi{padding:18px 22px 6px;font-size:14.5px;line-height:1.6}.kopi .nomor{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#fff8e1;border:1px solid #f0d77a;border-radius:14px;padding:12px 14px;margin:12px 0;font-weight:800;color:#5c4400}.kopi .nomor button{flex:none}.kopi #kopi-info{display:flex;flex-direction:column;gap:2px;min-width:0}.kopi #kopi-info .dompet{margin:0;color:#7a5c00;font-size:12.5px;font-weight:700}.kopi #kopi-info .no{font-size:19px;white-space:nowrap;letter-spacing:.3px;color:#5c4400}.kopi #kopi-info .an{margin:0;color:#7a5c00;font-size:12.5px;font-weight:600}.kopi small{display:block;color:var(--muted);font-size:12.5px;margin-top:8px}
 .ajak-kopi{position:fixed;right:16px;bottom:16px;z-index:50;max-width:340px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 18px 40px rgba(18,49,79,.22);font-size:14px;line-height:1.5}.ajak-kopi b{display:block;color:var(--blue);margin-bottom:4px}.ajak-kopi .aksi{margin-top:10px}
 @media print{.ajak-kopi{display:none!important}}
 .btn.wa{background:#1fa855}.btn.wa:hover{background:#178a45}
@@ -864,7 +864,7 @@ async function muatInfo(){
   INFO = res;
   tampilUmum(res);
   // Ajakan dukungan sukarela: tampil hanya bila pengelola mengisi "Info Dukungan".
-  $('#kopi-info').textContent = res.dukungan || '';
+  tulisKopi(res.dukungan || '');
   document.querySelectorAll('.buka-kopi').forEach(b => b.classList.toggle('hidden', !res.dukungan));
   // Pendaftaran ditutup: tab Daftar dan statistik disembunyikan.
   $('#tab-daftar').classList.toggle('hidden', !res.daftarDibuka);
@@ -2858,6 +2858,13 @@ document.querySelectorAll('.buka-kopi').forEach(b => b.addEventListener('click',
 }));
 $('#kopi-tutup').addEventListener('click', () => $('#kopi').close());
 $('#kopi').addEventListener('click', e => { if (e.target === $('#kopi')) $('#kopi').close(); });
+/* "DANA / OVO / GoPay: 0811-9693-9694 (a.n. Nama)" → dompet, nomor, dan atas nama di baris sendiri-sendiri. */
+function tulisKopi(t){
+  const m = t.match(/^(.*?):\s*([\d\-\s]{9,}?)\s*(?:\((.*)\))?\s*$/);
+  if (!m) { $('#kopi-info').textContent = t; return; }
+  $('#kopi-info').innerHTML = '<small class="dompet">' + esc(m[1].trim()) + '</small><b class="no">' + esc(m[2].trim()) + '</b>' +
+    (m[3] ? '<small class="an">' + esc(m[3].trim()) + '</small>' : '');
+}
 $('#kopi-salin').addEventListener('click', async () => {
   const nomor = ($('#kopi-info').textContent.match(/[\d\-\s]{9,}/) || [''])[0].replace(/\D/g, '');
   try { await navigator.clipboard.writeText(nomor); $('#kopi-salin').textContent = 'Tersalin ✓'; } catch (e) { $('#kopi-salin').textContent = nomor; }
