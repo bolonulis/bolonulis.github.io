@@ -140,6 +140,10 @@ table.kok tr.basi td.ket{opacity:.45}
 .t-prog{grid-column:1/-1;border-color:#cdb8f2;background:linear-gradient(135deg,#fff,#f3ecff)}.t-prog b{color:#4b2a8c;font-size:17px}
 .tile .t-prog-baru{display:inline-block;width:auto;margin:0 0 0 6px;line-height:1.4;font-size:11px;font-weight:800;letter-spacing:.06em;color:#fff;background:#6d44c4;border-radius:999px;padding:2px 8px;vertical-align:2px}
 .t-prog-promo{margin:10px 0 2px;background:#fff8e1;border:1px solid #f0d77a;border-radius:12px;padding:9px 12px;font-size:13.5px;font-weight:700;color:#5c4400;text-align:left}
+.pg-siap{margin-top:12px;background:#e9f6ec;border:1px solid #b9dfc6;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.55;color:#14532d}
+.pg-siap b.j{display:block;font-size:15px;margin-bottom:4px}.pg-siap ol{margin:6px 0 10px;padding-left:20px}.pg-siap li{margin:3px 0}
+.pg-siap .ok{color:var(--ok);font-weight:800}.pg-siap .belum{color:#9a6c00;font-weight:800}
+.pg-siap .link-kode{background:none;border:0;padding:0;font:inherit;font-size:12.5px;color:var(--muted);text-decoration:underline;cursor:pointer;margin-top:6px}
 .pg-promo{margin-top:10px;background:#fff8e1;border:1px solid #f0d77a;border-radius:12px;padding:9px 12px;font-size:13.5px;font-weight:700;color:#5c4400}
 .pg-langkah{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}.pg-langkah span{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;background:#f1ecfb;color:#6b5a8e;border:1px solid #e4dbf6}
 .pg-langkah span.on{background:#4b2a8c;color:#fff;border-color:#4b2a8c}.pg-langkah span.ok{background:#e9f6ec;color:var(--ok);border-color:#b9dfc6}
@@ -530,8 +534,9 @@ table.leger td.j{text-align:center;font-weight:800}
     <div id="pg-depan">
       <div class="card pg-kuota-kartu">
         <div class="pg-kuota"><div><b id="pg-kuota-judul">Memuat…</b><div class="sub" id="pg-kuota-teks"></div></div>
-          <button class="btn ghost small" type="button" id="pg-aktivasi-buka">🔑 Masukkan kode aktivasi</button></div>
+          <button class="btn ghost small hidden" type="button" id="pg-aktivasi-buka">🔑 Masukkan kode aktivasi</button></div>
         <div class="pg-promo hidden" id="pg-promo"></div>
+        <div class="pg-siap hidden" id="pg-siap"></div>
         <div class="pg-kontribusi hidden" id="pg-kontribusi"></div>
         <form id="pg-aktivasi" class="hidden" style="margin-top:12px">
           <label for="pg-kode">Kode aktivasi Lisensi Sekolah</label>
@@ -3268,6 +3273,6 @@ async function mulai(){
 }
 mulai();
 </script>
-<script src="program.js?v=4"></script>
+<script src="program.js?v=5"></script>
 </body>
 </html>

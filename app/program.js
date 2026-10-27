@@ -247,8 +247,25 @@ function renderDepan(){
   $('#pg-kontribusi').classList.toggle('hidden', !!k.lisensiSampai || k.sisaGratis > 1);
   $('#pg-promo').textContent = k.promo && !k.lisensiSampai ? '🎁 ' + k.promo : '';
   $('#pg-promo').classList.toggle('hidden', !k.promo || !!k.lisensiSampai);
+  // Petunjuk memulai: selama kuota gratis/lisensi masih ada, kode aktivasi TIDAK diperlukan.
+  const adaKunci = !!ls.get(KUNCI_GEMINI);
+  $('#pg-aktivasi-buka').classList.toggle('hidden', k.bisaBaru);
+  if (k.bisaBaru) {
+    $('#pg-siap').innerHTML = '<b class="j">✅ ' + (k.lisensiSampai ? 'Lisensi Sekolah aktif.' : 'Tidak perlu kode aktivasi.') + '</b>' +
+      (k.lisensiSampai ? 'Semua guru dapat langsung menyusun program.' : 'Sekolah Anda masih punya <b>' + k.sisaGratis + ' program gratis</b>. Kode aktivasi baru diperlukan setelah kuota gratis habis.') +
+      '<ol><li>Isi <b>Kunci API Gemini</b> di bawah (cukup sekali per perangkat): ' + (adaKunci ? '<span class="ok">✓ sudah tersimpan</span>' : '<span class="belum">belum diisi</span>') + '</li>' +
+      '<li>Klik <b>Mulai program baru</b>, lalu ikuti tahapnya: Persiapan → Tahap 1 → 2 → 3 → Dokumen.</li></ol>' +
+      '<div class="toolbar" style="margin:0"><button class="btn small" type="button" id="pg-siap-mulai">' + (adaKunci ? '+ Mulai program baru' : '🔐 Isi kunci API Gemini dulu') + '</button></div>' +
+      (k.lisensiSampai ? '' : '<button class="link-kode" type="button" id="pg-siap-kode">Sudah punya kode aktivasi Lisensi Sekolah? Masukkan di sini</button>');
+    $('#pg-siap-mulai').addEventListener('click', () => {
+      if (!ls.get(KUNCI_GEMINI)) { $('#pg-kunci-box').open = true; $('#pg-kunci-box').scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(() => $('#pg-kunci').focus(), 300); return; }
+      $('#pg-baru').click();
+    });
+    if ($('#pg-siap-kode')) $('#pg-siap-kode').addEventListener('click', () => { $('#pg-aktivasi').classList.remove('hidden'); $('#pg-kode').focus(); });
+  }
+  $('#pg-siap').classList.toggle('hidden', !k.bisaBaru);
   $('#pg-baru').disabled = !k.bisaBaru;
-  $('#pg-baru-ket').textContent = k.bisaBaru ? (k.lisensiSampai ? '' : 'Memulai program baru memakai 1 kuota gratis.') : 'Kuota gratis sudah terpakai.';
+  $('#pg-baru-ket').textContent = k.bisaBaru ? (k.lisensiSampai ? '' : 'Memulai program baru memakai 1 dari ' + k.sisaGratis + ' kuota gratis sekolah.') : 'Kuota gratis sudah terpakai. Masukkan kode aktivasi untuk melanjutkan.';
   $('#pg-daftar').innerHTML = PG.program.length ? '<table class="pg-tabel"><thead><tr><th>Program</th><th>Tahun ajaran</th><th>Tahap</th><th>Diubah</th><th></th></tr></thead><tbody>' +
     PG.program.map(p => '<tr><td><b>' + esc(p.judul) + '</b></td><td>' + esc(p.ta) + '</td><td>' + esc(LANGKAH[Math.min(4, (p.tahap || 0) + 1)]) + '</td><td>' + esc(p.diubah) + '</td>' +
       '<td style="white-space:nowrap"><button class="btn small" type="button" data-buka="' + esc(p.id) + '">Buka</button> <button class="btn ghost small" type="button" data-hapus="' + esc(p.id) + '">Hapus</button></td></tr>').join('') +
@@ -269,8 +286,9 @@ $('#pg-kunci-uji').addEventListener('click', e => sibuk(e.target, async () => {
     pesan('#pg-kunci-msg', 'Kunci berfungsi dan tersimpan di perangkat ini. Anda siap menyusun program.', true);
   } catch (err) { pesan('#pg-kunci-msg', err.message, false); }
   renderKunci(); $('#pg-kunci-box').open = true;
+  if (PG) renderDepan();    // status kunci di petunjuk memulai ikut diperbarui
 }));
-$('#pg-kunci-hapus').addEventListener('click', () => { ls.del(KUNCI_GEMINI); renderKunci(); pesan('#pg-kunci-msg', 'Kunci dihapus dari perangkat ini.', true); });
+$('#pg-kunci-hapus').addEventListener('click', () => { ls.del(KUNCI_GEMINI); renderKunci(); if (PG) renderDepan(); pesan('#pg-kunci-msg', 'Kunci dihapus dari perangkat ini.', true); });
 $('#pg-aktivasi-buka').addEventListener('click', () => { $('#pg-aktivasi').classList.toggle('hidden'); $('#pg-kode').focus(); });
 $('#pg-aktivasi').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
   const res = await api({ aksi: 'aktivasiKok', kode: $('#pg-kode').value });
@@ -296,7 +314,8 @@ $('#pg-daftar').addEventListener('click', async e => {
     bukaKerja();
   });
 });
-$('#pg-baru').addEventListener('click', () => { PR = { id: '', ta: PG.tahunAjaran, data: { tahap: 0 } }; LIHAT = 0; bukaKerja(); });
+$('#pg-baru').addEventListener('click', () => {
+  if (!ls.get(KUNCI_GEMINI)) { pesan('#pg-info', 'Isi dulu Kunci API Gemini (bagian 🔐 di bawah), baru mulai program.', false); $('#pg-kunci-box').open = true; $('#pg-kunci-box').scrollIntoView({ behavior: 'smooth' }); return; } PR = { id: '', ta: PG.tahunAjaran, data: { tahap: 0 } }; LIHAT = 0; bukaKerja(); });
 $('#pg-kembali').addEventListener('click', async () => {
   if (PG_UBAH && !confirm('Ada perubahan yang belum disimpan. Tinggalkan?')) return;
   PG_UBAH = false; bukaProgramKok();
