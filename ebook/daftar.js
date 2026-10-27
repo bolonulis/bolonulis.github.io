@@ -11,7 +11,7 @@ const EBOOK = [
     halaman: 43,
     ringkas: 'Memahami beda model, metode, dan teknik; memilih model dengan tiga pertanyaan; sintaks lengkap 13 model; 12 metode; cara memadukannya; dan daftar periksa sebelum masuk kelas.',
     poin: ['13 model: PBL, PjBL, TPS, Jigsaw, STAD, NHT, Discovery, dan lainnya', '12 metode pembelajaran dan cara memadukannya', 'Selaras dengan Panduan Pembelajaran dan Asesmen 2025'],
-    berkas: 'racik-kelas-hidup.pdf?v=2',
+    berkas: 'racik-kelas-hidup-2026.pdf',
     sampul: 'racik-kelas-hidup.png',
     hargaNormal: 100000,
     gratis: true // masa promo: ubah ke false bila promo berakhir
