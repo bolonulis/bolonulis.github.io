@@ -95,6 +95,9 @@ table.mapel .na{color:#c9bfa8}
 .t-bantu-tombol{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.t-bantu-tombol .btn{text-decoration:none;width:auto}
 .tp-salin{margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fffdf6}.tp-salin ol{margin:8px 0 12px;padding-left:20px;font-size:14px;line-height:1.6}.baris-salin{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.baris-salin em{color:var(--red);font-style:normal}.baris-salin .btn{width:auto;flex:none}
 .satu-akun{background:#eef5fb;border:1px solid #c9dcee;border-radius:14px;padding:12px 14px;margin:0 0 16px;font-size:14px;color:var(--blue)}.satu-akun ul{margin:6px 0 0;padding-left:20px;line-height:1.55;color:var(--ink)}.satu-akun li{margin:3px 0}
+.bantu-masuk{margin-top:10px;padding:12px 14px;border-radius:12px;background:#fff8e1;border:1px solid #f0d77a;font-size:13.5px;color:#5c4400}.bantu-masuk ul{margin:6px 0 10px;padding-left:18px;line-height:1.55}.bantu-masuk .btn{width:auto;text-decoration:none;display:inline-flex}
+.catatan-masuk{margin-top:14px;padding:10px 12px;border-radius:12px;background:#eef5fb;border:1px solid #c9dcee;font-size:13px;line-height:1.55;color:var(--ink)}
+.daftar-ok h3{margin:0 0 8px;color:var(--ok)}.daftar-ok ol{margin:0 0 14px;padding-left:20px;line-height:1.6;font-size:14.5px}.daftar-ok li{margin:4px 0}.daftar-ok .tombol-ok{display:flex;gap:8px;flex-wrap:wrap}.daftar-ok .tombol-ok .btn{width:auto;flex:1 1 auto;text-decoration:none;display:inline-flex;justify-content:center}
 .tag.baru{background:#fde8e8;color:var(--red);margin-left:6px}
 .b-tpbaru{margin:0 0 14px}
 .b-tpbaru-daftar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;width:100%}
@@ -234,7 +237,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <h2>Kode akses</h2>
     <p>Aplikasi ini saat ini khusus untuk sekolah tertentu. Masukkan kode akses dari operator sekolah untuk melanjutkan.</p>
     <form id="f-gerbang">
-      <div class="field"><label for="g-kode">Kode akses</label><input id="g-kode" type="password" autocomplete="off" required></div>
+      <div class="field"><label for="g-kode">Kode akses</label><input id="g-kode" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" required></div>
       <label class="show"><input type="checkbox" data-show="g-kode"> Tampilkan kode</label>
       <button class="btn" type="submit">Lanjut</button>
       <div class="msg" id="g-msg"></div>
@@ -251,13 +254,15 @@ table.leger td.j{text-align:center;font-weight:800}
     <h2>Masuk</h2>
     <p>Gunakan email dan kata sandi akun sekolah. Tanyakan kepada operator sekolah jika belum tahu.</p>
     <form id="f-masuk">
-      <div class="field"><label for="m-email">Email sekolah</label><input id="m-email" type="email" autocomplete="username" required></div>
-      <div class="field"><label for="m-sandi">Kata sandi</label><input id="m-sandi" type="password" autocomplete="current-password" required></div>
+      <div class="field"><label for="m-email">Email sekolah</label><input id="m-email" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></div>
+      <div class="field"><label for="m-sandi">Kata sandi</label><input id="m-sandi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="current-password" required></div>
       <label class="show"><input type="checkbox" data-show="m-sandi"> Tampilkan kata sandi</label>
       <button class="btn" type="submit">Masuk</button>
       <div class="msg" id="m-msg"></div>
+      <div class="bantu-masuk hidden" id="m-bantu"></div>
     </form>
     <div class="links"><a href="#lupa">Lupa kata sandi?</a></div>
+    <div class="catatan-masuk">🆕 <b>Baru mendaftar?</b> Aktifkan akun dulu lewat tautan di email pendaftaran (periksa juga folder <b>Spam</b>). Kata sandi yang dipakai adalah <b>kata sandi aplikasi</b> yang dibuat saat mendaftar, bukan kata sandi email.</div>
   </section>
 
   <!-- DAFTAR -->
@@ -278,17 +283,28 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="field"><label for="d-nama">Nama sekolah</label><input id="d-nama" type="text" maxlength="100" placeholder="Contoh: SD NEGERI 1 SUKAMAJU" required></div>
       <div class="field"><label for="d-prov">Provinsi</label><select id="d-prov" required><option value="">Pilih provinsi…</option></select></div>
       <div class="field"><label for="d-kab">Kabupaten/Kota</label><select id="d-kab" required disabled><option value="">Pilih provinsi dulu…</option></select></div>
-      <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocomplete="username" required>
+      <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required>
         <div class="hint"><b>Gunakan email sekolah</b>, bukan email pribadi guru. Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email hanya untuk satu sekolah.</div></div>
-      <div class="field"><label for="d-sandi">Buat kata sandi aplikasi</label><input id="d-sandi" type="password" autocomplete="new-password" required>
+      <div class="field"><label for="d-sandi">Buat kata sandi aplikasi</label><input id="d-sandi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required>
         <div class="hint"><b>Jangan pakai kata sandi email Anda.</b> Kata sandi ini akan dibagikan ke semua guru. Minimal 8 karakter, campuran huruf dan angka.</div></div>
-      <div class="field"><label for="d-ulangi">Ulangi kata sandi</label><input id="d-ulangi" type="password" autocomplete="new-password" required></div>
+      <div class="field"><label for="d-ulangi">Ulangi kata sandi</label><input id="d-ulangi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required></div>
       <label class="show"><input type="checkbox" data-show="d-sandi,d-ulangi"> Tampilkan kata sandi</label>
       <div class="field"><label class="check"><input id="d-setuju" type="checkbox">
         <span>Saya, atas nama sekolah, menyetujui bahwa data sekolah, guru, dan siswa yang diisi disimpan di Google Drive pengelola aplikasi Rapor Merdeka Digital dan hanya dipakai untuk pengolahan nilai serta rapor sekolah ini, sesuai <a href="../privasi.html" target="_blank" rel="noopener">Kebijakan Privasi</a> dan <a href="../syarat.html" target="_blank" rel="noopener">Syarat Layanan</a>. Akun dipakai bersama semua guru, sehingga sekolah bertanggung jawab atas siapa saja yang diberi kata sandi dan atas perubahan data yang dilakukan dengan akun ini.</span></label></div>
       <button class="btn" type="submit">Daftar</button>
       <div class="msg" id="d-msg"></div>
     </form>
+    <div class="daftar-ok hidden" id="d-ok">
+      <h3>✅ Pendaftaran tersimpan, tinggal satu langkah lagi</h3>
+      <ol>
+        <li>Buka email <b id="d-ok-email"></b>.</li>
+        <li>Cari email <b>"Rapor Merdeka Digital — Verifikasi pendaftaran"</b>. Tidak ada di Kotak Masuk? Periksa folder <b>Spam</b>, <b>Promosi</b>, atau <b>Semua Email</b> (Yahoo: folder <b>Spam/Massal</b>). Bila ada di Spam, tandai <i>Bukan spam</i>.</li>
+        <li>Klik tombol <b>Aktifkan Akun Sekolah</b> di email itu. Spreadsheet rapor sekolah dibuat otomatis.</li>
+        <li>Kembali ke sini, pilih <b>Masuk</b> dengan email tadi dan <b>kata sandi aplikasi yang baru Anda buat</b>. Catat kata sandinya sekarang, karena akan dibagikan ke semua guru.</li>
+      </ol>
+      <div class="tombol-ok"><a class="btn" href="#masuk">Ke halaman Masuk</a><button class="btn ghost" type="button" id="d-ok-ulang">Email belum masuk? Kirim ulang</button></div>
+      <div class="msg" id="d-ok-msg"></div>
+    </div>
   </section>
 
   <!-- LUPA -->
@@ -296,7 +312,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <h2>Lupa kata sandi</h2>
     <p>Masukkan email sekolah. Kami kirim tautan untuk membuat kata sandi baru.</p>
     <form id="f-lupa">
-      <div class="field"><label for="l-email">Email sekolah</label><input id="l-email" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="l-email">Email sekolah</label><input id="l-email" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></div>
       <button class="btn" type="submit">Kirim tautan</button>
       <div class="msg" id="l-msg"></div>
     </form>
@@ -316,8 +332,8 @@ table.leger td.j{text-align:center;font-weight:800}
     <h2>Buat kata sandi baru</h2>
     <p>Setelah disimpan, semua perangkat yang sedang masuk otomatis keluar. Beritahukan kata sandi baru kepada guru.</p>
     <form id="f-reset">
-      <div class="field"><label for="r-sandi">Kata sandi baru</label><input id="r-sandi" type="password" autocomplete="new-password" required></div>
-      <div class="field"><label for="r-ulangi">Ulangi kata sandi baru</label><input id="r-ulangi" type="password" autocomplete="new-password" required></div>
+      <div class="field"><label for="r-sandi">Kata sandi baru</label><input id="r-sandi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required></div>
+      <div class="field"><label for="r-ulangi">Ulangi kata sandi baru</label><input id="r-ulangi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required></div>
       <label class="show"><input type="checkbox" data-show="r-sandi,r-ulangi"> Tampilkan kata sandi</label>
       <button class="btn" type="submit">Simpan kata sandi</button>
       <div class="msg" id="r-msg"></div>
@@ -364,9 +380,9 @@ table.leger td.j{text-align:center;font-weight:800}
       <div id="ganti-wrap" class="hidden" style="margin-top:16px">
         <p class="hint" style="margin:0 0 12px">Lakukan jika ada guru yang pindah atau kata sandi tersebar. Semua perangkat lain otomatis keluar.</p>
         <form id="f-ganti" class="grid3">
-          <div><label for="g-lama">Kata sandi lama</label><input id="g-lama" type="password" autocomplete="current-password" required></div>
-          <div><label for="g-baru">Kata sandi baru</label><input id="g-baru" type="password" autocomplete="new-password" required></div>
-          <div><label for="g-ulangi">Ulangi kata sandi baru</label><input id="g-ulangi" type="password" autocomplete="new-password" required></div>
+          <div><label for="g-lama">Kata sandi lama</label><input id="g-lama" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="current-password" required></div>
+          <div><label for="g-baru">Kata sandi baru</label><input id="g-baru" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required></div>
+          <div><label for="g-ulangi">Ulangi kata sandi baru</label><input id="g-ulangi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required></div>
           <div class="aksi"><button class="btn small" type="submit">Simpan</button><button class="btn ghost small" type="button" id="g-batal">Batal</button></div>
         </form>
       </div>
@@ -935,6 +951,9 @@ function tampil(v){
   TAMPIL = v;
   if (v === 'beranda' && typeof renderPembaruanTp === 'function') renderPembaruanTp();
   VIEWS.forEach(x => $('#v-' + x).classList.toggle('hidden', x !== v));
+  if (v !== 'daftar' && !$('#d-ok').classList.contains('hidden')) { // selesai daftar: formulir siap dipakai lagi
+    $('#d-ok').classList.add('hidden'); $('#f-daftar').classList.remove('hidden'); $('#v-daftar .satu-akun').classList.remove('hidden');
+  }
   const akun = ['masuk','daftar','lupa'].includes(v);
   $('#tab-akun').classList.toggle('hidden', !akun);
   $('#tab-masuk').classList.toggle('on', v === 'masuk' || v === 'lupa');
@@ -1037,9 +1056,41 @@ $('#f-gerbang').addEventListener('submit', e => { e.preventDefault(); kirim(e.ta
   tampil(['daftar','lupa'].includes(h) && INFO.daftarDibuka ? h : 'masuk');
 }); });
 
+/* Kirim ulang tautan aktivasi (dipakai di panel selesai daftar dan di pesan "belum diaktifkan"). */
+let EMAIL_DAFTAR = '';
+async function kirimUlangAktivasi(email, tombol, msgSel){
+  return sibuk(tombol, async () => {
+    const res = await api({ aksi:'kirimUlangAktivasi', email });
+    pesan(msgSel, res.pesan, res.ok);
+  });
+}
+$('#d-ok-ulang').addEventListener('click', e => kirimUlangAktivasi(EMAIL_DAFTAR, e.target, '#d-ok-msg'));
+
+/* Petunjuk saat gagal masuk: disesuaikan dengan penyebabnya. */
+function bantuMasuk(res){
+  const b = $('#m-bantu');
+  let isi = '';
+  if (res.belumAktif) {
+    isi = '<button class="btn ghost small" type="button" id="m-ulang">Kirim ulang email aktivasi</button>';
+  } else if (res.salahSandi || res.terkunci) {
+    isi = '<b>Periksa hal berikut:</b><ul>' +
+      '<li>Yang dipakai adalah <b>kata sandi aplikasi</b> yang dibuat saat mendaftar, <b>bukan kata sandi email</b>.</li>' +
+      '<li>Huruf besar dan kecil dibedakan. Centang <b>Tampilkan kata sandi</b> untuk memeriksa ketikan (di HP, huruf pertama sering otomatis menjadi kapital).</li>' +
+      '<li>Bila lupa, jangan menebak terus: klik tombol di bawah, tautan untuk membuat kata sandi baru dikirim ke email sekolah.</li></ul>' +
+      '<a class="btn ghost small" href="#lupa">Buat kata sandi baru (Lupa kata sandi)</a>';
+  } else if (res.emailTidakAda) {
+    isi = '<a class="btn ghost small" href="#daftar">Daftarkan sekolah</a>';
+  }
+  b.innerHTML = isi;
+  b.classList.toggle('hidden', !isi);
+  const u = $('#m-ulang');
+  if (u) u.addEventListener('click', () => kirimUlangAktivasi(res.email || $('#m-email').value, u, '#m-msg'));
+}
+
 $('#f-masuk').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
   const res = await api({ aksi:'masuk', email: $('#m-email').value, sandi: $('#m-sandi').value });
-  if (!res.ok) return pesan('#m-msg', res.pesan, false);
+  bantuMasuk(res.ok ? {} : res);
+  if (!res.ok) { if ($('#l-email') && !$('#l-email').value) $('#l-email').value = $('#m-email').value; return pesan('#m-msg', res.pesan, false); }
   ls.set(KUNCI_SESI, res.sesi);
   $('#m-sandi').value = ''; $('#m-msg').textContent = '';
   masukBeranda(res.sekolah);
@@ -1050,8 +1101,15 @@ $('#f-daftar').addEventListener('submit', e => { e.preventDefault(); kirim(e.tar
     npsn: $('#d-npsn').value, nama: $('#d-nama').value, email: $('#d-email').value,
     kabupaten: $('#d-kab').value, provinsi: $('#d-prov').value,
     sandi: $('#d-sandi').value, ulangi: $('#d-ulangi').value, setuju: $('#d-setuju').checked } });
-  pesan('#d-msg', res.pesan, res.ok, res.salah);
-  if (res.ok) { $('#d-prov').value = ''; isiKabupaten(); e.target.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; }); }
+  if (!res.ok) return pesan('#d-msg', res.pesan, false, res.salah);
+  $('#d-msg').className = 'msg';
+  $('#d-ok-email').textContent = res.email || $('#d-email').value.trim();
+  EMAIL_DAFTAR = $('#d-ok-email').textContent;
+  $('#m-email').value = EMAIL_DAFTAR;
+  $('#d-prov').value = ''; isiKabupaten(); e.target.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+  e.target.classList.add('hidden'); $('#v-daftar .satu-akun').classList.add('hidden');
+  $('#d-ok-msg').className = 'msg'; $('#d-ok').classList.remove('hidden');
+  $('#d-ok').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }); });
 
 $('#f-lupa').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
