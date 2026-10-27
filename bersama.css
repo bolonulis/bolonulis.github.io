@@ -37,3 +37,10 @@
 @media (max-width:560px){.eb-format ul{columns:1}}
 @media(max-width:600px){.eb{grid-template-columns:1fr}.eb-sampul{max-width:200px;margin:auto}}
 .eb-penulis{font-size:13px;color:var(--muted,#5b6b7f);margin-top:2px}
+
+/* Ajakan grup WhatsApp (dipakai di beberapa halaman) */
+.grup-wa{display:flex;gap:14px;align-items:center;margin:18px 0;padding:14px 16px;border-radius:16px;background:#e9f9ee;border:1px solid #9fd9b2;color:#14532d;text-decoration:none;font-size:14px;line-height:1.5}
+.grup-wa:hover{border-color:#25d366;background:#ddf6e6}
+.grup-wa .ikon{font-size:26px;flex:none}.grup-wa b{display:block;font-size:15.5px;color:#0f5132}
+.grup-wa .ajak{margin-left:auto;flex:none;background:#25d366;color:#fff;font-weight:800;border-radius:999px;padding:8px 14px;white-space:nowrap}
+@media (max-width:560px){.grup-wa{flex-wrap:wrap}.grup-wa .ajak{margin-left:0}}
