@@ -298,6 +298,8 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="field"><label for="d-kab">Kabupaten/Kota</label><select id="d-kab" required disabled><option value="">Pilih provinsi dulu…</option></select></div>
       <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required>
         <div class="hint"><b>Gunakan email sekolah</b>, bukan email pribadi guru. Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email hanya untuk satu sekolah.</div></div>
+      <div class="field"><label for="d-wa">Nomor WhatsApp yang bisa dihubungi</label><input id="d-wa" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="Contoh: 0812-3456-7890" required>
+        <div class="hint">Nomor operator atau guru yang mengurus akun ini. Hanya dipakai pengelola aplikasi untuk menghubungi sekolah bila ada kendala akun atau aktivasi, tidak ditampilkan ke siapa pun.</div></div>
       <div class="field"><label for="d-sandi">Buat kata sandi aplikasi</label><input id="d-sandi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required>
         <div class="hint"><b>Jangan pakai kata sandi email Anda.</b> Kata sandi ini akan dibagikan ke semua guru. Minimal 8 karakter, campuran huruf dan angka.</div></div>
       <div class="field"><label for="d-ulangi">Ulangi kata sandi</label><input id="d-ulangi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required></div>
@@ -1134,6 +1136,7 @@ $('#f-daftar').addEventListener('submit', e => { e.preventDefault(); kirim(e.tar
   const res = await api({ aksi:'daftar', data: {
     npsn: $('#d-npsn').value, nama: $('#d-nama').value, email: $('#d-email').value,
     kabupaten: $('#d-kab').value, provinsi: $('#d-prov').value,
+    wa: $('#d-wa').value,
     sandi: $('#d-sandi').value, ulangi: $('#d-ulangi').value, setuju: $('#d-setuju').checked } });
   if (!res.ok) return pesan('#d-msg', res.pesan, false, res.salah);
   $('#d-msg').className = 'msg';
