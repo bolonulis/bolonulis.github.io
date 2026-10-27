@@ -137,6 +137,24 @@ table.kok tr.basi td.ket{opacity:.45}
 .keg .fokus{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}.keg .fokus label{font-weight:400;margin:0;display:flex;gap:5px;align-items:center}
 .keg .alat{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}.keg .hitung{font-size:12px;color:var(--muted);margin-left:auto}
 @media (max-width:560px){.keg .dua{grid-template-columns:1fr}}
+.t-prog{border-color:#cdb8f2;background:linear-gradient(135deg,#fff,#f6f1ff)}.t-prog b{color:#4b2a8c}
+.pg-langkah{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}.pg-langkah span{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;background:#f1ecfb;color:#6b5a8e;border:1px solid #e4dbf6}
+.pg-langkah span.on{background:#4b2a8c;color:#fff;border-color:#4b2a8c}.pg-langkah span.ok{background:#e9f6ec;color:var(--ok);border-color:#b9dfc6}
+.pg-kuota{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.pg-kuota b{font-size:15px}
+.pg-kontribusi{background:#fff8e1;border:1px solid #f0d77a;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:#5c4400;margin-top:12px}
+.pg-blok{border:1px solid #e3d8c0;border-radius:14px;padding:14px;margin:12px 0;background:#fffdf7}.pg-blok h4{margin:0 0 8px;color:var(--blue)}
+.pg-blok label{display:block;font-size:12.5px;font-weight:700;margin:8px 0 4px}
+.pg-blok input[type=text],.pg-blok input[type=number],.pg-blok input[type=date],.pg-blok select,.pg-blok textarea,#v-prog .pg-form input,#v-prog .pg-form select,#v-prog .pg-form textarea{width:100%;font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid #d9cfb8;border-radius:10px;background:#fff;box-sizing:border-box}
+.pg-blok textarea,#v-prog .pg-form textarea{min-height:70px;line-height:1.45;resize:vertical}
+.pg-dua{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pg-tiga{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pg-sub{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}.pg-sub label{font-weight:400!important;margin:0!important;display:flex!important;gap:5px;align-items:center}
+.pg-dim{margin:6px 0}.pg-dim>b{font-size:12.5px;color:var(--muted)}
+.pg-pt{border-left:4px solid #cdb8f2;padding:8px 10px;margin:8px 0;background:#fff;border-radius:0 10px 10px 0}
+.pg-pt .kepala{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:800;color:#4b2a8c}
+.pg-resmi{font-size:12px;color:var(--muted);background:#f6f7f9;border-radius:8px;padding:6px 8px;margin-top:4px}
+.pg-tabel{width:100%;border-collapse:collapse;font-size:13px}.pg-tabel th,.pg-tabel td{border:1px solid #e3d8c0;padding:6px 8px;text-align:left;vertical-align:top}.pg-tabel th{background:#f7f1e3}
+.pg-sibuk{display:flex;gap:10px;align-items:center;font-size:14px;color:#4b2a8c;font-weight:700;margin:10px 0}
+@media (max-width:560px){.pg-dua,.pg-tiga{grid-template-columns:1fr}}
 .acuan{margin-top:14px}.acuan h4{margin:14px 0 6px;font-size:14px;color:var(--blue)}
 .acuan table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.45}.acuan th,.acuan td{border:1px solid #e3d8c0;padding:7px 9px;vertical-align:top;text-align:left}
 .acuan th{background:#f7f1e3;width:110px}.acuan .sumber{font-size:12px;color:var(--muted)}
@@ -377,6 +395,7 @@ table.leger td.j{text-align:center;font-weight:800}
       <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa disalin ke template impor TP e-Rapor.</span><div class="tag on">Buka →</div><div class="tag baru hidden" id="t-tp-baru"></div></button>
       <button class="tile" type="button" id="t-nilai"><b>Input Nilai</b><span>Sumatif lingkup materi dan sumatif akhir semester per rombel dan mapel, lengkap dengan nilai rapor dan deskripsinya.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-kok"><b>Kokurikuler</b><span>Subdimensi profil lulusan per kelas, capaian Mahir/Cakap/Berkembang, dan deskripsi otomatis.</span><div class="tag on">Buka →</div></button>
+      <button class="tile t-prog" type="button" id="t-prog"><b>✨ Program Kokurikuler</b><span>Susun program satu kelas satu semester bertahap bersama Gemini: rancangan, pertemuan, lembar observasi, asesmen sumatif, sampai dokumen Word dan Google Docs.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-wk"><b>Wali Kelas</b><span>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-lulus"><b>Transkrip &amp; SKL</b><span>Kelas 6: nilai rata-rata kelas 5–6 dan praktik, nomor ijazah, cetak transkrip nilai dan Surat Keterangan Lulus.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-cetak"><b>Cek &amp; Cetak Rapor</b><span>Pemeriksaan kelengkapan, leger nilai, dan cetak rapor (bisa disimpan sebagai PDF).</span><div class="tag on">Buka →</div></button>
@@ -498,6 +517,58 @@ table.leger td.j{text-align:center;font-weight:800}
   </section>
 
   <!-- WALI KELAS -->
+  <section id="v-prog" class="hidden">
+    <div class="bar">
+      <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>✨ Program Kokurikuler</h2><div class="sub" id="pg-sub">Disusun bertahap bersama Gemini, dikoreksi guru di setiap tahap.</div></div>
+    </div>
+    <div class="msg" id="pg-info"></div>
+
+    <div id="pg-depan">
+      <div class="card pg-kuota-kartu">
+        <div class="pg-kuota"><div><b id="pg-kuota-judul">Memuat…</b><div class="sub" id="pg-kuota-teks"></div></div>
+          <button class="btn ghost small" type="button" id="pg-aktivasi-buka">🔑 Masukkan kode aktivasi</button></div>
+        <div class="pg-kontribusi hidden" id="pg-kontribusi"></div>
+        <form id="pg-aktivasi" class="hidden" style="margin-top:12px">
+          <label for="pg-kode">Kode aktivasi Lisensi Sekolah</label>
+          <div class="toolbar" style="margin:0"><input id="pg-kode" type="text" autocapitalize="characters" spellcheck="false" placeholder="KOK-XXXX-XXXX" style="max-width:220px;padding:10px;border:1px solid #d9cfb8;border-radius:10px;font:inherit">
+            <button class="btn small" type="submit">Aktifkan</button></div>
+          <div class="msg" id="pg-aktivasi-msg"></div>
+        </form>
+      </div>
+
+      <details class="card" id="pg-kunci-box" style="margin-top:14px">
+        <summary><b>🔐 Kunci API Gemini</b> <span class="sub" id="pg-kunci-status">— belum diisi</span></summary>
+        <p class="hint">Program disusun oleh Gemini memakai <b>kunci API milik Anda sendiri</b> (gratis dari Google). Kunci hanya disimpan di browser perangkat ini dan dikirim langsung ke Google, <b>tidak pernah ke server aplikasi</b>.</p>
+        <div class="toolbar" style="margin:8px 0"><input id="pg-kunci" type="password" autocomplete="off" spellcheck="false" placeholder="Tempel kunci API Gemini (AIza…)" style="flex:1;min-width:220px;padding:10px;border:1px solid #d9cfb8;border-radius:10px;font:inherit">
+          <button class="btn small" type="button" id="pg-kunci-uji">Simpan &amp; uji</button>
+          <button class="btn ghost small" type="button" id="pg-kunci-hapus">Hapus dari perangkat ini</button></div>
+        <div class="msg" id="pg-kunci-msg"></div>
+        <details style="margin-top:8px"><summary>Belum punya kunci? Begini cara mendapatkannya (gratis, ±2 menit)</summary>
+          <ol class="hint" style="line-height:1.7">
+            <li>Buka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> dan masuk dengan akun Google (boleh akun pribadi).</li>
+            <li>Setujui ketentuan bila diminta, lalu klik <b>Create API key</b> (Buat kunci API).</li>
+            <li>Salin kunci yang muncul (diawali <b>AIza</b>), tempel di kolom di atas, lalu klik <b>Simpan &amp; uji</b>.</li>
+            <li>Paket gratis punya batas permintaan per menit dan per hari. Satu program memakai sekitar 3–7 permintaan. Bila muncul pesan batas tercapai, tunggu sebentar lalu coba lagi.</li>
+            <li>Pada paket gratis, Google dapat memakai isian untuk meningkatkan layanannya. Jangan menulis data pribadi murid di isian program.</li>
+          </ol></details>
+      </details>
+
+      <div class="card" style="margin-top:14px">
+        <div class="panduan"><b>Sebelum mulai</b>, siapkan dua hal: (1) pahami alurnya lewat e-book gratis
+          <a href="../ebook/" target="_blank" rel="noopener"><b>Kokurikuler Siap Jalan</b></a> (Bab 3–7), dan (2) unduh <b>Rapor Pendidikan</b> sekolah di
+          <a href="https://raporpendidikan.kemendikdasmen.go.id/" target="_blank" rel="noopener">raporpendidikan.kemendikdasmen.go.id</a> untuk menentukan subdimensi prioritas.</div>
+        <div class="toolbar"><button class="btn small" type="button" id="pg-baru">+ Program baru</button><span class="sub" id="pg-baru-ket"></span></div>
+        <div id="pg-daftar"></div>
+      </div>
+    </div>
+
+    <div id="pg-kerja" class="hidden">
+      <div class="toolbar"><button class="btn ghost small" type="button" id="pg-kembali">← Daftar program</button><b id="pg-judul"></b></div>
+      <div class="pg-langkah" id="pg-langkah"></div>
+      <div class="card" id="pg-panel"></div>
+      <div class="msg" id="pg-msg"></div>
+    </div>
+  </section>
   <section id="v-wk" class="hidden">
     <div class="bar">
       <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Wali Kelas</h2><div class="sub" id="wk-sub"></div></div>
@@ -880,7 +951,7 @@ const ls = { get:k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}}
 const KUNCI_SESI = 'rapor-sesi';
 const KUNCI_KODE = 'rapor-kode';
 let INFO = { kodeAkses: false, daftarDibuka: true };
-const VIEWS = ['gerbang','masuk','daftar','lupa','reset','verifikasi','beranda','data','siswa','tp','nilai','kok','wk','cetak','lulus'];
+const VIEWS = ['gerbang','masuk','daftar','lupa','reset','verifikasi','beranda','data','siswa','tp','nilai','kok','prog','wk','cetak','lulus'];
 let TOKEN_RESET = '';
 let DATA = null, ROMBEL = null, SISWA = [], UBAH = false, SENI_SEKOLAH = [], TARGET = 0;
 const SEMUA_SENI = ['Seni Musik', 'Seni Rupa', 'Seni Tari', 'Seni Teater'];
@@ -3043,7 +3114,7 @@ document.querySelector('#v-tp [data-ke="beranda"]').addEventListener('click', e 
   TP_UBAH = false;
 });
 
-const PUSTAKA = { ExcelJS: 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js' };
+const PUSTAKA = { ExcelJS: 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', docx: 'https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js' };
 function muatPustaka(nama){
   if (window[nama]) return Promise.resolve();
   return new Promise((ok, gagal) => {
@@ -3192,5 +3263,6 @@ async function mulai(){
 }
 mulai();
 </script>
+<script src="program.js?v=1"></script>
 </body>
 </html>
