@@ -127,6 +127,11 @@ table.kok tr.basi td.ket{opacity:.45}
 .narasi textarea{width:100%;font:inherit;font-size:13.5px;line-height:1.45;padding:9px 10px;border:1px solid #d9cfb8;border-radius:10px;resize:vertical;min-height:58px}
 .narasi textarea:focus{outline:2px solid var(--yellow);border-color:var(--yellow)}
 @media (max-width:560px){.narasi .lv{grid-template-columns:1fr}.narasi .lv b{padding-top:0}}
+.narasi .beda{grid-column:2;font-size:12px;color:#9a6c00;margin-top:-4px}.narasi .beda button{font:inherit;font-size:12px;margin-left:6px;padding:2px 8px;border-radius:7px;border:1px solid #e3c46a;background:#fff8df;color:#6b4b00;cursor:pointer}
+@media (max-width:560px){.narasi .beda{grid-column:1}}
+.acuan{margin-top:14px}.acuan h4{margin:14px 0 6px;font-size:14px;color:var(--blue)}
+.acuan table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.45}.acuan th,.acuan td{border:1px solid #e3d8c0;padding:7px 9px;vertical-align:top;text-align:left}
+.acuan th{background:#f7f1e3;width:110px}.acuan .sumber{font-size:12px;color:var(--muted)}
 .eks-daftar{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:12px}
 .eks-daftar label{display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--muted)}.eks-daftar label b{min-width:22px;text-align:right}
 .eks-daftar input{padding:9px 10px!important;font-size:14px!important}
@@ -443,16 +448,24 @@ table.leger td.j{text-align:center;font-weight:800}
       </details>
       <div id="kk-editor" class="hidden">
         <div class="panduan" style="margin-top:14px">Pilih capaian tiap siswa: <b>Mahir</b>, <b>Cakap</b>, atau <b>Berkembang</b> (bisa juga mengetik huruf M, C, atau B di kotak pilihan).
-          Pilihan di judul kolom mengisi satu kolom sekaligus. Deskripsi rapor dibuat otomatis dari capaian tertinggi dan terendah.</div>
+          Pilihan di judul kolom mengisi satu kolom sekaligus. Deskripsi rapor dibuat otomatis dari capaian tertinggi dan terendah.
+          Arti tiap tahap ada di <b>Acuan resmi Kepka 058</b> di bawah tabel.</div>
         <div class="toolbar">
           <button class="btn" type="button" id="kk-simpan" style="width:auto">Simpan capaian</button>
           <span class="sub" id="kk-status"></span>
         </div>
         <div class="msg" id="kk-msg"></div>
         <div class="tbl"><table class="siswa kok"><thead><tr id="kk-head"></tr></thead><tbody id="kk-body"></tbody></table></div>
+        <details class="card acuan" id="kk-acuan-box">
+          <summary><b>Acuan resmi Kepka 058</b> <span class="sub">— arti Berkembang, Cakap, dan Mahir untuk subdimensi kelas ini</span></summary>
+          <p class="sumber">Sumber: Keputusan Kepala BSKAP Nomor 058/H/KR/2025, alur perkembangan kompetensi dimensi profil lulusan jenjang SD. Ditampilkan apa adanya, tidak bisa diubah.</p>
+          <div id="kk-acuan"></div>
+        </details>
         <details class="card narasi" id="kk-narasi-box">
           <summary><b>Narasi deskripsi</b> <span class="sub">— kalimat yang dipakai untuk tiap capaian; berlaku untuk semua kelas di sekolah</span></summary>
-          <p class="hint">Tulis dengan awalan kata kerja dan huruf kecil, misalnya "bekerja sama dengan teman…". Dalam rapor kalimatnya menjadi "…salah satunya mampu <i>narasi</i>". Kosongkan untuk kembali ke narasi bawaan.</p>
+          <p class="hint">Narasi bawaan adalah teks resmi Kepka 058, jadi sebaiknya tidak diubah. Dalam rapor kalimatnya menjadi
+            "Ananda … sudah baik dalam dimensi profil …, yaitu <i>narasi capaiannya</i>, dan masih perlu bimbingan dalam dimensi profil … agar dapat <i>narasi satu tahap di atasnya</i>."
+            Narasi yang berbeda dari teks resmi diberi tanda. Kosongkan untuk kembali ke teks resmi.</p>
           <div id="kk-narasi"></div>
           <div class="toolbar"><button class="btn small" type="button" id="kk-narasi-simpan">Simpan narasi</button></div>
           <div class="msg" id="kk-narasi-msg"></div>
@@ -1710,6 +1723,7 @@ function renderKok(){
   if (!KK.siswa.length) return pesan('#kk-info', 'Rombel ini belum punya siswa. Isi dulu di Data Sekolah & Siswa → Rombel & Siswa.', false);
   $('#kk-info').textContent = '';
   renderTabelKok();
+  renderAcuanKok();
   renderNarasiKok();
   kunciLayar('#kk-isi', KK.terkunci);
 }
@@ -1805,14 +1819,31 @@ $('#kk-simpan').addEventListener('click', e => sibuk(e.target, async () => {
   renderTabelKok(); renderDimKok();
 }));
 
+function renderAcuanKok(){
+  // dari tahap terendah ke tertinggi, seperti tabel Kepka
+  const urut = KK.level.slice().reverse();
+  $('#kk-acuan').innerHTML = KK.dimensi.map(d => '<h4>' + esc(d.subdimensi) + ' <span class="sub">(' + esc(d.dimensi) + ')</span></h4><table>' +
+    urut.map(l => '<tr><th>' + l + '</th><td>' + esc(KK.narasi[d.subdimensi][l].resmi || KK.narasi[d.subdimensi][l].bawaan) + '</td></tr>').join('') + '</table>').join('');
+}
 function renderNarasiKok(){
   $('#kk-narasi').innerHTML = KK.dimensi.map(d => '<h4>' + esc(d.subdimensi) + ' <span class="sub">(' + esc(d.dimensi) + ')</span></h4>' +
     KK.level.map(l => {
       const n = KK.narasi[d.subdimensi][l], k = d.subdimensi + '|' + l;
       const v = k in KK_NAR ? KK_NAR[k] : n.teks;
-      return '<div class="lv"><b>' + l + '</b><textarea data-k="' + esc(k) + '" maxlength="300" placeholder="' + esc(n.bawaan) + '">' + esc(v) + '</textarea></div>';
+      const beda = n.teks !== n.bawaan ? '<div class="beda">⚠ Berbeda dari teks resmi Kepka 058<button type="button" data-resmi="' + esc(k) + '">Pakai teks resmi</button></div>' : '';
+      return '<div class="lv"><b>' + l + '</b><textarea data-k="' + esc(k) + '" maxlength="300" placeholder="' + esc(n.bawaan) + '">' + esc(v) + '</textarea>' + beda + '</div>';
     }).join('')).join('');
 }
+$('#kk-narasi').addEventListener('click', e => {
+  const b = e.target.closest('[data-resmi]');
+  if (!b) return;
+  const k = b.dataset.resmi, [sub, l] = k.split('|');
+  // kosong = kembali ke teks resmi saat disimpan
+  KK_NAR[k] = ''; KK_UBAH.narasi = true;
+  const t = [...$('#kk-narasi').querySelectorAll('textarea')].find(x => x.dataset.k === k);
+  if (t) t.value = KK.narasi[sub][l].bawaan;
+  b.parentNode.textContent = 'Akan kembali ke teks resmi setelah Simpan narasi.';
+});
 $('#kk-narasi').addEventListener('input', e => {
   if (!e.target.dataset.k) return;
   KK_NAR[e.target.dataset.k] = e.target.value; KK_UBAH.narasi = true;
