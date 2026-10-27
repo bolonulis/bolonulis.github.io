@@ -51,6 +51,6 @@ function pasangFormWa(formId, susun) {
     const kosong = [...f.querySelectorAll('[required]')].find(el => !el.value.trim());
     if (kosong) { salah.textContent = 'Lengkapi ' + kosong.dataset.label + ' terlebih dahulu.'; kosong.focus(); return; }
     salah.textContent = '';
-    window.open('https://wa.me/6281196939694?text=' + encodeURIComponent(susun(data)), '_blank', 'noopener');
+    window.open('https://wa.me/628196939694?text=' + encodeURIComponent(susun(data)), '_blank', 'noopener');
   });
 }

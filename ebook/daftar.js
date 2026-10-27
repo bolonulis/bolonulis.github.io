@@ -7,11 +7,11 @@ const EBOOK = [
     subjudul: 'Panduan Teknis Menyusun Program, Melaksanakan, Menilai, hingga Melaporkan Kokurikuler di SD',
     kategori: 'Seri Panduan Guru SD',
     edisi: 'Edisi 2026',
-    penulis: 'Admin',
+    penulis: 'Tim Penyusun',
     halaman: 39,
     ringkas: 'Dari tim kerja dan analisis sekolah, program tahunan kelas I–VI, perencanaan kegiatan format A–H, pelaksanaan di kelas, asesmen Berkembang–Cakap–Mahir, sampai deskripsi rapor dan evaluasi. Mengacu pada Panduan Kokurikuler 2025 dan Kepka BSKAP 058/H/KR/2025.',
     poin: ['Menentukan dimensi prioritas dari data Rapor Pendidikan, lengkap dengan tabel jembatan indikator → 8 dimensi', '12 format F1–F12 siap cetak dan versi Word (.docx) siap diisi', '3 contoh perencanaan lengkap: lintas disiplin, Gerakan 7 KAIH, dan kearifan lokal', 'Rumusan resmi 8 dimensi jenjang SD dan bank kalimat deskripsi rapor'],
-    berkas: 'kokurikuler-siap-jalan-2026.pdf?v=2',
+    berkas: 'kokurikuler-siap-jalan-2026.pdf?v=3',
     sampul: 'kokurikuler-siap-jalan.png',
     format: {
       zip: 'format/Format-F1-F12-Kokurikuler-Siap-Jalan.zip',
@@ -39,11 +39,11 @@ const EBOOK = [
     subjudul: 'Panduan Praktis 13 Model dan 12 Metode Pembelajaran untuk Guru SD',
     kategori: 'Pendamping RPP Flash',
     edisi: 'Edisi 2026',
-    penulis: 'Admin',
+    penulis: 'Tim Penyusun',
     halaman: 43,
     ringkas: 'Memahami beda model, metode, dan teknik; memilih model dengan tiga pertanyaan; sintaks lengkap 13 model; 12 metode; cara memadukannya; dan daftar periksa sebelum masuk kelas.',
     poin: ['13 model: PBL, PjBL, TPS, Jigsaw, STAD, NHT, Discovery, dan lainnya', '12 metode pembelajaran dan cara memadukannya', 'Selaras dengan Panduan Pembelajaran dan Asesmen 2025'],
-    berkas: 'racik-kelas-hidup-2026.pdf',
+    berkas: 'racik-kelas-hidup-2026.pdf?v=2',
     sampul: 'racik-kelas-hidup.png',
     hargaNormal: 100000,
     gratis: true // masa promo: ubah ke false bila promo berakhir
@@ -70,7 +70,7 @@ function kartuEbook(e, akar) {
     : '<div class="eb-harga"><b>' + rupiah(e.hargaNormal) + '</b></div>';
   const unduh = e.gratis
     ? '<a class="btn eb-unduh" href="' + akar + esc(e.berkas) + '" download>⬇️ Unduh gratis (PDF)</a><a class="btn ghost" href="' + akar + esc(e.berkas) + '" target="_blank" rel="noopener">Baca dulu</a>'
-    : '<a class="btn eb-unduh" href="https://wa.me/6281196939694?text=' + encodeURIComponent('Halo Admin, saya ingin membeli e-book "' + e.judul + '".') + '" target="_blank" rel="noopener">Beli lewat WhatsApp</a>';
+    : '<a class="btn eb-unduh" href="https://wa.me/628196939694?text=' + encodeURIComponent('Halo Admin, saya ingin membeli e-book "' + e.judul + '".') + '" target="_blank" rel="noopener">Beli lewat WhatsApp</a>';
   return '<article class="eb">' +
     '<img class="eb-sampul" src="' + akar + esc(e.sampul) + '" alt="Sampul ' + esc(e.judul) + '" loading="lazy">' +
     '<div class="eb-isi"><div class="eb-kat">' + esc(e.kategori) + ' · ' + esc(e.edisi) + ' · ' + e.halaman + ' halaman</div>' +

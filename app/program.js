@@ -242,7 +242,7 @@ function renderDepan(){
   const ajak = 'Assalamualaikum, kami dari ' + PG.sekolah.nama + ' (NPSN ' + PG.sekolah.npsn + ') ingin mengaktifkan Lisensi Sekolah Program Kokurikuler di Rapor Merdeka Digital. Mohon informasi kontribusinya.';
   $('#pg-kontribusi').innerHTML = '<b>Merasa terbantu?</b> Sekolah dapat melanjutkan dengan <b>Lisensi Sekolah</b> selama <b>' + k.masaHari + ' hari untuk semua guru</b>, ' +
     'melalui kontribusi pengembangan <b>' + esc(k.kontribusi) + '</b>. Kontribusi ini dipakai untuk memelihara dan mengembangkan aplikasi agar tetap bisa dimanfaatkan guru-guru lain. ' +
-    (wa ? '<a href="https://wa.me/' + wa + '?text=' + encodeURIComponent(ajak) + '" target="_blank" rel="noopener"><b>Hubungi pengembang lewat WhatsApp</b></a>' : 'Hubungi ' + esc(PG.narahubung)) +
+    (wa ? '<a href="https://wa.me/' + wa + '?text=' + encodeURIComponent(ajak) + '" target="_blank" rel="noopener"><b>Hubungi Admin lewat WhatsApp</b></a>' : 'Hubungi ' + esc(PG.narahubung)) +
     ' untuk mendapatkan kode aktivasi, lalu masukkan kodenya di tombol 🔑 di atas.' + (PG.infoBayar ? '<br><span class="sub">' + esc(PG.infoBayar) + '</span>' : '');
   $('#pg-kontribusi').classList.toggle('hidden', !!k.lisensiSampai || k.sisaGratis > 1);
   $('#pg-promo').textContent = k.promo && !k.lisensiSampai ? '🎁 ' + k.promo : '';

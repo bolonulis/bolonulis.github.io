@@ -361,7 +361,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <div id="st-rincian"></div>
     <div class="sub" id="st-waktu"></div>
   </section>
-  <p class="bantuan hidden" id="bantuan"><a href="panduan.html" target="_blank" rel="noopener">Panduan guru</a> · Butuh bantuan? Narahubung: <b>Admin</b> · <a href="https://wa.me/6281196939694" target="_blank" rel="noopener">WA 0811-9693-9694</a> · <button type="button" class="link buka-profil">Profil pengembang</button></p>
+  <p class="bantuan hidden" id="bantuan"><a href="panduan.html" target="_blank" rel="noopener">Panduan guru</a> · Butuh bantuan? Hubungi <b>Admin</b> · <a href="https://wa.me/628196939694" target="_blank" rel="noopener">WA 0819-6939-694</a> · <button type="button" class="link buka-profil">Kontak Admin</button></p>
 
   <!-- RESET -->
   <section id="v-reset" class="card form hidden">
@@ -904,18 +904,15 @@ table.leger td.j{text-align:center;font-weight:800}
     <datalist id="dl-seni"></datalist>
   </section>
 
-  <footer>Rapor Merdeka Digital · dikembangkan oleh Admin · <a href="panduan.html" target="_blank" rel="noopener" style="color:inherit">Panduan guru</a> · <span class="buka-kopi hidden"><button type="button" class="link">☕ Traktir kopi</button> · </span><button type="button" class="link buka-profil">Profil pengembang &amp; narahubung</button> · <a href="../syarat.html" target="_blank" rel="noopener" style="color:inherit">Syarat</a> · <a href="../privasi.html" target="_blank" rel="noopener" style="color:inherit">Privasi</a> · <a href="../rapor/" style="color:inherit">Tentang aplikasi</a> · <a href="../" style="color:inherit">Karya lain</a></footer>
+  <footer>Rapor Merdeka Digital · <a href="panduan.html" target="_blank" rel="noopener" style="color:inherit">Panduan guru</a> · <span class="buka-kopi hidden"><button type="button" class="link">☕ Traktir kopi</button> · </span><button type="button" class="link buka-profil">Kontak Admin</button> · <a href="../syarat.html" target="_blank" rel="noopener" style="color:inherit">Syarat</a> · <a href="../privasi.html" target="_blank" rel="noopener" style="color:inherit">Privasi</a> · <a href="../rapor/" style="color:inherit">Tentang aplikasi</a> · <a href="../" style="color:inherit">Karya lain</a></footer>
 
   <dialog id="profil" class="profil" aria-labelledby="pf-nama">
-    <div class="kepala"><small>PROFIL PENGEMBANG</small><h3 id="pf-nama">Admin</h3><p>Pengembang Rapor Merdeka Digital</p></div>
+    <div class="kepala"><small>KONTAK</small><h3 id="pf-nama">Admin Rapor Merdeka Digital</h3><p>Bantuan penggunaan, masukan, dan kode aktivasi</p></div>
     <dl>
-      <dt>Pengalaman</dt><dd>Admin</dd>
-      <dt>WhatsApp</dt><dd><a href="https://wa.me/6281196939694" target="_blank" rel="noopener">0811-9693-9694</a></dd>
-      <dt>Email</dt><dd><a href="mailto:bolonulis@gmail.com">bolonulis@gmail.com</a></dd>
-      <dt>Media sosial</dt><dd>Instagram <a href="#" target="_blank" rel="noopener">@admin</a><br>Facebook: Admin</dd>
+      <dt>WhatsApp</dt><dd><a href="https://wa.me/628196939694" target="_blank" rel="noopener">0819-6939-694</a></dd>
     </dl>
     <p class="hint" style="margin:0;padding:0 22px 16px">Untuk pertanyaan, masukan, atau kendala penggunaan aplikasi, silakan hubungi melalui WhatsApp.</p>
-    <div class="tombol"><a class="btn wa" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Rapor%20Merdeka%20Digital." target="_blank" rel="noopener">Chat WhatsApp</a><button type="button" class="btn ghost buka-kopi hidden">☕ Traktir kopi</button><button type="button" class="btn ghost" id="pf-tutup">Tutup</button></div>
+    <div class="tombol"><a class="btn wa" href="https://wa.me/628196939694?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Rapor%20Merdeka%20Digital." target="_blank" rel="noopener">Chat WhatsApp</a><button type="button" class="btn ghost buka-kopi hidden">☕ Traktir kopi</button><button type="button" class="btn ghost" id="pf-tutup">Tutup</button></div>
   </dialog>
 
   <dialog id="testi" class="profil kopi" aria-labelledby="testi-judul">
@@ -1105,8 +1102,8 @@ function tampilLangganan(l){
   if (!l || l.tanpaBatas) { $('#u-lgn').classList.add('hidden'); return ''; }
   const sampai = tglPanjang(l.sampai);
   let teks = '';
-  if (l.habis) teks = 'Masa langganan berakhir pada ' + sampai + '. Data tetap bisa dilihat dan diunduh; fitur lain menunggu perpanjangan. Hubungi pengembang lewat menu Profil pengembang.';
-  else if (l.sisaHari <= 14) teks = 'Masa ' + (/uji/i.test(l.catatan || '') ? 'uji coba' : 'langganan') + ' tinggal ' + l.sisaHari + ' hari (sampai ' + sampai + '). Hubungi pengembang untuk memperpanjang agar tidak terputus.';
+  if (l.habis) teks = 'Masa langganan berakhir pada ' + sampai + '. Data tetap bisa dilihat dan diunduh; fitur lain menunggu perpanjangan. Hubungi Admin lewat menu Kontak Admin.';
+  else if (l.sisaHari <= 14) teks = 'Masa ' + (/uji/i.test(l.catatan || '') ? 'uji coba' : 'langganan') + ' tinggal ' + l.sisaHari + ' hari (sampai ' + sampai + '). Hubungi Admin untuk memperpanjang agar tidak terputus.';
   $('#u-lgn-teks').textContent = teks;
   $('#u-lgn').classList.toggle('hidden', !teks);
   return (/uji/i.test(l.catatan || '') ? 'Uji coba' : 'Langganan') + (l.habis ? ' berakhir ' : ' aktif sampai ') + sampai;
@@ -3208,7 +3205,7 @@ $('#f-testi').addEventListener('submit', e => { e.preventDefault(); kirim(e.targ
   if (res.ok) { $('#ts-isi').value = ''; $('#ts-hitung').textContent = '0/400 karakter'; }
 }); });
 $('#kopi').addEventListener('click', e => { if (e.target === $('#kopi')) $('#kopi').close(); });
-/* "DANA / OVO / GoPay: 0811-9693-9694 (a.n. Nama)" → dompet, nomor, dan atas nama di baris sendiri-sendiri. */
+/* "DANA / OVO / GoPay: 0812-0000-0000 (a.n. Nama)" → dompet, nomor, dan atas nama di baris sendiri-sendiri. */
 function tulisKopi(t){
   const m = t.match(/^(.*?):\s*([\d\-\s]{9,}?)\s*(?:\((.*)\))?\s*$/);
   if (!m) { $('#kopi-info').textContent = t; return; }
@@ -3271,6 +3268,6 @@ async function mulai(){
 }
 mulai();
 </script>
-<script src="program.js?v=2"></script>
+<script src="program.js?v=3"></script>
 </body>
 </html>
