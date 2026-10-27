@@ -13,3 +13,19 @@
 .form-wa .penuh{grid-column:1/-1}
 .form-wa .salah{color:#c5221f;font-size:13.5px;font-weight:600;min-height:1em}
 @media(max-width:600px){.form-wa{grid-template-columns:1fr}}
+/* Kartu e-book */
+.rak-ebook{display:grid;gap:18px}
+.eb{display:grid;grid-template-columns:170px 1fr;gap:20px;background:#fff;border:1px solid var(--line,#eadfc7);border-radius:22px;padding:20px;box-shadow:0 12px 28px rgba(18,49,79,.07)}
+.eb-sampul{width:100%;border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.18);display:block}
+.eb-kat{font-size:12px;font-weight:800;letter-spacing:.04em;color:#1b7f3e;text-transform:uppercase}
+.eb h3{margin:4px 0 2px;font-size:22px;color:var(--ink,#16202a)}
+.eb .eb-sub{margin:0 0 8px;font-weight:700;color:var(--aksen,#12314f)}
+.eb p{margin:0 0 8px;color:var(--muted,#5b6b7f);font-size:14.5px}
+.eb ul{margin:0 0 12px;padding-left:20px;font-size:14px}
+.eb-harga{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
+.eb-harga b{font-size:24px;color:#1b7f3e}
+.eb-harga span{font-size:13px;color:var(--muted,#5b6b7f)}
+.eb-aksi{display:flex;gap:8px;flex-wrap:wrap}
+.eb-aksi .btn{text-decoration:none}
+.eb-aksi .eb-unduh{background:#1b7f3e;color:#fff}
+@media(max-width:600px){.eb{grid-template-columns:1fr}.eb-sampul{max-width:200px;margin:auto}}

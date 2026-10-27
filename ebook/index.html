@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-book untuk Guru | Karya Admin</title>
+<meta name="description" content="E-book praktis untuk guru SD: model dan metode pembelajaran, panduan regulasi terbaru, dan pendamping aplikasi Rapor Merdeka Digital serta RPP Flash.">
+<link rel="icon" type="image/svg+xml" href="../karya.svg">
+<link rel="stylesheet" href="../bersama.css">
+<style>
+:root{--aksen:#12314f;--blue:#12314f;--blue2:#1f4f7a;--yellow:#ffd21f;--hijau:#1b7f3e;--cream:#fffaf0;--ink:#16202a;--muted:#5b6b7f;--line:#eadfc7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+a{color:var(--blue)}
+.topline{height:6px;background:linear-gradient(90deg,#d71920 0 34%,var(--yellow) 34% 52%,var(--hijau) 52% 76%,var(--blue) 76%)}
+.wrap{max-width:1040px;margin:auto;padding:0 18px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--blue);text-decoration:none;font-size:17px}
+.brand img{width:36px;height:36px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:11px 16px;font:inherit;font-weight:800;font-size:14.5px;cursor:pointer;background:var(--blue);color:#fff;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--line)}
+.hero{margin:10px 0 28px;padding:36px 30px;border-radius:28px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
+.hero small{color:var(--yellow);font-weight:800;letter-spacing:.08em;font-size:12.5px}
+.hero h1{margin:8px 0 10px;font-size:clamp(1.8rem,4.4vw,2.7rem);line-height:1.12;letter-spacing:-.03em}
+.hero p{margin:0;color:#d6e2ee;font-size:16px;max-width:700px}
+.segera{margin-top:18px;padding:18px 20px;border:2px dashed var(--line);border-radius:20px;color:var(--muted);text-align:center;font-size:14.5px}
+.segera b{display:block;color:var(--blue);font-size:16px;margin-bottom:2px}
+footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="../"><img src="../karya.svg" alt="">Karya Admin</a>
+    <a class="btn ghost" href="../">← Semua karya</a>
+  </nav>
+  <header class="hero">
+    <small>E-BOOK UNTUK GURU SD</small>
+    <h1>Bacaan praktis, langsung bisa dipakai di kelas.</h1>
+    <p>Panduan ringkas yang disusun guru untuk guru: model dan metode pembelajaran, regulasi terbaru, dan pendamping aplikasi.</p>
+  </header>
+  <div class="rak-ebook" id="rak"></div>
+  <div class="segera"><b>📚 E-book berikutnya sedang disiapkan</b>Termasuk ringkasan Permendikdasmen terbaru yang berlaku. Punya usulan topik? <a href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20punya%20usulan%20topik%20e-book%3A%20" target="_blank" rel="noopener">Kirim lewat WhatsApp</a></div>
+  <footer>© <span id="tahun">2026</span> Admin · E-book boleh dibagikan ulang dalam bentuk utuh, tanpa diubah dan tanpa diperjualbelikan.</footer>
+</div>
+<script src="daftar.js"></script>
+<script>
+document.getElementById('tahun').textContent = new Date().getFullYear();
+document.getElementById('rak').innerHTML = EBOOK.map(e => kartuEbook(e, '')).join('');
+</script>
+</body>
+</html>

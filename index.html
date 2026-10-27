@@ -73,7 +73,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <small>APLIKASI UNTUK GURU SD · KURIKULUM MERDEKA</small>
     <h1>Dibuat oleh guru, untuk meringankan pekerjaan guru.</h1>
     <p>Kumpulan aplikasi untuk administrasi pembelajaran SD: dari menyusun RPP sampai mencetak rapor. Tanpa instal, cukup dibuka dari laptop atau HP.</p>
-    <div class="aksi"><a class="btn" href="#karya">Lihat aplikasi</a><a class="btn ghost" href="#pengembang">Tentang pengembang</a></div>
+    <div class="aksi"><a class="btn" href="#karya">Lihat aplikasi</a><a class="btn ghost" href="ebook/">E-book gratis</a><a class="btn ghost" href="#pengembang">Tentang pengembang</a></div>
   </header>
 
   <section id="karya">
@@ -103,6 +103,12 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
         <span style="font-size:14px">Sedang disiapkan. Punya usulan aplikasi yang dibutuhkan guru?<br><a href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20saya%20punya%20usulan%20aplikasi%20untuk%20guru%3A%20" target="_blank" rel="noopener">Kirim usulan lewat WhatsApp</a></span>
       </div>
     </div>
+  </section>
+
+  <section id="ebook">
+    <h2>E-book untuk Guru</h2>
+    <p class="sub">Bacaan praktis pendamping aplikasi dan regulasi terbaru. <a href="ebook/">Lihat semua e-book →</a></p>
+    <div class="rak-ebook" id="rak-ebook"></div>
   </section>
 
   <section id="testimoni" hidden>
@@ -138,11 +144,13 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   </footer>
 </div>
 <script src="bersama.js"></script>
+<script src="ebook/daftar.js"></script>
 <script>
 document.getElementById('tahun').textContent = new Date().getFullYear();
 tampilPemakai('rapor', 'st-rapor');
 tampilPemakai('rpp', 'st-rpp');
 tampilTestimoni(['rapor', 'rpp'], 'daftar-testi', 'testimoni');
+document.getElementById('rak-ebook').innerHTML = EBOOK.slice(0, 2).map(e => kartuEbook(e, 'ebook/')).join('');
 </script>
 </body>
 </html>
