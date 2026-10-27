@@ -7,6 +7,7 @@ const EBOOK = [
     subjudul: 'Panduan Praktis 13 Model dan 12 Metode Pembelajaran untuk Guru SD',
     kategori: 'Pendamping RPP Flash',
     edisi: 'Edisi 2026',
+    penulis: 'Admin',
     halaman: 43,
     ringkas: 'Memahami beda model, metode, dan teknik; memilih model dengan tiga pertanyaan; sintaks lengkap 13 model; 12 metode; cara memadukannya; dan daftar periksa sebelum masuk kelas.',
     poin: ['13 model: PBL, PjBL, TPS, Jigsaw, STAD, NHT, Discovery, dan lainnya', '12 metode pembelajaran dan cara memadukannya', 'Selaras dengan Panduan Pembelajaran dan Asesmen 2025'],
@@ -31,6 +32,7 @@ function kartuEbook(e, akar) {
   return '<article class="eb">' +
     '<img class="eb-sampul" src="' + akar + esc(e.sampul) + '" alt="Sampul ' + esc(e.judul) + '" loading="lazy">' +
     '<div class="eb-isi"><div class="eb-kat">' + esc(e.kategori) + ' · ' + esc(e.edisi) + ' · ' + e.halaman + ' halaman</div>' +
+    (e.penulis ? '<div class="eb-penulis">oleh ' + esc(e.penulis) + '</div>' : '') +
     '<h3>' + esc(e.judul) + '</h3><p class="eb-sub">' + esc(e.subjudul) + '</p>' +
     '<p>' + esc(e.ringkas) + '</p><ul>' + e.poin.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul>' +
     harga + '<div class="eb-aksi">' + unduh + '</div></div></article>';

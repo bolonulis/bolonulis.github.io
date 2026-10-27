@@ -29,3 +29,4 @@
 .eb-aksi .btn{text-decoration:none}
 .eb-aksi .eb-unduh{background:#1b7f3e;color:#fff}
 @media(max-width:600px){.eb{grid-template-columns:1fr}.eb-sampul{max-width:200px;margin:auto}}
+.eb-penulis{font-size:13px;color:var(--muted,#5b6b7f);margin-top:2px}
