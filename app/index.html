@@ -129,6 +129,14 @@ table.kok tr.basi td.ket{opacity:.45}
 @media (max-width:560px){.narasi .lv{grid-template-columns:1fr}.narasi .lv b{padding-top:0}}
 .narasi .beda{grid-column:2;font-size:12px;color:#9a6c00;margin-top:-4px}.narasi .beda button{font:inherit;font-size:12px;margin-left:6px;padding:2px 8px;border-radius:7px;border:1px solid #e3c46a;background:#fff8df;color:#6b4b00;cursor:pointer}
 @media (max-width:560px){.narasi .beda{grid-column:1}}
+.keg{border:1px solid #e3d8c0;border-radius:14px;padding:14px;margin:12px 0;background:#fffdf7}
+.keg .kepala{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.keg .kepala b{color:var(--blue)}
+.keg .dua{display:grid;grid-template-columns:1fr 1fr;gap:10px}.keg label{display:block;font-size:12.5px;font-weight:700;margin:8px 0 4px}
+.keg input[type=text],.keg textarea{width:100%;font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid #d9cfb8;border-radius:10px;background:#fff}
+.keg textarea{min-height:76px;line-height:1.45;resize:vertical}
+.keg .fokus{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}.keg .fokus label{font-weight:400;margin:0;display:flex;gap:5px;align-items:center}
+.keg .alat{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}.keg .hitung{font-size:12px;color:var(--muted);margin-left:auto}
+@media (max-width:560px){.keg .dua{grid-template-columns:1fr}}
 .acuan{margin-top:14px}.acuan h4{margin:14px 0 6px;font-size:14px;color:var(--blue)}
 .acuan table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.45}.acuan th,.acuan td{border:1px solid #e3d8c0;padding:7px 9px;vertical-align:top;text-align:left}
 .acuan th{background:#f7f1e3;width:110px}.acuan .sumber{font-size:12px;color:var(--muted)}
@@ -445,6 +453,19 @@ table.leger td.j{text-align:center;font-weight:800}
           <button class="btn small" type="button" id="kk-dim-simpan">Simpan subdimensi</button>
         </div>
         <div class="msg" id="kk-dim-msg"></div>
+      </details>
+      <details class="card" id="kk-keg-box" style="margin-top:14px">
+        <summary><b id="kk-keg-judul">Kegiatan kokurikuler</b> <span class="sub" id="kk-keg-ring"></span></summary>
+        <div class="panduan" style="margin-top:10px">Isian <b>Tema</b>, <b>Nama Kegiatan Kokurikuler</b>, dan <b>Tujuan Akhir Kegiatan</b> untuk e-Rapor. Berlaku untuk semua rombel kelas ini.
+          Pilih tema (atau ketik sendiri), beri nama kegiatan, centang subdimensi yang menjadi fokus, lalu klik <b>Susun tujuan otomatis</b>. Kalimatnya boleh diubah.
+          Klik lagi untuk pola kalimat lain. Setelah disimpan, klik <b>Salin untuk e-Rapor</b> dan tempel di template kokurikuler e-Rapor.</div>
+        <datalist id="dl-tema-kok"></datalist>
+        <div id="kk-keg"></div>
+        <div class="toolbar">
+          <button class="btn add small" type="button" id="kk-keg-tambah">+ Tambah kegiatan</button>
+          <button class="btn small" type="button" id="kk-keg-simpan">Simpan kegiatan</button>
+        </div>
+        <div class="msg" id="kk-keg-msg"></div>
       </details>
       <div id="kk-editor" class="hidden">
         <div class="panduan" style="margin-top:14px">Pilih capaian tiap siswa: <b>Mahir</b>, <b>Cakap</b>, atau <b>Berkembang</b> (bisa juga mengetik huruf M, C, atau B di kotak pilihan).
@@ -1664,13 +1685,13 @@ document.querySelector('#v-nilai [data-ke="beranda"]').addEventListener('click',
 });
 
 /* ---------- kokurikuler ---------- */
-let KK = null, KK_ISI = {}, KK_DIM = [], KK_NAR = {}, KK_BASI = {};
-const KK_UBAH = { capaian:false, dimensi:false, narasi:false };
+let KK = null, KK_ISI = {}, KK_DIM = [], KK_NAR = {}, KK_BASI = {}, KK_KEG = [];
+const KK_UBAH = { capaian:false, dimensi:false, narasi:false, kegiatan:false };
 $('#t-kok').addEventListener('click', () => bukaKok());
 function tinggalkanKok(){
-  const apa = [KK_UBAH.dimensi && 'subdimensi', KK_UBAH.capaian && 'capaian', KK_UBAH.narasi && 'narasi'].filter(Boolean);
+  const apa = [KK_UBAH.dimensi && 'subdimensi', KK_UBAH.kegiatan && 'kegiatan', KK_UBAH.capaian && 'capaian', KK_UBAH.narasi && 'narasi'].filter(Boolean);
   if (apa.length && !confirm('Perubahan ' + apa.join(', ') + ' belum disimpan. Tinggalkan?')) return false;
-  KK_UBAH.capaian = KK_UBAH.dimensi = KK_UBAH.narasi = false;
+  KK_UBAH.capaian = KK_UBAH.dimensi = KK_UBAH.narasi = KK_UBAH.kegiatan = false;
   return true;
 }
 
@@ -1694,8 +1715,11 @@ async function bukaKok(){
 }
 
 function pakaiKok(res){
+  // kegiatan yang belum disimpan tetap dipertahankan selama kelas dan semesternya sama
+  const simpanKeg = KK_UBAH.kegiatan && KK && KK.rombel.kelas === res.rombel.kelas && KK.semester === res.semester;
   KK = res; KK_BASI = {};
   KK_UBAH.capaian = KK_UBAH.dimensi = KK_UBAH.narasi = false;
+  if (!simpanKeg) { KK_KEG = (res.kegiatan || []).map(g => Object.assign({ hasil:'', pola:0 }, g)); KK_UBAH.kegiatan = false; }
   KK_ISI = {};
   res.siswa.forEach(s => { KK_ISI[s.id] = Object.assign({}, res.capaian[s.id] || {}); });
   KK_DIM = res.dimensi.map(d => d.subdimensi);
@@ -1703,7 +1727,7 @@ function pakaiKok(res){
 }
 
 async function muatKok(){
-  $('#kk-info').textContent = ''; $('#kk-msg').textContent = ''; $('#kk-dim-msg').textContent = ''; $('#kk-narasi-msg').textContent = '';
+  $('#kk-info').textContent = ''; $('#kk-msg').textContent = ''; $('#kk-dim-msg').textContent = ''; $('#kk-narasi-msg').textContent = ''; $('#kk-keg-msg').textContent = '';
   const res = await api({ aksi:'kokRombel', rombel: $('#kk-rombel').value, semester: Number($('#kk-semester').value) });
   if (res.sesiHabis) return;
   if (!res.ok) { $('#kk-isi').classList.add('hidden'); return pesan('#kk-info', res.pesan, false); }
@@ -1716,6 +1740,7 @@ async function muatKok(){
 
 function renderKok(){
   renderDimKok();
+  renderKegKok();
   const ada = KK.dimensi.length > 0;
   $('#kk-editor').classList.toggle('hidden', !ada || !KK.siswa.length);
   kunciLayar('#kk-isi', KK.terkunci);
@@ -1765,6 +1790,118 @@ $('#kk-dim-simpan').addEventListener('click', e => sibuk(e.target, async () => {
   pakaiKok(res);
   renderKok();
   pesan('#kk-dim-msg', res.pesan, true);
+}));
+
+/* ---------- kegiatan kokurikuler (Tema, Nama Kegiatan, Tujuan Akhir untuk e-Rapor) ---------- */
+function renderKegKok(){
+  $('#kk-keg-judul').textContent = 'Kegiatan kokurikuler — Kelas ' + KK.rombel.kelas + ', Semester ' + KK.semester;
+  const isi = KK_KEG.filter(g => g.nama || g.tema);
+  $('#kk-keg-ring').textContent = isi.length ? '(' + isi.map(g => g.nama || g.tema).join('; ') + ')' : '(belum diisi)';
+  $('#dl-tema-kok').innerHTML = (KK.temaKok || []).map(t => '<option value="' + esc(t.tema) + '">').join('');
+  if (!KK.dimensi.length) {
+    $('#kk-keg').innerHTML = '<p class="hint">Pilih dan simpan dulu subdimensi yang dinilai, karena tujuan akhir kegiatan disusun dari subdimensi itu.</p>';
+    $('#kk-keg-tambah').classList.add('hidden');
+    return;
+  }
+  if (!KK_KEG.length) KK_KEG = [kegBaru()];
+  const maks = KK.panjangKegiatan || { tema:100, nama:150, tujuan:500 };
+  $('#kk-keg').innerHTML = KK_KEG.map((g, i) => '<div class="keg" data-i="' + i + '">' +
+    '<div class="kepala"><b>Kegiatan ' + (i + 1) + '</b>' + (KK_KEG.length > 1 ? '<button class="btn danger small" type="button" data-hapus-keg="' + i + '">Hapus</button>' : '') + '</div>' +
+    '<div class="dua"><div><label>Tema</label><input type="text" data-f="tema" list="dl-tema-kok" maxlength="' + maks.tema + '" placeholder="Pilih atau ketik tema" value="' + esc(g.tema) + '"></div>' +
+    '<div><label>Nama Kegiatan Kokurikuler</label><input type="text" data-f="nama" list="dl-nama-kok-' + i + '" maxlength="' + maks.nama + '" placeholder="mis. Kelasku Bersih, Tubuhku Sehat" value="' + esc(g.nama) + '">' +
+    '<datalist id="dl-nama-kok-' + i + '">' + opsiNamaKeg(g.tema) + '</datalist></div></div>' +
+    '<label>Subdimensi yang menjadi fokus kegiatan ini</label><div class="fokus">' + KK.dimensi.map(d =>
+      '<label><input type="checkbox" data-sub="' + esc(d.subdimensi) + '"' + (g.subdimensi.includes(d.subdimensi) ? ' checked' : '') + '>' + esc(d.subdimensi) + '</label>').join('') + '</div>' +
+    '<label>Hasil atau aksi nyata <span class="sub">(opsional, untuk kalimat tujuan)</span></label><input type="text" data-f="hasil" maxlength="120" placeholder="mis. poster ajakan hidup bersih, jadwal piket kelas" value="' + esc(g.hasil || '') + '">' +
+    '<label>Tujuan Akhir Kegiatan</label><textarea data-f="tujuan" maxlength="' + maks.tujuan + '" placeholder="Klik Susun tujuan otomatis, atau tulis sendiri">' + esc(g.tujuan) + '</textarea>' +
+    '<div class="alat"><button class="btn small" type="button" data-susun="' + i + '">✨ Susun tujuan otomatis</button>' +
+    '<button class="btn ghost small" type="button" data-salin-keg="' + i + '">📋 Salin untuk e-Rapor</button>' +
+    '<span class="hitung" data-hitung="' + i + '">' + g.tujuan.length + '/' + maks.tujuan + ' karakter</span></div></div>').join('');
+  $('#kk-keg-tambah').classList.toggle('hidden', KK_KEG.length >= (KK.maksKegiatan || 4));
+}
+function kegBaru(){ return { tema:'', nama:'', tujuan:'', hasil:'', pola:0, subdimensi: KK.dimensi.map(d => d.subdimensi) }; }
+function opsiNamaKeg(tema){
+  const t = (KK.temaKok || []).find(x => x.tema.toLowerCase() === String(tema || '').trim().toLowerCase());
+  return (t ? t.kegiatan : []).map(n => '<option value="' + esc(n) + '">').join('');
+}
+/* Kalimat tujuan dari frasa subdimensi (disarikan dari tahap Cakap Kepka 058) dan pola tetap — tanpa AI. */
+function susunTujuan(g){
+  const frasa = KK.dimensi.map(d => d.subdimensi).filter(s => g.subdimensi.includes(s)).map(s => KK.frasaTujuan[s]).filter(Boolean);
+  if (!frasa.length) return '';
+  const daftar = frasa.length === 1 ? frasa[0] : frasa.slice(0, -1).join(', ') + (frasa.length > 2 ? ', serta ' : ' serta ') + frasa[frasa.length - 1];
+  const nama = '“' + g.nama.trim() + '”', tema = g.tema.trim(), hasil = (g.hasil || '').trim();
+  const akhir = hasil ? ', dengan hasil akhir berupa ' + hasil.replace(/[.\s]+$/, '') : '';
+  const pola = [
+    () => 'Melalui kegiatan ' + nama + ', murid mampu ' + daftar + akhir + '.',
+    () => 'Murid mampu ' + daftar + ' melalui kegiatan ' + nama + (tema ? ' bertema ' + tema : '') + akhir + '.',
+    () => 'Setelah mengikuti kegiatan ' + nama + ', murid mampu ' + daftar + akhir + '.'
+  ];
+  return pola[(g.pola || 0) % pola.length]();
+}
+async function salinKePapan(teks){
+  try { await navigator.clipboard.writeText(teks); return true; }
+  catch (err) {
+    const ta = document.createElement('textarea'); ta.value = teks; document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove(); return ok;
+  }
+}
+$('#kk-keg').addEventListener('input', e => {
+  const kartu = e.target.closest('.keg'), f = e.target.dataset.f;
+  if (!kartu || !f) return;
+  const i = Number(kartu.dataset.i), g = KK_KEG[i];
+  g[f] = e.target.value; KK_UBAH.kegiatan = true;
+  if (f === 'tema') $('#dl-nama-kok-' + i).innerHTML = opsiNamaKeg(g.tema);
+  if (f === 'tujuan') kartu.querySelector('[data-hitung]').textContent = g.tujuan.length + '/' + ((KK.panjangKegiatan || {}).tujuan || 500) + ' karakter';
+});
+$('#kk-keg').addEventListener('change', e => {
+  const sub = e.target.dataset.sub, kartu = e.target.closest('.keg');
+  if (sub === undefined || !kartu) return;
+  const g = KK_KEG[Number(kartu.dataset.i)];
+  g.subdimensi = e.target.checked ? g.subdimensi.concat(sub) : g.subdimensi.filter(x => x !== sub);
+  KK_UBAH.kegiatan = true;
+});
+$('#kk-keg').addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.hapusKeg !== undefined) {
+    KK_KEG.splice(Number(b.dataset.hapusKeg), 1); KK_UBAH.kegiatan = true; return renderKegKok();
+  }
+  if (b.dataset.susun !== undefined) {
+    const i = Number(b.dataset.susun), g = KK_KEG[i];
+    if (!g.nama.trim()) return pesan('#kk-keg-msg', 'Kegiatan ' + (i + 1) + ': isi dulu nama kegiatannya.', false);
+    const t = susunTujuan(g);
+    if (!t) return pesan('#kk-keg-msg', 'Kegiatan ' + (i + 1) + ': centang minimal satu subdimensi fokus.', false);
+    g.tujuan = t; g.pola = (g.pola || 0) + 1; KK_UBAH.kegiatan = true;
+    renderKegKok();
+    return pesan('#kk-keg-msg', 'Tujuan kegiatan ' + (i + 1) + ' tersusun. Periksa dan ubah bila perlu, lalu Simpan kegiatan. Klik Susun lagi untuk pola kalimat lain.', true);
+  }
+  if (b.dataset.salinKeg !== undefined) {
+    const g = KK_KEG[Number(b.dataset.salinKeg)];
+    if (!g.tema.trim() || !g.nama.trim() || !g.tujuan.trim()) return pesan('#kk-keg-msg', 'Lengkapi tema, nama kegiatan, dan tujuan akhir dulu.', false);
+    // dipisah tab: tertempel di tiga kolom berurutan (Tema, Nama Kegiatan, Tujuan Akhir)
+    const teks = [g.tema, g.nama, g.tujuan].map(x => String(x).replace(/[\t\r\n]+/g, ' ').trim()).join('\t');
+    if (!await salinKePapan(teks)) return pesan('#kk-keg-msg', 'Gagal menyalin otomatis. Coba lagi dengan browser Chrome.', false);
+    b.textContent = '✓ Tersalin';
+    pesan('#kk-keg-msg', 'Tersalin 3 kolom: Tema, Nama Kegiatan, Tujuan Akhir. Di template kokurikuler e-Rapor, klik sel Tema pada baris kegiatan, lalu tempel (Ctrl+V).' +
+      (KK_UBAH.kegiatan ? ' Jangan lupa Simpan kegiatan di aplikasi ini.' : ''), true);
+  }
+});
+$('#kk-keg-tambah').addEventListener('click', () => { KK_KEG.push(kegBaru()); KK_UBAH.kegiatan = true; renderKegKok(); });
+$('#kk-keg-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const res = await api({ aksi:'simpanKegiatanKok', rombel: KK.rombel.id, semester: KK.semester,
+    kegiatan: KK_KEG.map(g => ({ tema: g.tema, nama: g.nama, tujuan: g.tujuan, subdimensi: g.subdimensi })) });
+  if (res.sesiHabis) return;
+  pesan('#kk-keg-msg', res.pesan, res.ok, res.salah);
+  if (!res.ok) return;
+  // simpan kegiatan tidak membuang ketikan lain; isian bantu (hasil, pola) tetap
+  const bantu = KK_KEG.filter(g => g.tema || g.nama || g.tujuan);
+  const isi = KK_ISI, basi = KK_BASI, ubahCap = KK_UBAH.capaian, nar = KK_NAR, ubahNar = KK_UBAH.narasi, dim = KK_DIM, ubahDim = KK_UBAH.dimensi;
+  KK_UBAH.kegiatan = false;
+  pakaiKok(res);
+  KK_KEG.forEach((g, i) => { if (bantu[i]) { g.hasil = bantu[i].hasil; g.pola = bantu[i].pola; } });
+  KK_ISI = isi; KK_BASI = basi; KK_UBAH.capaian = ubahCap; KK_NAR = nar; KK_UBAH.narasi = ubahNar; KK_DIM = dim; KK_UBAH.dimensi = ubahDim;
+  renderKegKok();
+  pesan('#kk-keg-msg', res.pesan, true);
 }));
 
 function renderTabelKok(){
