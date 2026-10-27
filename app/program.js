@@ -245,6 +245,8 @@ function renderDepan(){
     (wa ? '<a href="https://wa.me/' + wa + '?text=' + encodeURIComponent(ajak) + '" target="_blank" rel="noopener"><b>Hubungi pengembang lewat WhatsApp</b></a>' : 'Hubungi ' + esc(PG.narahubung)) +
     ' untuk mendapatkan kode aktivasi, lalu masukkan kodenya di tombol 🔑 di atas.' + (PG.infoBayar ? '<br><span class="sub">' + esc(PG.infoBayar) + '</span>' : '');
   $('#pg-kontribusi').classList.toggle('hidden', !!k.lisensiSampai || k.sisaGratis > 1);
+  $('#pg-promo').textContent = k.promo && !k.lisensiSampai ? '🎁 ' + k.promo : '';
+  $('#pg-promo').classList.toggle('hidden', !k.promo || !!k.lisensiSampai);
   $('#pg-baru').disabled = !k.bisaBaru;
   $('#pg-baru-ket').textContent = k.bisaBaru ? (k.lisensiSampai ? '' : 'Memulai program baru memakai 1 kuota gratis.') : 'Kuota gratis sudah terpakai.';
   $('#pg-daftar').innerHTML = PG.program.length ? '<table class="pg-tabel"><thead><tr><th>Program</th><th>Tahun ajaran</th><th>Tahap</th><th>Diubah</th><th></th></tr></thead><tbody>' +

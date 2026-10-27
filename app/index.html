@@ -137,7 +137,10 @@ table.kok tr.basi td.ket{opacity:.45}
 .keg .fokus{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}.keg .fokus label{font-weight:400;margin:0;display:flex;gap:5px;align-items:center}
 .keg .alat{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}.keg .hitung{font-size:12px;color:var(--muted);margin-left:auto}
 @media (max-width:560px){.keg .dua{grid-template-columns:1fr}}
-.t-prog{border-color:#cdb8f2;background:linear-gradient(135deg,#fff,#f6f1ff)}.t-prog b{color:#4b2a8c}
+.t-prog{grid-column:1/-1;border-color:#cdb8f2;background:linear-gradient(135deg,#fff,#f3ecff)}.t-prog b{color:#4b2a8c;font-size:17px}
+.tile .t-prog-baru{display:inline-block;width:auto;margin:0 0 0 6px;line-height:1.4;font-size:11px;font-weight:800;letter-spacing:.06em;color:#fff;background:#6d44c4;border-radius:999px;padding:2px 8px;vertical-align:2px}
+.t-prog-promo{margin:10px 0 2px;background:#fff8e1;border:1px solid #f0d77a;border-radius:12px;padding:9px 12px;font-size:13.5px;font-weight:700;color:#5c4400;text-align:left}
+.pg-promo{margin-top:10px;background:#fff8e1;border:1px solid #f0d77a;border-radius:12px;padding:9px 12px;font-size:13.5px;font-weight:700;color:#5c4400}
 .pg-langkah{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}.pg-langkah span{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;background:#f1ecfb;color:#6b5a8e;border:1px solid #e4dbf6}
 .pg-langkah span.on{background:#4b2a8c;color:#fff;border-color:#4b2a8c}.pg-langkah span.ok{background:#e9f6ec;color:var(--ok);border-color:#b9dfc6}
 .pg-kuota{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.pg-kuota b{font-size:15px}
@@ -395,12 +398,13 @@ table.leger td.j{text-align:center;font-weight:800}
       <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa disalin ke template impor TP e-Rapor.</span><div class="tag on">Buka →</div><div class="tag baru hidden" id="t-tp-baru"></div></button>
       <button class="tile" type="button" id="t-nilai"><b>Input Nilai</b><span>Sumatif lingkup materi dan sumatif akhir semester per rombel dan mapel, lengkap dengan nilai rapor dan deskripsinya.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-kok"><b>Kokurikuler</b><span>Subdimensi profil lulusan per kelas, capaian Mahir/Cakap/Berkembang, dan deskripsi otomatis.</span><div class="tag on">Buka →</div></button>
-      <button class="tile t-prog" type="button" id="t-prog"><b>✨ Program Kokurikuler</b><span>Susun program satu kelas satu semester bertahap bersama Gemini: rancangan, pertemuan, lembar observasi, asesmen sumatif, sampai dokumen Word dan Google Docs.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-wk"><b>Wali Kelas</b><span>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-lulus"><b>Transkrip &amp; SKL</b><span>Kelas 6: nilai rata-rata kelas 5–6 dan praktik, nomor ijazah, cetak transkrip nilai dan Surat Keterangan Lulus.</span><div class="tag on">Buka →</div></button>
       <button class="tile" type="button" id="t-cetak"><b>Cek &amp; Cetak Rapor</b><span>Pemeriksaan kelengkapan, leger nilai, dan cetak rapor (bisa disimpan sebagai PDF).</span><div class="tag on">Buka →</div></button>
       <div class="tile t-bantu"><b>Bantuan</b><span>Panduan, narahubung, dan testimoni untuk aplikasi ini.</span>
         <div class="t-bantu-tombol"><a class="btn ghost small" href="panduan.html" target="_blank" rel="noopener">📘 Panduan</a><button type="button" class="btn ghost small buka-profil">👤 Narahubung</button><button type="button" class="btn ghost small" id="buka-testi">⭐ Beri testimoni</button><button type="button" class="btn ghost small buka-kopi hidden">☕ Traktir kopi</button></div></div>
+      <button class="tile t-prog" type="button" id="t-prog"><div class="t-prog-isi"><b>✨ Program Kokurikuler <span class="t-prog-baru">BARU</span></b><span>Susun program kokurikuler satu kelas satu semester secara bertahap bersama Gemini: rancangan kegiatan, alur dan pertemuan, lembar observasi, asesmen sumatif, sampai dokumen Word dan Google Docs serta isian e-Rapor.</span></div>
+        <div class="t-prog-promo hidden" id="t-prog-promo"></div><div class="tag on">Buka →</div></button>
     </div>
 
     <div class="card akun">
@@ -527,6 +531,7 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="card pg-kuota-kartu">
         <div class="pg-kuota"><div><b id="pg-kuota-judul">Memuat…</b><div class="sub" id="pg-kuota-teks"></div></div>
           <button class="btn ghost small" type="button" id="pg-aktivasi-buka">🔑 Masukkan kode aktivasi</button></div>
+        <div class="pg-promo hidden" id="pg-promo"></div>
         <div class="pg-kontribusi hidden" id="pg-kontribusi"></div>
         <form id="pg-aktivasi" class="hidden" style="margin-top:12px">
           <label for="pg-kode">Kode aktivasi Lisensi Sekolah</label>
@@ -1032,6 +1037,9 @@ async function muatInfo(){
   // Ajakan dukungan sukarela: tampil hanya bila pengelola mengisi "Info Dukungan".
   tulisKopi(res.dukungan || '');
   document.querySelectorAll('.buka-kopi').forEach(b => b.classList.toggle('hidden', !res.dukungan));
+  // Info masa promo Program Kokurikuler (diatur pengelola di Pengaturan Pusat)
+  $('#t-prog-promo').textContent = res.promoKok ? '🎁 ' + res.promoKok : '';
+  $('#t-prog-promo').classList.toggle('hidden', !res.promoKok);
   // Pendaftaran ditutup: tab Daftar dan statistik disembunyikan.
   $('#tab-daftar').classList.toggle('hidden', !res.daftarDibuka);
   $('#tab-akun').style.gridTemplateColumns = res.daftarDibuka ? '' : '1fr';
@@ -3263,6 +3271,6 @@ async function mulai(){
 }
 mulai();
 </script>
-<script src="program.js?v=1"></script>
+<script src="program.js?v=2"></script>
 </body>
 </html>
