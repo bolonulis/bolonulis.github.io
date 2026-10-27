@@ -2,6 +2,21 @@
    (entri paling atas tampil paling depan). Sampul bisa dibuat dari halaman pertama PDF. */
 const EBOOK = [
   {
+    id: 'kokurikuler-siap-jalan',
+    judul: 'Kokurikuler Siap Jalan',
+    subjudul: 'Panduan Teknis Menyusun Program, Melaksanakan, Menilai, hingga Melaporkan Kokurikuler di SD',
+    kategori: 'Seri Panduan Guru SD',
+    edisi: 'Edisi 2026',
+    penulis: 'Admin',
+    halaman: 38,
+    ringkas: 'Dari tim kerja dan analisis sekolah, program tahunan kelas I–VI, perencanaan kegiatan format A–H, pelaksanaan di kelas, asesmen Berkembang–Cakap–Mahir, sampai deskripsi rapor dan evaluasi. Mengacu pada Panduan Kokurikuler 2025 dan Kepka BSKAP 058/H/KR/2025.',
+    poin: ['12 format siap cetak: SK tim, analisis, program tahunan, perencanaan A–H, jurnal 7 KAIH, rubrik, evaluasi', '3 contoh perencanaan lengkap: lintas disiplin, Gerakan 7 KAIH, dan kearifan lokal', 'Rumusan resmi 8 dimensi jenjang SD dan bank kalimat deskripsi rapor'],
+    berkas: 'kokurikuler-siap-jalan-2026.pdf',
+    sampul: 'kokurikuler-siap-jalan.png',
+    hargaNormal: 100000,
+    gratis: true
+  },
+  {
     id: 'racik-kelas-hidup',
     judul: 'Racik Kelas Hidup',
     subjudul: 'Panduan Praktis 13 Model dan 12 Metode Pembelajaran untuk Guru SD',
