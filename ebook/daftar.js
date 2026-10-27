@@ -70,7 +70,7 @@ function kartuEbook(e, akar) {
     : '<div class="eb-harga"><b>' + rupiah(e.hargaNormal) + '</b></div>';
   const unduh = e.gratis
     ? '<a class="btn eb-unduh" href="' + akar + esc(e.berkas) + '" download>⬇️ Unduh gratis (PDF)</a><a class="btn ghost" href="' + akar + esc(e.berkas) + '" target="_blank" rel="noopener">Baca dulu</a>'
-    : '<a class="btn eb-unduh" href="https://wa.me/628196939694?text=' + encodeURIComponent('Halo Admin, saya ingin membeli e-book "' + e.judul + '".') + '" target="_blank" rel="noopener">Beli lewat WhatsApp</a>';
+    : '<a class="btn eb-unduh" href="https://wa.me/6281196939694?text=' + encodeURIComponent('Halo Admin, saya ingin membeli e-book "' + e.judul + '".') + '" target="_blank" rel="noopener">Beli lewat WhatsApp</a>';
   return '<article class="eb">' +
     '<img class="eb-sampul" src="' + akar + esc(e.sampul) + '" alt="Sampul ' + esc(e.judul) + '" loading="lazy">' +
     '<div class="eb-isi"><div class="eb-kat">' + esc(e.kategori) + ' · ' + esc(e.edisi) + ' · ' + e.halaman + ' halaman</div>' +
