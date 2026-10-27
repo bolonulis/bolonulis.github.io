@@ -202,7 +202,11 @@ async function susunTahap3(){
 async function muatInfoProgram(){
   const res = await api({ aksi: 'programInfo' });
   if (res.sesiHabis) return false;
-  if (!res.ok) { pesan('#pg-info', res.pesan, false); return false; }
+  if (!res.ok) {
+    // halaman sudah baru tetapi server belum diperbarui pengelola
+    pesan('#pg-info', res.pesan === 'Aksi tidak dikenal.' ? 'Menu ini sedang disiapkan dan akan aktif setelah server diperbarui pengelola. Silakan coba lagi nanti.' : res.pesan, false);
+    return false;
+  }
   PG = res; return true;
 }
 async function simpanProgram(diam){
