@@ -279,7 +279,8 @@ function renderKunci(){
 }
 $('#pg-kunci-uji').addEventListener('click', e => sibuk(e.target, async () => {
   const k = $('#pg-kunci').value.trim();
-  if (!/^AIza[\w-]{20,}$/.test(k)) return pesan('#pg-kunci-msg', 'Kunci API Gemini diawali "AIza". Salin ulang dari aistudio.google.com/apikey.', false);
+  // Google kini membuat kunci berawalan "AQ." (dulu "AIza"); keabsahan dipastikan oleh Google saat diuji
+  if (!/^[\w.-]{20,}$/.test(k)) return pesan('#pg-kunci-msg', 'Kunci API Gemini belum lengkap atau memuat spasi. Salin ulang seluruh kunci dari aistudio.google.com/apikey.', false);
   ls.set(KUNCI_GEMINI, k);
   try {
     await gemini('Balas hanya dengan JSON.', 'Balas persis: {"ok":true}', 1024);

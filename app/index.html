@@ -549,7 +549,7 @@ table.leger td.j{text-align:center;font-weight:800}
       <details class="card" id="pg-kunci-box" style="margin-top:14px">
         <summary><b>🔐 Kunci API Gemini</b> <span class="sub" id="pg-kunci-status">— belum diisi</span></summary>
         <p class="hint">Program disusun oleh Gemini memakai <b>kunci API milik Anda sendiri</b> (gratis dari Google). Kunci hanya disimpan di browser perangkat ini dan dikirim langsung ke Google, <b>tidak pernah ke server aplikasi</b>.</p>
-        <div class="toolbar" style="margin:8px 0"><input id="pg-kunci" type="password" autocomplete="off" spellcheck="false" placeholder="Tempel kunci API Gemini (AIza…)" style="flex:1;min-width:220px;padding:10px;border:1px solid #d9cfb8;border-radius:10px;font:inherit">
+        <div class="toolbar" style="margin:8px 0"><input id="pg-kunci" type="password" autocomplete="off" spellcheck="false" placeholder="Tempel kunci API Gemini (AQ.… atau AIza…)" style="flex:1;min-width:220px;padding:10px;border:1px solid #d9cfb8;border-radius:10px;font:inherit">
           <button class="btn small" type="button" id="pg-kunci-uji">Simpan &amp; uji</button>
           <button class="btn ghost small" type="button" id="pg-kunci-hapus">Hapus dari perangkat ini</button></div>
         <div class="msg" id="pg-kunci-msg"></div>
@@ -557,7 +557,7 @@ table.leger td.j{text-align:center;font-weight:800}
           <ol class="hint" style="line-height:1.7">
             <li>Buka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> dan masuk dengan akun Google (boleh akun pribadi).</li>
             <li>Setujui ketentuan bila diminta, lalu klik <b>Create API key</b> (Buat kunci API).</li>
-            <li>Salin kunci yang muncul (diawali <b>AIza</b>), tempel di kolom di atas, lalu klik <b>Simpan &amp; uji</b>.</li>
+            <li>Salin kunci yang muncul (diawali <b>AQ.</b>; kunci lama diawali <b>AIza</b>), tempel di kolom di atas, lalu klik <b>Simpan &amp; uji</b>.</li>
             <li>Paket gratis punya batas permintaan per menit dan per hari. Satu program memakai sekitar 3–7 permintaan. Bila muncul pesan batas tercapai, tunggu sebentar lalu coba lagi.</li>
             <li>Pada paket gratis, Google dapat memakai isian untuk meningkatkan layanannya. Jangan menulis data pribadi murid di isian program.</li>
           </ol></details>
@@ -3273,6 +3273,6 @@ async function mulai(){
 }
 mulai();
 </script>
-<script src="program.js?v=5"></script>
+<script src="program.js?v=6"></script>
 </body>
 </html>
