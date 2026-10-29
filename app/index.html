@@ -321,6 +321,7 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="field"><label for="d-nama">Nama sekolah</label><input id="d-nama" type="text" maxlength="100" placeholder="Contoh: SD NEGERI 1 SUKAMAJU" required></div>
       <div class="field"><label for="d-prov">Provinsi</label><select id="d-prov" required><option value="">Pilih provinsi…</option></select></div>
       <div class="field"><label for="d-kab">Kabupaten/Kota</label><select id="d-kab" required disabled><option value="">Pilih provinsi dulu…</option></select></div>
+      <div class="field"><label for="d-kec">Kecamatan</label><select id="d-kec" required disabled><option value="">Pilih kabupaten/kota dulu…</option></select></div>
       <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required>
         <div class="hint"><b>Gunakan email sekolah</b>, bukan email pribadi guru. Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email hanya untuk satu sekolah.</div></div>
       <div class="field"><label for="d-wa">Nomor WhatsApp yang bisa dihubungi</label><input id="d-wa" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="Contoh: 0812-3456-7890" required>
@@ -1015,8 +1016,34 @@ function isiKabupaten(){
   $('#d-kab').innerHTML = '<option value="">' + (daftar.length ? 'Pilih kabupaten/kota…' : 'Pilih provinsi dulu…') + '</option>' +
     daftar.map(k => '<option>' + esc(k) + '</option>').join('');
   $('#d-kab').disabled = !daftar.length;
+  isiKecamatan();
 }
 $('#d-prov').addEventListener('change', isiKabupaten);
+/* Kecamatan per kabupaten/kota diambil dari app/kecamatan/<provinsi>.json (Kepmendagri 2025) saat provinsi dipilih. */
+const KECAMATAN = {};
+async function isiKecamatan(){
+  const prov = $('#d-prov').value, kab = $('#d-kab').value, el = $('#d-kec');
+  el.innerHTML = '<option value="">' + (kab ? 'Memuat kecamatan…' : 'Pilih kabupaten/kota dulu…') + '</option>';
+  el.disabled = true;
+  if (!prov || !kab) return;
+  if (!KECAMATAN[prov]) {
+    try { KECAMATAN[prov] = await (await fetch('kecamatan/' + prov.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '') + '.json')).json(); }
+    catch (e) { KECAMATAN[prov] = {}; }
+  }
+  if ($('#d-kab').value !== kab) return;   // pilihan sudah berganti selama memuat
+  const daftar = KECAMATAN[prov][kab] || [];
+  el.innerHTML = '<option value="">Pilih kecamatan…</option>' + daftar.map(k => '<option>' + esc(k) + '</option>').join('') +
+    '<option value="lain">Tidak ada di daftar…</option>';
+  el.disabled = false;
+}
+$('#d-kab').addEventListener('change', isiKecamatan);
+$('#d-kec').addEventListener('change', () => {
+  if ($('#d-kec').value !== 'lain') return;
+  const k = (prompt('Tulis nama kecamatan sekolah:') || '').trim();
+  if (!k) { $('#d-kec').value = ''; return; }
+  $('#d-kec').insertAdjacentHTML('afterbegin', '<option>' + esc(k) + '</option>');
+  $('#d-kec').value = k;
+});
 
 /* Statistik pengguna: dimuat sekali saat halaman masuk/daftar tampil; disembunyikan bila gagal atau masih kosong. */
 /* Pengumuman dan status pemeliharaan dari pengelola (spreadsheet Pusat → Pengaturan). */
@@ -1216,7 +1243,7 @@ $('#f-masuk').addEventListener('submit', e => { e.preventDefault(); kirim(e.targ
 $('#f-daftar').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
   const res = await api({ aksi:'daftar', data: {
     npsn: $('#d-npsn').value, nama: $('#d-nama').value, email: $('#d-email').value,
-    kabupaten: $('#d-kab').value, provinsi: $('#d-prov').value,
+    kabupaten: $('#d-kab').value, provinsi: $('#d-prov').value, kecamatan: $('#d-kec').value,
     wa: $('#d-wa').value,
     sandi: $('#d-sandi').value, ulangi: $('#d-ulangi').value, setuju: $('#d-setuju').checked } });
   if (!res.ok) return pesan('#d-msg', res.pesan, false, res.salah);
