@@ -105,6 +105,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
         <div><span class="lencana">Baru · 117 poster</span></div>
         <p>Rangkuman materi IPAS dalam poster berwarna, siap tayang di kelas tanpa menghabiskan kuota membuat gambar.</p>
         <ul><li>Gratis diunduh (bertanda air)</li><li>Bebas tanda air resolusi penuh Rp15.000/kelas</li><li>Paket lengkap kelas 3–6 Rp50.000</li></ul>
+        <p class="pemakai" id="st-poster" hidden style="--aksen:#b45309"></p>
         <div class="aksi"><a class="btn" style="background:#d97706" href="poster/">Lihat poster</a></div>
       </article>
       <div class="app segera">
@@ -158,6 +159,12 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 document.getElementById('tahun').textContent = new Date().getFullYear();
 tampilPemakai('rapor', 'st-rapor');
 tampilPemakai('rpp', 'st-rpp');
+tanyaLayanan('rapor', 'posterPublik').then(h => {
+  if (!h.ok || !h.unduhan) return;
+  const el = document.getElementById('st-poster');
+  el.textContent = '⬇️ Sudah diunduh ' + h.unduhan.toLocaleString('id-ID') + ' kali oleh ' + h.guru.toLocaleString('id-ID') + ' guru di ' + h.kabupaten + ' kabupaten/kota';
+  el.hidden = false;
+});
 tampilTestimoni(['rapor', 'rpp'], 'daftar-testi', 'testimoni');
 document.getElementById('rak-ebook').innerHTML = EBOOK.slice(0, 2).map(e => kartuEbook(e, 'ebook/')).join('');
 </script>

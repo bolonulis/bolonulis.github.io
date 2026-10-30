@@ -334,7 +334,7 @@ function ajakTesti() { toast('Poster bermanfaat untuk kelas Bapak/Ibu?', { label
 
 kirimApi({ aksi: 'posterPublik' }).then(h => {
   if (!h.ok) return;
-  if (h.unduhan >= 20) { $('#st-poster').textContent = '⬇️ Sudah diunduh ' + h.unduhan.toLocaleString('id-ID') + ' kali oleh ' + h.guru.toLocaleString('id-ID') + ' guru dari ' + h.kabupaten + ' kabupaten/kota'; $('#st-poster').hidden = false; }
+  if (h.unduhan >= 1) { $('#st-poster').textContent = '⬇️ Sudah diunduh ' + h.unduhan.toLocaleString('id-ID') + ' kali oleh ' + h.guru.toLocaleString('id-ID') + ' guru dari ' + h.kabupaten + ' kabupaten/kota'; $('#st-poster').hidden = false; }
   const t = h.testimoni || [];
   $('#daftar-testi').innerHTML = t.length ? t.map(x => '<figure class="testi"><blockquote>“' + esc(x.isi) + '”</blockquote><figcaption><b>' + esc(x.nama) + '</b>' +
     [x.jabatan, x.sekolah, x.kabupaten].filter(Boolean).map(v => '<span>' + esc(v) + '</span>').join('') + '</figcaption></figure>').join('')
