@@ -56,6 +56,17 @@ dialog::backdrop{background:rgba(10,20,30,.7)}
 .dlg-aksi{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
 .dlg-aksi .btn{flex:1 1 200px}
 #beli{scroll-margin-top:20px}
+.st-poster{margin:14px 0 0;font-weight:700;color:var(--yellow);font-size:14.5px}
+.form-dlg{padding:16px 18px;overflow:auto}
+.form-dlg h3{margin:0 0 4px;color:var(--blue)}
+.form-dlg p.ket{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+.form-dlg .privasi{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+.form-dlg textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;width:100%;min-height:110px;resize:vertical}
+.saya{font-size:13px;color:var(--muted);margin:8px 0 0}
+.saya button{font:inherit;font-size:13px;border:0;background:none;color:var(--blue);text-decoration:underline;cursor:pointer;padding:0}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--blue);color:#fff;border-radius:14px;padding:12px 16px;box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:20;display:flex;gap:12px;align-items:center;max-width:calc(100vw - 32px);font-size:14px}
+.toast button{font:inherit;font-weight:800;border:0;border-radius:10px;padding:7px 12px;cursor:pointer;background:var(--yellow);color:var(--blue);white-space:nowrap}
+.toast .tutup{background:transparent;color:#fff;padding:4px}
 footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 @media(max-width:600px){.hero{padding:26px 20px}.galeri{grid-template-columns:repeat(2,1fr);gap:10px}}
 </style>
@@ -72,6 +83,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <small>POSTER INFOGRAFIS · IPAS KELAS 3–6</small>
     <h1>117 poster rangkuman materi IPAS, siap tayang dan siap cetak.</h1>
     <p>Tidak perlu menghabiskan kuota membuat gambar. Pakai untuk penjelasan di Papan Interaktif, dibagikan ke grup kelas, atau dicetak sebagai pajangan dan bahan belajar murid.</p>
+    <p class="st-poster" id="st-poster" hidden></p>
   </header>
 
   <div class="paket">
@@ -96,6 +108,13 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   <div class="tab" id="tab" role="group" aria-label="Pilih kelas"></div>
   <div class="galeri" id="galeri"></div>
 
+  <section id="testimoni" style="margin-top:34px">
+    <h2 style="color:var(--blue);margin:0 0 4px;font-size:clamp(1.3rem,3vw,1.7rem)">Kata Bapak/Ibu Guru</h2>
+    <p style="margin:0 0 14px;color:var(--muted)">Sudah memakai poster ini di kelas? Ceritakan pengalaman Bapak/Ibu.</p>
+    <div class="daftar-testi" id="daftar-testi"></div>
+    <p style="margin-top:14px"><button class="btn" type="button" id="buka-testi">✍️ Tulis testimoni</button></p>
+  </section>
+
   <section id="beli" class="kotak" style="margin-top:30px">
     <h3 style="font-size:20px">✨ Dapatkan versi bebas tanda air</h3>
     <p style="margin-bottom:14px">Isi formulir, lalu pesan WhatsApp untuk Admin tersusun otomatis. Setelah kontribusi diterima, Admin membagikan folder Google Drive berisi poster resolusi penuh ke email Google Bapak/Ibu.</p>
@@ -118,13 +137,41 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <div class="dlg-kepala"><b id="dlg-judul"></b><button type="button" id="dlg-tutup" aria-label="Tutup">×</button></div>
     <div class="dlg-gambar"><img id="dlg-img" alt=""></div>
     <div class="dlg-aksi">
-      <a class="btn ghost" id="dlg-unduh" download>⬇️ Unduh gratis (bertanda air)</a>
+      <button class="btn ghost" type="button" id="dlg-unduh">⬇️ Unduh gratis (bertanda air)</button>
       <a class="btn hijau" href="#beli" id="dlg-beli">✨ Versi bebas tanda air</a>
     </div>
   </div>
 </dialog>
 
+<dialog id="dlg-data">
+  <form class="form-dlg form-wa" id="f-data" novalidate>
+    <div class="penuh"><h3>Sebelum mengunduh</h3>
+      <p class="ket">Cukup diisi <b>sekali</b> di perangkat ini. Unduhan berikutnya langsung tersimpan tanpa mengisi lagi.</p></div>
+    <label>Nama<input name="nama" required data-label="nama" maxlength="80" autocomplete="name"></label>
+    <label>Asal sekolah<input name="sekolah" required data-label="asal sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju"></label>
+    <label>Provinsi<select name="provinsi" id="dt-prov" required data-label="provinsi"><option value="">Pilih provinsi…</option></select></label>
+    <label>Kabupaten/Kota<select name="kabupaten" id="dt-kab" required data-label="kabupaten/kota" disabled><option value="">Pilih provinsi dulu…</option></select></label>
+    <label>Mengajar<select name="mengajar" required data-label="kelas yang diajar"><option value="">Pilih…</option><option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option><option>Guru mapel</option><option>Kepala sekolah</option><option>Lainnya</option></select></label>
+    <label>No. WhatsApp <span style="font-weight:400;color:var(--muted)">(opsional)</span><input name="wa" type="tel" inputmode="tel" maxlength="20" placeholder="Untuk kabar poster baru"></label>
+    <p class="salah penuh"></p>
+    <div class="penuh" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn hijau" type="submit">⬇️ Simpan &amp; unduh</button><button class="btn ghost" type="button" data-tutup>Batal</button></div>
+    <p class="privasi penuh">Data hanya dipakai Admin untuk mengetahui sebaran pemakai dan mengembangkan poster berikutnya. Tidak ditampilkan dan tidak dibagikan ke pihak lain.</p>
+  </form>
+</dialog>
+
+<dialog id="dlg-testi">
+  <form class="form-dlg form-wa" id="f-testi" novalidate>
+    <div class="penuh"><h3>✍️ Tulis testimoni</h3><p class="ket" id="testi-siapa"></p></div>
+    <label class="penuh">Jabatan <span style="font-weight:400;color:var(--muted)">(opsional)</span><input name="jabatan" maxlength="60" placeholder="Contoh: Guru Kelas 5"></label>
+    <label class="penuh">Testimoni<textarea name="isi" required data-label="testimoni" maxlength="400" placeholder="Bagaimana poster ini membantu pembelajaran di kelas Bapak/Ibu?"></textarea></label>
+    <label class="penuh" style="flex-direction:row;align-items:flex-start;gap:8px;font-weight:400"><input type="checkbox" name="izin" checked style="width:auto;margin-top:4px"> Boleh ditampilkan di halaman ini beserta nama, sekolah, dan kabupaten/kota saya.</label>
+    <p class="salah penuh"></p>
+    <div class="penuh" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn hijau" type="submit">Kirim testimoni</button><button class="btn ghost" type="button" data-tutup>Batal</button></div>
+  </form>
+</dialog>
+
 <script src="../bersama.js"></script>
+<script src="../app/wilayah.js"></script>
 <script src="daftar.js?v=1"></script>
 <script>
 const $ = s => document.querySelector(s);
@@ -171,13 +218,130 @@ $('#galeri').addEventListener('click', e => {
   $('#dlg-judul').textContent = 'Kelas ' + p.kelas + ' · ' + p.no + ' ' + p.judul;
   $('#dlg-img').src = p.besar;
   $('#dlg-img').alt = p.judul;
-  $('#dlg-unduh').href = p.besar;
-  $('#dlg-unduh').setAttribute('download', 'IPAS Kelas ' + p.kelas + ' - ' + p.no + ' ' + p.judul.replace(/[\\/:*?"<>|]/g, '') + ' (gratis).jpg');
+  $('#dlg-unduh').dataset.i = b.dataset.i;
   $('#dlg-beli').dataset.k = p.kelas;
   $('#dlg').showModal();
 });
 $('#dlg-tutup').addEventListener('click', () => $('#dlg').close());
+document.querySelectorAll('[data-tutup]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
+
+/* ---------- data pengunduh (sekali per perangkat), catatan unduhan, testimoni ---------- */
+const API = LAYANAN.rapor.url;
+const simpanan = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* mode privat */ } }
+};
+let PENGUNDUH = simpanan.get('poster-pengunduh');
+let MENUNGGU = null;                       // poster yang menunggu data pengunduh diisi
+let LALU = null;                           // aksi setelah data diisi: 'unduh' atau 'testi'
+function idPerangkat() {
+  let id = simpanan.get('poster-perangkat');
+  if (!id) { id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); simpanan.set('poster-perangkat', id); }
+  return id;
+}
+function kirimApi(data) {
+  return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data), keepalive: true })
+    .then(r => r.json()).catch(() => ({ ok: false, pesan: 'Server tidak terjangkau. Periksa koneksi lalu coba lagi.' }));
+}
+function namaBerkas(p) { return 'IPAS Kelas ' + p.kelas + ' - ' + p.no + ' ' + p.judul.replace(/[\\/:*?"<>|]/g, '') + ' (gratis).jpg'; }
+function lakukanUnduh(p) {
+  const a = document.createElement('a');
+  a.href = p.besar; a.download = namaBerkas(p);
+  document.body.appendChild(a); a.click(); a.remove();
+  // dicatat tanpa menunggu: unduhan tidak pernah tertahan oleh server
+  kirimApi({ aksi: 'posterUnduh', pengunduh: { ...PENGUNDUH, id: idPerangkat() }, kelas: p.kelas, poster: 'Kelas ' + p.kelas + ' · ' + p.no + ' ' + p.judul });
+  const n = (simpanan.get('poster-jumlah') || 0) + 1;
+  simpanan.set('poster-jumlah', n);
+  if (n === 3 && !simpanan.get('poster-testi')) setTimeout(ajakTesti, 1500);
+}
+function unduh(i) {
+  const p = POSTER[i];
+  if (PENGUNDUH) return lakukanUnduh(p);
+  MENUNGGU = p; LALU = 'unduh';
+  bukaFormData();
+}
+function bukaFormData() {
+  const f = $('#f-data');
+  f.querySelector('.salah').textContent = '';
+  if (PENGUNDUH) {
+    ['nama', 'sekolah', 'mengajar', 'wa'].forEach(k => { f.elements[k].value = PENGUNDUH[k] || ''; });
+    f.elements.provinsi.value = PENGUNDUH.provinsi || ''; isiKab(); f.elements.kabupaten.value = PENGUNDUH.kabupaten || '';
+  }
+  f.querySelector('button[type=submit]').textContent = LALU === 'unduh' ? '⬇️ Simpan & unduh' : 'Simpan';
+  if ($('#dlg').open) $('#dlg').close();
+  $('#dlg-data').showModal();
+}
+$('#dt-prov').insertAdjacentHTML('beforeend', Object.keys(WILAYAH).sort((a, b) => a.localeCompare(b)).map(p => '<option>' + esc(p) + '</option>').join(''));
+function isiKab() {
+  const d = WILAYAH[$('#dt-prov').value] || [];
+  $('#dt-kab').innerHTML = '<option value="">' + (d.length ? 'Pilih kabupaten/kota…' : 'Pilih provinsi dulu…') + '</option>' + d.map(k => '<option>' + esc(k) + '</option>').join('');
+  $('#dt-kab').disabled = !d.length;
+}
+$('#dt-prov').addEventListener('change', isiKab);
+$('#f-data').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target, salah = f.querySelector('.salah');
+  const kosong = [...f.querySelectorAll('[required]')].find(el => !el.value.trim());
+  if (kosong) { salah.textContent = 'Lengkapi ' + kosong.dataset.label + ' terlebih dahulu.'; kosong.focus(); return; }
+  const wa = f.elements.wa.value.replace(/\D/g, '');
+  if (wa && !/^(08|628|8)\d{7,12}$/.test(wa)) { salah.textContent = 'Nomor WhatsApp belum benar, atau kosongkan saja.'; f.elements.wa.focus(); return; }
+  PENGUNDUH = { nama: f.elements.nama.value.trim(), sekolah: f.elements.sekolah.value.trim(), provinsi: f.elements.provinsi.value,
+    kabupaten: f.elements.kabupaten.value, mengajar: f.elements.mengajar.value, wa: f.elements.wa.value.trim() };
+  simpanan.set('poster-pengunduh', PENGUNDUH);
+  $('#dlg-data').close();
+  tampilSaya();
+  if (LALU === 'unduh' && MENUNGGU) lakukanUnduh(MENUNGGU);
+  if (LALU === 'testi') bukaTesti();
+  MENUNGGU = null; LALU = null;
+});
+function tampilSaya() {
+  let el = $('#saya');
+  if (!PENGUNDUH) { if (el) el.remove(); return; }
+  if (!el) { $('#galeri').insertAdjacentHTML('beforebegin', '<p class="saya" id="saya"></p>'); el = $('#saya'); }
+  el.innerHTML = 'Mengunduh sebagai <b>' + esc(PENGUNDUH.nama) + '</b> · ' + esc(PENGUNDUH.sekolah) + ' · <button type="button" id="ubah-saya">ubah data</button>';
+  $('#ubah-saya').addEventListener('click', () => { LALU = null; bukaFormData(); });
+}
+
+function bukaTesti() {
+  if (!PENGUNDUH) { LALU = 'testi'; return bukaFormData(); }
+  $('#testi-siapa').textContent = 'Sebagai ' + PENGUNDUH.nama + ' · ' + PENGUNDUH.sekolah + ' · ' + PENGUNDUH.kabupaten;
+  $('#f-testi .salah').textContent = '';
+  $('#dlg-testi').showModal();
+}
+$('#buka-testi').addEventListener('click', bukaTesti);
+$('#f-testi').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target, salah = f.querySelector('.salah'), isi = f.elements.isi.value.trim();
+  if (isi.length < 20) { salah.textContent = 'Tulis testimoni minimal 20 karakter.'; f.elements.isi.focus(); return; }
+  const tombol = f.querySelector('button[type=submit]'); tombol.disabled = true; tombol.textContent = 'Mengirim…';
+  const res = await kirimApi({ aksi: 'posterTestimoni', pengunduh: { ...PENGUNDUH, id: idPerangkat() }, jabatan: f.elements.jabatan.value.trim(), isi, izin: f.elements.izin.checked });
+  tombol.disabled = false; tombol.textContent = 'Kirim testimoni';
+  if (!res.ok) { salah.textContent = res.pesan || 'Gagal mengirim. Coba lagi.'; return; }
+  simpanan.set('poster-testi', true);
+  f.reset(); $('#dlg-testi').close();
+  toast(res.pesan || 'Terima kasih atas testimoninya! 🙏');
+});
+function toast(teks, aksi) {
+  const lama = $('.toast'); if (lama) lama.remove();
+  document.body.insertAdjacentHTML('beforeend', '<div class="toast" role="status"><span>' + esc(teks) + '</span>' +
+    (aksi ? '<button type="button" class="ya">' + esc(aksi.label) + '</button>' : '') + '<button type="button" class="tutup" aria-label="Tutup">✕</button></div>');
+  const t = $('.toast');
+  t.querySelector('.tutup').addEventListener('click', () => t.remove());
+  if (aksi) t.querySelector('.ya').addEventListener('click', () => { t.remove(); aksi.jalankan(); });
+  setTimeout(() => t.remove(), aksi ? 15000 : 6000);
+}
+function ajakTesti() { toast('Poster bermanfaat untuk kelas Bapak/Ibu?', { label: '✍️ Tulis testimoni', jalankan: bukaTesti }); }
+
+kirimApi({ aksi: 'posterPublik' }).then(h => {
+  if (!h.ok) return;
+  if (h.unduhan >= 20) { $('#st-poster').textContent = '⬇️ Sudah diunduh ' + h.unduhan.toLocaleString('id-ID') + ' kali oleh ' + h.guru.toLocaleString('id-ID') + ' guru dari ' + h.kabupaten + ' kabupaten/kota'; $('#st-poster').hidden = false; }
+  const t = h.testimoni || [];
+  $('#daftar-testi').innerHTML = t.length ? t.map(x => '<figure class="testi"><blockquote>“' + esc(x.isi) + '”</blockquote><figcaption><b>' + esc(x.nama) + '</b>' +
+    [x.jabatan, x.sekolah, x.kabupaten].filter(Boolean).map(v => '<span>' + esc(v) + '</span>').join('') + '</figcaption></figure>').join('')
+    : '<p style="color:var(--muted);margin:0">Jadilah yang pertama memberi testimoni.</p>';
+});
 $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg').close(); });
+$('#dlg-unduh').addEventListener('click', e => unduh(e.currentTarget.dataset.i));
 $('#dlg-beli').addEventListener('click', e => { $('#pilih-paket').value = 'Kelas ' + e.currentTarget.dataset.k; $('#dlg').close(); });
 
 $('#pilih-paket').innerHTML = KELAS.map(k => '<option>Kelas ' + k + '</option>').join('') +
@@ -191,6 +355,7 @@ pasangFormWa('form-beli', d => {
 });
 tampilTab();
 tampilGaleri();
+tampilSaya();
 </script>
 </body>
 </html>
