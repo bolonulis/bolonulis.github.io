@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPP FLASH — Cepat, Aplikatif, dan Kontekstual</title>
+<meta name="description" content="RPP FLASH: penyusun RPP Kurikulum Pembelajaran Mendalam untuk guru SD, lengkap dengan soal bermodel TKA, LKPD, dan media interaktif.">
+<meta name="theme-color" content="#1D5FD1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D5FD1'/%3E%3Cpath d='M36 8 18 36h12l-4 20 20-30H34z' fill='%23fff'/%3E%3C/svg%3E">
+<!--
+  Halaman pembungkus: aplikasi RPP FLASH (Google Apps Script) dimuat satu layar penuh
+  di dalam halaman ini, sehingga guru cukup membuka alamat bolonulis.github.io.
+  Bila alamat aplikasi berubah (deployment baru), cukup ganti APLIKASI di bawah.
+-->
+<style>
+  :root { --utama:#1D5FD1; --utama-tua:#143F8F; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { height:100%; background:#EEF2F6; overflow:hidden; }
+  body { font-family:'Segoe UI',system-ui,Arial,sans-serif; color:#1F2328; }
+  #aplikasi { position:fixed; inset:0; width:100%; height:100%; height:100dvh; border:0; display:block; }
+
+  /* Layar memuat: tampil sampai aplikasi selesai dimuat Google (biasanya 2–5 detik). */
+  #memuat { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+            gap:14px; padding:24px; text-align:center; color:#fff;
+            background:linear-gradient(135deg,var(--utama),var(--utama-tua)); transition:opacity .35s; z-index:2; }
+  #memuat.selesai { opacity:0; pointer-events:none; }
+  #memuat h1 { font-size:1.9rem; letter-spacing:0.08em; }
+  #memuat p { font-size:0.92rem; opacity:0.85; }
+  .putar { width:34px; height:34px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%;
+           animation:putar .8s linear infinite; }
+  @keyframes putar { to { transform:rotate(360deg); } }
+  #lambat { display:none; font-size:0.84rem; opacity:0.9; max-width:340px; }
+  #lambat a { color:#fff; font-weight:700; }
+</style>
+</head>
+<body>
+  <div id="memuat" role="status">
+    <h1>RPP FLASH</h1>
+    <div class="putar" aria-hidden="true"></div>
+    <p>Menyiapkan aplikasi&hellip;</p>
+    <p id="lambat">Aplikasi belum juga terbuka? <a id="tautan-langsung" href="#" target="_top">Buka langsung di sini</a>.</p>
+  </div>
+
+  <iframe id="aplikasi" title="RPP FLASH" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
+
+<script>
+  var APLIKASI = 'https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec';
+
+  var bingkai = document.getElementById('aplikasi');
+  var memuat = document.getElementById('memuat');
+  document.getElementById('tautan-langsung').href = APLIKASI;
+
+  bingkai.addEventListener('load', function () { memuat.classList.add('selesai'); });
+  // Jaringan lambat atau peramban menolak bingkai: tawarkan membuka aplikasinya langsung.
+  setTimeout(function () {
+    if (!memuat.classList.contains('selesai')) document.getElementById('lambat').style.display = 'block';
+  }, 12000);
+  bingkai.src = APLIKASI;
+</script>
+<noscript><p style="padding:24px">Aktifkan JavaScript, atau <a href="https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec">buka RPP FLASH langsung</a>.</p></noscript>
+</body>
+</html>
