@@ -231,7 +231,10 @@ const simpanan = {
   get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
   set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* mode privat */ } }
 };
+/* Naikkan VERSI_DATA bila semua pengunduh perlu mengisi data lagi (data lama di perangkat diabaikan). */
+const VERSI_DATA = 2;
 let PENGUNDUH = simpanan.get('poster-pengunduh');
+if (!PENGUNDUH || PENGUNDUH.versi !== VERSI_DATA) PENGUNDUH = null;
 let MENUNGGU = null;                       // poster yang menunggu data pengunduh diisi
 let LALU = null;                           // aksi setelah data diisi: 'unduh' atau 'testi'
 function idPerangkat() {
@@ -239,9 +242,28 @@ function idPerangkat() {
   if (!id) { id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); simpanan.set('poster-perangkat', id); }
   return id;
 }
+/* Catatan unduhan masuk antrean di perangkat dulu dan baru dilepas setelah server menjawab.
+   Bila server tak terjangkau, antrean dikirim ulang saat halaman dibuka lagi. */
+function catatUnduh(req) {
+  simpanan.set('poster-antrean', (simpanan.get('poster-antrean') || []).concat([req]).slice(-200));
+  if (!(simpanan.get('poster-antrean') || []).length) return kirimApi(req);   // penyimpanan peramban diblokir: kirim langsung
+  kirimAntrean();
+}
+let mengirim = false;
+async function kirimAntrean() {
+  if (mengirim) return;
+  mengirim = true;
+  try {
+    while ((simpanan.get('poster-antrean') || []).length) {
+      const res = await kirimApi(simpanan.get('poster-antrean')[0]);
+      if (res.putus) break;
+      simpanan.set('poster-antrean', (simpanan.get('poster-antrean') || []).slice(1));
+    }
+  } finally { mengirim = false; }
+}
 function kirimApi(data) {
   return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data), keepalive: true })
-    .then(r => r.json()).catch(() => ({ ok: false, pesan: 'Server tidak terjangkau. Periksa koneksi lalu coba lagi.' }));
+    .then(r => r.json()).catch(() => ({ ok: false, putus: true, pesan: 'Server tidak terjangkau. Periksa koneksi lalu coba lagi.' }));
 }
 function namaBerkas(p) { return 'IPAS Kelas ' + p.kelas + ' - ' + p.no + ' ' + p.judul.replace(/[\\/:*?"<>|]/g, '') + ' (gratis).jpg'; }
 function lakukanUnduh(p) {
@@ -249,7 +271,7 @@ function lakukanUnduh(p) {
   a.href = p.besar; a.download = namaBerkas(p);
   document.body.appendChild(a); a.click(); a.remove();
   // dicatat tanpa menunggu: unduhan tidak pernah tertahan oleh server
-  kirimApi({ aksi: 'posterUnduh', pengunduh: { ...PENGUNDUH, id: idPerangkat() }, kelas: p.kelas, poster: 'Kelas ' + p.kelas + ' · ' + p.no + ' ' + p.judul });
+  catatUnduh({ aksi: 'posterUnduh', pengunduh: { ...PENGUNDUH, id: idPerangkat() }, kelas: p.kelas, poster: 'Kelas ' + p.kelas + ' · ' + p.no + ' ' + p.judul });
   const n = (simpanan.get('poster-jumlah') || 0) + 1;
   simpanan.set('poster-jumlah', n);
   if (n === 3 && !simpanan.get('poster-testi')) setTimeout(ajakTesti, 1500);
@@ -287,6 +309,7 @@ $('#f-data').addEventListener('submit', e => {
   if (wa && !/^(08|628|8)\d{7,12}$/.test(wa)) { salah.textContent = 'Nomor WhatsApp belum benar, atau kosongkan saja.'; f.elements.wa.focus(); return; }
   PENGUNDUH = { nama: f.elements.nama.value.trim(), sekolah: f.elements.sekolah.value.trim(), provinsi: f.elements.provinsi.value,
     kabupaten: f.elements.kabupaten.value, mengajar: f.elements.mengajar.value, wa: f.elements.wa.value.trim() };
+  PENGUNDUH.versi = VERSI_DATA;
   simpanan.set('poster-pengunduh', PENGUNDUH);
   $('#dlg-data').close();
   tampilSaya();
@@ -356,6 +379,7 @@ pasangFormWa('form-beli', d => {
 tampilTab();
 tampilGaleri();
 tampilSaya();
+kirimAntrean();
 </script>
 </body>
 </html>
