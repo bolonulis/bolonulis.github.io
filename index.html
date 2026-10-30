@@ -154,7 +154,8 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   </footer>
 </div>
 <script src="bersama.js"></script>
-<script src="ebook/daftar.js?v=7"></script>
+<script src="pengunduh.js?v=1"></script>
+<script src="ebook/daftar.js?v=8"></script>
 <script>
 document.getElementById('tahun').textContent = new Date().getFullYear();
 tampilPemakai('rapor', 'st-rapor');
@@ -167,6 +168,7 @@ tanyaLayanan('rapor', 'posterPublik').then(h => {
 });
 tampilTestimoni(['rapor', 'rpp'], 'daftar-testi', 'testimoni');
 document.getElementById('rak-ebook').innerHTML = EBOOK.slice(0, 2).map(e => kartuEbook(e, 'ebook/')).join('');
+pasangCatatanEbook('');
 </script>
 </body>
 </html>

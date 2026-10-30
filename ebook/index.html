@@ -46,10 +46,12 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   <a class="grup-wa" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener"><span class="ikon">👥</span><span><b>Gabung Grup WhatsApp Guru</b>Kabar e-book baru, Rapor Merdeka Digital, RPP Flash, dan masa promo, langsung ke WhatsApp Anda.</span><span class="ajak">Gabung →</span></a>
   <footer>© <span id="tahun">2026</span> Karya untuk Guru SD · E-book boleh dibagikan ulang dalam bentuk utuh, tanpa diubah dan tanpa diperjualbelikan.</footer>
 </div>
-<script src="daftar.js?v=7"></script>
+<script src="../pengunduh.js?v=1"></script>
+<script src="daftar.js?v=8"></script>
 <script>
 document.getElementById('tahun').textContent = new Date().getFullYear();
 document.getElementById('rak').innerHTML = EBOOK.map(e => kartuEbook(e, '')).join('');
+pasangCatatanEbook('../');
 </script>
 </body>
 </html>

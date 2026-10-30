@@ -56,9 +56,9 @@ const rupiah = n => 'Rp' + Number(n).toLocaleString('id-ID');
 function formatWord(e, akar, esc) {
   if (!e.format) return '';
   return '<div class="eb-format"><b>📝 Format Word siap diisi</b>' +
-    '<a class="btn small eb-zip" href="' + akar + esc(e.format.zip) + '" download>⬇️ Unduh semua F1–F' + e.format.daftar.length + ' (ZIP)</a>' +
+    '<a class="btn small eb-zip" href="' + akar + esc(e.format.zip) + '" download data-catat="ZIP" data-ebook="' + esc(e.id) + '" data-berkas="Semua format (ZIP)">⬇️ Unduh semua F1–F' + e.format.daftar.length + ' (ZIP)</a>' +
     '<details><summary>atau unduh satu per satu</summary><ul>' +
-    e.format.daftar.map(f => '<li><a href="' + akar + esc(f.berkas) + '" download><b>' + esc(f.kode) + '</b> ' + esc(f.nama) + '</a></li>').join('') +
+    e.format.daftar.map(f => '<li><a href="' + akar + esc(f.berkas) + '" download data-catat="Word" data-ebook="' + esc(e.id) + '" data-berkas="' + esc(f.kode + ' ' + f.nama) + '"><b>' + esc(f.kode) + '</b> ' + esc(f.nama) + '</a></li>').join('') +
     '</ul></details></div>';
 }
 
@@ -69,7 +69,8 @@ function kartuEbook(e, akar) {
     ? '<div class="eb-harga"><b>Gratis</b><span>selama masa promo · harga normal ' + rupiah(e.hargaNormal) + '</span></div>'
     : '<div class="eb-harga"><b>' + rupiah(e.hargaNormal) + '</b></div>';
   const unduh = e.gratis
-    ? '<a class="btn eb-unduh" href="' + akar + esc(e.berkas) + '" download>⬇️ Unduh gratis (PDF)</a><a class="btn ghost" href="' + akar + esc(e.berkas) + '" target="_blank" rel="noopener">Baca dulu</a>'
+    ? '<a class="btn eb-unduh" href="' + akar + esc(e.berkas) + '" download data-catat="PDF" data-ebook="' + esc(e.id) + '" data-berkas="PDF">⬇️ Unduh gratis (PDF)</a>' +
+      '<a class="btn ghost" href="' + akar + esc(e.berkas) + '" target="_blank" rel="noopener" data-catat="Baca" data-ebook="' + esc(e.id) + '" data-berkas="PDF">Baca dulu</a>'
     : '<a class="btn eb-unduh" href="https://wa.me/6281196939694?text=' + encodeURIComponent('Halo Admin, saya ingin membeli e-book "' + e.judul + '".') + '" target="_blank" rel="noopener">Beli lewat WhatsApp</a>';
   return '<article class="eb">' +
     '<img class="eb-sampul" src="' + akar + esc(e.sampul) + '" alt="Sampul ' + esc(e.judul) + '" loading="lazy">' +
@@ -77,5 +78,33 @@ function kartuEbook(e, akar) {
     (e.penulis ? '<div class="eb-penulis">oleh ' + esc(e.penulis) + '</div>' : '') +
     '<h3>' + esc(e.judul) + '</h3><p class="eb-sub">' + esc(e.subjudul) + '</p>' +
     '<p>' + esc(e.ringkas) + '</p><ul>' + e.poin.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul>' +
-    harga + '<div class="eb-aksi">' + unduh + '</div>' + formatWord(e, akar, esc) + '</div></article>';
+    harga + '<p class="eb-hitung" data-hitung="' + esc(e.id) + '" hidden></p><div class="eb-aksi">' + unduh + '</div>' + formatWord(e, akar, esc) + '</div></article>';
+}
+
+/** Catatan unduhan e-book (data pengunduh sekali per perangkat, lihat pengunduh.js) dan jumlah unduhan di kartu.
+    akarSitus = jalur ke akar situs dari halaman pemanggil ('../' dari /ebook/, '' dari beranda). */
+function pasangCatatanEbook(akarSitus) {
+  if (typeof Pengunduh === 'undefined') return;
+  Pengunduh.pasang(akarSitus);
+  document.addEventListener('click', ev => {
+    const a = ev.target.closest('a[data-catat]');
+    if (!a) return;
+    ev.preventDefault();
+    Pengunduh.minta(() => {
+      Pengunduh.catat({ aksi: 'ebookUnduh', ebook: a.dataset.ebook, jenis: a.dataset.catat, berkas: a.dataset.berkas });
+      if (a.dataset.catat === 'Baca') { window.open(a.href, '_blank', 'noopener'); return; }
+      const b = document.createElement('a');
+      b.href = a.href; b.download = '';
+      document.body.appendChild(b); b.click(); b.remove();
+    });
+  });
+  Pengunduh.kirim({ aksi: 'ebookPublik' }).then(h => {
+    if (!h || !h.ok || !h.ebook) return;
+    document.querySelectorAll('[data-hitung]').forEach(el => {
+      const x = h.ebook[el.dataset.hitung];
+      if (!x || !x.unduhan) return;
+      el.textContent = '⬇️ Sudah diunduh ' + x.unduhan.toLocaleString('id-ID') + ' kali oleh ' + x.guru.toLocaleString('id-ID') + ' guru';
+      el.hidden = false;
+    });
+  });
 }
