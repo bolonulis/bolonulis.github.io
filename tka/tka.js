@@ -39,7 +39,7 @@ const TKA = (() => {
     if (!/^[a-z0-9-]+$/.test(id)) return Promise.reject(new Error('Paket tidak dikenal'));
     return new Promise((ok, gagal) => {
       const s = document.createElement('script');
-      s.src = 'bank/' + id + '.js?v=2';
+      s.src = 'bank/' + id + '.js?v=3';
       s.onload = () => bank[id] ? ok(bank[id]) : gagal(new Error('Paket tidak dikenal'));
       s.onerror = () => gagal(new Error('Paket tidak dapat dimuat'));
       document.head.appendChild(s);
@@ -174,6 +174,8 @@ const TKA = (() => {
     '.tj-opsi li.kunci{border-color:#1b7f3e;background:#eefaf1}.tj-opsi li.kunci>b{background:#1b7f3e;color:#fff}.tj-opsi li.pilih:not(.kunci){border-color:#c0392b;background:#fdf0ef}.tj-opsi li.pilih:not(.kunci)>b{background:#c0392b;color:#fff}' +
     '.tj-opsi em{font-style:normal;font-size:11px;font-weight:800;padding:1px 7px;border-radius:99px;align-self:center}.tanda-k{background:#1b7f3e;color:#fff}.tanda-p{background:#12314f;color:#fff}' +
     '.tj-bs td.ok{color:#1b7f3e;font-weight:700}.tj-bs td.x{color:#c0392b}.tj-gbr{margin:8px 0;overflow-x:auto}.tj-gbr svg,.gbr{max-width:100%;height:auto;color:#16202a}.gbr2{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}' +
+    '.ilus-kisi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:560px}.ilus{margin:0;border:1px solid #dfe5ec;border-radius:8px;overflow:hidden}.ilus svg{display:block;width:100%;height:auto}.ilus figcaption{text-align:center;font-weight:800;font-size:12px;padding:3px;background:#f1f5f9;color:#12314f}' +
+    '.bagan{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}.bagan span{border:1.5px solid #7d93ab;background:#f4f8fc;border-radius:7px;padding:3px 8px;font-size:13px}.bagan i{font-style:normal;color:#7d93ab;font-weight:800}' +
     'img{max-width:100%;height:auto}.tj-opsi img{max-height:140px;width:auto}.tj-opsi svg{max-height:120px;width:auto}.bahas{margin-top:10px;background:#f4f8fd;border-left:4px solid #1f6fb2;border-radius:6px;padding:8px 12px;font-size:14.5px}.bahas>b{color:#1f6fb2}' +
     '.pc{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;line-height:1.1;margin:0 2px}.pc>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.pc-u{margin-right:1px}' +
     '.tabel{margin:6px 0}.tabel caption{font-weight:700;text-align:left;margin-bottom:4px}.poster{border:2px dashed #c0392b;border-radius:12px;padding:12px;text-align:center}.poster .besar{display:block;font-size:17px;color:#c0392b}' +

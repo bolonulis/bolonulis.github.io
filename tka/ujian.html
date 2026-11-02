@@ -69,6 +69,14 @@ button{font:inherit;cursor:pointer}
 .gbr{max-width:100%;height:auto;color:var(--ink)}
 .panel-soal img,.panel-stim img,.tinjau img{max-width:100%;height:auto;border-radius:6px}
 .opsi .isi img{max-height:160px;width:auto}
+.ilus-kisi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:620px}
+.ilus{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.ilus svg{display:block;width:100%;height:auto}
+.ilus figcaption{text-align:center;font-weight:800;font-size:.85em;padding:4px;color:var(--biru);background:#f1f5f9}
+.bagan{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.bagan span{border:1.5px solid #7d93ab;background:#f4f8fc;border-radius:8px;padding:4px 9px;font-size:.88em;line-height:1.3}
+.bagan i{font-style:normal;color:#7d93ab;font-weight:800}
+@media(max-width:420px){.ilus-kisi{gap:8px}}
 .gbr2{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0;align-items:flex-end}
 .tanya{margin:12px 0 4px;font-weight:600}
 .opsi{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}
@@ -307,7 +315,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=2"></script>
+<script src="tka.js?v=3"></script>
 <script>
 const $ = id => document.getElementById(id);
 const par = new URLSearchParams(location.search);
