@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulasi TKA SD | Latihan Soal Tes Kemampuan Akademik</title>
+<meta name="description" content="Latihan Simulasi TKA SD Matematika dan Bahasa Indonesia berbasis komputer, mengikuti kisi-kisi dan indikator TKA. Gratis mengetahui nilai; pembahasan lengkap dapat diunduh.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="stylesheet" href="../bersama.css">
+<style>
+:root{--aksen:#12314f;--red:#d71920;--yellow:#ffd21f;--blue:#12314f;--blue2:#1f4f7a;--hijau:#1b7f3e;--cream:#fffaf0;--ink:#16202a;--muted:#5b6b7f;--line:#eadfc7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+a{color:var(--blue)}
+[hidden]{display:none!important}
+.topline{height:6px;background:linear-gradient(90deg,var(--red) 0 34%,var(--yellow) 34% 52%,var(--hijau) 52% 76%,var(--blue) 76%)}
+.wrap{max-width:1040px;margin:auto;padding:0 18px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--blue);text-decoration:none;font-size:17px}
+.brand img{width:36px;height:36px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:11px 16px;font:inherit;font-weight:800;font-size:14.5px;cursor:pointer;background:var(--blue);color:#fff;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.12)}.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--line)}
+.btn.hijau{background:var(--hijau)}.btn.wa{background:#25d366}
+.hero{margin:10px 0 0;padding:40px 34px;border-radius:28px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:center}
+.hero small{color:var(--yellow);font-weight:800;letter-spacing:.08em;font-size:12.5px}
+.hero h1{margin:8px 0 12px;font-size:clamp(1.9rem,4.4vw,2.8rem);line-height:1.12;letter-spacing:-.03em}
+.hero p{margin:0 0 20px;color:#d6e2ee;font-size:16px}
+.hero .aksi{display:flex;gap:10px;flex-wrap:wrap}
+.hero .btn{background:var(--yellow);color:var(--blue)}
+.hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.layar{background:#fff;border-radius:16px;padding:12px;color:var(--ink);box-shadow:0 20px 40px rgba(0,0,0,.25);font-size:12px}
+.layar .bar{display:flex;justify-content:space-between;align-items:center;background:var(--blue);color:#fff;border-radius:9px;padding:6px 10px;font-weight:800}
+.layar .bar span{background:#fff;color:var(--blue);border-radius:6px;padding:1px 7px;font-variant-numeric:tabular-nums}
+.layar .q{margin:10px 2px 8px;font-weight:600}
+.layar .o{border:1.5px solid #dfe5ec;border-radius:8px;padding:5px 8px;margin:5px 0;display:flex;gap:8px;align-items:center}
+.layar .o b{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--blue);display:grid;place-items:center;font-size:10px;color:var(--blue)}
+.layar .o.on{border-color:#1f6fb2;background:#eaf3fc}.layar .o.on b{background:#1f6fb2;color:#fff;border-color:#1f6fb2}
+.layar .nv{display:flex;justify-content:space-between;margin-top:9px}.layar .nv i{font-style:normal;border-radius:6px;padding:3px 9px;font-weight:800;background:#eef2f6}.layar .nv i.r{background:#e8a317;color:#fff}.layar .nv i.n{background:var(--blue);color:#fff}
+section{margin-top:44px}
+h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 20px}
+.paket{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.pk{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 12px 28px rgba(18,49,79,.07);display:flex;flex-direction:column;border-top:6px solid var(--w)}
+.pk .kepala{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.pk .ikon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:color-mix(in srgb,var(--w) 14%,#fff)}
+.pk .jenis{font-size:12.5px;font-weight:800;color:var(--w);letter-spacing:.04em}
+.pk h3{margin:0;font-size:20px}
+.pk ul{margin:0 0 14px;padding-left:20px;font-size:14px;color:var(--muted)}
+.pk .terakhir{font-size:13.5px;font-weight:700;color:var(--hijau);margin:0 0 10px}
+.pk .aksi{margin-top:auto;display:flex;gap:8px}.pk .aksi .btn{flex:1;background:var(--w)}
+.pk.segera{background:transparent;border:2px dashed var(--line);box-shadow:none;align-items:center;justify-content:center;text-align:center;color:var(--muted);min-height:200px}
+.pk.segera b{display:block;font-size:17px;color:var(--blue);margin:6px 0 4px}
+.banding{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.versi{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px}
+.versi.premium{border:2px solid var(--yellow);background:linear-gradient(160deg,#fffbea,#fff 60%)}
+.versi h3{margin:0 0 4px;font-size:19px;color:var(--blue)}
+.versi .harga{font-size:26px;font-weight:900;color:var(--hijau);margin:4px 0 10px}
+.versi .harga span{font-size:14px;font-weight:600;color:var(--muted)}
+.versi ul{list-style:none;padding:0;margin:0 0 14px}
+.versi li{padding:6px 0 6px 28px;position:relative;border-bottom:1px dashed #efe6d2;font-size:14.5px}
+.versi li::before{content:'✔';position:absolute;left:4px;color:var(--hijau);font-weight:900}
+.versi li.tidak{color:#9aa6b4}.versi li.tidak::before{content:'✕';color:#c0392b}
+.akses{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.akses h3{margin:0 0 6px;color:var(--blue)}
+.akses p{margin:0 0 10px;color:var(--muted);font-size:14.5px}
+.kode-in{display:flex;gap:8px;flex-wrap:wrap}
+.kode-in input{flex:1 1 180px;font:inherit;font-size:16px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 12px;border:1px solid var(--line);border-radius:12px}
+.salah{color:#c5221f;font-size:13.5px;font-weight:600;min-height:1.2em;margin:6px 0 0}
+.aktif-box{background:#e3f4e7;border:1px solid #a8d5b8;border-radius:14px;padding:12px 14px;color:#145c2d}
+.aktif-box b{display:block;font-size:16px}
+.langkah{counter-reset:l;list-style:none;padding:0;margin:0 0 14px}
+.langkah li{counter-increment:l;position:relative;padding:4px 0 8px 38px;font-size:14.5px}
+.langkah li::before{content:counter(l);position:absolute;left:0;top:3px;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;display:grid;place-items:center;font-size:13px}
+.riwayat{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--line);font-size:14.5px}
+.riwayat th,.riwayat td{padding:10px 12px;border-bottom:1px solid #f0e8d6;text-align:left}
+.riwayat th{background:#fbf5e8;color:var(--muted);font-size:13px}
+.riwayat td b{color:var(--blue);font-size:16px}
+.tanya details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:8px 0}
+.tanya summary{cursor:pointer;font-weight:700;color:var(--blue)}
+.tanya p{margin:8px 0 2px;color:var(--muted);font-size:14.5px}
+.kisi-kisi{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.kk{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.kk h3{margin:0 0 8px;font-size:16px;color:var(--blue)}
+.kk table{width:100%;border-collapse:collapse;font-size:13.5px}
+.kk td{padding:5px 0;border-bottom:1px dashed #efe6d2}.kk td:last-child{text-align:right;font-weight:800;color:var(--blue);white-space:nowrap}
+footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
+@media(max-width:780px){.hero{grid-template-columns:1fr;padding:30px 22px}.layar{display:none}.banding,.akses{grid-template-columns:1fr}}
+@media(max-width:560px){.riwayat .sk{display:none}}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="../"><img src="logo.svg" alt="">Simulasi TKA</a>
+    <a class="btn ghost" href="https://wa.me/6281196939694" target="_blank" rel="noopener">WhatsApp Admin</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <small>LATIHAN TES KEMAMPUAN AKADEMIK · SD</small>
+      <h1>Berlatih TKA seperti hari ujian sesungguhnya.</h1>
+      <p>30 soal, 75 menit, berbasis komputer dengan tiga bentuk soal TKA: pilihan ganda, pilihan ganda kompleks, dan benar/salah. Soal disusun mengikuti kisi-kisi dan indikator TKA SD tahun lalu.</p>
+      <div class="aksi"><a class="btn" href="#paket">Mulai latihan gratis</a><a class="btn ghost" href="#akses">Kode akses Pembahasan</a></div>
+    </div>
+    <div class="layar" aria-hidden="true">
+      <div class="bar">Soal nomor 7 <span>01:12:48</span></div>
+      <div class="q">Pilihlah dua pecahan yang menyatakan bagian yang diarsir!</div>
+      <div class="o on"><b>A</b>9/12</div><div class="o"><b>B</b>3/9</div><div class="o on"><b>C</b>3/4</div><div class="o"><b>D</b>1/4</div>
+      <div class="nv"><i>‹ Sebelumnya</i><i class="r">☐ Ragu-ragu</i><i class="n">Berikutnya ›</i></div>
+    </div>
+  </header>
+
+  <section id="paket">
+    <h2>Paket soal</h2>
+    <p class="sub">Pilih mata pelajaran. Setiap paket dapat dikerjakan berulang kali.</p>
+    <div class="paket" id="daftar-paket"></div>
+  </section>
+
+  <section id="versi">
+    <h2>Gratis atau dengan Pembahasan</h2>
+    <p class="sub">Semua soal dapat dikerjakan gratis. Kode akses membuka kunci jawaban dan cara mengerjakannya.</p>
+    <div class="banding">
+      <div class="versi">
+        <h3>Gratis</h3>
+        <div class="harga">Rp0</div>
+        <ul>
+          <li>Semua paket soal dan simulasi waktu 75 menit</li>
+          <li>Tampilan ujian berbasis komputer seperti TKA</li>
+          <li>Nilai akhir (skala 0–100)</li>
+          <li class="tidak">Kunci jawaban</li>
+          <li class="tidak">Pembahasan cara mengerjakan</li>
+          <li class="tidak">Analisis per elemen &amp; unduhan PDF</li>
+        </ul>
+        <a class="btn ghost" href="#paket">Mulai latihan</a>
+      </div>
+      <div class="versi premium">
+        <h3>Dengan Pembahasan</h3>
+        <div class="harga">Rp50.000 <span>· dukungan sekali, tanpa batas</span></div>
+        <ul>
+          <li>Semua fitur versi gratis</li>
+          <li>Kunci jawaban setiap soal, lengkap dengan jawabanmu</li>
+          <li>Pembahasan langkah demi langkah</li>
+          <li>Analisis capaian per elemen dan subelemen seperti laporan hasil TKA</li>
+          <li>Unduh pembahasan (PDF/HTML) <b>berulang kali tanpa batas</b></li>
+          <li>Berlaku untuk semua paket, termasuk paket baru</li>
+        </ul>
+        <a class="btn wa" href="#akses">Dapatkan kode akses</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="akses">
+    <h2>Kode akses Pembahasan</h2>
+    <p class="sub">Kode dikirim Admin lewat WhatsApp setelah dukungan diterima.</p>
+    <div class="akses">
+      <div>
+        <h3>1. Minta kode lewat WhatsApp</h3>
+        <ol class="langkah">
+          <li>Isi data di bawah, lalu ketuk <b>Kirim ke WhatsApp</b>.</li>
+          <li>Admin membalas dengan info pembayaran dukungan <b>Rp50.000</b>.</li>
+          <li>Setelah dukungan diterima, Admin mengirimkan kode akses (contoh: <b>TKA-7KQ4-M2XP</b>).</li>
+        </ol>
+        <form class="form-wa" id="form-kode" novalidate>
+          <label>Nama siswa<input name="nama" required data-label="nama siswa" maxlength="60"></label>
+          <label>Kelas<select name="kelas"><option>Kelas 6</option><option>Kelas 5</option><option>Kelas 4</option><option>Lainnya</option></select></label>
+          <label class="penuh">Asal sekolah<input name="sekolah" required data-label="asal sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju"></label>
+          <label class="penuh">Kabupaten/Kota<input name="kab" maxlength="60" placeholder="Contoh: Kabupaten Kendal"></label>
+          <p class="salah penuh"></p>
+          <div class="penuh"><button class="btn wa" type="submit">💬 Kirim ke WhatsApp</button></div>
+        </form>
+      </div>
+      <div>
+        <h3>2. Masukkan kode akses</h3>
+        <div id="kode-aktif" class="aktif-box" hidden><b>✅ Akses Pembahasan aktif</b><span id="kode-nama"></span><br><button class="btn ghost" type="button" id="kode-lepas" style="margin-top:10px">Lepas kode dari perangkat ini</button></div>
+        <div id="kode-form">
+          <p>Kode cukup dimasukkan sekali di setiap perangkat. Setelah itu, pembahasan langsung tampil setiap kali selesai mengerjakan, termasuk untuk hasil yang sudah ada di <a href="#riwayat">riwayat</a>.</p>
+          <div class="kode-in"><input id="kode-input" placeholder="TKA-XXXX-XXXX" maxlength="20" autocomplete="off" aria-label="Kode akses"><button class="btn hijau" type="button" id="kode-btn">Aktifkan</button></div>
+          <p class="salah" id="kode-salah"></p>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px">Satu kode dapat dipakai di 3 perangkat (misalnya HP siswa, HP orang tua, dan laptop). Mohon tidak membagikan kode kepada orang lain.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="riwayat" hidden>
+    <h2>Riwayat pengerjaan di perangkat ini</h2>
+    <p class="sub">Ketuk <b>Lihat</b> untuk membuka hasil dan pembahasan.</p>
+    <div style="overflow-x:auto"><table class="riwayat"><thead><tr><th>Paket</th><th class="sk">Peserta</th><th>Tanggal</th><th>Nilai</th><th></th></tr></thead><tbody id="isi-riwayat"></tbody></table></div>
+  </section>
+
+  <section id="kisi">
+    <h2>Mengikuti kisi-kisi TKA SD</h2>
+    <p class="sub">Setiap nomor soal dipetakan ke elemen, subelemen, dan indikator yang sama dengan laporan hasil TKA SD, sehingga analisis hasil latihan dapat dibandingkan langsung dengan rapor TKA sekolah.</p>
+    <div class="kisi-kisi" id="kisi-isi"></div>
+  </section>
+
+  <section class="tanya">
+    <h2>Pertanyaan umum</h2>
+    <details><summary>Apakah ini soal TKA asli?</summary><p>Bukan. Soal disusun ulang oleh Admin dengan mengikuti kisi-kisi, bentuk soal, dan indikator TKA SD tahun lalu, sehingga tingkat kesulitan dan cara bertanya mirip dengan TKA. Ini bukan aplikasi resmi Kemendikdasmen.</p></details>
+    <details><summary>Bagaimana nilai dihitung?</summary><p>Pilihan ganda bernilai 1 bila benar. Pilihan ganda kompleks dinilai sebagian: pilihan benar menambah skor, pilihan salah mengurangi. Benar/salah dinilai per pernyataan. Nilai akhir dikonversi ke skala 0–100.</p></details>
+    <details><summary>Apakah harus mengerjakan sampai selesai dalam sekali duduk?</summary><p>Sebaiknya ya, agar seperti ujian sungguhan. Bila halaman tertutup, jawaban tetap tersimpan di perangkat dan waktu terus berjalan; buka kembali paket yang sama untuk melanjutkan.</p></details>
+    <details><summary>Berapa kali pembahasan boleh diunduh?</summary><p>Tanpa batas. Kode akses berlaku untuk semua paket dan semua pengerjaan, termasuk paket yang ditambahkan kemudian.</p></details>
+    <details><summary>Data apa yang dikirim ke server?</summary><p>Nama, asal sekolah, kelas, jawaban, dan nilai, untuk menghitung nilai dan membantu Admin mengembangkan soal. Data tidak ditampilkan dan tidak dibagikan.</p></details>
+  </section>
+
+  <footer>
+    © <span id="tahun">2026</span> Karya untuk Guru SD · <a href="../">Beranda</a> · <a href="../privasi.html">Kebijakan Privasi</a><br>
+    Simulasi TKA ini bukan aplikasi resmi Kementerian Pendidikan Dasar dan Menengah.
+  </footer>
+</div>
+<script src="../bersama.js"></script>
+<script src="konfigurasi.js?v=1"></script>
+<script src="tka.js?v=1"></script>
+<script src="bank/daftar.js?v=1"></script>
+<script>
+const $ = id => document.getElementById(id);
+$('tahun').textContent = new Date().getFullYear();
+const RIWAYAT = TKA.riwayat.semua();
+
+$('daftar-paket').innerHTML = PAKET_TKA.map(p => {
+  const r = RIWAYAT.find(x => x.paket === p.id && typeof x.nilai === 'number');
+  return '<article class="pk" style="--w:' + p.warna + '"><div class="kepala"><div class="ikon">' + p.ikon + '</div><div><div class="jenis">TKA ' + p.jenjang + ' · ' + p.paket.toUpperCase() + '</div><h3>' + TKA.esc(p.mapel) + '</h3></div></div>' +
+    '<ul><li>' + p.soal + ' soal · ' + p.durasi + ' menit</li><li>Pilihan ganda, pilihan ganda kompleks, benar/salah</li><li>Mengikuti indikator TKA ' + p.jenjang + '</li></ul>' +
+    (r ? '<p class="terakhir">Nilai terakhir: ' + TKA.angka(r.nilai) + '</p>' : '') +
+    '<div class="aksi"><a class="btn" href="ujian.html?paket=' + p.id + '">Kerjakan ▶</a></div></article>';
+}).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket berikutnya</b><span style="font-size:14px">Paket 2 dan TKA SMP sedang disiapkan.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
+
+/* ---------- riwayat ---------- */
+const NAMA_PAKET = Object.fromEntries(PAKET_TKA.map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]));
+if (RIWAYAT.length) {
+  $('riwayat').hidden = false;
+  $('isi-riwayat').innerHTML = RIWAYAT.slice(0, 15).map(r => '<tr><td>' + TKA.esc(NAMA_PAKET[r.paket] || r.paket) + '</td><td class="sk">' + TKA.esc(r.peserta && r.peserta.nama) + '</td><td>' +
+    new Date(r.waktu).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + '</td><td><b>' + (typeof r.nilai === 'number' && !r.tertunda ? TKA.angka(r.nilai) : '–') + '</b></td>' +
+    '<td><a class="btn ghost" href="ujian.html?paket=' + encodeURIComponent(r.paket) + '&lihat=' + encodeURIComponent(r.id) + '">Lihat</a></td></tr>').join('');
+}
+
+/* ---------- kode akses ---------- */
+function tampilKode() {
+  const k = TKA.kode.get();
+  $('kode-aktif').hidden = !k; $('kode-form').hidden = !!k;
+  if (k) $('kode-nama').textContent = (k.nama ? 'Atas nama ' + k.nama + ' · ' : '') + 'Kode ' + k.kode;
+}
+tampilKode();
+$('kode-btn').onclick = async () => {
+  const v = $('kode-input').value.trim();
+  if (!v) { $('kode-salah').textContent = 'Tuliskan kode akses terlebih dahulu.'; return; }
+  $('kode-btn').disabled = true; $('kode-salah').textContent = 'Memeriksa kode…';
+  const c = await TKA.api({ aksi: 'cekKode', kode: v });
+  $('kode-btn').disabled = false;
+  if (!c.ok) { $('kode-salah').textContent = c.pesan || 'Kode tidak dapat diperiksa.'; return; }
+  TKA.kode.set({ kode: c.kode, nama: c.nama });
+  $('kode-salah').textContent = '';
+  tampilKode();
+};
+$('kode-lepas').onclick = () => { if (confirm('Lepas kode akses dari perangkat ini? Kode masih bisa dimasukkan lagi nanti.')) { TKA.kode.hapus(); tampilKode(); } };
+pasangFormWa('form-kode', d => 'Halo Admin, saya ingin mendapatkan kode akses Pembahasan Simulasi TKA (dukungan Rp50.000).\n\n' +
+  'Nama siswa: ' + d.nama + '\nKelas: ' + d.kelas + '\nSekolah: ' + d.sekolah + (d.kab ? '\nKabupaten/Kota: ' + d.kab : '') + '\n\nMohon info cara pembayarannya. Terima kasih.');
+
+/* ---------- kisi-kisi dari bank soal ---------- */
+Promise.all(PAKET_TKA.map(p => TKA.muatBank(p.id).catch(() => null))).then(semua => {
+  $('kisi-isi').innerHTML = semua.filter(Boolean).map(b => {
+    const el = {};
+    b.soal.forEach(q => { el[q.elemen] = (el[q.elemen] || 0) + 1; });
+    return '<div class="kk"><h3>' + TKA.esc(b.mapel) + ' · ' + b.soal.length + ' soal</h3><table>' +
+      Object.entries(el).map(([n, j]) => '<tr><td>' + TKA.esc(n) + '</td><td>' + j + ' soal</td></tr>').join('') + '</table></div>';
+  }).join('');
+});
+</script>
+</body>
+</html>

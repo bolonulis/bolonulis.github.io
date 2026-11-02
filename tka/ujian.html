@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ujian Simulasi TKA</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{--biru:#12314f;--biru2:#1f4f7a;--aksen:#1f6fb2;--kuning:#ffd21f;--hijau:#1b7f3e;--merah:#c0392b;--oranye:#e8a317;--ink:#16202a;--muted:#5b6b7f;--line:#dfe5ec;--latar:#eef2f6;--fs:17px}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--latar);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+button{font:inherit;cursor:pointer}
+[hidden]{display:none!important}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:11px 18px;font-weight:800;font-size:15px;background:var(--biru);color:#fff;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.12)}.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--biru);border:1px solid var(--line)}
+.btn.hijau{background:var(--hijau)}.btn.kuning{background:var(--kuning);color:var(--biru)}.btn.wa{background:#25d366}
+/* ---------- bilah atas ---------- */
+.bar{background:linear-gradient(90deg,var(--biru),var(--biru2));color:#fff;display:flex;align-items:center;gap:14px;padding:10px 18px;position:sticky;top:0;z-index:20}
+.bar .merk{display:flex;align-items:center;gap:10px;font-weight:800;color:#fff;text-decoration:none;min-width:0}
+.bar .merk img{width:34px;height:34px;flex:none}
+.bar .merk span{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.bar .merk small{color:var(--kuning);font-size:11px;letter-spacing:.06em}
+.bar .merk b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .siswa{margin-left:auto;text-align:right;font-size:13px;line-height:1.3;color:#d6e2ee;min-width:0}
+.bar .siswa b{display:block;color:#fff;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.waktu{background:#fff;color:var(--biru);border-radius:10px;padding:5px 12px;text-align:center;line-height:1.15;flex:none}
+.waktu small{display:block;font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.waktu b{font-size:19px;font-variant-numeric:tabular-nums}
+.waktu.genting{background:var(--merah);color:#fff;animation:kedip 1s steps(2) infinite}.waktu.genting small{color:#ffe3e0}
+@keyframes kedip{50%{opacity:.75}}
+/* ---------- halaman awal & hasil ---------- */
+.wadah{max-width:880px;margin:26px auto;padding:0 16px}
+.kartu{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 10px 26px rgba(18,49,79,.06);margin-bottom:18px}
+.kartu h1{margin:0 0 4px;color:var(--biru);font-size:clamp(1.4rem,3.4vw,1.9rem);letter-spacing:-.02em}
+.kartu h2{margin:0 0 10px;color:var(--biru);font-size:19px}
+.lencana{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.05em;color:var(--aksen);background:#e8f1fb;border-radius:99px;padding:3px 10px}
+.fakta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}
+.fakta div{background:var(--latar);border-radius:12px;padding:10px 14px}.fakta b{display:block;font-size:20px;color:var(--biru)}.fakta span{font-size:13px;color:var(--muted)}
+.petunjuk{margin:0;padding-left:20px;font-size:15px}.petunjuk li{margin:4px 0}
+.form{display:grid;grid-template-columns:1fr 1fr 150px;gap:10px;margin:14px 0}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
+.form input,.form select,.kode-in input{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%;background:#fff;color:var(--ink)}
+.salah{color:var(--merah);font-weight:600;font-size:14px;min-height:1.2em;margin:4px 0}
+.aksi{display:flex;gap:10px;flex-wrap:wrap}
+.lanjut{background:#fff8e1;border:1px solid #f0d77a;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lanjut p{margin:0;flex:1 1 260px;font-size:14.5px}
+.peringatan{background:#fde2e1;border:1px solid #f5b5b0;color:#7a1712;border-radius:12px;padding:12px 14px;font-size:14.5px;margin-bottom:14px}
+@media(max-width:640px){.form{grid-template-columns:1fr}}
+/* ---------- lembar ujian ---------- */
+.alat{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:8px 18px;position:sticky;top:54px;z-index:15}
+.alat .nomor{font-weight:800;color:var(--biru);font-size:16px}
+.alat .nomor span{display:inline-block;background:var(--biru);color:#fff;border-radius:8px;padding:1px 10px;margin-left:6px}
+.alat .jenis{font-size:12.5px;color:var(--muted);font-weight:700}
+.alat .kanan{margin-left:auto;display:flex;gap:6px;align-items:center}
+.ukuran button{border:1px solid var(--line);background:#fff;border-radius:8px;width:34px;height:32px;font-weight:800;color:var(--biru)}
+.ukuran button:nth-child(1){font-size:12px}.ukuran button:nth-child(3){font-size:18px}
+.btn-daftar{border:1px solid var(--biru);background:#fff;color:var(--biru);border-radius:8px;padding:5px 12px;font-weight:800;font-size:14px}
+.lembar{max-width:1200px;margin:16px auto 110px;padding:0 16px;display:grid;gap:16px;font-size:var(--fs)}
+.lembar.dua{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.panel-stim,.panel-soal{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.panel-stim{max-height:calc(100vh - 220px);overflow:auto;position:sticky;top:116px;align-self:start;background:#fffdf7}
+.panel-stim h3{margin:0 0 8px;color:var(--biru);font-size:1.05em}
+.panel-stim p{margin:0 0 .7em}
+.panel-soal .teks p:first-child{margin-top:0}
+.gbr-wadah{margin:12px 0;overflow-x:auto}
+.gbr{max-width:100%;height:auto;color:var(--ink)}
+.gbr2{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0;align-items:flex-end}
+.tanya{margin:12px 0 4px;font-weight:600}
+.opsi{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}
+.opsi label{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;background:#fff;transition:border-color .12s,background .12s}
+.opsi label:hover{border-color:#b9cde3;background:#f7fafd}
+.opsi input{position:absolute;opacity:0;pointer-events:none}
+.opsi .huruf{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--biru);display:grid;place-items:center;font-weight:800;color:var(--biru);font-size:.85em}
+.opsi.kotak .huruf{border-radius:7px}
+.opsi .isi{flex:1;min-width:0;padding-top:2px}
+.opsi .isi svg{max-height:150px;width:auto}
+.opsi input:checked+label{border-color:var(--aksen);background:#eaf3fc}
+.opsi input:checked+label .huruf{background:var(--aksen);border-color:var(--aksen);color:#fff}
+.opsi input:focus-visible+label{outline:3px solid var(--kuning);outline-offset:2px}
+.ket-pgk{display:inline-block;background:#fff3cd;color:#7a5200;font-size:.78em;font-weight:700;border-radius:8px;padding:2px 9px;margin-top:6px}
+.bs{width:100%;border-collapse:collapse;margin-top:10px}
+.bs th,.bs td{border:1px solid var(--line);padding:9px 10px;vertical-align:middle}
+.bs th{background:#f1f5f9;font-size:.85em}
+.bs td.pil{text-align:center;width:92px}
+.bs input{width:22px;height:22px;accent-color:var(--aksen);cursor:pointer}
+.tabel{border-collapse:collapse;margin:8px 0;font-size:.92em}
+.tabel th,.tabel td{border:1px solid #c9d3de;padding:6px 12px;text-align:center}
+.tabel th{background:#eef4fb}.tabel td:first-child{text-align:left}
+.tabel caption{font-weight:700;margin-bottom:6px;text-align:left}
+.poster{border:3px dashed var(--merah);border-radius:14px;padding:14px;text-align:center;background:#fff}
+.poster .besar{display:block;font-size:1.15em;color:var(--merah)}
+.poster p{margin:.5em 0}
+.pc{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;line-height:1.1;margin:0 2px}
+.pc>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}
+.pc-u{margin-right:1px}
+.navbawah{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;z-index:15;box-shadow:0 -6px 18px rgba(18,49,79,.06)}
+.navbawah .btn{min-width:150px}
+.ragu{display:flex;align-items:center;gap:8px;background:var(--oranye);color:#fff;font-weight:800;border-radius:10px;padding:10px 16px;cursor:pointer;user-select:none}
+.ragu input{width:20px;height:20px;accent-color:#7a4b00}
+@media(max-width:860px){.lembar.dua{grid-template-columns:1fr}.panel-stim{position:static;max-height:none}}
+@media(max-width:560px){.bar .siswa{display:none}.navbawah{padding:8px 10px;gap:6px}.navbawah .btn{min-width:0;flex:1;padding:11px 8px;font-size:14px}.ragu{padding:10px;font-size:14px}.alat{padding:8px 10px}.alat .jenis{display:none}.panel-stim,.panel-soal{padding:16px}}
+/* ---------- daftar soal ---------- */
+.latar-gelap{position:fixed;inset:0;background:rgba(10,20,30,.55);z-index:30}
+.daftar{position:fixed;top:0;right:0;bottom:0;width:min(360px,92vw);background:#fff;z-index:31;padding:18px;overflow:auto;box-shadow:-10px 0 30px rgba(0,0,0,.2)}
+.daftar h3{margin:0 0 4px;color:var(--biru)}
+.daftar .tutup{position:absolute;top:12px;right:12px;border:0;background:var(--latar);border-radius:8px;width:34px;height:34px;font-size:16px}
+.kisi{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
+.kisi button{aspect-ratio:1;border:2px solid var(--line);background:#fff;border-radius:10px;font-weight:800;font-size:16px;color:var(--ink);position:relative}
+.kisi button.isi{background:var(--aksen);border-color:var(--aksen);color:#fff}
+.kisi button.ragu-r{background:var(--oranye);border-color:var(--oranye);color:#fff}
+.kisi button.kini{outline:3px solid var(--kuning);outline-offset:1px}
+.legenda{display:grid;gap:6px;font-size:13px;color:var(--muted);margin-bottom:14px}
+.legenda i{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:-3px;margin-right:6px;border:2px solid var(--line)}
+/* ---------- dialog ---------- */
+dialog{border:0;border-radius:18px;padding:0;max-width:min(480px,94vw);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,20,30,.6)}
+.dlg{padding:22px}
+.dlg h3{margin:0 0 8px;color:var(--biru)}
+.dlg .ringkas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.dlg .ringkas div{background:var(--latar);border-radius:10px;padding:8px;text-align:center;font-size:12.5px;color:var(--muted)}
+.dlg .ringkas b{display:block;font-size:22px;color:var(--biru)}
+.dlg label.yakin{display:flex;gap:8px;align-items:flex-start;font-size:14.5px;margin:10px 0 14px}
+.dlg label.yakin input{width:20px;height:20px;margin-top:2px}
+/* ---------- hasil ---------- */
+.skor{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.skor .bulat{width:150px;height:150px;border-radius:50%;background:conic-gradient(var(--warna,#1f6fb2) calc(var(--p)*1%),#e6ebf1 0);display:grid;place-items:center}
+.skor .bulat div{width:118px;height:118px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center;line-height:1.1}
+.skor .bulat b{font-size:34px;color:var(--biru)}.skor .bulat small{font-size:12px;color:var(--muted);font-weight:700}
+.skor p{margin:4px 0;color:var(--muted)}
+@media(max-width:560px){.skor{grid-template-columns:1fr;justify-items:center;text-align:center}}
+.kunci-premium{border:2px solid var(--kuning);background:linear-gradient(135deg,#fffbea,#fff);}
+.kunci-premium ul{margin:8px 0 14px;padding-left:20px}
+.harga{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:6px 0 12px}.harga b{font-size:26px;color:var(--hijau)}.harga span{color:var(--muted);font-size:14px}
+.kode-in{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.kode-in input{flex:1 1 200px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.analisis{border-collapse:collapse;width:100%;font-size:14px}
+.analisis th,.analisis td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:middle}
+.analisis th{color:var(--muted);font-size:12.5px}
+.analisis .el td{font-weight:800;color:var(--biru);background:#f4f8fd}.analisis .sub{padding-left:20px;font-size:13.5px}
+.bt{display:inline-block;width:110px;height:9px;background:#e6ebf1;border-radius:9px;vertical-align:middle;margin-right:8px;overflow:hidden}
+.bt-isi{display:block;height:100%}.bt-isi.baik{background:var(--hijau)}.bt-isi.cukup{background:#e0a400}.bt-isi.kurang{background:var(--merah)}
+.bt-n{font-variant-numeric:tabular-nums}
+@media(max-width:560px){.bt{width:60px}}
+.saring{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.saring button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 14px;font-weight:700;font-size:13.5px}
+.saring button.aktif{background:var(--biru);color:#fff;border-color:var(--biru)}
+.tinjau{border:1px solid var(--line);border-radius:14px;margin:10px 0;background:#fff;overflow:hidden}
+.tinjau summary{list-style:none;display:flex;gap:10px;align-items:center;padding:12px 16px;cursor:pointer;font-weight:700}
+.tinjau summary::-webkit-details-marker{display:none}
+.tinjau summary .no{min-width:62px;color:var(--biru)}
+.tinjau summary .ind{flex:1;font-weight:400;font-size:13.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st{font-size:12px;font-weight:800;padding:2px 10px;border-radius:99px;flex:none}
+.st.benar{background:#e3f4e7;color:var(--hijau)}.st.sebagian{background:#fff3cd;color:#8a5a00}.st.salah{background:#fde2e1;color:#a61b1b}
+.tinjau .badan{padding:0 16px 16px;border-top:1px solid var(--line)}
+.tinjau .stim-kecil{background:#fffdf7;border:1px solid #eadfc7;border-radius:10px;padding:10px 14px;margin:12px 0;font-size:14.5px;max-height:260px;overflow:auto}
+.tinjau .stim-kecil p{margin:.4em 0}
+.tj-teks{margin:10px 0}.tj-gbr{margin:8px 0;overflow-x:auto}
+.tj-opsi{list-style:none;padding:0;margin:8px 0}
+.tj-opsi li{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:7px 10px;margin:6px 0}
+.tj-opsi li>b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--latar);display:grid;place-items:center;font-size:13px}
+.tj-opsi li>div{flex:1}.tj-opsi svg{max-height:120px;width:auto}
+.tj-opsi li.kunci{border-color:var(--hijau);background:#eefaf1}.tj-opsi li.kunci>b{background:var(--hijau);color:#fff}
+.tj-opsi li.pilih:not(.kunci){border-color:var(--merah);background:#fdf0ef}.tj-opsi li.pilih:not(.kunci)>b{background:var(--merah);color:#fff}
+.tj-opsi em{font-style:normal;font-size:11px;font-weight:800;padding:1px 8px;border-radius:99px;align-self:center}
+.tanda-k{background:var(--hijau);color:#fff}.tanda-p{background:var(--biru);color:#fff}
+.tj-bs{border-collapse:collapse;width:100%;font-size:14.5px}.tj-bs th,.tj-bs td{border:1px solid var(--line);padding:7px 9px;text-align:left}.tj-bs th{background:#f1f5f9;font-size:13px}
+.tj-bs td.ok{color:var(--hijau);font-weight:700}.tj-bs td.x{color:var(--merah)}
+.bahas{margin-top:12px;background:#f4f8fd;border-left:4px solid var(--aksen);border-radius:8px;padding:10px 14px;font-size:15px}
+.bahas>b{color:var(--aksen)}
+.memuat{text-align:center;padding:60px 16px;color:var(--muted)}
+.putar{width:38px;height:38px;border:4px solid #d5dfea;border-top-color:var(--aksen);border-radius:50%;margin:0 auto 14px;animation:putar 1s linear infinite}
+@keyframes putar{to{transform:rotate(360deg)}}
+.catatan{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="merk" href="./"><img src="logo.svg" alt=""><span><small>SIMULASI TKA</small><b id="judul-bar">Memuat…</b></span></a>
+  <div class="siswa" id="siswa-bar" hidden><span>Peserta</span><b id="nama-bar"></b></div>
+  <div class="waktu" id="waktu" hidden><small>SISA WAKTU</small><b id="sisa">00:00:00</b></div>
+</header>
+
+<div id="v-memuat" class="memuat"><div class="putar"></div>Memuat soal…</div>
+
+<!-- ============ HALAMAN AWAL ============ -->
+<div id="v-awal" class="wadah" hidden>
+  <div class="kartu">
+    <span class="lencana" id="aw-jenjang"></span>
+    <h1 id="aw-judul"></h1>
+    <div class="fakta">
+      <div><b id="aw-soal">30</b><span>butir soal</span></div>
+      <div><b id="aw-durasi">75 menit</b><span>waktu mengerjakan</span></div>
+      <div><b>3 bentuk</b><span>pilihan ganda, pilihan ganda kompleks, benar/salah</span></div>
+    </div>
+    <div class="peringatan" id="aw-server" hidden>Server penilaian belum dipasang Admin. Soal tetap dapat dikerjakan, tetapi nilai baru bisa dihitung setelah server aktif (jawaban tersimpan di perangkat ini).</div>
+    <div class="lanjut" id="aw-lanjut" hidden><p id="aw-lanjut-teks"></p><button class="btn kuning" id="aw-lanjut-btn" type="button">Lanjutkan</button></div>
+    <h2>Petunjuk</h2>
+    <ol class="petunjuk">
+      <li>Bacalah teks atau gambar dengan teliti sebelum menjawab.</li>
+      <li><b>Pilihan ganda</b>: pilih satu jawaban. <b>Pilihan ganda kompleks</b>: pilih lebih dari satu jawaban sesuai perintah. <b>Benar/Salah</b> (atau Sesuai/Tidak Sesuai): tentukan pilihan untuk setiap pernyataan.</li>
+      <li>Tandai <b>Ragu-ragu</b> bila belum yakin, lalu periksa kembali lewat <b>Daftar Soal</b>.</li>
+      <li>Waktu berjalan terus walaupun halaman ditutup. Jawaban tersimpan otomatis di perangkat ini.</li>
+      <li>Bila waktu habis, jawaban dikirim otomatis.</li>
+    </ol>
+    <form id="f-peserta" novalidate>
+      <div class="form">
+        <label>Nama peserta<input name="nama" required maxlength="60" autocomplete="name" data-label="nama peserta"></label>
+        <label>Asal sekolah<input name="sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju"></label>
+        <label>Kelas<select name="kelas"><option value="">Pilih…</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option><option>Lainnya</option></select></label>
+      </div>
+      <p class="salah" id="aw-salah"></p>
+      <div class="aksi"><button class="btn hijau" type="submit">Mulai mengerjakan ▶</button><a class="btn ghost" href="./">Kembali</a></div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ LEMBAR UJIAN ============ -->
+<div id="v-ujian" hidden>
+  <div class="alat">
+    <div class="nomor">Soal nomor<span id="u-no">1</span></div>
+    <div class="jenis" id="u-jenis"></div>
+    <div class="kanan">
+      <div class="ukuran" role="group" aria-label="Ukuran huruf"><button type="button" data-fs="-1" title="Perkecil huruf">A</button><button type="button" data-fs="0" title="Ukuran normal">A</button><button type="button" data-fs="1" title="Perbesar huruf">A</button></div>
+      <button class="btn-daftar" id="u-daftar-btn" type="button">☰ Daftar Soal</button>
+    </div>
+  </div>
+  <main class="lembar" id="lembar">
+    <section class="panel-stim" id="u-stim" hidden></section>
+    <section class="panel-soal" id="u-soal"></section>
+  </main>
+  <nav class="navbawah">
+    <button class="btn ghost" id="u-mundur" type="button">‹ Sebelumnya</button>
+    <label class="ragu"><input type="checkbox" id="u-ragu"> Ragu-ragu</label>
+    <button class="btn" id="u-maju" type="button">Berikutnya ›</button>
+  </nav>
+</div>
+
+<div class="latar-gelap" id="u-latar" hidden></div>
+<aside class="daftar" id="u-daftar" hidden aria-label="Daftar soal">
+  <button class="tutup" type="button" id="u-daftar-tutup" aria-label="Tutup">✕</button>
+  <h3>Daftar Soal</h3>
+  <div class="kisi" id="u-kisi"></div>
+  <div class="legenda"><span><i style="background:var(--aksen);border-color:var(--aksen)"></i>Sudah dijawab</span><span><i style="background:var(--oranye);border-color:var(--oranye)"></i>Ragu-ragu</span><span><i></i>Belum dijawab</span></div>
+  <button class="btn hijau" type="button" id="u-selesai-panel" style="width:100%">Selesai &amp; kirim jawaban</button>
+</aside>
+
+<dialog id="dlg-selesai"><form method="dialog" class="dlg">
+  <h3>Selesaikan ujian?</h3>
+  <div class="ringkas"><div><b id="d-isi">0</b>dijawab</div><div><b id="d-ragu">0</b>ragu-ragu</div><div><b id="d-kosong">0</b>belum dijawab</div></div>
+  <p id="d-pesan" style="margin:0;font-size:14.5px"></p>
+  <label class="yakin"><input type="checkbox" id="d-yakin"> Saya sudah memeriksa jawaban dan yakin akan menyelesaikan ujian.</label>
+  <div class="aksi"><button class="btn hijau" id="d-kirim" value="kirim" disabled>Selesai</button><button class="btn ghost" value="batal">Kembali ke soal</button></div>
+</form></dialog>
+
+<!-- ============ HASIL ============ -->
+<div id="v-hasil" class="wadah" hidden>
+  <div class="kartu">
+    <span class="lencana" id="h-jenjang"></span>
+    <div class="skor" style="margin-top:12px">
+      <div class="bulat" id="h-bulat"><div><span><small>NILAI</small><br><b id="h-nilai">–</b></span></div></div>
+      <div>
+        <h1 id="h-judul"></h1>
+        <p id="h-peserta"></p>
+        <p id="h-terjawab"></p>
+        <p class="catatan" id="h-waktu"></p>
+      </div>
+    </div>
+    <div class="peringatan" id="h-tertunda" hidden style="margin-top:14px"><b>Nilai belum dapat dihitung.</b> <span id="h-tertunda-teks"></span> Jawaban sudah tersimpan di perangkat ini. <button class="btn" type="button" id="h-ulang-kirim" style="margin-top:8px">Hitung nilai sekarang</button></div>
+    <div class="aksi" style="margin-top:16px"><a class="btn ghost" id="h-ulang" href="#">↻ Kerjakan ulang</a><a class="btn ghost" href="./">Daftar paket soal</a></div>
+  </div>
+
+  <div class="kartu kunci-premium" id="h-kunci" hidden>
+    <h2>🔒 Pembahasan lengkap belum terbuka</h2>
+    <p style="margin:0">Versi gratis hanya menampilkan nilai akhir. Dengan <b>kode akses Pembahasan</b>, kamu mendapatkan:</p>
+    <ul>
+      <li>Kunci jawaban setiap soal dan jawabanmu yang benar/salah</li>
+      <li>Cara mengerjakan (pembahasan) langkah demi langkah</li>
+      <li>Analisis capaian per elemen dan subelemen, seperti laporan hasil TKA</li>
+      <li>Pembahasan dapat <b>diunduh</b> (PDF/HTML) <b>tanpa batas, berulang kali</b>, untuk semua paket</li>
+    </ul>
+    <div class="harga"><b>Rp50.000</b><span>dukungan sekali untuk akses tanpa batas</span></div>
+    <div class="aksi"><a class="btn wa" id="h-wa" href="#" target="_blank" rel="noopener">💬 Minta kode lewat WhatsApp</a></div>
+    <div class="kode-in"><input id="h-kode" placeholder="TKA-XXXX-XXXX" maxlength="20" autocomplete="off" aria-label="Kode akses"><button class="btn hijau" type="button" id="h-kode-btn">Buka pembahasan</button></div>
+    <p class="salah" id="h-kode-salah"></p>
+  </div>
+
+  <div id="h-premium" hidden>
+    <div class="kartu">
+      <h2>📊 Analisis per elemen</h2>
+      <div style="overflow-x:auto" id="h-analisis"></div>
+      <div class="aksi" style="margin-top:16px">
+        <button class="btn hijau" type="button" id="h-unduh">⬇️ Unduh pembahasan (HTML)</button>
+        <button class="btn" type="button" id="h-cetak">🖨️ Cetak / simpan PDF</button>
+      </div>
+      <p class="catatan" id="h-akses-nama"></p>
+    </div>
+    <div class="kartu">
+      <h2>📝 Kunci &amp; pembahasan per soal</h2>
+      <div class="saring" id="h-saring"><button type="button" class="aktif" data-f="semua">Semua</button><button type="button" data-f="salah">Salah</button><button type="button" data-f="sebagian">Benar sebagian</button><button type="button" data-f="benar">Benar</button></div>
+      <div id="h-tinjau"></div>
+    </div>
+  </div>
+</div>
+
+<script src="konfigurasi.js?v=1"></script>
+<script src="tka.js?v=1"></script>
+<script>
+const $ = id => document.getElementById(id);
+const par = new URLSearchParams(location.search);
+const ID = par.get('paket') || '';
+const KUNCI_SESI = 'tka-sesi-' + ID;
+let B = null, S = null, posisi = 0, detak = null, hasilKini = null, riwayatKini = null;
+
+function tampil(v) { ['v-memuat', 'v-awal', 'v-ujian', 'v-hasil'].forEach(x => { $(x).hidden = x !== v; }); window.scrollTo(0, 0); }
+function judulPaket() { return B.mapel + ' · ' + B.paket; }
+
+TKA.muatBank(ID).then(b => {
+  B = b;
+  document.title = 'Simulasi TKA ' + b.jenjang + ' ' + judulPaket();
+  $('judul-bar').textContent = 'TKA ' + b.jenjang + ' · ' + judulPaket();
+  const lihat = par.get('lihat');
+  if (lihat && TKA.riwayat.ambil(lihat)) return bukaHasil(TKA.riwayat.ambil(lihat), true);
+  halamanAwal();
+}).catch(() => {
+  $('v-memuat').innerHTML = 'Paket soal tidak ditemukan. <a href="./">Kembali ke daftar paket</a>.';
+});
+
+/* ================= HALAMAN AWAL ================= */
+function halamanAwal() {
+  $('aw-jenjang').textContent = 'TKA ' + B.jenjang;
+  $('aw-judul').textContent = 'Simulasi TKA ' + B.jenjang + ' ' + judulPaket();
+  $('aw-soal').textContent = B.soal.length;
+  $('aw-durasi').textContent = B.durasi + ' menit';
+  $('aw-server').hidden = TKA.siapServer();
+  const f = $('f-peserta'), ps = TKA.peserta.get();
+  ['nama', 'sekolah', 'kelas'].forEach(k => { if (ps[k]) f.elements[k].value = ps[k]; });
+  const s = TKA.simpan.get(KUNCI_SESI);
+  if (s && s.batas > Date.now()) {
+    const terisi = Object.keys(s.jawaban).filter(k => terjawab(s.jawaban[k])).length;
+    $('aw-lanjut-teks').innerHTML = '<b>Pengerjaan sebelumnya belum selesai.</b> ' + terisi + ' soal sudah dijawab, sisa waktu ' + Math.ceil((s.batas - Date.now()) / 60000) + ' menit.';
+    $('aw-lanjut').hidden = false;
+    $('aw-lanjut-btn').onclick = () => { S = s; mulaiUjian(); };
+  } else if (s) {
+    // waktu habis saat halaman tertutup: kirim jawaban yang ada
+    S = s; kirimJawaban();
+    return;
+  }
+  tampil('v-awal');
+  f.onsubmit = e => {
+    e.preventDefault();
+    const d = { nama: f.elements.nama.value.trim(), sekolah: f.elements.sekolah.value.trim(), kelas: f.elements.kelas.value };
+    if (!d.nama) { $('aw-salah').textContent = 'Tuliskan nama peserta terlebih dahulu.'; f.elements.nama.focus(); return; }
+    TKA.peserta.set(d);
+    S = { paket: ID, mulai: Date.now(), batas: Date.now() + B.durasi * 60000, jawaban: {}, ragu: {}, posisi: 0, peserta: d };
+    simpanSesi();
+    mulaiUjian();
+  };
+}
+
+/* ================= UJIAN ================= */
+function simpanSesi() { S.posisi = posisi; TKA.simpan.set(KUNCI_SESI, S); }
+function terjawab(j) { return j !== undefined && j !== null && (Array.isArray(j) ? j.some(x => x !== null && x !== undefined) : j !== ''); }
+
+function mulaiUjian() {
+  posisi = S.posisi || 0;
+  $('nama-bar').textContent = S.peserta.nama;
+  $('siswa-bar').hidden = false;
+  $('waktu').hidden = false;
+  tampil('v-ujian');
+  aturUkuran(TKA.simpan.get('tka-fs', 0));
+  tampilSoal();
+  clearInterval(detak);
+  detak = setInterval(jalankanWaktu, 1000);
+  jalankanWaktu();
+}
+
+function jalankanWaktu() {
+  const sisa = Math.max(0, S.batas - Date.now());
+  const j = Math.floor(sisa / 3600000), m = Math.floor(sisa / 60000) % 60, d = Math.floor(sisa / 1000) % 60;
+  $('sisa').textContent = [j, m, d].map(x => String(x).padStart(2, '0')).join(':');
+  $('waktu').classList.toggle('genting', sisa < 5 * 60000);
+  if (sisa <= 0) { clearInterval(detak); alert('Waktu habis. Jawaban akan dikirim.'); kirimJawaban(); }
+}
+
+const NAMA_TIPE = { pg: 'Pilihan ganda', pgk: 'Pilihan ganda kompleks', bs: 'Benar/Salah' };
+function tampilSoal() {
+  const q = B.soal[posisi], j = S.jawaban[q.no];
+  $('u-no').textContent = q.no;
+  $('u-jenis').textContent = q.tipe === 'bs' ? (q.kolom.join('/')) : NAMA_TIPE[q.tipe];
+  const st = q.stimulus ? B.stimulus[q.stimulus] : null;
+  $('u-stim').hidden = !st;
+  $('lembar').classList.toggle('dua', !!st);
+  if (st) $('u-stim').innerHTML = '<h3>' + TKA.esc(st.judul) + '</h3>' + TKA.pecahan(st.isi);
+  let h = '';
+  if (q.teks) h += '<div class="teks">' + TKA.pecahan(q.teks) + '</div>';
+  if (q.gambar) h += '<div class="gbr-wadah">' + q.gambar + '</div>';
+  if (q.tanya) h += '<div class="tanya">' + TKA.pecahan(q.tanya) + '</div>';
+  if (q.tipe === 'pg' || q.tipe === 'pgk') {
+    const jenis = q.tipe === 'pg' ? 'radio' : 'checkbox';
+    if (q.tipe === 'pgk') h += '<span class="ket-pgk">Jawaban benar lebih dari satu</span>';
+    h += '<ul class="opsi' + (q.tipe === 'pgk' ? ' kotak' : '') + '">' + q.opsi.map((o, i) => {
+      const L = TKA.HURUF[i], cek = q.tipe === 'pg' ? j === L : (j || []).includes(L);
+      return '<li><input type="' + jenis + '" name="o" id="o' + i + '" value="' + L + '"' + (cek ? ' checked' : '') + '><label for="o' + i + '"><span class="huruf">' + L + '</span><span class="isi">' + TKA.pecahan(o) + '</span></label></li>';
+    }).join('') + '</ul>';
+  } else {
+    h += '<table class="bs"><thead><tr><th>Pernyataan</th>' + q.kolom.map(k => '<th>' + k + '</th>').join('') + '</tr></thead><tbody>' +
+      q.pernyataan.map((p, i) => '<tr><td>' + TKA.pecahan(p) + '</td>' + [true, false].map((v, c) =>
+        '<td class="pil"><input type="radio" name="b' + i + '" data-i="' + i + '" value="' + v + '" aria-label="' + q.kolom[c] + '"' + (j && j[i] === v ? ' checked' : '') + '></td>').join('') + '</tr>').join('') +
+      '</tbody></table>';
+  }
+  $('u-soal').innerHTML = h;
+  $('u-soal').querySelectorAll('input').forEach(el => el.addEventListener('change', () => catatJawaban(q)));
+  $('u-ragu').checked = !!S.ragu[q.no];
+  $('u-mundur').disabled = posisi === 0;
+  const akhir = posisi === B.soal.length - 1;
+  $('u-maju').textContent = akhir ? 'Selesai ✓' : 'Berikutnya ›';
+  $('u-maju').classList.toggle('hijau', akhir);
+  $('u-stim').scrollTop = 0;
+  window.scrollTo(0, 0);
+  isiKisi();
+  simpanSesi();
+}
+
+function catatJawaban(q) {
+  const box = $('u-soal');
+  if (q.tipe === 'pg') { const c = box.querySelector('input:checked'); S.jawaban[q.no] = c ? c.value : null; }
+  else if (q.tipe === 'pgk') { S.jawaban[q.no] = [...box.querySelectorAll('input:checked')].map(x => x.value); }
+  else {
+    const a = q.pernyataan.map(() => null);
+    box.querySelectorAll('input:checked').forEach(x => { a[+x.dataset.i] = x.value === 'true'; });
+    S.jawaban[q.no] = a;
+  }
+  simpanSesi();
+  isiKisi();
+}
+
+function isiKisi() {
+  $('u-kisi').innerHTML = B.soal.map((q, i) => {
+    const c = [S.ragu[q.no] ? 'ragu-r' : terjawab(S.jawaban[q.no]) ? 'isi' : '', i === posisi ? 'kini' : ''].join(' ');
+    return '<button type="button" class="' + c + '" data-i="' + i + '">' + q.no + '</button>';
+  }).join('');
+}
+
+function aturUkuran(n) {
+  n = Math.max(-1, Math.min(2, n));
+  TKA.simpan.set('tka-fs', n);
+  document.documentElement.style.setProperty('--fs', (17 + n * 2) + 'px');
+}
+document.querySelectorAll('.ukuran button').forEach(b => b.addEventListener('click', () => {
+  const d = +b.dataset.fs; aturUkuran(d === 0 ? 0 : TKA.simpan.get('tka-fs', 0) + d);
+}));
+$('u-mundur').onclick = () => { if (posisi > 0) { posisi--; tampilSoal(); } };
+$('u-maju').onclick = () => { if (posisi < B.soal.length - 1) { posisi++; tampilSoal(); } else tanyaSelesai(); };
+$('u-ragu').onchange = e => { const q = B.soal[posisi]; if (e.target.checked) S.ragu[q.no] = true; else delete S.ragu[q.no]; simpanSesi(); isiKisi(); };
+function bukaDaftar(b) { $('u-daftar').hidden = !b; $('u-latar').hidden = !b; }
+$('u-daftar-btn').onclick = () => bukaDaftar(true);
+$('u-daftar-tutup').onclick = $('u-latar').onclick = () => bukaDaftar(false);
+$('u-kisi').onclick = e => { const b = e.target.closest('button'); if (!b) return; posisi = +b.dataset.i; bukaDaftar(false); tampilSoal(); };
+$('u-selesai-panel').onclick = () => { bukaDaftar(false); tanyaSelesai(); };
+
+function tanyaSelesai() {
+  const isi = B.soal.filter(q => terjawab(S.jawaban[q.no])).length, ragu = Object.keys(S.ragu).length, kosong = B.soal.length - isi;
+  $('d-isi').textContent = isi; $('d-ragu').textContent = ragu; $('d-kosong').textContent = kosong;
+  $('d-pesan').textContent = kosong ? 'Masih ada ' + kosong + ' soal yang belum dijawab.' : ragu ? 'Masih ada soal yang ditandai ragu-ragu.' : 'Semua soal sudah dijawab.';
+  $('d-yakin').checked = false; $('d-kirim').disabled = true;
+  $('dlg-selesai').showModal();
+}
+$('d-yakin').onchange = e => { $('d-kirim').disabled = !e.target.checked; };
+$('dlg-selesai').addEventListener('close', () => { if ($('dlg-selesai').returnValue === 'kirim') kirimJawaban(); });
+
+/* ================= KIRIM & HASIL ================= */
+async function kirimJawaban() {
+  clearInterval(detak);
+  $('waktu').hidden = true;
+  $('v-memuat').innerHTML = '<div class="putar"></div>Mengirim jawaban dan menghitung nilai…';
+  tampil('v-memuat');
+  const r = { id: 'r' + Date.now().toString(36), paket: ID, waktu: Date.now(), peserta: S.peserta, jawaban: S.jawaban, tertunda: true };
+  TKA.riwayat.simpan(r);
+  TKA.simpan.hapus(KUNCI_SESI);
+  history.replaceState(null, '', '?paket=' + encodeURIComponent(ID) + '&lihat=' + r.id);
+  bukaHasil(r, false);
+}
+
+async function bukaHasil(r, lihatUlang) {
+  riwayatKini = r;
+  $('v-memuat').innerHTML = '<div class="putar"></div>Menghitung nilai…';
+  tampil('v-memuat');
+  $('siswa-bar').hidden = true;
+  const kode = TKA.kode.get();
+  const res = await TKA.api({ aksi: 'nilai', paket: ID, jawaban: r.jawaban, peserta: r.peserta, kode: kode && kode.kode, lihatUlang: lihatUlang && !r.tertunda });
+  if (res.ok) {
+    Object.assign(r, { nilai: res.nilai, terjawab: res.terjawab, jumlah: res.jumlah, tertunda: false });
+    TKA.riwayat.simpan(r);
+    if (res.pesanKode && kode) { TKA.kode.hapus(); }
+  }
+  hasilKini = res.ok ? res : null;
+  isiHasil(r, res);
+}
+
+function isiHasil(r, res) {
+  tampil('v-hasil');
+  $('h-jenjang').textContent = 'HASIL SIMULASI TKA ' + B.jenjang;
+  $('h-judul').textContent = judulPaket();
+  const ps = r.peserta || {};
+  $('h-peserta').textContent = [ps.nama, ps.sekolah, ps.kelas].filter(Boolean).join(' · ');
+  $('h-waktu').textContent = 'Dikerjakan ' + new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
+  $('h-ulang').href = '?paket=' + encodeURIComponent(ID);
+  const ada = typeof r.nilai === 'number' && !r.tertunda;
+  $('h-nilai').textContent = ada ? TKA.angka(r.nilai) : '–';
+  $('h-bulat').style.setProperty('--p', ada ? r.nilai : 0);
+  $('h-bulat').style.setProperty('--warna', !ada ? '#c9d3de' : r.nilai >= 70 ? '#1b7f3e' : r.nilai >= 50 ? '#e0a400' : '#c0392b');
+  $('h-terjawab').textContent = ada ? r.terjawab + ' dari ' + r.jumlah + ' soal dijawab · nilai skala 0–100' : '';
+  $('h-tertunda').hidden = ada;
+  $('h-tertunda-teks').textContent = res.pesan || '';
+  const premium = res.ok && res.premium;
+  $('h-kunci').hidden = !ada || premium;
+  $('h-premium').hidden = !premium;
+  if (ada && !premium) siapkanKunci(r, res);
+  if (premium) isiPremium(r, res);
+}
+
+$('h-ulang-kirim').onclick = () => bukaHasil(riwayatKini, false);
+
+function siapkanKunci(r, res) {
+  const ps = r.peserta || {};
+  const pesan = 'Halo Admin, saya ingin mendapatkan kode akses Pembahasan Simulasi TKA (dukungan Rp50.000).\n\n' +
+    'Nama siswa: ' + (ps.nama || '') + '\nSekolah: ' + (ps.sekolah || '') + '\nKelas: ' + (ps.kelas || '') +
+    '\nPaket yang dikerjakan: TKA ' + B.jenjang + ' ' + judulPaket() + ' (nilai ' + TKA.angka(r.nilai) + ')\n\nMohon info cara pembayarannya. Terima kasih.';
+  $('h-wa').href = 'https://wa.me/6281196939694?text=' + encodeURIComponent(pesan);
+  $('h-kode-salah').textContent = res.pesanKode || '';
+}
+
+$('h-kode-btn').onclick = async () => {
+  const v = $('h-kode').value.trim();
+  if (!v) { $('h-kode-salah').textContent = 'Tuliskan kode akses terlebih dahulu.'; return; }
+  $('h-kode-btn').disabled = true; $('h-kode-salah').textContent = 'Memeriksa kode…';
+  const c = await TKA.api({ aksi: 'cekKode', kode: v });
+  $('h-kode-btn').disabled = false;
+  if (!c.ok) { $('h-kode-salah').textContent = c.pesan || 'Kode tidak dapat diperiksa.'; return; }
+  TKA.kode.set({ kode: c.kode, nama: c.nama });
+  $('h-kode-salah').textContent = '';
+  bukaHasil(riwayatKini, true);
+};
+
+function isiPremium(r, res) {
+  $('h-analisis').innerHTML = TKA.htmlAnalisis(B, res.rinci);
+  $('h-akses-nama').textContent = 'Akses Pembahasan aktif' + (res.nama ? ' atas nama ' + res.nama : '') + '. Unduh sebanyak yang diperlukan.';
+  $('h-tinjau').innerHTML = B.soal.map(q => {
+    const rc = res.rinci[q.no] || { skor: 0 };
+    const [c, l] = TKA.statusSkor(rc.skor);
+    let stim = '';
+    if (q.stimulus) {
+      const st = B.stimulus[q.stimulus];
+      stim = '<details class="stim-kecil"><summary><b>Teks: ' + TKA.esc(st.judul) + '</b> (ketuk untuk membaca)</summary>' + TKA.pecahan(st.isi) + '</details>';
+    }
+    return '<details class="tinjau" data-st="' + c + '"><summary><span class="no">Soal ' + q.no + '</span><span class="ind">' + TKA.esc(q.indikator) + '</span><span class="st ' + c + '">' + l + '</span></summary>' +
+      '<div class="badan">' + stim + TKA.htmlTinjau(B, q, r.jawaban[q.no], rc) + '<div class="bahas"><b>Pembahasan</b><div>' + TKA.pecahan(rc.bahas) + '</div></div></div></details>';
+  }).join('');
+}
+
+$('h-saring').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  $('h-saring').querySelectorAll('button').forEach(x => x.classList.toggle('aktif', x === b));
+  $('h-tinjau').querySelectorAll('.tinjau').forEach(d => { d.hidden = b.dataset.f !== 'semua' && d.dataset.st !== b.dataset.f; });
+};
+
+function namaBerkas() {
+  const n = (riwayatKini.peserta && riwayatKini.peserta.nama || 'siswa').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+  return 'Pembahasan-TKA-' + B.jenjang + '-' + B.mapel.replace(/\s+/g, '-') + '-' + B.paket.replace(/\s+/g, '') + '-' + n;
+}
+$('h-unduh').onclick = () => {
+  const html = TKA.dokumenPembahasan(B, riwayatKini, hasilKini);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  a.download = namaBerkas() + '.html';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+};
+$('h-cetak').onclick = () => {
+  const html = TKA.dokumenPembahasan(B, riwayatKini, hasilKini).replace('</body>', '<script>window.onload=()=>setTimeout(()=>print(),300)<\/script></body>');
+  const w = window.open('', '_blank');
+  if (!w) { alert('Izinkan jendela pop-up untuk mencetak, atau gunakan tombol Unduh.'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+};
+</script>
+</body>
+</html>
