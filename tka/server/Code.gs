@@ -22,11 +22,12 @@ var PENGATURAN = {
 var LEMBAR_AKSES = 'Akses';
 var LEMBAR_NILAI = 'Nilai';
 var KEPALA_AKSES = ['Kode', 'Nama', 'No. WA', 'Dibuat', 'Aktif', 'Perangkat', 'Dipakai', 'Terakhir dipakai', 'Catatan'];
-var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat'];
+var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan'];
 
 /* ============================ WEB APP ============================ */
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.aksi === 'statistik') return json_(statistik_());
   return json_({ ok: true, layanan: 'Simulasi TKA', paket: Object.keys(KUNCI_TKA) });
 }
 
@@ -36,6 +37,7 @@ function doPost(e) {
   try {
     if (req.aksi === 'nilai') return json_(nilai_(req));
     if (req.aksi === 'cekKode') return json_(cekKode_(req));
+    if (req.aksi === 'statistik') return json_(statistik_());
     return json_({ ok: false, pesan: 'Aksi tidak dikenal.' });
   } catch (err) {
     return json_({ ok: false, pesan: 'Server sedang sibuk. Coba lagi sebentar lagi. (' + err.message + ')' });
@@ -159,7 +161,8 @@ function catatNilai_(req, h, kode) {
   try {
     var p = req.peserta || {};
     var potong = function (s) { return String(s || '').slice(0, 80); };
-    lembar_(LEMBAR_NILAI, KEPALA_NILAI).appendRow([new Date(), potong(p.nama), potong(p.sekolah), potong(p.kelas), req.paket, h.nilai, h.terjawab + '/' + h.jumlah, kode, potong(req.perangkat)]);
+    lembar_(LEMBAR_NILAI, KEPALA_NILAI).appendRow([new Date(), potong(p.nama), potong(p.sekolah), potong(p.kelas), req.paket, h.nilai, h.terjawab + '/' + h.jumlah, kode, potong(req.perangkat),
+      potong(p.provinsi), potong(p.kabupaten), potong(p.kecamatan)]);
   } catch (err) { /* pencatatan gagal tidak boleh menggagalkan penilaian */ }
 }
 
@@ -170,8 +173,38 @@ function lembar_(nama, kepala) {
     sh = ss.insertSheet(nama);
     sh.getRange(1, 1, 1, kepala.length).setValues([kepala]).setFontWeight('bold').setBackground('#12314f').setFontColor('#ffffff');
     sh.setFrozenRows(1);
+  } else if (sh.getLastColumn() < kepala.length) {
+    // lembar lama: tambahkan judul kolom baru tanpa mengubah data
+    sh.getRange(1, 1, 1, kepala.length).setValues([kepala]).setFontWeight('bold').setBackground('#12314f').setFontColor('#ffffff');
   }
   return sh;
+}
+
+/* ============================ STATISTIK PUBLIK ============================ */
+
+/** Angka gabungan untuk ditampilkan di situs (tanpa nama atau data pribadi apa pun).
+ *  Baris uji (nama berawalan "UJI SISTEM") tidak dihitung. Hasil disimpan sementara 10 menit. */
+function statistik_() {
+  var cache = CacheService.getScriptCache(), simpanan = cache.get('statistik');
+  if (simpanan) return JSON.parse(simpanan);
+  var data = lembar_(LEMBAR_NILAI, KEPALA_NILAI).getDataRange().getValues().slice(1);
+  var rapi = function (v) { return String(v || '').trim().toLowerCase().replace(/\s+/g, ' '); };
+  var siswa = {}, sekolah = {}, kec = {}, kab = {}, prov = {}, pengerjaan = 0;
+  data.forEach(function (b) {
+    var nama = rapi(b[1]);
+    if (!nama || nama.indexOf('uji sistem') === 0) return;
+    pengerjaan++;
+    siswa[nama + '|' + rapi(b[8])] = 1;
+    var pv = rapi(b[9]), kb = rapi(b[10]), kc = rapi(b[11]), sk = rapi(b[2]);
+    if (sk) sekolah[sk + '|' + kb] = 1;
+    if (pv) prov[pv] = 1;
+    if (kb) kab[pv + '|' + kb] = 1;
+    if (kc) kec[kb + '|' + kc] = 1;
+  });
+  var n = function (o) { return Object.keys(o).length; };
+  var hasil = { ok: true, pengerjaan: pengerjaan, siswa: n(siswa), sekolah: n(sekolah), kecamatan: n(kec), kabupaten: n(kab), provinsi: n(prov) };
+  cache.put('statistik', JSON.stringify(hasil), 600);
+  return hasil;
 }
 
 /* ============================ MENU ADMIN DI SPREADSHEET ============================ */

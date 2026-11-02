@@ -39,7 +39,7 @@ const TKA = (() => {
     if (!/^[a-z0-9-]+$/.test(id)) return Promise.reject(new Error('Paket tidak dikenal'));
     return new Promise((ok, gagal) => {
       const s = document.createElement('script');
-      s.src = 'bank/' + id + '.js?v=4';
+      s.src = 'bank/' + id + '.js?v=5';
       s.onload = () => bank[id] ? ok(bank[id]) : gagal(new Error('Paket tidak dikenal'));
       s.onerror = () => gagal(new Error('Paket tidak dapat dimuat'));
       document.head.appendChild(s);
@@ -182,7 +182,19 @@ const TKA = (() => {
     '.tabel{margin:6px 0}.tabel caption{font-weight:700;text-align:left;margin-bottom:4px}.poster{border:2px dashed #c0392b;border-radius:12px;padding:12px;text-align:center}.poster .besar{display:block;font-size:17px;color:#c0392b}' +
     'footer{margin-top:30px;color:#5b6b7f;font-size:12px;text-align:center}@media print{body{padding:0}h2{break-after:avoid}}';
 
+  /** Statistik gabungan pemakai (jumlah pengerjaan, siswa, sekolah, wilayah). Gagal → null, bagian tampilan tetap tersembunyi. */
+  function statistik() {
+    if (!siapServer()) return Promise.resolve(null);
+    return fetch(TKA_API + '?aksi=statistik').then(r => r.json()).then(s => (s && s.ok && s.pengerjaan ? s : null)).catch(() => null);
+  }
+  function kalimatStatistik(s) {
+    const f = n => n.toLocaleString('id-ID');
+    const wil = [[s.sekolah, 'sekolah'], [s.kecamatan, 'kecamatan'], [s.kabupaten, 'kabupaten/kota'], [s.provinsi, 'provinsi']].filter(x => x[0]).map(x => f(x[0]) + ' ' + x[1]);
+    return 'Sudah dikerjakan ' + f(s.pengerjaan) + ' kali oleh ' + f(s.siswa) + ' siswa' + (wil.length ? ' dari ' + wil.join(' · ') : '');
+  }
+
   return {
+    statistik, kalimatStatistik,
     bank, simpan, esc, pecahan, api, siapServer, muatBank, kode, peserta, riwayat, idPerangkat, HURUF,
     ringkasJawaban, htmlTinjau, statusSkor, htmlAnalisis, dokumenPembahasan, angka,
     daftarkan: b => { bank[b.id] = b; }

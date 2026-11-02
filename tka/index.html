@@ -84,6 +84,9 @@ h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-sp
 .kk h3{margin:0 0 8px;font-size:16px;color:var(--blue)}
 .kk table{width:100%;border-collapse:collapse;font-size:13.5px}
 .kk td{padding:5px 0;border-bottom:1px dashed #efe6d2}.kk td:last-child{text-align:right;font-weight:800;color:var(--blue);white-space:nowrap}
+.statistik{display:none;margin:18px 0 0;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:14.5px;font-weight:700;line-height:1.5}
+.hero .statistik{margin:16px 0 0}
+.statistik.ada{display:block}.statistik b{color:var(--yellow)}
 .segera-info{display:flex;gap:14px;align-items:center;margin:18px 0 0;padding:14px 18px;border-radius:16px;background:#fff8e1;border:1px solid #f0d77a;color:#5c4400;font-size:14.5px}
 .segera-info .ikon{font-size:28px;flex:none}.segera-info b{display:block;font-size:16px;color:#12314f}
 .segera-info a.ajak{margin-left:auto;flex:none;background:#25d366;color:#fff;font-weight:800;border-radius:999px;padding:8px 14px;text-decoration:none;white-space:nowrap}
@@ -107,6 +110,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
       <h1>Berlatih TKA seperti hari ujian sesungguhnya.</h1>
       <p>30 soal, 75 menit, berbasis komputer dengan tiga bentuk soal TKA: pilihan ganda, pilihan ganda kompleks, dan benar/salah. Soal disusun mengikuti kisi-kisi dan indikator TKA SD tahun lalu.</p>
       <div class="aksi"><a class="btn" href="#paket">Mulai latihan gratis</a><a class="btn ghost" href="#akses">Kode akses Pembahasan</a></div>
+      <p class="statistik" id="statistik"></p>
     </div>
     <div class="layar" aria-hidden="true">
       <div class="bar">Soal nomor 7 <span>01:12:48</span></div>
@@ -208,7 +212,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <details><summary>Bagaimana nilai dihitung?</summary><p>Pilihan ganda bernilai 1 bila benar. Pilihan ganda kompleks dinilai sebagian: pilihan benar menambah skor, pilihan salah mengurangi. Benar/salah dinilai per pernyataan. Nilai akhir dikonversi ke skala 0–100.</p></details>
     <details><summary>Apakah harus mengerjakan sampai selesai dalam sekali duduk?</summary><p>Sebaiknya ya, agar seperti ujian sungguhan. Bila halaman tertutup, jawaban tetap tersimpan di perangkat dan waktu terus berjalan; buka kembali paket yang sama untuk melanjutkan.</p></details>
     <details><summary>Berapa kali pembahasan boleh diunduh?</summary><p>Tanpa batas. Kode akses berlaku untuk semua paket dan semua pengerjaan, termasuk paket yang ditambahkan kemudian.</p></details>
-    <details><summary>Data apa yang dikirim ke server?</summary><p>Nama, asal sekolah, kelas, jawaban, dan nilai, untuk menghitung nilai dan membantu Admin mengembangkan soal. Data tidak ditampilkan dan tidak dibagikan.</p></details>
+    <details><summary>Data apa yang dikirim ke server?</summary><p>Nama, asal sekolah, kelas, wilayah (provinsi, kabupaten/kota, kecamatan), jawaban, dan nilai, untuk menghitung nilai dan membantu Admin mengembangkan soal. Yang ditampilkan di halaman ini hanya angka gabungan (jumlah siswa, sekolah, dan wilayah). Nama dan nilai perorangan tidak pernah ditampilkan atau dibagikan.</p></details>
   </section>
 
   <footer>
@@ -218,11 +222,17 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 </div>
 <script src="../bersama.js"></script>
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=4"></script>
+<script src="tka.js?v=5"></script>
 <script src="bank/daftar.js?v=1"></script>
 <script>
 const $ = id => document.getElementById(id);
 $('tahun').textContent = new Date().getFullYear();
+TKA.statistik().then(st => {
+  if (!st) return;
+  const el = $('statistik');
+  el.innerHTML = '📊 ' + TKA.esc(TKA.kalimatStatistik(st)).replace(/(\d[\d.]*)/g, '<b>$1</b>');
+  el.classList.add('ada');
+});
 const RIWAYAT = TKA.riwayat.semua();
 
 $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
