@@ -39,7 +39,7 @@ const TKA = (() => {
     if (!/^[a-z0-9-]+$/.test(id)) return Promise.reject(new Error('Paket tidak dikenal'));
     return new Promise((ok, gagal) => {
       const s = document.createElement('script');
-      s.src = 'bank/' + id + '.js?v=1';
+      s.src = 'bank/' + id + '.js?v=2';
       s.onload = () => bank[id] ? ok(bank[id]) : gagal(new Error('Paket tidak dikenal'));
       s.onerror = () => gagal(new Error('Paket tidak dapat dimuat'));
       document.head.appendChild(s);
@@ -146,6 +146,9 @@ const TKA = (() => {
         '<span class="ind">' + esc(q.indikator) + '</span></header>' + htmlTinjau(b, q, r.jawaban[q.no], rc) +
         '<div class="bahas"><b>Pembahasan</b><div>' + pecahan(rc.bahas || '') + '</div></div></article>';
     }).join('');
+    // gambar berkas (bank/gambar/...) dijadikan alamat lengkap agar tetap tampil di berkas unduhan
+    const akar = new URL('bank/', location.href).href;
+    isi = isi.replace(/src="bank\//g, 'src="' + akar);
     return '<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + '</style></head><body>' +
       '<header class="kop"><div><small>SIMULASI TKA · BOLONULIS.GITHUB.IO/TKA</small><h1>' + esc(judul) + '</h1>' +
       '<p>' + esc(ps.nama || '-') + (ps.sekolah ? ' · ' + esc(ps.sekolah) : '') + (ps.kelas ? ' · ' + esc(ps.kelas) : '') + '<br>' + tgl + '</p></div>' +
@@ -171,7 +174,7 @@ const TKA = (() => {
     '.tj-opsi li.kunci{border-color:#1b7f3e;background:#eefaf1}.tj-opsi li.kunci>b{background:#1b7f3e;color:#fff}.tj-opsi li.pilih:not(.kunci){border-color:#c0392b;background:#fdf0ef}.tj-opsi li.pilih:not(.kunci)>b{background:#c0392b;color:#fff}' +
     '.tj-opsi em{font-style:normal;font-size:11px;font-weight:800;padding:1px 7px;border-radius:99px;align-self:center}.tanda-k{background:#1b7f3e;color:#fff}.tanda-p{background:#12314f;color:#fff}' +
     '.tj-bs td.ok{color:#1b7f3e;font-weight:700}.tj-bs td.x{color:#c0392b}.tj-gbr{margin:8px 0;overflow-x:auto}.tj-gbr svg,.gbr{max-width:100%;height:auto;color:#16202a}.gbr2{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}' +
-    '.tj-opsi svg{max-height:120px;width:auto}.bahas{margin-top:10px;background:#f4f8fd;border-left:4px solid #1f6fb2;border-radius:6px;padding:8px 12px;font-size:14.5px}.bahas>b{color:#1f6fb2}' +
+    'img{max-width:100%;height:auto}.tj-opsi img{max-height:140px;width:auto}.tj-opsi svg{max-height:120px;width:auto}.bahas{margin-top:10px;background:#f4f8fd;border-left:4px solid #1f6fb2;border-radius:6px;padding:8px 12px;font-size:14.5px}.bahas>b{color:#1f6fb2}' +
     '.pc{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;line-height:1.1;margin:0 2px}.pc>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.pc-u{margin-right:1px}' +
     '.tabel{margin:6px 0}.tabel caption{font-weight:700;text-align:left;margin-bottom:4px}.poster{border:2px dashed #c0392b;border-radius:12px;padding:12px;text-align:center}.poster .besar{display:block;font-size:17px;color:#c0392b}' +
     'footer{margin-top:30px;color:#5b6b7f;font-size:12px;text-align:center}@media print{body{padding:0}h2{break-after:avoid}}';
