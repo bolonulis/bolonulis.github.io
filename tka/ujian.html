@@ -67,6 +67,8 @@ button{font:inherit;cursor:pointer}
 .panel-soal .teks p:first-child{margin-top:0}
 .gbr-wadah{margin:12px 0;overflow-x:auto}
 .gbr{max-width:100%;height:auto;color:var(--ink)}
+.panel-soal img,.panel-stim img,.tinjau img{max-width:100%;height:auto;border-radius:6px}
+.opsi .isi img{max-height:160px;width:auto}
 .gbr2{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0;align-items:flex-end}
 .tanya{margin:12px 0 4px;font-weight:600}
 .opsi{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}
@@ -305,7 +307,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=1"></script>
+<script src="tka.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
 const par = new URLSearchParams(location.search);
