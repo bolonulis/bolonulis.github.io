@@ -76,6 +76,25 @@ button{font:inherit;cursor:pointer}
 .bagan{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
 .bagan span{border:1.5px solid #7d93ab;background:#f4f8fc;border-radius:8px;padding:4px 9px;font-size:.88em;line-height:1.3}
 .bagan i{font-style:normal;color:#7d93ab;font-weight:800}
+.poster2{max-width:440px;margin:4px auto;border-radius:16px;overflow:hidden;background:#fffdf5;border:3px solid #ff7043;box-shadow:0 8px 20px rgba(0,0,0,.08);font-size:.9em;line-height:1.4}
+.p2-kepala{background:linear-gradient(135deg,#ff7043,#ffb300);color:#fff;text-align:center;padding:14px 12px 12px}
+.p2-pita{display:inline-block;background:#fff;color:#e65100;font-weight:800;font-size:.78em;border-radius:99px;padding:2px 12px;letter-spacing:.02em}
+.p2-kepala b{display:block;font-size:1.55em;line-height:1.1;margin:8px 0 6px;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.p2-tema{font-style:italic;font-size:.85em}
+.p2-info{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px}
+.p2-info div{background:#fff3e0;border-radius:10px;padding:6px;text-align:center}
+.p2-info i{font-style:normal;display:block;font-size:1.2em}.p2-info span{display:block;font-size:.72em;color:#8d6e63}.p2-info b{font-size:.82em;color:#4e342e}
+.p2-kat{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px}
+.p2-kat div{border:2px dashed #42a5f5;border-radius:10px;padding:6px;text-align:center;background:#e3f2fd}
+.p2-kat b{display:block;color:#1565c0;font-size:.85em}.p2-kat span{font-size:.82em}
+.p2-ket{padding:8px 14px 4px}.p2-ket>b{color:#e65100}.p2-ket ul{margin:4px 0;padding-left:18px}.p2-ket li{margin:2px 0}
+.p2-kaki{background:#4e342e;color:#ffe0b2;text-align:center;font-size:.8em;font-weight:700;padding:7px 8px;margin-top:6px}
+@media(max-width:420px){.p2-info{grid-template-columns:1fr}}
+.opsi.gambar{grid-template-columns:repeat(2,minmax(0,1fr))}
+.opsi.gambar label{flex-direction:column;align-items:center}
+.opsi.gambar .isi{width:100%;text-align:center}
+.opsi.gambar .isi svg{max-height:170px;max-width:100%}
+@media(max-width:380px){.opsi.gambar{gap:6px}.opsi.gambar label{padding:8px}}
 @media(max-width:420px){.ilus-kisi{gap:8px}}
 .gbr2{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0;align-items:flex-end}
 .tanya{margin:12px 0 4px;font-weight:600}
@@ -315,7 +334,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=3"></script>
+<script src="tka.js?v=4"></script>
 <script>
 const $ = id => document.getElementById(id);
 const par = new URLSearchParams(location.search);
@@ -410,7 +429,7 @@ function tampilSoal() {
   if (q.tipe === 'pg' || q.tipe === 'pgk') {
     const jenis = q.tipe === 'pg' ? 'radio' : 'checkbox';
     if (q.tipe === 'pgk') h += '<span class="ket-pgk">Jawaban benar lebih dari satu</span>';
-    h += '<ul class="opsi' + (q.tipe === 'pgk' ? ' kotak' : '') + '">' + q.opsi.map((o, i) => {
+    h += '<ul class="opsi' + (q.tipe === 'pgk' ? ' kotak' : '') + (q.opsi.every(o => o.includes('<svg')) ? ' gambar' : '') + '">' + q.opsi.map((o, i) => {
       const L = TKA.HURUF[i], cek = q.tipe === 'pg' ? j === L : (j || []).includes(L);
       return '<li><input type="' + jenis + '" name="o" id="o' + i + '" value="' + L + '"' + (cek ? ' checked' : '') + '><label for="o' + i + '"><span class="huruf">' + L + '</span><span class="isi">' + TKA.pecahan(o) + '</span></label></li>';
     }).join('') + '</ul>';
