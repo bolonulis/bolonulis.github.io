@@ -41,6 +41,7 @@ button{font:inherit;cursor:pointer}
 .fakta div{background:var(--latar);border-radius:12px;padding:10px 14px}.fakta b{display:block;font-size:20px;color:var(--biru)}.fakta span{font-size:13px;color:var(--muted)}
 .petunjuk{margin:0;padding-left:20px;font-size:15px}.petunjuk li{margin:4px 0}
 .form{display:grid;grid-template-columns:1fr 1fr 150px;gap:10px;margin:14px 0}
+.form.wil{grid-template-columns:repeat(3,1fr);margin-top:0}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
 .form input,.form select,.kode-in input{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%;background:#fff;color:var(--ink)}
 .salah{color:var(--merah);font-weight:600;font-size:14px;min-height:1.2em;margin:4px 0}
@@ -48,7 +49,7 @@ button{font:inherit;cursor:pointer}
 .lanjut{background:#fff8e1;border:1px solid #f0d77a;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .lanjut p{margin:0;flex:1 1 260px;font-size:14.5px}
 .peringatan{background:#fde2e1;border:1px solid #f5b5b0;color:#7a1712;border-radius:12px;padding:12px 14px;font-size:14.5px;margin-bottom:14px}
-@media(max-width:640px){.form{grid-template-columns:1fr}}
+@media(max-width:640px){.form,.form.wil{grid-template-columns:1fr}}
 /* ---------- lembar ujian ---------- */
 .alat{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:8px 18px;position:sticky;top:54px;z-index:15}
 .alat .nomor{font-weight:800;color:var(--biru);font-size:16px}
@@ -236,9 +237,15 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
     <form id="f-peserta" novalidate>
       <div class="form">
         <label>Nama peserta<input name="nama" required maxlength="60" autocomplete="name" data-label="nama peserta"></label>
-        <label>Asal sekolah<input name="sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju"></label>
+        <label>Asal sekolah<input name="sekolah" required maxlength="80" placeholder="Contoh: SD N 1 Sukamaju" data-label="asal sekolah"></label>
         <label>Kelas<select name="kelas"><option value="">Pilih…</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option><option>Lainnya</option></select></label>
       </div>
+      <div class="form wil">
+        <label>Provinsi<select name="provinsi" required data-label="provinsi"><option value="">Memuat…</option></select></label>
+        <label>Kabupaten/Kota<select name="kabupaten" required data-label="kabupaten/kota" disabled><option value="">Pilih provinsi dulu…</option></select></label>
+        <label>Kecamatan<select name="kecamatan" required data-label="kecamatan" disabled><option value="">Pilih kabupaten dulu…</option></select></label>
+      </div>
+      <p class="catatan" style="margin:0">Asal sekolah dan wilayah hanya dipakai untuk statistik gabungan (jumlah sekolah, kecamatan, kabupaten, dan provinsi peserta). Nama tidak pernah ditampilkan.</p>
       <p class="salah" id="aw-salah"></p>
       <div class="aksi"><button class="btn hijau" type="submit">Mulai mengerjakan ▶</button><a class="btn ghost" href="./">Kembali</a></div>
     </form>
@@ -335,7 +342,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=4"></script>
+<script src="tka.js?v=5"></script>
 <script>
 const $ = id => document.getElementById(id);
 const par = new URLSearchParams(location.search);
@@ -366,6 +373,7 @@ function halamanAwal() {
   $('aw-server').hidden = TKA.siapServer();
   const f = $('f-peserta'), ps = TKA.peserta.get();
   ['nama', 'sekolah', 'kelas'].forEach(k => { if (ps[k]) f.elements[k].value = ps[k]; });
+  pasangWilayah(f, ps);
   const s = TKA.simpan.get(KUNCI_SESI);
   if (s && s.batas > Date.now()) {
     const terisi = Object.keys(s.jawaban).filter(k => terjawab(s.jawaban[k])).length;
@@ -380,13 +388,46 @@ function halamanAwal() {
   tampil('v-awal');
   f.onsubmit = e => {
     e.preventDefault();
-    const d = { nama: f.elements.nama.value.trim(), sekolah: f.elements.sekolah.value.trim(), kelas: f.elements.kelas.value };
-    if (!d.nama) { $('aw-salah').textContent = 'Tuliskan nama peserta terlebih dahulu.'; f.elements.nama.focus(); return; }
+    const d = { nama: f.elements.nama.value.trim(), sekolah: f.elements.sekolah.value.trim(), kelas: f.elements.kelas.value,
+      provinsi: f.elements.provinsi.value, kabupaten: f.elements.kabupaten.value, kecamatan: f.elements.kecamatan.value };
+    const kosong = [...f.querySelectorAll('[required]')].find(el => !el.value.trim());
+    if (kosong) { $('aw-salah').textContent = 'Lengkapi ' + kosong.dataset.label + ' terlebih dahulu.'; kosong.focus(); return; }
+    $('aw-salah').textContent = '';
     TKA.peserta.set(d);
     S = { paket: ID, mulai: Date.now(), batas: Date.now() + B.durasi * 60000, jawaban: {}, ragu: {}, posisi: 0, peserta: d };
     simpanSesi();
     mulaiUjian();
   };
+}
+
+/* Pilihan provinsi → kabupaten/kota → kecamatan (data wilayah bersama aplikasi rapor di /app/). */
+function pasangWilayah(f, ps) {
+  const pv = f.elements.provinsi, kb = f.elements.kabupaten, kc = f.elements.kecamatan;
+  const opsi = (el, daftar, kosong, pilih) => {
+    el.innerHTML = '<option value="">' + kosong + '</option>' + daftar.map(x => '<option' + (x === pilih ? ' selected' : '') + '>' + TKA.esc(x) + '</option>').join('');
+    el.disabled = !daftar.length;
+  };
+  const kecamatan = {};
+  const slug = p => p.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const muatKec = p => kecamatan[p] || (kecamatan[p] = fetch('../app/kecamatan/' + slug(p) + '.json').then(r => r.json()).catch(() => ({})));
+  const isiKec = async (pilih) => {
+    opsi(kc, [], kb.value ? 'Memuat…' : 'Pilih kabupaten dulu…');
+    if (!kb.value) return;
+    const d = await muatKec(pv.value);
+    opsi(kc, d[kb.value] || [], 'Pilih kecamatan…', pilih);
+  };
+  const isiKab = (pilih) => { opsi(kb, WILAYAH[pv.value] || [], pv.value ? 'Pilih kabupaten/kota…' : 'Pilih provinsi dulu…', pilih); };
+  const mulai = () => {
+    opsi(pv, Object.keys(WILAYAH).sort((a, b) => a.localeCompare(b, 'id')), 'Pilih provinsi…', ps.provinsi);
+    isiKab(ps.kabupaten); isiKec(ps.kecamatan);
+    pv.onchange = () => { isiKab(); isiKec(); };
+    kb.onchange = () => isiKec();
+  };
+  if (typeof WILAYAH !== 'undefined') return mulai();
+  const s = document.createElement('script');
+  s.src = '../app/wilayah.js'; s.onload = mulai;
+  s.onerror = () => { [pv, kb, kc].forEach(el => { el.required = false; el.disabled = true; el.innerHTML = '<option value="">(tidak tersedia)</option>'; }); };
+  document.head.appendChild(s);
 }
 
 /* ================= UJIAN ================= */

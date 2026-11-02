@@ -113,6 +113,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
         <div><span class="lencana">Baru · Matematika &amp; Bahasa Indonesia</span></div>
         <p>Siswa berlatih TKA berbasis komputer: 30 soal, 75 menit, tiga bentuk soal, mengikuti indikator TKA SD.</p>
         <ul><li>Gratis: nilai akhir</li><li>Kunci, pembahasan &amp; analisis per elemen: dukungan Rp50.000</li><li>Pembahasan dapat diunduh tanpa batas</li></ul>
+        <p class="pemakai" id="st-tka" hidden style="--aksen:#1f6fb2"></p>
         <div class="aksi"><a class="btn" style="background:#1f6fb2" href="tka/">Mulai latihan</a></div>
       </article>
       <div class="app segera">
@@ -163,6 +164,8 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 <script src="bersama.js"></script>
 <script src="pengunduh.js?v=1"></script>
 <script src="ebook/daftar.js?v=8"></script>
+<script src="tka/konfigurasi.js?v=2"></script>
+<script src="tka/tka.js?v=5"></script>
 <script>
 document.getElementById('tahun').textContent = new Date().getFullYear();
 tampilPemakai('rapor', 'st-rapor');
@@ -174,6 +177,7 @@ tanyaLayanan('rapor', 'posterPublik').then(h => {
   el.hidden = false;
 });
 tampilTestimoni(['rapor', 'rpp'], 'daftar-testi', 'testimoni');
+TKA.statistik().then(st => { if (!st) return; const el = document.getElementById('st-tka'); el.textContent = '📊 ' + TKA.kalimatStatistik(st); el.hidden = false; });
 document.getElementById('rak-ebook').innerHTML = EBOOK.slice(0, 2).map(e => kartuEbook(e, 'ebook/')).join('');
 pasangCatatanEbook('');
 </script>
