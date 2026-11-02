@@ -84,6 +84,10 @@ h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-sp
 .kk h3{margin:0 0 8px;font-size:16px;color:var(--blue)}
 .kk table{width:100%;border-collapse:collapse;font-size:13.5px}
 .kk td{padding:5px 0;border-bottom:1px dashed #efe6d2}.kk td:last-child{text-align:right;font-weight:800;color:var(--blue);white-space:nowrap}
+.segera-info{display:flex;gap:14px;align-items:center;margin:18px 0 0;padding:14px 18px;border-radius:16px;background:#fff8e1;border:1px solid #f0d77a;color:#5c4400;font-size:14.5px}
+.segera-info .ikon{font-size:28px;flex:none}.segera-info b{display:block;font-size:16px;color:#12314f}
+.segera-info a.ajak{margin-left:auto;flex:none;background:#25d366;color:#fff;font-weight:800;border-radius:999px;padding:8px 14px;text-decoration:none;white-space:nowrap}
+@media(max-width:600px){.segera-info{flex-wrap:wrap}.segera-info a.ajak{margin-left:0}}
 footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 @media(max-width:780px){.hero{grid-template-columns:1fr;padding:30px 22px}.layar{display:none}.banding,.akses{grid-template-columns:1fr}}
 @media(max-width:560px){.riwayat .sk{display:none}}
@@ -111,6 +115,8 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
       <div class="nv"><i>‹ Sebelumnya</i><i class="r">☐ Ragu-ragu</i><i class="n">Berikutnya ›</i></div>
     </div>
   </header>
+
+  <div class="segera-info" role="note"><span class="ikon">🆕</span><span><b>Paket soal lainnya segera hadir!</b>Paket 2 Matematika dan Bahasa Indonesia sedang disiapkan dan akan tersedia dalam waktu dekat. Kerjakan Paket 1 dulu sambil menunggu.</span><a class="ajak" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">Gabung grup WA →</a></div>
 
   <section id="paket">
     <h2>Paket soal</h2>
@@ -225,7 +231,7 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
     '<ul><li>' + p.soal + ' soal · ' + p.durasi + ' menit</li><li>Pilihan ganda, pilihan ganda kompleks, benar/salah</li><li>Mengikuti indikator TKA ' + p.jenjang + '</li></ul>' +
     (r ? '<p class="terakhir">Nilai terakhir: ' + TKA.angka(r.nilai) + '</p>' : '') +
     '<div class="aksi"><a class="btn" href="ujian.html?paket=' + p.id + '">Kerjakan ▶</a></div></article>';
-}).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket berikutnya</b><span style="font-size:14px">Paket 2 dan TKA SMP sedang disiapkan.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
+}).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket 2 segera hadir</b><span style="font-size:14px">Paket soal lainnya akan tersedia dalam waktu dekat.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
 
 /* ---------- riwayat ---------- */
 const NAMA_PAKET = Object.fromEntries(PAKET_TKA.map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]));
