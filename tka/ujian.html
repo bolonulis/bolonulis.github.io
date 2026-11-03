@@ -70,6 +70,15 @@ button{font:inherit;cursor:pointer}
 .gbr{max-width:100%;height:auto;color:var(--ink)}
 .panel-soal img,.panel-stim img,.tinjau img{max-width:100%;height:auto;border-radius:6px}
 .opsi .isi img{max-height:160px;width:auto}
+.kartu-gbr{display:grid;grid-template-columns:repeat(var(--kolom,3),minmax(0,1fr));gap:10px;margin:10px 0;max-width:calc(var(--kolom,3) * 200px)}
+.kartu-gbr figure{margin:0;background:#f1f5f9;border:1px solid #dbe2ea;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.kartu-gbr figure>svg{margin:8px auto}
+.kartu-gbr figcaption{padding:6px 8px;text-align:center;font-size:.85em;line-height:1.35}
+.kartu-gbr figcaption:empty{display:none}
+.gbr-ai{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:#e2e8f0}
+.gbr-tunda{aspect-ratio:4/3;display:grid;place-content:center;text-align:center;font-size:.8em;color:#64748b;background:repeating-linear-gradient(45deg,#f1f5f9 0 10px,#e2e8f0 10px 20px);padding:8px}
+figure.tampak{margin:0;text-align:center}figure.tampak figcaption{font-size:.85em;font-weight:700}
+@media(max-width:560px){.kartu-gbr{grid-template-columns:repeat(min(var(--kolom,3),2),minmax(0,1fr))}}
 .ilus-kisi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:620px}
 .ilus{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
 .ilus svg{display:block;width:100%;height:auto}
@@ -342,7 +351,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=6"></script>
+<script src="tka.js?v=7"></script>
 <script>
 const $ = id => document.getElementById(id);
 const par = new URLSearchParams(location.search);
