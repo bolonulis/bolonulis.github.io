@@ -124,11 +124,84 @@ function cekKode_(req) {
   return a.ok ? { ok: true, nama: a.nama, kode: a.kode } : { ok: false, pesan: a.pesan };
 }
 
-/** Memeriksa kode, mencatat perangkat baru, dan menambah hitungan pemakaian. */
+/* Pemeriksaan kode dibuat ringan agar server tahan banyak siswa sekaligus (batas Apps Script 30 proses bersamaan):
+ *  - Peta kode → baris disimpan di CacheService (10 menit), tidak membaca seluruh lembar Akses setiap kali.
+ *  - Perangkat yang sudah terdaftar dilayani tanpa LockService (tanpa antre).
+ *  - Lock hanya dipakai saat mendaftarkan perangkat baru; hitungan "Dipakai" diperbarui paling sering sejam sekali per kode.
+ *  - Mengedit lembar Akses (atau membuat kode baru lewat menu) langsung mengosongkan cache. */
+var CACHE_AKSES = 'akses_v2';
+var CACHE_TTL = 600;
+var PESAN_TIDAK_DIKENAL = 'Kode akses tidak dikenal. Periksa kembali penulisannya.';
+
+function daftarPerangkat_(nilai) {
+  return String(nilai || '').split(',').map(function (s) { return s.trim(); }).filter(String);
+}
+
+/** { KODERAPI: [nomorBaris, nama, aktif] } dari cache, atau dibaca ulang dari lembar Akses. */
+function petaAkses_(paksa) {
+  var cache = CacheService.getScriptCache();
+  if (!paksa) {
+    var c = cache.get(CACHE_AKSES);
+    if (c) return JSON.parse(c);
+  }
+  var data = lembar_(LEMBAR_AKSES, KEPALA_AKSES).getDataRange().getValues();
+  var peta = {};
+  for (var r = 1; r < data.length; r++) {
+    var k = rapikanKode_(data[r][0]);
+    if (k) peta[k] = [r + 1, String(data[r][1] || ''), String(data[r][4] || '').trim().toUpperCase()];
+  }
+  try { cache.put(CACHE_AKSES, JSON.stringify(peta), CACHE_TTL); } catch (err) { /* terlalu besar: tanpa cache */ }
+  return peta;
+}
+
+function lupakanAkses_(kodeRapi) {
+  var cache = CacheService.getScriptCache();
+  cache.remove(CACHE_AKSES);
+  if (kodeRapi) cache.remove('dev_' + kodeRapi);
+}
+
+/** Memeriksa kode dan mendaftarkan perangkat baru bila masih ada kuota. */
 function periksaKode_(kode, perangkat) {
   var dicari = rapikanKode_(kode);
-  if (dicari.length < 6) return { ok: false, pesan: 'Kode akses tidak dikenal. Periksa kembali penulisannya.' };
+  if (dicari.length < 6) return { ok: false, pesan: PESAN_TIDAK_DIKENAL };
   perangkat = String(perangkat || 'tanpa-id').slice(0, 40);
+  var cache = CacheService.getScriptCache();
+  var peta = petaAkses_(false), e = peta[dicari];
+  if (!e) { peta = petaAkses_(true); e = peta[dicari]; }          // kode baru yang belum masuk cache
+  if (!e) return { ok: false, pesan: PESAN_TIDAK_DIKENAL };
+  if (e[2] && e[2] !== 'YA') return { ok: false, pesan: 'Kode akses ini sedang tidak aktif. Silakan hubungi Admin.' };
+
+  var sh = lembar_(LEMBAR_AKSES, KEPALA_AKSES);
+  var simpananDev = cache.get('dev_' + dicari);
+  var daftar = simpananDev !== null ? daftarPerangkat_(simpananDev) : null;
+  if (daftar === null) {
+    var baris = sh.getRange(e[0], 1, 1, 6).getValues()[0];
+    if (rapikanKode_(baris[0]) !== dicari) { lupakanAkses_(dicari); return periksaKodeLambat_(dicari, perangkat); }   // baris bergeser
+    daftar = daftarPerangkat_(baris[5]);
+    cache.put('dev_' + dicari, daftar.join(', '), CACHE_TTL);
+  }
+
+  if (daftar.indexOf(perangkat) >= 0) {
+    // jalur cepat: perangkat sudah terdaftar, tanpa antre
+    if (!cache.get('pakai_' + dicari)) {
+      cache.put('pakai_' + dicari, '1', 3600);
+      try { if (rapikanKode_(sh.getRange(e[0], 1).getValue()) === dicari) sh.getRange(e[0], 8).setValue(new Date()); } catch (err) { /* tidak penting */ }
+    }
+    return { ok: true, nama: e[1], kode: kodeAsli_(sh, e[0], dicari) };
+  }
+  return periksaKodeLambat_(dicari, perangkat);
+}
+
+function kodeAsli_(sh, baris, dicari) {
+  var c = CacheService.getScriptCache(), k = c.get('asli_' + dicari);
+  if (k) return k;
+  k = String(sh.getRange(baris, 1).getValue());
+  c.put('asli_' + dicari, k, 21600);
+  return k;
+}
+
+/** Jalur lambat dengan lock: mendaftarkan perangkat baru (atau mencari ulang bila baris bergeser). */
+function periksaKodeLambat_(dicari, perangkat) {
   var kunci = LockService.getScriptLock();
   kunci.waitLock(15000);
   try {
@@ -138,7 +211,7 @@ function periksaKode_(kode, perangkat) {
       if (rapikanKode_(data[r][0]) !== dicari) continue;
       var aktif = String(data[r][4]).trim().toUpperCase();
       if (aktif && aktif !== 'YA') return { ok: false, pesan: 'Kode akses ini sedang tidak aktif. Silakan hubungi Admin.' };
-      var daftar = String(data[r][5] || '').split(',').map(function (s) { return s.trim(); }).filter(String);
+      var daftar = daftarPerangkat_(data[r][5]);
       if (daftar.indexOf(perangkat) < 0) {
         if (daftar.length >= PENGATURAN.MAKS_PERANGKAT) {
           return { ok: false, pesan: 'Kode akses ini sudah dipakai di ' + PENGATURAN.MAKS_PERANGKAT + ' perangkat. Hubungi Admin bila perlu dipindahkan ke perangkat baru.' };
@@ -147,12 +220,25 @@ function periksaKode_(kode, perangkat) {
         sh.getRange(r + 1, 6).setValue(daftar.join(', '));
       }
       sh.getRange(r + 1, 7, 1, 2).setValues([[(Number(data[r][6]) || 0) + 1, new Date()]]);
+      CacheService.getScriptCache().put('dev_' + dicari, daftar.join(', '), CACHE_TTL);
       return { ok: true, nama: String(data[r][1] || ''), kode: String(data[r][0]) };
     }
-    return { ok: false, pesan: 'Kode akses tidak dikenal. Periksa kembali penulisannya.' };
+    return { ok: false, pesan: PESAN_TIDAK_DIKENAL };
   } finally {
     kunci.releaseLock();
   }
+}
+
+/** Admin mengubah lembar Akses (menonaktifkan kode, mengosongkan Perangkat, menambah/menghapus baris):
+ *  cache dikosongkan agar perubahan langsung berlaku. */
+function onEdit(e) {
+  try {
+    if (!e || !e.range || e.range.getSheet().getName() !== LEMBAR_AKSES) return;
+    var sh = e.range.getSheet(), awal = e.range.getRow(), n = Math.min(e.range.getNumRows(), 200);
+    var cache = CacheService.getScriptCache();
+    cache.remove(CACHE_AKSES);
+    sh.getRange(awal, 1, n, 1).getValues().forEach(function (b) { var k = rapikanKode_(b[0]); if (k) cache.remove('dev_' + k); });
+  } catch (err) { /* abaikan */ }
 }
 
 /* ============================ PENCATATAN ============================ */
@@ -247,6 +333,7 @@ function buatKode(nama, wa) {
     kode = 'TKA-' + s.slice(0, 4) + '-' + s.slice(4);
   } while (ada[rapikanKode_(kode)]);
   sh.appendRow([kode, nama || '', "'" + String(wa || ''), new Date(), 'YA', '', 0, '', '']);
+  lupakanAkses_(rapikanKode_(kode));
   return kode;
 }
 
