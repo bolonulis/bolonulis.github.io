@@ -114,3 +114,73 @@ Rasio [16:9 / 4:3 / 1:1], latar [putih polos / suasana …], warna cerah, ramah 
 JANGAN ada tulisan, angka, huruf, logo, atau tanda air apa pun di gambar.
 Tokoh berpakaian sopan khas Indonesia, beragam, ekspresi ramah.
 ```
+
+---
+
+# Bagian B — Bahasa Indonesia
+
+Disusun dari analisis 30 contoh soal resmi TKA SD Bahasa Indonesia (indikator 1–30, portal hasil TKA) dan daya serap
+nasional per indikator (54–70%, lebih tinggi dari Matematika). Soal resmi **tidak disalin**.
+
+## B1. Temuan utama
+
+| Aspek | Pola TKA asli | Paket 1 kita | Arah perbaikan |
+|---|---|---|---|
+| Stimulus | **11 teks untuk 30 soal**; tiap teks dipakai 2–3 soal yang menguji tiga kompetensi berbeda (tekstual → inferensial → evaluasi) | 10 teks, sudah dipakai berkelompok | Pertahankan; pastikan satu teks memuat soal dari ketiga kompetensi |
+| Jenis teks | Brosur/infografik wisata, buku harian, cerita bergambar (fabel bentuk geometri), cerpen budaya daerah, naskah dialog, teks eksplanasi, teks sejarah kuliner, cerita dari buku bacaan Budi Kemdikbud | Narasi & informatif | Tambah buku harian, dialog/drama, brosur, teks eksplanasi, cerita budaya Nusantara |
+| Muatan budaya | Cap Go Meh di Palembang, ruwatan rambut gimbal, kampung nelayan, nama daerah bakwan (bala-bala, ote-ote, badak) | Umum | Angkat keberagaman budaya dan daerah Indonesia |
+| Ilustrasi | Hampir **setiap teks berilustrasi** (gaya datar berwarna). Fungsi: konteks; penanda alur (kertas ujian "40!"); **objek evaluasi** (soal 18: "mengapa ciri kota berkelanjutan belum tampak pada gambar?"); **pilihan jawaban berupa bagan** (soal 1) | 5 soal bergambar | Ilustrasi di setiap teks; minimal satu soal menilai gambar dan satu soal pilihan berupa bagan/infografik |
+| Kelengkapan teks | Judul, nama penulis, **sumber/referensi**, **daftar istilah** (HP, ruwatan) | Tanpa sumber | Cantumkan sumber (atau "teks rekaan") dan daftar istilah untuk kata daerah/asing |
+| PG kompleks (MCMA) | **3 pilihan**, umumnya 2 benar | Sebagian 5 pilihan | 3 pilihan |
+| Kategori | Kolom bervariasi: **Benar/Salah, Sesuai/Tidak Sesuai, Setuju/Tidak Setuju, Sebelum/Sesudah** | Benar/Salah, Sesuai/Tidak Sesuai | Gunakan keempat variasi |
+| Pola khas evaluasi | (a) **Pendapat tiga tokoh** (Amara–Bima–Jena; Simon–Johan–Maria) dinilai satu per satu; (b) **pembaca fiktif** ("Rania telah membaca…", "Riza merasa…", "Dinda tidak suka dibandingkan…") lalu menentukan tindakan/perasaan | Skenario sehari-hari | Pakai kedua pola untuk indikator 3, 8, 15, 21, 24, 27, 30 |
+| Pilihan jawaban | Paralel dan panjang; sering berbentuk "**sifat, dibuktikan dengan …**" (soal 29) | Pendek | Pilihan memuat alasan/bukti dari teks |
+
+## B2. Karakter soal per indikator
+
+| No | Indikator (ringkas) | Bentuk | Pola soal TKA |
+|---|---|---|---|
+| 1 | Bagan kerangka isi | PG, opsi **bagan bergambar** | Bagan 3 kategori (lokasi–zona–satwa); pengecoh menukar "spot foto" dengan "zona" |
+| 2 | Makna ungkapan | MCMA | "Permata tersembunyi" — dua tafsiran benar, satu bertentangan ("ramai dikunjungi") |
+| 3 | Kesesuaian judul–isi | Kategori B/S | Tiga tokoh berpendapat tentang judul yang terlalu luas ("di Indonesia" vs isi satu tempat) |
+| 4 | Kesimpulan relevansi isi | MCMA | "Mengapa bakwan unik?" — dua alasan tersirat, satu salah tangkap |
+| 5 | Perbedaan informasi | Kategori **Sebelum/Sesudah** | Isi bakwan sebelum dan sesudah pengaruh budaya Jepang |
+| 6 | Nilai dalam teks | MCMA | Nilai moral dialog botol minum; pengecoh "bebas memilih gaya hidup" |
+| 7 | Makna idiom | PG | "Tutup mata soal sampah" → mengabaikan; pengecoh kata yang ada di teks |
+| 8 | Refleksi peristiwa | Kategori Sesuai/Tidak | Pembaca fiktif ingin meniru aksi tokoh; satu pilihan berlebihan (membelikan teman) |
+| 9 | Tersurat | PG | "Mengapa hujan meteor tidak berbahaya?" — jawaban ada di kalimat ayah |
+| 10 | Inferensi isi | MCMA | Hal yang membuat tokoh "aku" senang — gabungan beberapa kalimat |
+| 11 | Tersurat | PG | Fabel bentuk: Heksagonal → bunga; pengecoh benda milik tokoh lain |
+| 12 | Tersurat | MCMA | Pasukan Kotak → roket, menara; pengecoh bendera (milik Segitiga) |
+| 13 | Tersurat | PG | Cara pergi **pertama kali** vs **kali ini** (jebakan keterangan waktu) |
+| 14 | Unsur intrinsik | MCMA | Peristiwa yang membuat tokoh belajar bersyukur |
+| 15 | Refleksi pengetahuan baru | PG | "Apa yang kamu lakukan jika liburan batal karena hujan?" |
+| 16 | Ide pokok/fokus | PG | Teks eksplanasi kota berkelanjutan; pengecoh rincian satu paragraf |
+| 17 | Simpulan isi | PG | Hasil pengelolaan sampah yang baik → kota bersih |
+| 18 | Kesesuaian ilustrasi | MCMA | Menilai **kekurangan gambar** dibanding isi teks |
+| 19 | Tersurat | PG | Siapa yang memotong rambut (ilustrasi ikut membantu) |
+| 20 | Perasaan & sifat tokoh | PG | Perasaan tokoh setelah mendengar penjelasan ayah |
+| 21 | Refleksi pengetahuan baru | MCMA | Apa yang sebaiknya dilakukan bila ingin barang baru |
+| 22 | Peribahasa | PG | "Bersakit-sakit dahulu…" — pengecoh menyelipkan tafsiran lain (sombong, belajar bersama) |
+| 23 | Perubahan watak | PG | Perubahan sikap; pengecoh "berjanji" (tidak ada di teks) |
+| 24 | Nilai keteladanan | Kategori B/S | Pembaca fiktif yang mirip tokoh; satu pilihan meneruskan kebiasaan buruk |
+| 25 | Kosakata–objek | MCMA | Frasa yang menunjukkan pekerjaan nelayan; pengecoh "memperbaiki perahu" (alasan tokoh lain) |
+| 26 | Perubahan karakter | PG | Sikap setelah ditegur |
+| 27 | Respons emosional | Kategori Sesuai/Tidak | Pendapat tiga tokoh pembaca tentang akhir cerita |
+| 28 | Tersurat | PG | Tokoh yang suka menggambar |
+| 29 | Sifat tokoh | PG | "Pantang menyerah, dibuktikan dengan …" |
+| 30 | Respons emosional | Kategori **Setuju/Tidak Setuju** | Perasaan pembaca fiktif yang pernah dibanding-bandingkan |
+
+## B3. Pengecoh khas Bahasa Indonesia
+
+1. **Informasi milik tokoh/bagian lain** — benar di teks, tetapi bukan jawaban pertanyaan (bendera milik Segitiga).
+2. **Keterangan waktu tertukar** — "waktu itu" vs "kali ini", "awalnya" vs "kini".
+3. **Kategori tertukar** — spot foto ≠ zona; isi bakwan dahulu ≠ kini.
+4. **Rincian dijadikan ide pokok** — satu kalimat paragraf disajikan seolah fokus utama.
+5. **Tambahan yang tidak ada di teks** — "Arul berjanji…", "membelikan teman botol".
+6. **Tafsiran berlawanan** — "tempat tersembunyi, tetapi ramai dikunjungi".
+7. **Pendapat tokoh yang separuh benar** — alasan benar, kesimpulan salah (Jena: "tetap mewakili").
+
+## B4. Catatan mutu
+Hindari kelemahan pada soal asli: salah ketik ("teman-temanya", "Meyakini"), pilihan perasaan yang sama-sama mungkin
+(lega/puas/ceria/ikhlas), dan pertanyaan refleksi yang jawabannya hanya normatif.
