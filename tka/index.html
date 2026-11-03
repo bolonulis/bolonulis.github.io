@@ -48,7 +48,7 @@ h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-sp
 .pk h3{margin:0;font-size:20px}
 .pk ul{margin:0 0 14px;padding-left:20px;font-size:14px;color:var(--muted)}
 .pk .terakhir{font-size:13.5px;font-weight:700;color:var(--hijau);margin:0 0 10px}
-.pk .aksi{margin-top:auto;display:flex;gap:8px}.pk .aksi .btn{flex:1;background:var(--w)}
+.pk .aksi{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}.pk .aksi .btn{flex:1;background:var(--w)}.pk .aksi .btn.pdf{background:#fff;color:var(--w);border:1.5px solid var(--w);flex:0 1 auto}
 .pk.segera{background:transparent;border:2px dashed var(--line);box-shadow:none;align-items:center;justify-content:center;text-align:center;color:var(--muted);min-height:200px}
 .pk.segera b{display:block;font-size:17px;color:var(--blue);margin:6px 0 4px}
 .banding{display:grid;grid-template-columns:1fr 1fr;gap:18px}
@@ -139,6 +139,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
           <li>Semua paket soal dan simulasi waktu 75 menit</li>
           <li>Tampilan ujian berbasis komputer seperti TKA</li>
           <li>Nilai akhir (skala 0–100)</li>
+          <li>Unduh soal PDF untuk latihan di kertas</li>
           <li class="tidak">Kunci jawaban</li>
           <li class="tidak">Pembahasan cara mengerjakan</li>
           <li class="tidak">Analisis per elemen &amp; unduhan PDF</li>
@@ -189,7 +190,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
           <div class="kode-in"><input id="kode-input" placeholder="TKA-XXXX-XXXX" maxlength="20" autocomplete="off" aria-label="Kode akses"><button class="btn hijau" type="button" id="kode-btn">Aktifkan</button></div>
           <p class="salah" id="kode-salah"></p>
         </div>
-        <p style="font-size:13px;color:var(--muted);margin-top:10px">Satu kode dapat dipakai di 3 perangkat (misalnya HP siswa, HP orang tua, dan laptop). Mohon tidak membagikan kode kepada orang lain.</p>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px">Satu kode dapat dipakai di banyak perangkat (hingga 50), misalnya HP siswa, HP orang tua, dan laptop. Mohon tidak membagikan kode kepada orang lain.</p>
       </div>
     </div>
   </section>
@@ -211,6 +212,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <details><summary>Apakah ini soal TKA asli?</summary><p>Bukan. Soal disusun ulang oleh Admin dengan mengikuti kisi-kisi, bentuk soal, dan indikator TKA SD tahun lalu, sehingga tingkat kesulitan dan cara bertanya mirip dengan TKA. Ini bukan aplikasi resmi Kemendikdasmen.</p></details>
     <details><summary>Bagaimana nilai dihitung?</summary><p>Pilihan ganda bernilai 1 bila benar. Pilihan ganda kompleks dinilai sebagian: pilihan benar menambah skor, pilihan salah mengurangi. Benar/salah dinilai per pernyataan. Nilai akhir dikonversi ke skala 0–100.</p></details>
     <details><summary>Apakah harus mengerjakan sampai selesai dalam sekali duduk?</summary><p>Sebaiknya ya, agar seperti ujian sungguhan. Bila halaman tertutup, jawaban tetap tersimpan di perangkat dan waktu terus berjalan; buka kembali paket yang sama untuk melanjutkan.</p></details>
+    <details><summary>Apakah soalnya bisa dicetak?</summary><p>Bisa, gratis. Ketuk <b>⬇️ Soal PDF</b> pada setiap paket untuk mengunduh soal beserta lembar jawabannya. Cocok untuk latihan di kertas atau dibagikan guru ke kelas. Nilai dan pembahasan tetap diperoleh dengan mengerjakan versi komputer.</p></details>
     <details><summary>Berapa kali pembahasan boleh diunduh?</summary><p>Tanpa batas. Kode akses berlaku untuk semua paket dan semua pengerjaan, termasuk paket yang ditambahkan kemudian.</p></details>
     <details><summary>Data apa yang dikirim ke server?</summary><p>Nama, asal sekolah, kelas, wilayah (provinsi, kabupaten/kota, kecamatan), jawaban, dan nilai, untuk menghitung nilai dan membantu Admin mengembangkan soal. Yang ditampilkan di halaman ini hanya angka gabungan (jumlah siswa, sekolah, dan wilayah). Nama dan nilai perorangan tidak pernah ditampilkan atau dibagikan.</p></details>
   </section>
@@ -222,7 +224,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 </div>
 <script src="../bersama.js"></script>
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=5"></script>
+<script src="tka.js?v=6"></script>
 <script src="bank/daftar.js?v=1"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -240,7 +242,8 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
   return '<article class="pk" style="--w:' + p.warna + '"><div class="kepala"><div class="ikon">' + p.ikon + '</div><div><div class="jenis">TKA ' + p.jenjang + ' · ' + p.paket.toUpperCase() + '</div><h3>' + TKA.esc(p.mapel) + '</h3></div></div>' +
     '<ul><li>' + p.soal + ' soal · ' + p.durasi + ' menit</li><li>Pilihan ganda, pilihan ganda kompleks, benar/salah</li><li>Mengikuti indikator TKA ' + p.jenjang + '</li></ul>' +
     (r ? '<p class="terakhir">Nilai terakhir: ' + TKA.angka(r.nilai) + '</p>' : '') +
-    '<div class="aksi"><a class="btn" href="ujian.html?paket=' + p.id + '">Kerjakan ▶</a></div></article>';
+    '<div class="aksi"><a class="btn" href="ujian.html?paket=' + p.id + '">Kerjakan ▶</a>' +
+    '<a class="btn pdf" href="pdf/' + p.id + '.pdf?v=1" download="Soal-Simulasi-TKA-' + p.jenjang + '-' + p.mapel.replace(/\s+/g, '-') + '-' + p.paket.replace(/\s+/g, '') + '.pdf" title="Unduh soal untuk dikerjakan di kertas">⬇️ Soal PDF</a></div></article>';
 }).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket 2 segera hadir</b><span style="font-size:14px">Paket soal lainnya akan tersedia dalam waktu dekat.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
 
 /* ---------- riwayat ---------- */

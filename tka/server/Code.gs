@@ -15,7 +15,7 @@
  */
 
 var PENGATURAN = {
-  MAKS_PERANGKAT: 3,          // satu kode akses boleh dipakai di berapa perangkat (HP/laptop) berbeda
+  MAKS_PERANGKAT: 50,         // satu kode akses boleh dipakai di berapa perangkat (HP/laptop) berbeda
   WA_ADMIN: '6281196939694'
 };
 
