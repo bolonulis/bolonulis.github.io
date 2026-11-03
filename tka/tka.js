@@ -24,14 +24,20 @@ const TKA = (() => {
 
   function siapServer() { return typeof TKA_API === 'string' && /^https:\/\//.test(TKA_API); }
 
+  /** Kirim permintaan ke server. Bila server sedang penuh (banyak siswa mengirim bersamaan, batas Apps Script
+   *  30 proses sekaligus) atau koneksi putus, dicoba ulang otomatis dengan jeda yang makin panjang. */
   async function api(req) {
     if (!siapServer()) return { ok: false, pesan: 'Server penilaian belum dipasang oleh Admin.' };
-    try {
-      const r = await fetch(TKA_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...req, perangkat: idPerangkat() }) });
-      return await r.json();
-    } catch (e) {
-      return { ok: false, putus: true, pesan: 'Tidak dapat terhubung ke server. Periksa koneksi internet, lalu coba lagi.' };
+    const jeda = [0, 2500, 6000, 12000];
+    for (let i = 0; i < jeda.length; i++) {
+      if (jeda[i]) await new Promise(t => setTimeout(t, jeda[i] + Math.random() * 1500));
+      try {
+        const r = await fetch(TKA_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...req, perangkat: idPerangkat() }) });
+        const h = await r.json();
+        if (h && (h.ok || !/sibuk/i.test(h.pesan || ''))) return h;   // berhasil, atau ditolak dengan alasan jelas (mis. kode salah)
+      } catch (e) { /* server penuh/koneksi putus: coba lagi */ }
     }
+    return { ok: false, putus: true, pesan: 'Server sedang ramai atau koneksi terputus. Tunggu sebentar, lalu ketuk tombol di bawah untuk mencoba lagi.' };
   }
 
   function muatBank(id) {
@@ -39,7 +45,7 @@ const TKA = (() => {
     if (!/^[a-z0-9-]+$/.test(id)) return Promise.reject(new Error('Paket tidak dikenal'));
     return new Promise((ok, gagal) => {
       const s = document.createElement('script');
-      s.src = 'bank/' + id + '.js?v=5';
+      s.src = 'bank/' + id + '.js?v=6';
       s.onload = () => bank[id] ? ok(bank[id]) : gagal(new Error('Paket tidak dikenal'));
       s.onerror = () => gagal(new Error('Paket tidak dapat dimuat'));
       document.head.appendChild(s);
@@ -242,7 +248,14 @@ const TKA = (() => {
   /** Statistik gabungan pemakai (jumlah pengerjaan, siswa, sekolah, wilayah). Gagal → null, bagian tampilan tetap tersembunyi. */
   function statistik() {
     if (!siapServer()) return Promise.resolve(null);
-    return fetch(TKA_API + '?aksi=statistik').then(r => r.json()).then(s => (s && s.ok && s.pengerjaan ? s : null)).catch(() => null);
+    // disimpan di perangkat 30 menit agar membuka halaman tidak selalu menjalankan proses di server
+    const lama = simpan.get('tka-statistik');
+    if (lama && Date.now() - lama.waktu < 30 * 60000) return Promise.resolve(lama.data);
+    return fetch(TKA_API + '?aksi=statistik').then(r => r.json()).then(s => {
+      const d = s && s.ok && s.pengerjaan ? s : null;
+      if (d) simpan.set('tka-statistik', { waktu: Date.now(), data: d });
+      return d || (lama && lama.data) || null;
+    }).catch(() => (lama && lama.data) || null);
   }
   function kalimatStatistik(s) {
     const f = n => n.toLocaleString('id-ID');
