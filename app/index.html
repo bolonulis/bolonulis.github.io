@@ -64,6 +64,10 @@ input:disabled{background:#f5f2ea;color:var(--muted)}
 .rombel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.rombel b{font-size:18px}.rombel .sub{font-size:13px;color:var(--muted);margin:3px 0 10px;line-height:1.45}
 .aksi{display:flex;gap:6px;flex-wrap:wrap;align-items:end}
 .btn.small{padding:8px 12px;font-size:13px;width:auto}
+.btn-3d{background:linear-gradient(180deg,#3b82f6,#1d4ed8);color:#fff;border:0;box-shadow:0 4px 0 #1e3a8a,0 8px 16px rgba(29,78,216,.28);transform:translateY(0);transition:transform .08s,box-shadow .08s}
+.btn-3d:hover{background:linear-gradient(180deg,#60a5fa,#2563eb)}
+.btn-3d:active{transform:translateY(3px);box-shadow:0 1px 0 #1e3a8a,0 3px 8px rgba(29,78,216,.25)}
+.hapus-mulok{display:inline-block;margin-top:4px;font-size:12.5px;color:var(--bad)}
 .btn.add{background:#fff;color:var(--blue);border:1px dashed #bcae8c;width:auto}.btn.add:hover{border-color:var(--blue);background:#fff}
 .btn.danger{background:#fff;color:var(--bad);border:1px solid #f1c7c2}.btn.danger:hover{background:#fde4e1}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}.toolbar .sub{font-size:13px;color:var(--muted)}
@@ -774,7 +778,7 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="grid2">
         <div><label for="tp-kelas">Kelas</label><select id="tp-kelas"><option value="1">Kelas 1 (Fase A)</option><option value="2">Kelas 2 (Fase A)</option><option value="3">Kelas 3 (Fase B)</option><option value="4">Kelas 4 (Fase B)</option><option value="5">Kelas 5 (Fase C)</option><option value="6">Kelas 6 (Fase C)</option></select></div>
         <div><label for="tp-semester">Semester</label><select id="tp-semester"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
-        <div class="aksi"><button class="btn ghost small" type="button" id="tp-unduh" title="Salin TP per mapel untuk ditempel ke template impor TP yang diunduh dari e-Rapor">Salin TP ke template e-Rapor</button></div>
+        <div class="aksi"><button class="btn small btn-3d" type="button" id="tp-unduh" title="Salin TP per mapel untuk ditempel ke template impor TP yang diunduh dari e-Rapor">Salin TP ke template e-Rapor</button></div>
       </div>
       <div class="msg" id="tpu-msg"></div>
       <div class="tp-salin hidden" id="tp-salin">
@@ -1333,7 +1337,8 @@ const namaMulok = m => m.namaBaru !== undefined ? m.namaBaru : (mulokDefault(m) 
 function renderMapel(){
   $('#mapel-isi').innerHTML = MAPEL.map((m, i) => '<tr><td><b>' + esc(m.nama) + '</b>' +
     '<span class="jenis ' + (m.pilihan ? 'pilihan">Pilihan' : 'wajib">Wajib') + '</span>' +
-    (m.jenis === 'mulok' ? '<input type="text" data-mulok="' + i + '" maxlength="60" placeholder="Nama muatan lokal, misalnya Bahasa Jawa" value="' + esc(namaMulok(m)) + '" aria-label="Nama ' + esc(m.nama) + '">' : '') +
+    (m.jenis === 'mulok' ? '<input type="text" data-mulok="' + i + '" maxlength="60" placeholder="Nama muatan lokal, misalnya Bahasa Jawa" value="' + esc(namaMulok(m)) + '" aria-label="Nama ' + esc(m.nama) + '">' +
+      '<button class="link hapus-mulok" type="button" data-hapus-mulok="' + i + '" title="Hapus muatan lokal ini (bila salah tambah)">🗑 Hapus</button>' : '') +
     '</td>' + [1,2,3,4,5,6].map(k => k in m.kelas
       ? '<td><input type="checkbox" data-i="' + i + '" data-k="' + k + '"' + (m.kelas[k] ? ' checked' : '') + (m.pilihan ? '' : ' disabled title="Mapel wajib"') +
         ' aria-label="' + esc(m.nama) + ' kelas ' + k + '"></td>'
@@ -1349,9 +1354,26 @@ $('#mapel-isi').addEventListener('input', e => {
   const t = e.target;
   if (t.dataset.mulok !== undefined) MAPEL[Number(t.dataset.mulok)].namaBaru = t.value;
 });
+$('#mapel-isi').addEventListener('click', async e => {
+  const t = e.target.closest('[data-hapus-mulok]');
+  if (!t) return;
+  const m = MAPEL[Number(t.dataset.hapusMulok)];
+  const nama = namaMulok(m) || m.nama;
+  if (m.belumTersimpan) { MAPEL.splice(Number(t.dataset.hapusMulok), 1); renderMapel(); return; }
+  if (!confirm('Hapus ' + nama + ' dari daftar mata pelajaran?\n\nBisa dihapus hanya bila belum punya TP dan nilai.')) return;
+  await sibuk(t, async () => {
+    const res = await api({ aksi:'hapusMulok', kode: m.kode });
+    if (res.sesiHabis) return;
+    pesan('#m2-msg', res.pesan, res.ok);
+    if (res.ok) {
+      const ketikan = MAPEL.filter(x => x.belumTersimpan);   // mulok baru yang belum disimpan tetap dipertahankan
+      MAPEL = res.mapel.concat(ketikan); renderMapel();
+    }
+  });
+});
 $('#mp-mulok').addEventListener('click', () => {
   const nomor = MAPEL.filter(m => m.jenis === 'mulok').map(m => Number(m.kode.replace('MULOK', ''))).reduce((a, b) => Math.max(a, b), 0) + 1;
-  MAPEL.push({ kode: 'MULOK' + nomor, nama: 'Muatan Lokal ' + nomor, jenis: 'mulok', pilihan: true, kelas: { 1:false, 2:false, 3:false, 4:false, 5:false, 6:false } });
+  MAPEL.push({ kode: 'MULOK' + nomor, nama: 'Muatan Lokal ' + nomor, jenis: 'mulok', pilihan: true, belumTersimpan: true, kelas: { 1:false, 2:false, 3:false, 4:false, 5:false, 6:false } });
   renderMapel();
   document.querySelector('[data-mulok="' + (MAPEL.length - 1) + '"]').focus();
 });
@@ -3201,7 +3223,7 @@ $('#tp-unduh').addEventListener('click', e => sibuk(e.target, async () => {
   TP_SALIN = res;
   $('#tp-salin-judul').textContent = 'Salin TP kelas ' + res.kelas + ' ke template e-Rapor';
   $('#tp-salin-daftar').innerHTML = res.berkas.map((b, i) => '<div class="baris-salin"><span><b>' + esc(b.nama) + '</b> · ' + b.baris.length + ' TP' +
-    (b.baris.length > 100 ? ' <em>(lebih dari 100 baris template)</em>' : '') + '</span><button class="btn small" type="button" data-salin="' + i + '">📋 Salin</button></div>').join('');
+    (b.baris.length > 100 ? ' <em>(lebih dari 100 baris template)</em>' : '') + '</span><button class="btn small btn-3d" type="button" data-salin="' + i + '">📋 Salin</button></div>').join('');
   $('#tp-salin').classList.remove('hidden');
   $('#tp-salin').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }));
