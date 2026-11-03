@@ -1,0 +1,104 @@
+# Memasang tka/server/Code.gs dan Kunci.gs (didekripsi dari Kunci.gs.enc) ke Google Apps Script
+# server Simulasi TKA, lalu memperbarui deployment aplikasi web yang sama (URL tidak berubah).
+#
+# Secrets yang dibutuhkan (Settings → Secrets and variables → Actions):
+#   CLASPRC_JSON       isi berkas ~/.clasprc.json hasil `clasp login` akun Google pemilik Apps Script
+#   KUNCI_PRIVATE_KEY  kunci privat untuk membuka Kunci.gs.enc
+# Variable yang dibutuhkan (tab Variables):
+#   TKA_SCRIPT_ID      ID skrip (Apps Script → Setelan proyek → ID Skrip)
+name: Pasang server Simulasi TKA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tka/server/Code.gs'
+      - 'tka/server/Kunci.gs.enc'
+      - 'tka/server/Kunci.gs.key.enc'
+      - 'tka/konfigurasi.js'
+      - '.github/workflows/apps-script.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: apps-script
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  pasang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Periksa pengaturan
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          KUNCI_PRIVATE_KEY: ${{ secrets.KUNCI_PRIVATE_KEY }}
+          SCRIPT_ID: ${{ vars.TKA_SCRIPT_ID }}
+        run: |
+          kurang=""
+          [ -n "$CLASPRC_JSON" ] || kurang="$kurang secret:CLASPRC_JSON"
+          [ -n "$KUNCI_PRIVATE_KEY" ] || kurang="$kurang secret:KUNCI_PRIVATE_KEY"
+          [ -n "$SCRIPT_ID" ] || kurang="$kurang variable:TKA_SCRIPT_ID"
+          if [ -n "$kurang" ]; then echo "::error::Pengaturan belum lengkap:$kurang"; exit 1; fi
+
+      - name: Siapkan clasp
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          npm install -g @google/clasp@2.4.2
+          umask 077
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+
+      - name: Ambil proyek Apps Script
+        env:
+          SCRIPT_ID: ${{ vars.TKA_SCRIPT_ID }}
+        run: |
+          mkdir proyek && cd proyek
+          clasp clone "$SCRIPT_ID"
+          ls -la
+
+      - name: Buka Kunci.gs dan salin kode terbaru
+        env:
+          KUNCI_PRIVATE_KEY: ${{ secrets.KUNCI_PRIVATE_KEY }}
+        run: |
+          umask 077
+          printf '%s\n' "$KUNCI_PRIVATE_KEY" > "$RUNNER_TEMP/privat.pem"
+          openssl pkeyutl -decrypt -inkey "$RUNNER_TEMP/privat.pem" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 \
+            -in tka/server/Kunci.gs.key.enc -out "$RUNNER_TEMP/sandi"
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in tka/server/Kunci.gs.enc -out proyek/Kunci.js -pass file:"$RUNNER_TEMP/sandi"
+          rm -f "$RUNNER_TEMP/privat.pem" "$RUNNER_TEMP/sandi"
+          cp tka/server/Code.gs proyek/Code.js
+          grep -q "var KUNCI_TKA" proyek/Kunci.js || { echo "::error::Kunci.js tidak valid"; exit 1; }
+
+      - name: Unggah kode ke Apps Script
+        working-directory: proyek
+        run: clasp push --force
+
+      - name: Perbarui deployment aplikasi web (URL tetap)
+        working-directory: proyek
+        run: |
+          DEPLOY_ID=$(grep -o "macros/s/[^/]*" ../tka/konfigurasi.js | cut -d/ -f3)
+          [ -n "$DEPLOY_ID" ] || { echo "::error::URL server tidak ditemukan di tka/konfigurasi.js"; exit 1; }
+          clasp deploy --deploymentId "$DEPLOY_ID" --description "Otomatis dari GitHub ${GITHUB_SHA::7}"
+
+      - name: Uji server
+        run: |
+          URL=$(grep -o "https://script.google.com/macros/s/[^']*" tka/konfigurasi.js)
+          for i in 1 2 3; do
+            HASIL=$(curl -sSL "$URL?aksi=statistik" || true)
+            echo "Statistik: $HASIL"
+            echo "$HASIL" | grep -q '"ok":true' && exit 0
+            sleep 10
+          done
+          echo "::error::Server tidak menjawab dengan benar setelah dipasang"; exit 1
+
+      - name: Bersihkan kredensial
+        if: always()
+        run: rm -f ~/.clasprc.json proyek/Kunci.js
