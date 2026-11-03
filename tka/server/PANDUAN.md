@@ -31,7 +31,7 @@ Bila Code.gs atau Kunci.gs diubah: **Terapkan → Kelola deployment → ✏️ �
 
 Lembar **Akses**:
 - Kolom **Aktif**: ubah ke `TIDAK` untuk menonaktifkan kode.
-- Kolom **Perangkat**: kosongkan bila siswa ganti HP (satu kode maksimal 3 perangkat, diatur di
+- Kolom **Perangkat**: kosongkan bila siswa ganti HP (satu kode maksimal 50 perangkat, diatur di
   `PENGATURAN.MAKS_PERANGKAT`).
 
 Lembar **Nilai** mencatat setiap pengerjaan: nama, sekolah, kelas, paket, nilai, dan kode yang dipakai.
