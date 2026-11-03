@@ -1212,12 +1212,35 @@ async function kirimUlangAktivasi(email, tombol, msgSel){
 }
 $('#d-ok-ulang').addEventListener('click', e => kirimUlangAktivasi(EMAIL_DAFTAR, e.target, '#d-ok-msg'));
 
+/* Email pendaftaran salah ketik atau tidak bisa dibuka: ganti sendiri (akun belum aktif) dengan kata sandi aplikasi. */
+let SANDI_DAFTAR = '';
+function formGantiEmail(wadah, emailLama, sandi, msgSel, setelah){
+  wadah.insertAdjacentHTML('beforeend', '<div class="ganti-email" style="margin-top:10px;padding:12px;border:1px dashed #d9cfb8;border-radius:12px">' +
+    '<b>Email tidak bisa dibuka atau salah ketik?</b><div class="hint" style="margin:4px 0 8px">Ganti dengan email yang aktif (sebaiknya Gmail). Tautan aktivasi baru dikirim ke email itu.</div>' +
+    (sandi() ? '' : '<input type="password" class="ge-sandi" placeholder="Kata sandi aplikasi yang dibuat saat mendaftar" autocomplete="current-password" style="width:100%;margin-bottom:6px">') +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap"><input type="email" class="ge-email" placeholder="Email baru, mis. sdnsukamaju@gmail.com" autocapitalize="none" style="flex:1;min-width:200px">' +
+    '<button class="btn small" type="button">Ganti email</button></div></div>');
+  const kotak = wadah.lastElementChild;
+  kotak.querySelector('button').addEventListener('click', e => sibuk(e.target, async () => {
+    const res = await api({ aksi:'gantiEmailDaftar', email: emailLama(), sandi: sandi() || (kotak.querySelector('.ge-sandi') || {}).value || '',
+      emailBaru: kotak.querySelector('.ge-email').value });
+    pesan(msgSel, res.pesan, res.ok);
+    if (res.ok && setelah) setelah(res.email);
+  }));
+}
+function pasangGantiEmailDaftar(){
+  const lama = $('#d-ok .ganti-email'); if (lama) lama.remove();
+  formGantiEmail($('#d-ok'), () => EMAIL_DAFTAR, () => SANDI_DAFTAR, '#d-ok-msg', email => {
+    EMAIL_DAFTAR = email; $('#d-ok-email').textContent = email; $('#m-email').value = email;
+  });
+}
+
 /* Petunjuk saat gagal masuk: disesuaikan dengan penyebabnya. */
 function bantuMasuk(res){
   const b = $('#m-bantu');
   let isi = '';
   if (res.belumAktif) {
-    isi = '<button class="btn ghost small" type="button" id="m-ulang">Kirim ulang email aktivasi</button>';
+    isi = '<button class="btn ghost small" type="button" id="m-ulang">Kirim ulang email aktivasi</button><div id="m-ganti"></div>';
   } else if (res.salahSandi || res.terkunci) {
     isi = '<b>Periksa hal berikut:</b><ul>' +
       '<li>Yang dipakai adalah <b>kata sandi aplikasi</b> yang dibuat saat mendaftar, <b>bukan kata sandi email</b>.</li>' +
@@ -1231,6 +1254,7 @@ function bantuMasuk(res){
   b.classList.toggle('hidden', !isi);
   const u = $('#m-ulang');
   if (u) u.addEventListener('click', () => kirimUlangAktivasi(res.email || $('#m-email').value, u, '#m-msg'));
+  if ($('#m-ganti')) formGantiEmail($('#m-ganti'), () => res.email || $('#m-email').value, () => $('#m-sandi').value, '#m-msg', email => { $('#m-email').value = email; });
 }
 
 $('#f-masuk').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
@@ -1252,6 +1276,8 @@ $('#f-daftar').addEventListener('submit', e => { e.preventDefault(); kirim(e.tar
   $('#d-msg').className = 'msg';
   $('#d-ok-email').textContent = res.email || $('#d-email').value.trim();
   EMAIL_DAFTAR = $('#d-ok-email').textContent;
+  SANDI_DAFTAR = $('#d-sandi').value;   // hanya di memori halaman, untuk Ganti email bila email ternyata tidak bisa dibuka
+  pasangGantiEmailDaftar();
   $('#m-email').value = EMAIL_DAFTAR;
   $('#d-prov').value = ''; isiKabupaten(); e.target.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
   e.target.classList.add('hidden'); $('#v-daftar .satu-akun').classList.add('hidden');
