@@ -1,7 +1,7 @@
 # Pedoman Penulisan Soal Simulasi TKA SD — Matematika
 
-Disusun dari analisis 29 contoh soal resmi TKA SD Matematika (portal hasil TKA, "Contoh Soal" per indikator,
-indikator 1–30 kecuali 11) dan daya serap nasional per indikator (laporan hasil TKA 2026).
+Disusun dari analisis 30 contoh soal resmi TKA SD Matematika (portal hasil TKA, "Contoh Soal" per indikator,
+indikator 1–30) dan daya serap nasional per indikator (laporan hasil TKA 2026).
 Soal resmi **tidak disalin**; dokumen ini hanya mencatat polanya sebagai acuan menulis soal orisinal.
 
 ---
@@ -32,6 +32,7 @@ Soal resmi **tidak disalin**; dokumen ini hanya mencatat polanya sebagai acuan m
 | 8 | Persamaan + / − | PG | Konteks IPA (magnet: feromagnetik/paramagnetik/diamagnetik), 2 langkah | 44% |
 | 9 | Persamaan + / − | MCMA 3 opsi | Data watt per kincir **di dalam gambar**, 2 hari, sisa daya → mana yang terpakai >150 | 44% |
 | 10 | Persamaan berbagai operasi | PG | Infografik gizi salmon (banyak angka pengecoh); protein per porsi → jumlah porsi | 46% |
+| 11 | Evaluasi informasi dengan persamaan (4 operasi) | Kategori | Resep keju: bahan per resep **di dalam gambar** (2 gelas susu, 4 sendok cuka, garam 4 g) + keterangan satuan (1 gelas = 200 ml, 1 sendok = 5 ml); dibuat 5× resep, dibandingkan dengan persediaan → evaluasi "cukup/kurang/lebih" | 46% |
 | 12 | KPK/FPB | MCMA 3 opsi | Laundry koin tiap 8 & 6 hari + **kalender** dua bulan; kapan bertemu lagi (lebih dari satu tanggal) | 49% |
 | 13 | Ciri bangun datar | Kategori | Huruf "E" dari kayu (foto tekstur): banyak sisi, titik sudut, sudut siku-siku | 42% |
 | 14 | Penyusun segi banyak | Kategori | Segi banyak di petak; beberapa **cara penguraian** berbeda (bisa lebih dari satu benar) | 42% |
@@ -62,12 +63,14 @@ Soal resmi **tidak disalin**; dokumen ini hanya mencatat polanya sebagai acuan m
 6. **Gambar mirip** — opsi gambar/grafik berbeda tipis (tinggi batang 2.100 vs 2.250; tinggi air botol).
 7. **Miskonsepsi konsep** — "sudut siku-siku = semua titik sudut", "bagian = potongan tidak sama besar".
 8. **Pada MCMA "mungkin"** — opsi salah melanggar syarat (bukan faktor; sudut lebih kecil dari pembanding).
+9. **Arah selisih terbalik** — angka selisih benar tetapi arahnya salah ("kekurangan 40 ml" padahal kelebihan 40 ml).
 
 ## 4. Fungsi narasi dan gambar
 
 - **Narasi**: membangun konteks bermakna (sosial, sains, kesehatan, ekonomi, budaya) dan menguji literasi membaca;
   sering memuat istilah baru yang dijelaskan dalam teks (feromagnetik, *screen time*, *home industry*).
-- **Gambar pembawa data (wajib dibaca)**: label angka pada benda, kalender, jam, neraca, grafik, petak.
+- **Gambar pembawa data (wajib dibaca)**: label angka pada benda, kalender, jam, neraca, grafik, petak,
+  termasuk kotak "Keterangan" konversi satuan (1 gelas = 200 ml) yang harus dipakai untuk menghitung.
   Data **tidak diulang** di teks — siswa harus membaca gambar.
 - **Gambar konteks**: foto/ilustrasi datar (karakter, tempat, benda) untuk keterlibatan; boleh dekoratif
   tetapi selalu relevan dengan cerita.
@@ -76,7 +79,7 @@ Soal resmi **tidak disalin**; dokumen ini hanya mencatat polanya sebagai acuan m
 ## 5. Catatan mutu (hindari kelemahan yang ada pada soal asli)
 
 - Kalimat pernyataan harus tidak ambigu ("paling sedikit 550" padahal hasilnya 600 → bisa dianggap benar).
-- Konsisten bahasa (bukan "21 October"), ejaan baku ("Kementerian"), pecahan campuran wajar (bukan 3 7/6).
+- Konsisten bahasa (bukan "21 October"), ejaan baku ("Kementerian", "susu segar" bukan "susu sugar"), pecahan campuran wajar (bukan 3 7/6).
 
 ## 6. Daftar periksa sebelum soal dirilis
 
