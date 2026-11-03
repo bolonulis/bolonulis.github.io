@@ -393,6 +393,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <h2>Aktivasi akun sekolah</h2>
     <p id="v-ket">Sedang mengaktifkan akun dan menyiapkan spreadsheet sekolah. Mohon tunggu, biasanya kurang dari satu menit…</p>
     <div class="msg" id="v-msg"></div>
+    <button class="btn hidden" type="button" id="v-ulang" style="margin-top:10px">📧 Kirim tautan baru ke email sekolah</button>
     <div class="links"><a href="#masuk" id="v-lanjut" class="hidden">Lanjut ke Masuk →</a></div>
   </section>
 
@@ -3332,6 +3333,14 @@ async function mulai(){
     const res = await api({ aksi:'verifikasi', token: q.get('verifikasi') });
     $('#v-ket').classList.add('hidden');
     pesan('#v-msg', res.pesan, res.ok);
+    if (res.kedaluwarsa) {
+      const tombol = $('#v-ulang'); tombol.classList.remove('hidden');
+      tombol.onclick = () => sibuk(tombol, async () => {
+        const h = await api({ aksi:'aktivasiUlangToken', token: q.get('verifikasi') });
+        pesan('#v-msg', h.pesan, h.ok);
+        if (h.ok) tombol.classList.add('hidden');
+      });
+    }
     $('#v-lanjut').classList.remove('hidden');
     return;
   }
