@@ -20,7 +20,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Mengurutkan beberapa bilangan yang dinyatakan dalam bentuk berbeda.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-03",
@@ -31,7 +31,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Membandingkan dan mengurutkan berbagai jenis bilangan yang meliputi pecahan, bilangan cacah, desimal, serta persentase.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-04",
@@ -42,7 +42,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Menggunakan operasi bilangan cacah (maks. empat angka) dan menyatakannya dalam berbagai bentuk.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-05",
@@ -53,7 +53,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Memodelkan masalah kontekstual ke dalam bentuk kalimat matematika yang melibatkan bilangan cacah.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-06",
@@ -64,7 +64,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Menentukan hasil operasi hitung campuran yang melibatkan pecahan dan bilangan asli.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-07",
@@ -75,7 +75,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Mengevaluasi kebenaran hasil operasi aritmetika bilangan cacah pada diagram alir.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-08",
@@ -87,7 +87,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Menyelesaikan persamaan sederhana menggunakan operasi penjumlahan atau pengurangan dalam bentuk sederhana.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-10",
@@ -98,7 +98,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Menyelesaikan persamaan sederhana menggunakan berbagai bentuk operasi bilangan (dalam bentuk sederhana).",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-11",
@@ -109,7 +109,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Mengevaluasi informasi dengan menggunakan persamaan sederhana dengan operasi penjumlahan, pengurangan, perkalian, dan pembagian.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-12",
@@ -120,7 +120,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Bilangan",
   "indikator": "Menentukan KPK dan FPB dari informasi.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-13",
@@ -131,7 +131,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Membedakan ciri-ciri berbagai jenis bangun datar.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-14",
@@ -142,7 +142,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Mengidentifikasi berbagai bangun datar penyusun suatu bangun segi banyak.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-15",
@@ -153,7 +153,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menyelesaikan masalah terkait konstruksi bangun ruang dan visualisasi spasial.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-16",
@@ -164,7 +164,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Mengidentifikasi kelogisan penggunaan satuan baku panjang dalam masalah pengukuran.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-17",
@@ -175,7 +175,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menentukan representasi visual dari volume benda menggunakan satuan baku.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-18",
@@ -186,7 +186,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menentukan representasi kesetimbangan neraca berdasarkan perbandingan berat benda.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-19",
@@ -197,7 +197,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menentukan durasi suatu aktivitas berdasarkan keterangan waktu pada jam analog.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-20",
@@ -208,7 +208,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menghitung keliling bangun datar segi banyak tidak beraturan yang diketahui panjang semua sisinya.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-21",
@@ -219,7 +219,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menentukan luas bangun datar segi banyak yang terbentuk dari gabungan beberapa segitiga.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-22",
@@ -230,7 +230,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menggunakan konsep keliling atau luas persegi/persegi panjang dalam menyelesaikan permasalahan.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-23",
@@ -241,7 +241,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Mengidentifikasi bentuk gambar benda berdasarkan ciri-ciri dari segiempat, segitiga, segibanyak, dan lingkaran.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-24",
@@ -252,7 +252,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menganalisis/mengevaluasi pernyataan berdasarkan konsep pengukuran panjang dan berat benda menggunakan satuan baku.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-25",
@@ -263,7 +263,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Geometri dan Pengukuran",
   "indikator": "Menentukan besar sudut yang terbentuk dari ilustrasi masalah kontekstual berdasarkan jenis sudutnya.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-26",
@@ -274,7 +274,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Data dan Ketidakpastian",
   "indikator": "Mengidentifikasi kesalahan penyajian data dalam bentuk diagram batang.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-27",
@@ -285,7 +285,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Data dan Ketidakpastian",
   "indikator": "Menginterpretasi informasi diagram atau tabel untuk menyelesaikan permasalahan yang disajikan.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-28",
@@ -296,7 +296,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Data dan Ketidakpastian",
   "indikator": "Menginterpretasi data berdasarkan kategori tertentu.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-29",
@@ -307,7 +307,7 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Data dan Ketidakpastian",
   "indikator": "Menyelesaikan permasalahan berkaitan dengan penyajian data dalam bentuk diagram batang atau tabel.",
-  "gratis": false
+  "gratis": true
  },
  {
   "id": "lt-mat-30",
@@ -318,6 +318,6 @@ const LATIHAN_TKA = [
   ],
   "elemen": "Data dan Ketidakpastian",
   "indikator": "Menginterpretasi data diagram batang atau tabel untuk menyelesaikan permasalahan.",
-  "gratis": false
+  "gratis": true
  }
 ];

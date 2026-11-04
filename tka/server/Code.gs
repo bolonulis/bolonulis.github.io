@@ -119,6 +119,8 @@ function nilai_(req) {
   if (!req.lihatUlang) catatNilai_(req, h, akses && akses.ok ? akses.kode : '');
 
   var hasil = { ok: true, nilai: h.nilai, terjawab: h.terjawab, jumlah: h.jumlah, premium: false };
+  var saran = saranLatihan_(req.paket, h.skor);
+  if (saran.length) hasil.saran = saran;
   if (akses && akses.ok) {
     hasil.premium = true;
     hasil.nama = akses.nama;
@@ -127,6 +129,19 @@ function nilai_(req) {
   } else if (akses) {
     hasil.pesanKode = akses.pesan;
   }
+  return hasil;
+}
+
+/** Remedial otomatis: latihan per indikator untuk soal yang belum benar penuh (skor terendah dahulu, maksimal 5).
+ *  Hanya nama latihan yang dikirim, bukan kunci jawaban. */
+function saranLatihan_(paket, skor) {
+  var m = /^sd-(mat|bi)-/.exec(String(paket));
+  var peta = m && typeof LATIHAN_PETA !== 'undefined' ? LATIHAN_PETA[m[1]] : null;
+  if (!peta) return [];
+  var hasil = [];
+  Object.keys(skor).filter(function (no) { return skor[no] < 1 && peta[no]; })
+    .sort(function (a, b) { return skor[a] - skor[b] || a - b; })
+    .forEach(function (no) { if (hasil.indexOf(peta[no]) < 0 && hasil.length < 5) hasil.push(peta[no]); });
   return hasil;
 }
 

@@ -32,6 +32,11 @@ button{font:inherit;cursor:pointer}
 .form input,.form textarea,.edit-siswa textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%}
 .form textarea,.edit-siswa textarea{resize:vertical;line-height:1.5}
 .belum{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.belum span{background:#fde2e1;color:#7a1712;border-radius:99px;padding:3px 10px;font-size:13px;font-weight:600}
+.rm{display:inline-block;background:#fff3e0;color:#8a4b00;border-radius:99px;padding:2px 9px;font-size:12px;font-weight:700;margin:2px 4px 2px 0;white-space:nowrap}
+.rm.ok{background:#e3f4e7;color:#1b7f3e}.rm.coba{background:#fdecc8}
+a.nm-siswa{color:inherit;font-weight:700;text-decoration:none;border-bottom:1px dashed var(--aksen)}
+.kembang-tabel td,.kembang-tabel th{font-size:13px}
+.btn-mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:2px 8px;font-size:12px;cursor:pointer;white-space:nowrap}
 .luar{background:#fff3cd;color:#7a5200;border-radius:6px;padding:1px 6px;font-size:11.5px;font-weight:700;margin-left:6px}
 .form .penuh{grid-column:1/-1}
 .salah{color:var(--merah);font-weight:600;font-size:14px;min-height:1.2em;margin:6px 0 0}
@@ -116,7 +121,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 <div id="v-masuk">
   <div class="kartu">
     <h2>Kelas Intensif TKA: pantau latihan seluruh kelas dalam satu layar</h2>
-    <p class="sub">Tanpa akun dan tanpa kata sandi: cukup buat kelas, bagikan tautannya, lalu lihat hasilnya. Semua paket Simulasi TKA dan latihan per indikator otomatis tersedia di kelas Anda.</p>
+    <p class="sub">Tanpa akun dan tanpa kata sandi: cukup buat kelas, bagikan tautannya, lalu lihat hasilnya. Semua paket Simulasi TKA dan latihan per indikator otomatis tersedia di kelas Anda, gratis, lengkap dengan remedial otomatis dan grafik perkembangan setiap siswa.</p>
     <div class="langkah">
       <div><b>1</b>Buat kelas di bawah ini. Anda mendapat <b style="display:inline;background:none;color:inherit;width:auto;height:auto">kode kelas</b> dan PIN.</div>
       <div><b>2</b>Bagikan tautan kelas ke grup WhatsApp siswa/orang tua.</div>
@@ -135,6 +140,9 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
           <li>5 indikator terlemah kelas</li>
           <li>Capaian per elemen dan per soal</li>
           <li>Unduh Excel (CSV) dan cetak</li>
+          <li><b>Latihan per indikator Matematika</b> (29 set) untuk seluruh siswa, dikirim langsung dari dasbor</li>
+          <li><b>Remedial otomatis per siswa</b>: setiap siswa mendapat latihan sesuai soal yang belum dikuasainya</li>
+          <li><b>Grafik perkembangan nilai setiap siswa</b></li>
         </ul>
       </div>
       <div class="pr">
@@ -142,12 +150,9 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
         <ul>
           <li>Semua fitur Kelas Gratis</li>
           <li><b>Kunci &amp; pembahasan setiap soal di dasbor guru</b>, siap ditampilkan atau dicetak untuk membahas di kelas</li>
-          <li><b>Latihan per indikator Matematika</b> (29 set) untuk seluruh siswa, dan tombol <b>kirim latihan</b> langsung dari indikator terlemah</li>
           <li>Siswa hanya melihat nilai, <b>kunci tetap di tangan guru</b>, sehingga siswa tidak sekadar menghafal jawaban</li>
           <li>Bantuan prioritas lewat WhatsApp</li>
-          <li class="nanti">Latihan per indikator Bahasa Indonesia</li>
-          <li class="nanti">Remedial otomatis sesuai kelemahan tiap siswa</li>
-          <li class="nanti">Peta kemampuan siswa dan grafik perkembangan</li>
+          <li class="nanti">Peta kemampuan siswa per indikator</li>
           <li class="nanti">Rapor untuk orang tua dan laporan kepala sekolah</li>
         </ul>
         <p class="catatan" style="margin:10px 0 0">🎁 <b>Coba gratis 14 hari</b>, cukup satu klik dari dasbor kelas. Fitur yang segera hadir otomatis masuk Kelas Premium.</p>
@@ -243,6 +248,8 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <li><b>🎯 Indikator yang perlu diperkuat</b>: 5 soal dengan capaian kelas terendah. Jadikan bahan pembelajaran ulang.</li>
       <li><b>📊 Capaian per elemen</b>: rata-rata kelas per elemen, seperti laporan hasil TKA.</li>
       <li><b>👩‍🎓 Nilai siswa</b>: nilai pengerjaan terakhir setiap siswa. Ketuk judul kolom untuk mengurutkan. Tanda <i>di luar daftar</i> berarti nama diketik sendiri oleh siswa.</li>
+      <li><b>Remedial otomatis</b>: kolom ini memilih hingga 3 latihan untuk setiap siswa dari soal yang belum dijawab benar. Ketuk <b>📲</b> untuk mengirim latihan remedial ke siswa itu, atau <b>📲 Kirim remedial ke grup kelas</b> untuk semua siswa sekaligus. Siswa juga langsung melihat saran latihannya di halaman hasil.</li>
+      <li><b>Grafik perkembangan</b>: ketuk nama siswa untuk melihat grafik nilai tryout dan latihannya dari waktu ke waktu.</li>
       <li>Di bawah setiap indikator terlemah ada tombol <b>📝 Kirim latihan</b>: tautan latihan 5 soal untuk indikator itu langsung terkirim ke WhatsApp. Hasil latihan siswa muncul sebagai tombol baru (📝) di pilihan paket.</li>
       <li>Ketuk <b>↻ Perbarui</b> untuk melihat nilai terbaru, <b>⬇️ Unduh Excel (CSV)</b> untuk diolah, atau <b>🖨️ Cetak</b> untuk arsip.</li>
     </ul>
@@ -255,7 +262,6 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <h3>E. Kelas Premium</h3>
     <ul>
       <li>Ketuk <b>🎁 Coba Premium gratis 14 hari</b> di dasbor. Langsung aktif, tanpa pembayaran, dan berhenti otomatis setelah 14 hari. Coba gratis hanya sekali untuk setiap kelas.</li>
-      <li>Selama Premium, siswa yang mengerjakan lewat tautan kelas (dan namanya ada di daftar siswa) dapat mengerjakan <b>semua latihan per indikator</b>.</li>
       <li>Siswa hanya melihat nilai. <b>Kunci dan pembahasan hanya untuk guru</b>, agar siswa belajar memahami, bukan menghafal jawaban.</li>
       <li><b>Sudah membeli kode akses Pembahasan?</b> Masukkan kode itu di kartu Kelas Premium pada dasbor. Kelas Anda langsung Premium sampai 31 Juli akhir tahun ajaran (1 kode untuk 1 kelas).</li>
       <li>Di dasbor muncul kolom <b>Kunci</b> dan tombol <b>📖 Kunci &amp; pembahasan</b> untuk dicetak.</li>
@@ -272,9 +278,9 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=10"></script>
+<script src="tka.js?v=11"></script>
 <script src="bank/daftar.js?v=4"></script>
-<script src="bank/latihan.js?v=1"></script>
+<script src="bank/latihan.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;
@@ -353,9 +359,9 @@ function gambarPremium() {
   const sisa = p.aktif ? Math.max(1, Math.ceil((p.sampai - Date.now()) / 864e5)) : 0;
   el.classList.toggle('aktif', p.aktif);
   el.innerHTML = p.aktif
-    ? '<div><h2>⭐ Kelas Premium aktif' + (p.masaCoba ? ' (coba gratis)' : '') + '</h2><p>Berlaku sampai <b>' + tglID(p.sampai) + '</b>' + (sisa <= 31 ? ' (sisa ' + sisa + ' hari)' : '') + '. Semua latihan terbuka untuk siswa di daftar kelas; kunci &amp; pembahasan tersedia di dasbor Anda.</p></div>' +
+    ? '<div><h2>⭐ Kelas Premium aktif' + (p.masaCoba ? ' (coba gratis)' : '') + '</h2><p>Berlaku sampai <b>' + tglID(p.sampai) + '</b>' + (sisa <= 31 ? ' (sisa ' + sisa + ' hari)' : '') + '. Kunci &amp; pembahasan setiap soal tersedia di dasbor Anda.</p></div>' +
       (p.masaCoba ? '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Lanjutkan Premium: Rp50.000/tahun ajaran</a>' : sisa <= 31 ? '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Perpanjang Premium</a>' : '')
-    : '<div><h2>Kelas Gratis</h2><p>Buka kunci &amp; pembahasan di dasbor Anda dan semua latihan per indikator untuk siswa dengan <b>Kelas Premium</b> (Rp50.000 per tahun ajaran).</p></div>' +
+    : '<div><h2>Kelas Gratis</h2><p>Buka <b>kunci &amp; pembahasan setiap soal</b> di dasbor Anda dengan <b>Kelas Premium</b> (Rp50.000 per tahun ajaran).</p></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (p.cobaDipakai ? '' : '<button class="btn hijau" id="p-coba" type="button">🎁 Coba Premium gratis ' + (p.hariCoba || 14) + ' hari</button>') +
       '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Aktifkan Premium</a></div>' + (p.cobaDipakai ? '<p style="flex-basis:100%;font-size:12.5px">Masa coba gratis kelas ini sudah selesai.</p>' : '');
   if (!p.aktif || p.masaCoba) el.innerHTML += '<div style="flex-basis:100%;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px dashed var(--line);padding-top:10px">' +
@@ -473,6 +479,11 @@ async function gambar() {
     return (x < y ? -1 : x > y ? 1 : 0) * (URUT.turun ? -1 : 1);
   });
   const tgl = w => new Date(w).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+  siswa.forEach(s => { s.remedial = remedialSiswa(bank, s); });
+  const adaRemedial = siswa.some(s => s.remedial.length);
+  const htmlRemedial = s => !s.remedial.length ? '<span class="rm ok">🎉 Semua benar</span>' :
+    s.remedial.map(r => '<span class="rm' + (r.terbaik >= 80 ? ' ok' : r.terbaik != null ? ' coba' : '') + '" title="' + esc(r.L.indikator) + '">' + (r.terbaik >= 80 ? '✔ ' : r.terbaik != null ? angka(r.terbaik) + ' · ' : '') + esc(r.L.judul) + '</span>').join('') +
+    ' <button class="btn-mini cetak-sembunyi" type="button" data-rm="' + esc(s.nama) + '" title="Kirim latihan remedial ke siswa ini lewat WhatsApp">📲</button>';
 
   $('d-isi').innerHTML =
     '<div class="angka"><div><small>Siswa mengerjakan</small><b>' + siswa.length + '</b></div><div><small>Rata-rata nilai</small><b>' + angka(Math.round(rata * 10) / 10) + '</b></div>' +
@@ -480,13 +491,16 @@ async function gambar() {
     '<div class="dua"><div class="kartu"><h2>🎯 Indikator yang perlu diperkuat</h2><p class="sub">5 soal dengan capaian kelas terendah. Fokuskan pembelajaran pada indikator ini.</p><div class="lemah">' +
       lemah.map(b => { const L = latihanUntuk(bank, b.q.no);
         return '<div><span class="no">No. ' + b.q.no + '</span><span>' + esc(b.q.indikator) + '<small>' + esc(b.q.elemen) + '</small>' +
-          (L ? '<a href="#" class="tugas cetak-sembunyi" data-lt="' + L.id + '">📝 Kirim latihan "' + esc(L.judul) + '" ke siswa' + (L.gratis || premiumAktif() ? '' : ' ⭐') + '</a>' : '') + '</span><span>' + batang(b.p) + '</span></div>'; }).join('') + '</div></div>' +
+          (L ? '<a href="#" class="tugas cetak-sembunyi" data-lt="' + L.id + '">📝 Kirim latihan "' + esc(L.judul) + '" ke siswa' + '</a>' : '') + '</span><span>' + batang(b.p) + '</span></div>'; }).join('') + '</div></div>' +
     '<div class="kartu"><h2>📊 Capaian per elemen</h2><p class="sub">Rata-rata kelas, seperti laporan hasil TKA.</p><table><tbody>' +
       [...elemen].map(([nm, e]) => '<tr><td>' + esc(nm) + '</td><td style="white-space:nowrap">' + batang(e.t / e.n) + '</td></tr>').join('') + '</tbody></table></div></div>' +
-    '<div class="kartu"><h2>👩‍🎓 Nilai siswa</h2><p class="sub">Nilai dari pengerjaan terakhir. Ketuk judul kolom untuk mengurutkan.</p><div style="overflow-x:auto"><table id="t-siswa"><thead><tr>' +
-      '<th data-urut="nama">Nama</th><th data-urut="nilai">Nilai terakhir</th><th data-urut="tertinggi">Tertinggi</th><th data-urut="coba">Percobaan</th><th data-urut="waktu" class="sembunyi-hp">Terakhir</th></tr></thead><tbody>' +
-      urutkan.map(s => '<tr><td>' + esc(s.nama) + (daftar.length && !terdaftar.has(kunciNama(s.nama)) ? '<span class="luar" title="Nama ini tidak ada di daftar siswa">di luar daftar</span>' : '') + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td></tr>').join('') +
-      '</tbody></table></div></div>' + kartuBelum +
+    '<div class="kartu"><div class="kepala-kelas"><div><h2 style="margin:0">👩‍🎓 Nilai siswa</h2><p class="sub" style="margin:2px 0 0">Nilai dari pengerjaan terakhir. Ketuk <b>nama</b> untuk melihat grafik perkembangan. Ketuk judul kolom untuk mengurutkan.</p></div>' +
+      (adaRemedial ? '<button class="btn ghost kecil cetak-sembunyi" id="rm-grup" type="button">📲 Kirim remedial ke grup kelas</button>' : '') + '</div><div style="overflow-x:auto"><table id="t-siswa"><thead><tr>' +
+      '<th data-urut="nama">Nama</th><th data-urut="nilai">Nilai terakhir</th><th data-urut="tertinggi">Tertinggi</th><th data-urut="coba">Percobaan</th><th data-urut="waktu" class="sembunyi-hp">Terakhir</th>' + (bank.latihan ? '' : '<th>Remedial otomatis</th>') + '</tr></thead><tbody>' +
+      urutkan.map(s => '<tr><td><a href="#" class="nm-siswa" data-siswa="' + esc(s.nama) + '">' + esc(s.nama) + '</a>' + (daftar.length && !terdaftar.has(kunciNama(s.nama)) ? '<span class="luar" title="Nama ini tidak ada di daftar siswa">di luar daftar</span>' : '') + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td>' +
+        (bank.latihan ? '' : '<td>' + htmlRemedial(s) + '</td>') + '</tr>').join('') +
+      '</tbody></table></div><p class="catatan" style="margin:8px 0 0">Remedial otomatis memilih hingga 3 latihan per indikator dari soal yang belum dijawab benar oleh setiap siswa. ✔ = latihan sudah dikerjakan dengan nilai minimal 80.</p></div>' +
+      '<div class="kartu" id="k-kembang" hidden></div>' + kartuBelum +
     '<div class="kartu"><h2>🧩 Capaian setiap soal</h2><p class="sub">Persentase skor rata-rata kelas per nomor soal dan indikatornya.</p><div style="overflow-x:auto"><table><thead><tr><th>No</th><th>Indikator</th>' + (rinci ? '<th>Kunci</th>' : '') + '<th>Capaian kelas</th></tr></thead><tbody>' +
       butir.map(b => '<tr><td><b>' + b.q.no + '</b></td><td>' + esc(b.q.indikator) + '</td>' + (rinci ? '<td class="kunci-k">' + esc(TKA.ringkasJawaban(b.q, (rinci[b.q.no] || {}).kunci)) + '</td>' : '') + '<td style="white-space:nowrap">' + batang(b.p) + '</td></tr>').join('') + '</tbody></table></div></div>' + tombolBahas;
   pasangBahas(bank, rinci);
@@ -496,6 +510,55 @@ async function gambar() {
     gambar();
   });
   $('d-unduh').onclick = () => unduhCSV(bank, siswa);
+  const tombolGrup = $('rm-grup');
+  if (tombolGrup) tombolGrup.onclick = () => {
+    const baris = siswa.filter(s => s.remedial.some(r => !(r.terbaik >= 80))).map(s => '• ' + s.nama + ': ' + s.remedial.filter(r => !(r.terbaik >= 80)).map(r => r.L.judul).join(', '));
+    if (!baris.length) { alert('Semua siswa sudah menuntaskan latihan remedialnya. 🎉'); return; }
+    const pesan = 'Anak-anak ' + KELAS.kelas + ', ini *latihan remedial TKA* untuk masing-masing (berdasarkan ' + bank.mapel + ' ' + bank.paket + ') 💪\n\n' + baris.join('\n') +
+      '\n\nBuka 👉 ' + tautanKelas(KELAS) + '\nlalu pilih latihan sesuai namamu di bagian *Latihan per Indikator*. Setiap latihan 5 soal, 15 menit.\n— ' + KELAS.guru;
+    window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
+  };
+  document.querySelectorAll('#t-siswa [data-rm]').forEach(b => b.onclick = () => {
+    const s = siswa.find(x => x.nama === b.dataset.rm), sisa = s.remedial.filter(r => !(r.terbaik >= 80));
+    if (!sisa.length) { alert(s.nama + ' sudah menuntaskan semua latihan remedialnya. 🎉'); return; }
+    const pesan = 'Halo ' + s.nama + ', ini latihan remedial TKA untukmu (dari ' + bank.mapel + ' ' + bank.paket + ') 💪\n\n' +
+      sisa.map((r, i) => (i + 1) + '. ' + r.L.judul + '\n👉 ' + tautanLatihan(r.L.id)).join('\n\n') + '\n\nPilih namamu, lalu kerjakan sampai selesai. Semangat!\n— ' + KELAS.guru;
+    window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
+  });
+  document.querySelectorAll('#t-siswa a.nm-siswa').forEach(a => a.onclick = e => { e.preventDefault(); tampilKembang(a.dataset.siswa); });
+}
+
+/* ---------- remedial otomatis & grafik perkembangan ---------- */
+function kunciNamaG(n) { return String(n).trim().toLowerCase().replace(/\s+/g, ' '); }
+function waktuMs(w) { return typeof w === 'number' ? w : new Date(w).getTime() || 0; }
+function remedialSiswa(bank, s) {
+  if (bank.latihan) return [];
+  const lemah = bank.soal.map((q, i) => ({ q, sk: s.terakhir.skor[i] })).filter(x => typeof x.sk === 'number' && !isNaN(x.sk) && x.sk < 1).sort((a, b) => a.sk - b.sk || a.q.no - b.q.no);
+  const pilih = [];
+  for (const x of lemah) { const L = latihanUntuk(bank, x.q.no); if (L && !pilih.includes(L)) pilih.push(L); if (pilih.length === 3) break; }
+  const nama = kunciNamaG(s.nama), sejak = waktuMs(s.terakhir.waktu);
+  return pilih.map(L => {
+    const lt = DATA.baris.filter(b => b.paket === L.id && kunciNamaG(b.nama) === nama && waktuMs(b.waktu) >= sejak);
+    return { L, terbaik: lt.length ? Math.max(...lt.map(b => b.nilai)) : null };
+  });
+}
+function namaPaket(id) {
+  const p = PAKET_TKA.find(x => x.id === id); if (p) return p.mapel + ' ' + p.paket;
+  const l = (typeof LATIHAN_TKA === 'undefined' ? [] : LATIHAN_TKA).find(x => x.id === id); return l ? 'Latihan: ' + l.judul : id;
+}
+function tampilKembang(nama) {
+  const k = kunciNamaG(nama);
+  const semua = DATA.baris.filter(b => kunciNamaG(b.nama) === k).sort((a, b) => waktuMs(a.waktu) - waktuMs(b.waktu));
+  const titik = semua.map(b => ({ waktu: waktuMs(b.waktu), nilai: b.nilai, label: namaPaket(b.paket), latihan: /^lt-/.test(b.paket) }));
+  const tryout = titik.filter(t => !t.latihan), latihan = titik.filter(t => t.latihan);
+  const naik = tryout.length > 1 ? tryout[tryout.length - 1].nilai - tryout[0].nilai : null;
+  const el = $('k-kembang');
+  el.innerHTML = '<div class="kepala-kelas"><div><h2 style="margin:0">📈 Perkembangan ' + esc(nama) + '</h2><p class="sub" style="margin:2px 0 0">' + tryout.length + ' tryout · ' + latihan.length + ' latihan' +
+    (naik != null ? ' · nilai tryout ' + (naik >= 0 ? 'naik ' : 'turun ') + angka(Math.abs(Math.round(naik * 10) / 10)) + ' poin sejak pertama' : '') + '</p></div><button class="btn ghost kecil cetak-sembunyi" type="button" onclick="this.closest(\'.kartu\').hidden=true">✕ Tutup</button></div>' +
+    TKA.grafikNilai(titik, { judul: 'Perkembangan nilai ' + nama }) +
+    '<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;color:var(--aksen)">Riwayat pengerjaan (' + semua.length + ')</summary><table class="kembang-tabel"><thead><tr><th>Tanggal</th><th>Paket/latihan</th><th>Nilai</th></tr></thead><tbody>' +
+    semua.slice().reverse().map(b => '<tr><td>' + new Date(waktuMs(b.waktu)).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + '</td><td>' + esc(namaPaket(b.paket)) + '</td><td><b>' + angka(b.nilai) + '</b></td></tr>').join('') + '</tbody></table></details>';
+  el.hidden = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 /* ---------- latihan per indikator ---------- */
@@ -514,10 +577,6 @@ $('d-isi').addEventListener('click', e => {
   const a = e.target.closest('a[data-lt]'); if (!a) return;
   e.preventDefault();
   const L = LATIHAN_TKA.find(l => l.id === a.dataset.lt);
-  if (!L.gratis && !premiumAktif()) {
-    alert('Latihan per indikator termasuk fitur Kelas Premium. Aktifkan coba gratis 14 hari di kartu Kelas Premium, lalu kirim latihan ini ke siswa.');
-    $('k-premium').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
-  }
   const pesan = 'Anak-anak ' + KELAS.kelas + ', ayo kerjakan *latihan TKA* berikut (5 soal, 15 menit) untuk memperkuat materi *' + L.judul + '* 💪\n👉 ' + tautanLatihan(L.id) +
     '\n\nBuka tautan, pilih namamu dari daftar, lalu kerjakan sampai selesai. Setelah selesai, pembahasannya langsung muncul.\n— ' + KELAS.guru;
   window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');

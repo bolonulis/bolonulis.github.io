@@ -45,7 +45,7 @@ const TKA = (() => {
     if (!/^[a-z0-9-]+$/.test(id)) return Promise.reject(new Error('Paket tidak dikenal'));
     return new Promise((ok, gagal) => {
       const s = document.createElement('script');
-      s.src = 'bank/' + id + '.js?v=9';
+      s.src = 'bank/' + id + '.js?v=10';
       s.onload = () => bank[id] ? ok(bank[id]) : gagal(new Error('Paket tidak dikenal'));
       s.onerror = () => gagal(new Error('Paket tidak dapat dimuat'));
       document.head.appendChild(s);
@@ -98,6 +98,31 @@ const TKA = (() => {
         }).join('') + '</tbody></table>';
     }
     return h;
+  }
+
+  /** Grafik garis perkembangan nilai (SVG). titik: [{waktu, nilai, label, latihan}] urut waktu. */
+  function grafikNilai(titik, opsi = {}) {
+    if (!titik.length) return '';
+    const W = Math.max(460, Math.min(760, 80 + titik.length * 56)), H = 210, x0 = 38, x1 = W - 16, y0 = 170, y1 = 16;
+    const X = i => titik.length === 1 ? (x0 + x1) / 2 : x0 + (x1 - x0) * i / (titik.length - 1);
+    const Y = v => y0 - (y0 - y1) * v / 100;
+    let s = '';
+    [0, 25, 50, 75, 100].forEach(v => { s += `<line x1="${x0}" y1="${Y(v)}" x2="${x1}" y2="${Y(v)}" stroke="#e3e8ef"/><text x="${x0 - 6}" y="${Y(v) + 4}" font-size="10" text-anchor="end" fill="#5b6b7f">${v}</text>`; });
+    s += `<line x1="${x0}" y1="${Y(70)}" x2="${x1}" y2="${Y(70)}" stroke="#1b7f3e" stroke-dasharray="4 4" opacity=".6"/><text x="${x1}" y="${Y(70) - 4}" font-size="9.5" text-anchor="end" fill="#1b7f3e">target 70</text>`;
+    const tryout = titik.map((t, i) => [t, i]).filter(([t]) => !t.latihan);
+    if (tryout.length > 1) s += `<polyline points="${tryout.map(([t, i]) => X(i).toFixed(1) + ',' + Y(t.nilai).toFixed(1)).join(' ')}" fill="none" stroke="#1f6fb2" stroke-width="2.5"/>`;
+    const langkah = Math.ceil(titik.length / 10);
+    titik.forEach((t, i) => {
+      const w = t.latihan ? '#d97706' : '#1f6fb2', tgl = new Date(t.waktu).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      s += `<g><title>${esc(tgl + ' · ' + t.label + ' · nilai ' + angka(t.nilai))}</title>` + (t.latihan
+        ? `<rect x="${X(i) - 5}" y="${Y(t.nilai) - 5}" width="10" height="10" fill="${w}" stroke="#fff" stroke-width="1.5" transform="rotate(45 ${X(i)} ${Y(t.nilai)})"/>`
+        : `<circle cx="${X(i)}" cy="${Y(t.nilai)}" r="5.5" fill="${w}" stroke="#fff" stroke-width="1.5"/>`) +
+        `<text x="${X(i)}" y="${Y(t.nilai) - 9}" font-size="10" font-weight="700" text-anchor="middle" fill="${w}">${angka(Math.round(t.nilai))}</text></g>`;
+      if (i % langkah === 0) s += `<text x="${X(i)}" y="${y0 + 16}" font-size="10" text-anchor="middle" fill="#5b6b7f">${tgl}</text>`;
+    });
+    s += `<circle cx="${x0 + 4}" cy="${H - 10}" r="5" fill="#1f6fb2"/><text x="${x0 + 14}" y="${H - 6}" font-size="11" fill="#16202a">Tryout (paket 30 soal)</text>` +
+      `<rect x="${x0 + 168}" y="${H - 15}" width="9" height="9" fill="#d97706" transform="rotate(45 ${x0 + 172.5} ${H - 10.5})"/><text x="${x0 + 182}" y="${H - 6}" font-size="11" fill="#16202a">Latihan per indikator</text>`;
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;font-family:inherit" role="img" aria-label="${esc(opsi.judul || 'Grafik perkembangan nilai')}">${s}</svg>`;
   }
 
   function statusSkor(s) { return s >= 0.999 ? ['benar', 'Benar'] : s > 0 ? ['sebagian', 'Benar sebagian'] : ['salah', 'Salah']; }
@@ -282,7 +307,7 @@ const TKA = (() => {
   return {
     statistik, kalimatStatistik, dokumenSoal,
     bank, simpan, esc, pecahan, api, siapServer, muatBank, kode, peserta, riwayat, idPerangkat, HURUF,
-    ringkasJawaban, htmlTinjau, statusSkor, htmlAnalisis, dokumenPembahasan, angka,
+    ringkasJawaban, htmlTinjau, statusSkor, htmlAnalisis, dokumenPembahasan, angka, grafikNilai,
     daftarkan: b => { bank[b.id] = b; }
   };
 })();
