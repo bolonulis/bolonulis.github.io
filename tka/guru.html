@@ -176,7 +176,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
           <li>Bantuan prioritas lewat WhatsApp</li>
           <li><b>Paket tryout eksklusif</b> khusus ujian serentak: soalnya belum pernah dilihat siswa (Paket 3 Matematika dan Bahasa Indonesia)</li>
           <li class="nanti">Peta kemampuan siswa per indikator</li>
-          <li class="nanti">Rapor untuk orang tua dan laporan kepala sekolah</li>
+          <li><b>Rapor untuk orang tua</b> (cetak/PDF dan ringkasan WA) dan <b>laporan kepala sekolah</b> siap tanda tangan</li>
         </ul>
         <p class="catatan" style="margin:10px 0 0">🎁 <b>Coba gratis 14 hari</b>, cukup satu klik dari dasbor kelas. Fitur yang segera hadir otomatis masuk Kelas Premium.</p>
         <p class="catatan" style="margin:6px 0 0">📋 <b>Ketentuan:</b> berlaku untuk 1 kelas sampai 31 Juli akhir tahun ajaran; coba gratis hanya sekali per kelas dan berhenti sendiri setelah 14 hari; pembayaran lewat WhatsApp Admin, lalu Admin mengaktifkan kelas Anda.</p>
@@ -233,7 +233,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
   <div class="kartu">
     <div class="kepala-kelas">
       <div><h1 id="d-judul"></h1><p id="d-sub"></p></div>
-      <div class="cetak-sembunyi" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost kecil" id="d-muat" type="button">↻ Perbarui</button><button class="btn ghost kecil" id="d-unduh" type="button">⬇️ Unduh Excel (CSV)</button><button class="btn ghost kecil" type="button" onclick="print()">🖨️ Cetak</button></div>
+      <div class="cetak-sembunyi" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost kecil" id="d-muat" type="button">↻ Perbarui</button><button class="btn ghost kecil" id="d-laporan" type="button" onclick="laporanKepsek()">📑 Laporan kepala sekolah</button><button class="btn ghost kecil" id="d-unduh" type="button">⬇️ Unduh Excel (CSV)</button><button class="btn ghost kecil" type="button" onclick="print()">🖨️ Cetak</button></div>
     </div>
     <div class="bagikan">
       <b style="font-size:14px">🔗 Tautan untuk siswa:</b><code id="d-tautan"></code>
@@ -316,7 +316,14 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <li>Ketuk <b>👀 Pantau</b> untuk melihat siapa yang belum masuk, sedang mengerjakan, dan sudah selesai beserta nilainya.</li>
       <li><b>⭐ Paket eksklusif</b> (Matematika dan Bahasa Indonesia Paket 3) hanya bisa dipilih untuk ujian serentak. Soalnya tidak tersedia di halaman umum, jadi belum pernah dilihat siswa. Soal baru terkirim ke HP siswa saat ujian dimulai.</li>
     </ul>
-    <h3>G. Pertanyaan yang sering muncul</h3>
+    <h3>G. Rapor orang tua dan laporan kepala sekolah (Kelas Premium)</h3>
+    <ul>
+      <li><b>Rapor orang tua</b>: ketuk 📄 di samping nama siswa (atau tombol <b>📄 Rapor untuk orang tua</b> pada grafik). Tulis catatan guru bila perlu, lalu pilih <b>Buat rapor</b> untuk mencetak/menyimpan PDF, atau <b>Kirim ringkasan ke WA</b> untuk mengirim ringkasan beserta tautan latihan ke orang tua.</li>
+      <li>Rapor berisi nilai terakhir dan predikat, perkembangan, grafik, capaian per elemen, indikator yang perlu ditingkatkan, status latihan remedial, saran untuk orang tua, dan kolom tanda tangan.</li>
+      <li><b>Laporan kepala sekolah</b>: ketuk <b>📑 Laporan kepala sekolah</b> di bagian atas dasbor. Berisi ringkasan kegiatan kelas, hasil setiap paket, sebaran predikat, indikator terlemah, hasil ujian serentak, siswa yang memerlukan perhatian, dan rencana tindak lanjut.</li>
+      <li>Untuk menyimpan sebagai PDF, pilih <b>Simpan sebagai PDF</b> pada jendela cetak.</li>
+    </ul>
+    <h3>H. Pertanyaan yang sering muncul</h3>
     <ul>
       <li><b>Buka dari HP atau laptop lain?</b> Masukkan kode kelas dan PIN pada kotak "Sudah punya kelas?". Kode dan PIN ada di pesan WhatsApp yang Anda simpan.</li>
       <li><b>Lupa PIN?</b> Hubungi Admin lewat WhatsApp dengan menyebutkan kode kelas, nama, dan sekolah.</li>
@@ -550,7 +557,7 @@ async function gambar() {
     '<div class="kartu"><div class="kepala-kelas"><div><h2 style="margin:0">👩‍🎓 Nilai siswa</h2><p class="sub" style="margin:2px 0 0">Nilai dari pengerjaan terakhir. Ketuk <b>nama</b> untuk melihat grafik perkembangan. Ketuk judul kolom untuk mengurutkan.</p></div>' +
       (adaRemedial ? '<button class="btn ghost kecil cetak-sembunyi" id="rm-grup" type="button">📲 Kirim remedial ke grup kelas</button>' : '') + '</div><div style="overflow-x:auto"><table id="t-siswa"><thead><tr>' +
       '<th data-urut="nama">Nama</th><th data-urut="nilai">Nilai terakhir</th><th data-urut="tertinggi">Tertinggi</th><th data-urut="coba">Percobaan</th><th data-urut="waktu" class="sembunyi-hp">Terakhir</th>' + (bank.latihan ? '' : '<th>Remedial otomatis</th>') + '</tr></thead><tbody>' +
-      urutkan.map(s => '<tr><td><a href="#" class="nm-siswa" data-siswa="' + esc(s.nama) + '">' + esc(s.nama) + '</a>' + (daftar.length && !terdaftar.has(kunciNama(s.nama)) ? '<span class="luar" title="Nama ini tidak ada di daftar siswa">di luar daftar</span>' : '') + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td>' +
+      urutkan.map(s => '<tr><td><a href="#" class="nm-siswa" data-siswa="' + esc(s.nama) + '">' + esc(s.nama) + '</a> <button class="btn-mini cetak-sembunyi" type="button" data-rapor="' + esc(s.nama) + '" title="Rapor untuk orang tua">📄</button>' + (daftar.length && !terdaftar.has(kunciNama(s.nama)) ? '<span class="luar" title="Nama ini tidak ada di daftar siswa">di luar daftar</span>' : '') + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td>' +
         (bank.latihan ? '' : '<td>' + htmlRemedial(s) + '</td>') + '</tr>').join('') +
       '</tbody></table></div><p class="catatan" style="margin:8px 0 0">Remedial otomatis memilih hingga 3 latihan per indikator dari soal yang belum dijawab benar oleh setiap siswa. ✔ = latihan sudah dikerjakan dengan nilai minimal 80.</p></div>' +
       '<div class="kartu" id="k-kembang" hidden></div>' + kartuBelum +
@@ -579,6 +586,7 @@ async function gambar() {
     window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
   });
   document.querySelectorAll('#t-siswa a.nm-siswa').forEach(a => a.onclick = e => { e.preventDefault(); tampilKembang(a.dataset.siswa); });
+  document.querySelectorAll('#t-siswa [data-rapor]').forEach(b => b.onclick = () => raporSiswa(b.dataset.rapor));
 }
 
 /* ---------- remedial otomatis & grafik perkembangan ---------- */
@@ -607,10 +615,11 @@ function tampilKembang(nama) {
   const naik = tryout.length > 1 ? tryout[tryout.length - 1].nilai - tryout[0].nilai : null;
   const el = $('k-kembang');
   el.innerHTML = '<div class="kepala-kelas"><div><h2 style="margin:0">📈 Perkembangan ' + esc(nama) + '</h2><p class="sub" style="margin:2px 0 0">' + tryout.length + ' tryout · ' + latihan.length + ' latihan' +
-    (naik != null ? ' · nilai tryout ' + (naik >= 0 ? 'naik ' : 'turun ') + angka(Math.abs(Math.round(naik * 10) / 10)) + ' poin sejak pertama' : '') + '</p></div><button class="btn ghost kecil cetak-sembunyi" type="button" onclick="this.closest(\'.kartu\').hidden=true">✕ Tutup</button></div>' +
+    (naik != null ? ' · nilai tryout ' + (naik >= 0 ? 'naik ' : 'turun ') + angka(Math.abs(Math.round(naik * 10) / 10)) + ' poin sejak pertama' : '') + '</p></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn emas kecil cetak-sembunyi" type="button" data-rapor-k>📄 Rapor untuk orang tua</button><button class="btn ghost kecil cetak-sembunyi" type="button" onclick="this.closest(\'.kartu\').hidden=true">✕ Tutup</button></div></div>' +
     TKA.grafikNilai(titik, { judul: 'Perkembangan nilai ' + nama }) +
     '<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;color:var(--aksen)">Riwayat pengerjaan (' + semua.length + ')</summary><table class="kembang-tabel"><thead><tr><th>Tanggal</th><th>Paket/latihan</th><th>Nilai</th></tr></thead><tbody>' +
     semua.slice().reverse().map(b => '<tr><td>' + new Date(waktuMs(b.waktu)).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + '</td><td>' + esc(namaPaket(b.paket)) + '</td><td><b>' + angka(b.nilai) + '</b></td></tr>').join('') + '</tbody></table></details>';
+  el.querySelector('[data-rapor-k]').onclick = () => raporSiswa(nama);
   el.hidden = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -644,6 +653,185 @@ function gambarLangkah() {
   atur(TKA.simpan.get('tka-zoom', 0));
   document.querySelectorAll('.ukuran-huruf button').forEach(b => b.onclick = () => atur(TKA.simpan.get('tka-zoom', 0) + +b.dataset.z));
 })();
+
+/* ---------- rapor orang tua & laporan kepala sekolah (Kelas Premium) ---------- */
+const CSS_RAPOR = '@page{size:A4;margin:14mm}body{font-family:Arial,Helvetica,sans-serif;color:#16202a;max-width:800px;margin:0 auto;padding:20px;font-size:13.5px;line-height:1.5}' +
+  '.kop{display:flex;justify-content:space-between;gap:12px;border-bottom:3px solid #12314f;padding-bottom:8px;margin-bottom:12px}.kop small{color:#5b6b7f;letter-spacing:.06em;font-weight:700;font-size:11px}' +
+  'h1{font-size:20px;margin:2px 0;color:#12314f}h2{font-size:15px;color:#12314f;border-left:4px solid #ffd21f;padding-left:8px;margin:18px 0 8px}h3{font-size:14px;margin:12px 0 6px}' +
+  'table{width:100%;border-collapse:collapse;margin:4px 0}td,th{border:1px solid #dfe5ec;padding:6px 8px;text-align:left;vertical-align:top}th{background:#f3f6fa}.id td:nth-child(odd){width:110px;font-weight:700;background:#f8fafc}' +
+  '.kotak{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.kotak div{border:1px solid #dfe5ec;border-radius:10px;padding:10px;text-align:center}.kotak b{display:block;font-size:24px;color:#12314f}.kotak small{color:#5b6b7f}' +
+  '.bar{background:#e5e7eb;border-radius:6px;height:10px;width:150px;display:inline-block;vertical-align:middle;margin-right:6px;overflow:hidden}.bar i{display:block;height:100%}' +
+  '.pred{display:inline-block;border-radius:99px;padding:1px 9px;font-size:12px;font-weight:700}.p4{background:#dcfce7;color:#166534}.p3{background:#e0f2fe;color:#075985}.p2{background:#fef3c7;color:#92400e}.p1{background:#fee2e2;color:#991b1b}' +
+  '.catatan{border:1px dashed #94a3b8;border-radius:10px;padding:10px 12px;background:#fffdf3}ul{margin:4px 0;padding-left:20px}' +
+  '.ttd{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:30px;text-align:center;break-inside:avoid}.ttd p{margin:0}.ttd .isi{height:70px}' +
+  '.tombol{position:sticky;top:0;background:#fff;padding:8px 0;margin-bottom:8px;border-bottom:1px solid #e5e7eb}.tombol button{font:inherit;font-weight:700;padding:8px 14px;border-radius:10px;border:0;background:#12314f;color:#fff;cursor:pointer}' +
+  'footer{margin-top:24px;font-size:11px;color:#64748b;text-align:center}section{break-inside:avoid}@media print{.tombol{display:none}}';
+
+function predikat(v) { return v >= 85 ? ['Sangat baik', 'p4'] : v >= 70 ? ['Baik', 'p3'] : v >= 55 ? ['Cukup', 'p2'] : ['Perlu bimbingan', 'p1']; }
+function lencanaPred(v) { const [l, c] = predikat(v); return '<span class="pred ' + c + '">' + l + '</span>'; }
+function batangR(p) { const w = p >= 70 ? '#16a34a' : p >= 50 ? '#f59e0b' : '#dc2626'; return '<span class="bar"><i style="width:' + Math.max(2, p) + '%;background:' + w + '"></i></span>' + angka(Math.round(p)) + '%'; }
+function semuaPaket() { return PAKET_TKA.concat(typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF); }
+function bukaDokumen(judul, isi) {
+  const html = '<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(judul) + '</title><style>' + CSS_RAPOR + '</style></head><body>' +
+    '<div class="tombol"><button onclick="print()">🖨️ Cetak / Simpan PDF</button> <span style="font-size:12px;color:#64748b">Pilih "Simpan sebagai PDF" pada jendela cetak untuk menyimpan berkas.</span></div>' + isi +
+    '<footer>Dibuat dengan Kelas Intensif TKA · bolonulis.github.io/tka · ' + new Date().toLocaleDateString('id-ID', { dateStyle: 'long' }) + '<br>Hasil latihan ini adalah simulasi dan bukan nilai resmi TKA.</footer></body></html>';
+  const w = window.open('', '_blank');
+  if (!w) { alert('Izinkan jendela pop-up untuk membuka dokumen.'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+}
+function cekPremiumUntuk(fitur) {
+  if (premiumAktif()) return true;
+  alert(fitur + ' termasuk fitur Kelas Premium. Aktifkan coba gratis 14 hari atau masukkan kode akses di kartu Kelas Premium.');
+  $('k-premium').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return false;
+}
+/** Ringkasan satu siswa per mata pelajaran: pengerjaan tryout pertama/terakhir, capaian elemen, indikator lemah. */
+async function ringkasSiswa(nama) {
+  const k = kunciNamaG(nama);
+  const milik = DATA.baris.filter(b => kunciNamaG(b.nama) === k).sort((a, b) => waktuMs(a.waktu) - waktuMs(b.waktu));
+  const paketInfo = Object.fromEntries(semuaPaket().map(p => [p.id, p]));
+  const hasil = [];
+  for (const mapel of ['Matematika', 'Bahasa Indonesia']) {
+    const tryout = milik.filter(b => paketInfo[b.paket] && paketInfo[b.paket].mapel === mapel);
+    if (!tryout.length) { hasil.push({ mapel, kosong: true }); continue; }
+    const akhir = tryout[tryout.length - 1], awal = tryout[0];
+    const bank = await bankUntuk(akhir.paket);
+    const elemen = new Map(), lemah = [];
+    bank.soal.forEach((q, i) => {
+      const sk = akhir.skor[i]; if (typeof sk !== 'number' || isNaN(sk)) return;
+      const e = elemen.get(q.elemen) || { t: 0, n: 0 }; e.t += sk; e.n++; elemen.set(q.elemen, e);
+      if (sk < 1) lemah.push({ q, sk });
+    });
+    lemah.sort((a, b) => a.sk - b.sk);
+    const remedial = remedialSiswa(bank, { nama, terakhir: akhir });
+    hasil.push({ mapel, akhir, awal, jumlah: tryout.length, bank, elemen: [...elemen].map(([n, e]) => [n, e.t / e.n * 100]), lemah: lemah.slice(0, 5), remedial });
+  }
+  const latihan = milik.filter(b => /^lt-/.test(b.paket));
+  return { nama, milik, hasil, latihan };
+}
+
+/* ---- rapor orang tua ---- */
+function mintaCatatan(nama, lanjut) {
+  let d = $('dlg-rapor');
+  if (!d) {
+    d = document.createElement('dialog'); d.id = 'dlg-rapor'; d.style.cssText = 'border:0;border-radius:16px;padding:18px;max-width:460px;width:92%';
+    d.innerHTML = '<h2 style="margin:0 0 4px">📄 Rapor untuk orang tua</h2><p class="sub" id="dr-nama" style="margin:0 0 10px"></p>' +
+      '<label style="font-weight:700;font-size:14px">Catatan guru <span style="font-weight:400;color:var(--muted)">(opsional, tampil di rapor)</span></label>' +
+      '<textarea id="dr-catatan" rows="4" style="width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:10px;margin-top:4px" placeholder="Contoh: Andi sudah rajin berlatih. Mohon dampingi saat mengerjakan latihan pecahan di rumah."></textarea>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn hijau" id="dr-buat" type="button">📄 Buat rapor (cetak/PDF)</button><button class="btn wa" id="dr-wa" type="button">💬 Kirim ringkasan ke WA</button><button class="btn ghost" type="button" onclick="this.closest(\'dialog\').close()">Batal</button></div>';
+    document.body.appendChild(d);
+  }
+  $('dr-nama').textContent = 'Siswa: ' + nama;
+  $('dr-buat').onclick = () => { d.close(); lanjut('dok', $('dr-catatan').value.trim()); };
+  $('dr-wa').onclick = () => { d.close(); lanjut('wa', $('dr-catatan').value.trim()); };
+  d.showModal();
+}
+function saranOrtu(r) {
+  const s = [];
+  r.hasil.filter(h => !h.kosong).forEach(h => {
+    const sisa = h.remedial.filter(x => !(x.terbaik >= 80));
+    if (sisa.length) s.push('Dampingi anak mengerjakan latihan <b>' + h.mapel + '</b>: ' + sisa.map(x => esc(x.L.judul)).join(', ') + '. Setiap latihan hanya 5 soal (15 menit) dan dapat dibuka dari tautan kelas.');
+  });
+  const nilai = r.hasil.filter(h => !h.kosong).map(h => h.akhir.nilai);
+  if (nilai.some(v => v < 55)) s.push('Sediakan waktu belajar rutin 20–30 menit setiap hari di rumah, lebih baik sedikit tetapi teratur.');
+  if (r.hasil.some(h => h.kosong)) s.push('Ajak anak mencoba tryout ' + r.hasil.filter(h => h.kosong).map(h => h.mapel).join(' dan ') + ' agar kemampuannya dapat diketahui.');
+  s.push('Berikan pujian atas usaha anak, bukan hanya pada nilainya.', 'Pastikan anak cukup tidur dan sarapan sebelum belajar atau ujian.');
+  return s;
+}
+async function raporSiswa(nama) {
+  if (!cekPremiumUntuk('Rapor untuk orang tua')) return;
+  mintaCatatan(nama, async (mode, catatan) => {
+    const r = await ringkasSiswa(nama);
+    if (mode === 'wa') return kirimRaporWA(r, catatan);
+    const isiMapel = r.hasil.map(h => h.kosong ? '<h3>' + h.mapel + '</h3><p>Belum mengerjakan tryout ' + h.mapel + '.</p>' :
+      '<section><h3>' + h.mapel + ' <span style="font-weight:400;color:#5b6b7f">(' + esc(namaPaket(h.akhir.paket)) + ', ' + tglID(waktuMs(h.akhir.waktu)) + ')</span></h3>' +
+      '<table><tr><th>Elemen</th><th>Capaian</th></tr>' + h.elemen.map(([n, v]) => '<tr><td>' + esc(n) + '</td><td>' + batangR(v) + '</td></tr>').join('') + '</table>' +
+      (h.lemah.length ? '<p style="margin:8px 0 2px"><b>Perlu ditingkatkan:</b></p><ul>' + h.lemah.map(x => '<li>' + esc(x.q.indikator) + '</li>').join('') + '</ul>' : '<p>🎉 Semua soal dijawab benar.</p>') +
+      (h.remedial.length ? '<p style="margin:8px 0 2px"><b>Latihan remedial:</b></p><ul>' + h.remedial.map(x => '<li>' + esc(x.L.judul) + ' — ' + (x.terbaik >= 80 ? '✔ tuntas (' + angka(x.terbaik) + ')' : x.terbaik != null ? 'sudah dicoba, nilai ' + angka(x.terbaik) : 'belum dikerjakan') + '</li>').join('') + '</ul>' : '') + '</section>').join('');
+    const titik = r.milik.map(b => ({ waktu: waktuMs(b.waktu), nilai: b.nilai, label: namaPaket(b.paket), latihan: /^lt-/.test(b.paket) }));
+    const isi = '<div class="kop"><div><small>KELAS INTENSIF TKA · RAPOR LATIHAN</small><h1>Rapor Latihan TKA</h1>Laporan perkembangan belajar untuk orang tua/wali</div><div style="text-align:right">' + tglID(Date.now()) + '</div></div>' +
+      '<table class="id"><tr><td>Nama siswa</td><td>' + esc(nama) + '</td><td>Kelas</td><td>' + esc(KELAS.kelas) + '</td></tr><tr><td>Sekolah</td><td>' + esc(KELAS.sekolah) + '</td><td>Guru</td><td>' + esc(KELAS.guru) + '</td></tr></table>' +
+      '<h2>Ringkasan</h2><div class="kotak">' + r.hasil.map(h => '<div><small>' + h.mapel + ' (terakhir)</small><b>' + (h.kosong ? '–' : angka(h.akhir.nilai)) + '</b>' + (h.kosong ? '<small>belum mengerjakan</small>' : lencanaPred(h.akhir.nilai) +
+        (h.jumlah > 1 ? '<br><small>' + (h.akhir.nilai >= h.awal.nilai ? '▲ naik ' : '▼ turun ') + angka(Math.abs(Math.round((h.akhir.nilai - h.awal.nilai) * 10) / 10)) + ' poin dari tryout pertama</small>' : '')) + '</div>').join('') +
+      '<div><small>Latihan per indikator</small><b>' + r.latihan.length + '</b><small>kali dikerjakan</small></div></div>' +
+      (titik.length > 1 ? '<h2>Grafik perkembangan</h2>' + TKA.grafikNilai(titik) : '') +
+      '<h2>Capaian per mata pelajaran</h2>' + isiMapel +
+      '<h2>Saran untuk orang tua</h2><ul>' + saranOrtu(r).map(x => '<li>' + x + '</li>').join('') + '</ul>' +
+      (catatan ? '<h2>Catatan guru</h2><div class="catatan">' + esc(catatan).replace(/\n/g, '<br>') + '</div>' : '') +
+      '<p style="font-size:12px;color:#64748b;margin-top:12px">Predikat: Sangat baik (85–100), Baik (70–84), Cukup (55–69), Perlu bimbingan (di bawah 55).</p>' +
+      '<div class="ttd"><div><p>Orang tua/Wali</p><div class="isi"></div><p>(............................)</p></div><div><p>Guru Kelas</p><div class="isi"></div><p><b>' + esc(KELAS.guru) + '</b></p></div></div>';
+    bukaDokumen('Rapor TKA ' + nama, isi);
+  });
+}
+function kirimRaporWA(r, catatan) {
+  const baris = r.hasil.map(h => h.kosong ? '• ' + h.mapel + ': belum mengerjakan' : '• ' + h.mapel + ': nilai terakhir *' + angka(h.akhir.nilai) + '* (' + predikat(h.akhir.nilai)[0] + ')' +
+    (h.jumlah > 1 ? ', ' + (h.akhir.nilai >= h.awal.nilai ? 'naik ' : 'turun ') + angka(Math.abs(Math.round((h.akhir.nilai - h.awal.nilai) * 10) / 10)) + ' poin' : ''));
+  const latihan = r.hasil.filter(h => !h.kosong).flatMap(h => h.remedial.filter(x => !(x.terbaik >= 80)).map(x => '• ' + x.L.judul + ' 👉 ' + tautanLatihan(x.L.id)));
+  const pesan = 'Assalamu’alaikum/Salam sejahtera, Bapak/Ibu orang tua/wali *' + r.nama + '* 🙏\n\nBerikut ringkasan latihan TKA ananda di ' + KELAS.kelas + ':\n' + baris.join('\n') +
+    '\n• Latihan per indikator: ' + r.latihan.length + ' kali dikerjakan' +
+    (latihan.length ? '\n\n*Latihan yang disarankan* (5 soal, 15 menit):\n' + latihan.join('\n') : '\n\n🎉 Semua latihan remedial sudah tuntas.') +
+    (catatan ? '\n\n*Catatan guru:* ' + catatan : '') + '\n\nMohon dampingi ananda saat berlatih di rumah. Terima kasih.\n— ' + KELAS.guru;
+  window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
+}
+
+/* ---- laporan kepala sekolah ---- */
+async function laporanKepsek() {
+  if (!cekPremiumUntuk('Laporan kepala sekolah')) return;
+  const info = Object.fromEntries(semuaPaket().map(p => [p.id, p]));
+  const daftar = DATA.siswa || [], k = n => kunciNamaG(n);
+  const tryout = DATA.baris.filter(b => info[b.paket]);
+  const latihan = DATA.baris.filter(b => /^lt-/.test(b.paket));
+  const namaUnik = new Set(DATA.baris.map(b => k(b.nama)));
+  const paketDipakai = semuaPaket().filter(p => tryout.some(b => b.paket === p.id));
+  const bagianPaket = [], perhatian = new Map(), kelompokRemedial = { total: 0, tuntas: 0 };
+  for (const p of paketDipakai) {
+    const bank = await bankUntuk(p.id);
+    const m = new Map();
+    tryout.filter(b => b.paket === p.id).sort((a, b) => waktuMs(a.waktu) - waktuMs(b.waktu)).forEach(b => {
+      const x = m.get(k(b.nama)) || { nama: b.nama.trim(), coba: [] }; x.coba.push(b); m.set(k(b.nama), x);
+    });
+    const siswa = [...m.values()].map(x => ({ nama: x.nama, terakhir: x.coba[x.coba.length - 1], pertama: x.coba[0] }));
+    const nilai = siswa.map(s => s.terakhir.nilai), rata = nilai.reduce((a, b) => a + b, 0) / nilai.length;
+    const dist = [0, 0, 0, 0]; nilai.forEach(v => { dist[v >= 85 ? 0 : v >= 70 ? 1 : v >= 55 ? 2 : 3]++; });
+    const butir = bank.soal.map((q, i) => { const sk = siswa.map(s => s.terakhir.skor[i]).filter(v => typeof v === 'number' && !isNaN(v)); return { q, p: sk.length ? sk.reduce((a, b) => a + b, 0) / sk.length * 100 : 0 }; });
+    const elemen = new Map(); butir.forEach(b => { const e = elemen.get(b.q.elemen) || { t: 0, n: 0 }; e.t += b.p; e.n++; elemen.set(b.q.elemen, e); });
+    const lemah = [...butir].sort((a, b) => a.p - b.p).slice(0, 5);
+    const naik = siswa.filter(s => s.terakhir !== s.pertama);
+    siswa.forEach(s => {
+      if (s.terakhir.nilai < 55) perhatian.set(k(s.nama), (perhatian.get(k(s.nama)) || []).concat(p.mapel + ' ' + p.paket + ' (' + angka(s.terakhir.nilai) + ')'));
+      remedialSiswa(bank, s).forEach(r => { kelompokRemedial.total++; if (r.terbaik >= 80) kelompokRemedial.tuntas++; });
+    });
+    const ikutUjian = tryout.filter(b => b.paket === p.id && b.ujian).length;
+    bagianPaket.push('<section><h3>' + esc(p.mapel + ' · ' + p.paket) + (p.eksklusif ? ' ⭐' : '') + '</h3>' +
+      '<div class="kotak"><div><small>Siswa mengerjakan</small><b>' + siswa.length + (daftar.length ? '<small style="font-size:13px"> / ' + daftar.length + '</small>' : '') + '</b></div><div><small>Rata-rata</small><b>' + angka(Math.round(rata * 10) / 10) + '</b>' + lencanaPred(rata) + '</div>' +
+      '<div><small>Tertinggi / terendah</small><b style="font-size:18px">' + angka(Math.max(...nilai)) + ' / ' + angka(Math.min(...nilai)) + '</b></div>' + (ikutUjian ? '<div><small>Lewat ujian serentak</small><b>' + ikutUjian + '</b></div>' : '') + '</div>' +
+      '<table style="margin-top:8px"><tr><th>Sangat baik (≥85)</th><th>Baik (70–84)</th><th>Cukup (55–69)</th><th>Perlu bimbingan (&lt;55)</th></tr><tr>' + dist.map(v => '<td style="text-align:center"><b>' + v + '</b> siswa</td>').join('') + '</tr></table>' +
+      '<table><tr><th>Elemen</th><th>Capaian kelas</th></tr>' + [...elemen].map(([n, e]) => '<tr><td>' + esc(n) + '</td><td>' + batangR(e.t / e.n) + '</td></tr>').join('') + '</table>' +
+      '<p style="margin:8px 0 2px"><b>Indikator yang perlu diperkuat:</b></p><ol>' + lemah.map(b => '<li>' + esc(b.q.indikator) + ' — ' + angka(Math.round(b.p)) + '%</li>').join('') + '</ol>' +
+      (naik.length ? '<p>Perkembangan: ' + naik.length + ' siswa mengerjakan lebih dari sekali; rata-rata pertama ' + angka(Math.round(naik.reduce((a, s) => a + s.pertama.nilai, 0) / naik.length * 10) / 10) + ' → terakhir ' + angka(Math.round(naik.reduce((a, s) => a + s.terakhir.nilai, 0) / naik.length * 10) / 10) + '.</p>' : '') + '</section>');
+  }
+  const belum = daftar.filter(n => !tryout.some(b => k(b.nama) === k(n)));
+  const ujianAktif = (DATA.ujian || []).filter(u => u.status !== 'BATAL');
+  const rek = [];
+  if (belum.length) rek.push('Mengingatkan ' + belum.length + ' siswa yang belum mengerjakan tryout, termasuk melalui orang tua.');
+  if (perhatian.size) rek.push('Memberikan bimbingan khusus kepada ' + perhatian.size + ' siswa dengan nilai di bawah 55.');
+  if (kelompokRemedial.total) rek.push('Menuntaskan latihan remedial (saat ini ' + kelompokRemedial.tuntas + ' dari ' + kelompokRemedial.total + ' latihan tuntas).');
+  rek.push('Membahas indikator terlemah bersama di kelas menggunakan kunci & pembahasan di dasbor.', 'Mengadakan tryout serentak berkala untuk memantau kemajuan menjelang TKA.');
+  const isi = '<div class="kop"><div><small>KELAS INTENSIF TKA · LAPORAN KELAS</small><h1>Laporan Hasil Latihan TKA</h1>Disampaikan kepada Kepala Sekolah</div><div style="text-align:right">' + tglID(Date.now()) + '</div></div>' +
+    '<table class="id"><tr><td>Kelas</td><td>' + esc(KELAS.kelas) + '</td><td>Sekolah</td><td>' + esc(KELAS.sekolah) + '</td></tr><tr><td>Guru</td><td>' + esc(KELAS.guru) + '</td><td>Jumlah siswa</td><td>' + (daftar.length || namaUnik.size) + '</td></tr></table>' +
+    '<h2>Ringkasan kegiatan</h2><div class="kotak"><div><small>Siswa aktif</small><b>' + namaUnik.size + '</b></div><div><small>Pengerjaan tryout</small><b>' + tryout.length + '</b></div><div><small>Latihan per indikator</small><b>' + latihan.length + '</b></div><div><small>Ujian serentak</small><b>' + ujianAktif.length + '</b></div></div>' +
+    (ujianAktif.length ? '<h2>Ujian serentak</h2><table><tr><th>Paket</th><th>Tanggal</th><th>Peserta</th><th>Rata-rata</th></tr>' + ujianAktif.map(u => {
+      const b = tryout.filter(x => x.ujian === u.id), r = b.length ? b.reduce((a, x) => a + x.nilai, 0) / b.length : null;
+      return '<tr><td>' + esc(namaPaket(u.paket)) + '</td><td>' + new Date(u.mulai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + '</td><td>' + b.length + '</td><td>' + (r == null ? '–' : angka(Math.round(r * 10) / 10)) + '</td></tr>';
+    }).join('') + '</table>' : '') +
+    '<h2>Hasil per paket</h2>' + (bagianPaket.join('') || '<p>Belum ada siswa yang mengerjakan tryout.</p>') +
+    '<h2>Siswa yang memerlukan perhatian</h2>' + (perhatian.size || belum.length ? '<table><tr><th>Nama</th><th>Keterangan</th></tr>' +
+      [...perhatian].map(([n, v]) => '<tr><td>' + esc(DATA.baris.find(b => k(b.nama) === n).nama) + '</td><td>Nilai di bawah 55: ' + esc(v.join('; ')) + '</td></tr>').join('') +
+      belum.map(n => '<tr><td>' + esc(n) + '</td><td>Belum mengerjakan tryout</td></tr>').join('') + '</table>' : '<p>🎉 Tidak ada siswa yang memerlukan perhatian khusus.</p>') +
+    '<h2>Rencana tindak lanjut</h2><ol>' + rek.map(x => '<li>' + x + '</li>').join('') + '</ol>' +
+    '<div class="ttd"><div><p>Mengetahui,<br>Kepala Sekolah</p><div class="isi"></div><p>(............................)</p></div><div><p>' + esc(KELAS.sekolah) + ', ' + tglID(Date.now()) + '<br>Guru Kelas</p><div class="isi"></div><p><b>' + esc(KELAS.guru) + '</b></p></div></div>';
+  bukaDokumen('Laporan TKA ' + KELAS.kelas, isi);
+}
 
 /* ---------- ujian serentak ---------- */
 let PANTAU = null;
