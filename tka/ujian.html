@@ -48,6 +48,7 @@ button{font:inherit;cursor:pointer}
 .form select[name=namaPilih]{font-weight:700;border-color:#93c5fd;background:#f5faff}
 .kelas-info{margin:0 0 8px;font-size:13.5px;color:var(--muted)}.kelas-info.ok{color:var(--hijau);font-weight:700}.kelas-info.x{color:var(--merah);font-weight:600}
 @media(max-width:640px){.kotak-kelas{grid-template-columns:1fr}}
+.bantu{display:block;font-weight:400;color:var(--muted);font-size:12px;line-height:1.35}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
 .form input,.form select,.kode-in input{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%;background:#fff;color:var(--ink)}
 .salah{color:var(--merah);font-weight:600;font-size:14px;min-height:1.2em;margin:4px 0}
@@ -252,19 +253,22 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
       <li>Waktu berjalan terus walaupun halaman ditutup. Jawaban tersimpan otomatis di perangkat ini.</li>
       <li>Bila waktu habis, jawaban dikirim otomatis.</li>
     </ol>
+    <h2>Isi data peserta</h2>
+    <p style="margin:-4px 0 10px;font-size:14px;color:var(--muted)">Semua kolom wajib diisi, kecuali kode kelas. Tulis data yang <b>sama setiap kali</b> mengerjakan agar riwayat nilaimu rapi.</p>
     <form id="f-peserta" novalidate>
       <div class="form">
-        <label>Nama peserta<input name="nama" required maxlength="60" autocomplete="name" data-label="nama peserta"></label>
-        <label>Asal sekolah<input name="sekolah" required maxlength="80" placeholder="Contoh: SD N 1 Sukamaju" data-label="asal sekolah"></label>
-        <label>Kelas<select name="kelas"><option value="">Pilih…</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option><option>Lainnya</option></select></label>
+        <label>Nama peserta<input name="nama" required maxlength="60" autocomplete="name" placeholder="Contoh: Andi Pratama" data-label="nama peserta"><span class="bantu">Nama lengkap. Bila ada daftar dari guru, cukup pilih namamu.</span></label>
+        <label>Asal sekolah<input name="sekolah" required maxlength="80" placeholder="Contoh: SD N 1 Sukamaju" data-label="asal sekolah"><span class="bantu">Tulis lengkap nama sekolahmu.</span></label>
+        <label>Kelas<select name="kelas"><option value="">Pilih…</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option><option>Lainnya</option></select><span class="bantu">Kelasmu saat ini.</span></label>
       </div>
+      <p style="margin:6px 0 2px;font-size:13px;font-weight:700">Lokasi sekolah <span style="font-weight:400;color:var(--muted)">(pilih berurutan: provinsi → kabupaten/kota → kecamatan)</span></p>
       <div class="form wil">
         <label>Provinsi<select name="provinsi" required data-label="provinsi"><option value="">Memuat…</option></select></label>
         <label>Kabupaten/Kota<select name="kabupaten" required data-label="kabupaten/kota" disabled><option value="">Pilih provinsi dulu…</option></select></label>
         <label>Kecamatan<select name="kecamatan" required data-label="kecamatan" disabled><option value="">Pilih kabupaten dulu…</option></select></label>
       </div>
       <div class="kotak-kelas">
-        <label>Kode kelas <span style="font-weight:400;color:var(--muted)">(opsional, dari guru)</span><input name="kodeKelas" maxlength="8" placeholder="Contoh: K7QP2A" autocomplete="off" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700"></label>
+        <label>Kode kelas <span style="font-weight:400;color:var(--muted)">(opsional, dari guru)</span><input name="kodeKelas" maxlength="8" placeholder="Contoh: K7QP2A" autocomplete="off" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700"><span class="bantu">6 huruf/angka dari gurumu. Belajar sendiri? Kosongkan saja.</span></label>
         <p class="kelas-info" id="aw-kelas-info"></p>
       </div>
       <p class="catatan" style="margin:0">Asal sekolah dan wilayah hanya dipakai untuk statistik gabungan. Nama dan nilai hanya dapat dilihat oleh guru kelasmu bila kamu mengisi kode kelas.</p>
@@ -328,6 +332,11 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
     <div class="peringatan" id="h-tertunda" hidden style="margin-top:14px"><b>Nilai belum dapat dihitung.</b> <span id="h-tertunda-teks"></span> Jawaban sudah tersimpan di perangkat ini. <button class="btn" type="button" id="h-ulang-kirim" style="margin-top:8px">Hitung nilai sekarang</button></div>
     <div class="aksi" style="margin-top:16px"><a class="btn ghost" id="h-ulang" href="#">↻ Kerjakan ulang</a><a class="btn ghost" href="./">Daftar paket soal</a></div>
     <p class="catatan" style="margin:12px 0 0">🆕 <b>Paket soal lainnya segera hadir</b> dalam waktu dekat. <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">Gabung grup WhatsApp</a> agar tidak ketinggalan kabarnya.</p>
+  </div>
+
+  <div class="kartu" id="h-langkah" hidden style="background:#f0f7ff;border:1px solid #cfe2f7">
+    <h2>🧭 Langkah berikutnya</h2>
+    <ol id="h-langkah-isi" style="margin:0;padding-left:20px;line-height:1.7"></ol>
   </div>
 
   <div class="kartu" id="h-saran" hidden style="border:2px solid #f5c26b;background:linear-gradient(135deg,#fff7e8,#fff)">
@@ -752,6 +761,14 @@ function isiHasil(r, res) {
   $('h-saran').hidden = !saran.length;
   $('h-saran-isi').innerHTML = saran.map((l, i) => '<a href="ujian.html?paket=' + l.id + '" style="display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit">' +
     '<b style="background:#d97706;color:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;flex:none">' + (i + 1) + '</b><span style="flex:1"><b>' + TKA.esc(l.judul) + '</b><br><small style="color:var(--muted)">' + TKA.esc(l.indikator) + '</small></span><span style="font-weight:800;color:#d97706">Kerjakan ›</span></a>').join('');
+  const langkah = [];
+  if (ada && r.peserta && r.peserta.kodeKelas) langkah.push('Nilaimu sudah <b>terkirim ke dasbor gurumu</b>. Tidak perlu mengirim tangkapan layar.');
+  if (saran.length) langkah.push('Kerjakan <b>Latihan untukmu</b> di bawah, mulai dari nomor 1. Setiap latihan hanya 5 soal.');
+  if (ada && !B.latihan && !r.ujian) langkah.push('Setelah berlatih, <b>kerjakan ulang</b> paket ini atau coba paket lain untuk melihat kemajuanmu.');
+  if (ada && B.latihan) langkah.push(r.nilai >= 80 ? 'Hebat! Lanjutkan ke latihan indikator lain di halaman Simulasi TKA.' : 'Pelajari lagi materinya, lalu <b>ulangi latihan ini</b> sampai nilaimu minimal 80.');
+  if (ada) langkah.push('Lihat <b>📈 Grafik perkembanganku</b> di <a href="./#riwayat">halaman Simulasi TKA</a>.');
+  $('h-langkah').hidden = !langkah.length;
+  $('h-langkah-isi').innerHTML = langkah.map(x => '<li>' + x + '</li>').join('');
   const premium = res.ok && res.premium;
   const lewatKelas = !!(r.peserta && r.peserta.kodeKelas);
   $('h-kunci').hidden = !ada || premium || lewatKelas;
