@@ -80,9 +80,19 @@ const LATIHAN_TKA = [
  {
   "id": "lt-mat-08",
   "mapel": "Matematika",
-  "judul": "Persamaan penjumlahan dan pengurangan",
+  "judul": "Persamaan penjumlahan",
   "nomor": [
-   8,
+   8
+  ],
+  "elemen": "Bilangan",
+  "indikator": "Menyelesaikan persamaan sederhana menggunakan operasi penjumlahan atau pengurangan dalam bentuk sederhana.",
+  "gratis": true
+ },
+ {
+  "id": "lt-mat-09",
+  "mapel": "Matematika",
+  "judul": "Persamaan pengurangan",
+  "nomor": [
    9
   ],
   "elemen": "Bilangan",
