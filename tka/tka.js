@@ -42,6 +42,8 @@ const TKA = (() => {
 
   function muatBank(id) {
     if (bank[id]) return Promise.resolve(bank[id]);
+    const lokal = simpan.get('tka-bank-' + id);   // paket eksklusif yang pernah diterima saat ujian serentak
+    if (lokal && lokal.soal) { bank[id] = lokal; return Promise.resolve(lokal); }
     if (!/^[a-z0-9-]+$/.test(id)) return Promise.reject(new Error('Paket tidak dikenal'));
     return new Promise((ok, gagal) => {
       const s = document.createElement('script');

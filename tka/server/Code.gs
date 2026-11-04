@@ -57,6 +57,7 @@ function doPost(e) {
     if (req.aksi === 'cekUjian') return json_(cekUjian_(req));
     if (req.aksi === 'mulaiUjian') return json_(mulaiUjian_(req));
     if (req.aksi === 'statusUjian') return json_(statusUjian_(req));
+    if (req.aksi === 'bankGuru') return json_(bankGuru_(req));
     if (req.aksi === 'pembahasanGuru') return json_(pembahasanGuru_(req));
     return json_({ ok: false, pesan: 'Aksi tidak dikenal.' });
   } catch (err) {
@@ -116,6 +117,7 @@ function hitung_(bank, jawaban) {
 function nilai_(req) {
   var bank = KUNCI_TKA[req.paket];
   if (!bank) return { ok: false, pesan: 'Paket soal tidak dikenal.' };
+  if (bankEksklusif_(req.paket) && !req.ujian && !req.lihatUlang) return { ok: false, pesan: 'Paket ini hanya dapat dikerjakan lewat ujian serentak.' };
   var jawaban = (req.jawaban && typeof req.jawaban === 'object') ? req.jawaban : {};
   var h = hitung_(bank, jawaban);
   var akses = req.kode ? periksaKode_(req.kode, req.perangkat) : null;
@@ -625,7 +627,10 @@ function cekUjian_(req) {
   if (u.status === 'BATAL') return { ok: false, pesan: 'Ujian ini dibatalkan oleh guru.' };
   var k = dataKelas_(u.kode);
   if (!k) return { ok: false, pesan: 'Kelas ujian tidak ditemukan.' };
-  return { ok: true, ujian: u, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [] }, sekarang: Date.now() };
+  var hasil = { ok: true, ujian: u, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [] }, sekarang: Date.now() };
+  var bx = bankEksklusif_(u.paket);
+  if (bx) hasil.eksklusif = { jenjang: bx.jenjang, mapel: bx.mapel, paket: bx.paket, durasi: bx.durasi, jumlah: bx.soal.length };
+  return hasil;
 }
 
 function cariPeserta_(id, nama) {
@@ -656,7 +661,22 @@ function mulaiUjian_(req) {
     if (p.baris && p.data[3]) return { ok: false, sudah: true, pesan: 'Kamu sudah mengumpulkan ujian ini. Ujian serentak hanya satu kali kesempatan.' };
     if (!p.baris) p.sh.appendRow([u.id, String(req.nama).slice(0, 60), new Date(), '', '']);
   } finally { kunci.releaseLock(); }
-  return { ok: true, sekarang: now };
+  var bx = bankEksklusif_(u.paket);
+  return bx ? { ok: true, sekarang: now, bank: bx } : { ok: true, sekarang: now };
+}
+
+/** Paket eksklusif (soal hanya di server). */
+function bankEksklusif_(paket) {
+  return typeof BANK_EKSKLUSIF !== 'undefined' && BANK_EKSKLUSIF[paket] ? BANK_EKSKLUSIF[paket] : null;
+}
+
+/** Soal paket eksklusif untuk dasbor guru Kelas Premium (analisis dan dokumen kunci). */
+function bankGuru_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  if (!premiumAktif_(k)) return { ok: false, pesan: 'Fitur ini tersedia untuk Kelas Premium.' };
+  var bx = bankEksklusif_(req.paket);
+  return bx ? { ok: true, bank: bx } : { ok: false, pesan: 'Paket tidak ditemukan.' };
 }
 
 /** Pemeriksaan saat siswa mengumpulkan jawaban ujian serentak. */

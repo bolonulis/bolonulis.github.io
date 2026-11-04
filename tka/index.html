@@ -278,8 +278,8 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 </div>
 <script src="../bersama.js?v=2"></script>
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=11"></script>
-<script src="bank/daftar.js?v=4"></script>
+<script src="tka.js?v=12"></script>
+<script src="bank/daftar.js?v=5"></script>
 <script src="bank/latihan.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -326,7 +326,7 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
 })();
 
 /* ---------- riwayat ---------- */
-const NAMA_PAKET = Object.fromEntries(PAKET_TKA.map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]).concat(LATIHAN_TKA.map(l => [l.id, 'Latihan ' + l.mapel + ': ' + l.judul])));
+const NAMA_PAKET = Object.fromEntries(PAKET_TKA.concat(typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]).concat(LATIHAN_TKA.map(l => [l.id, 'Latihan ' + l.mapel + ': ' + l.judul])));
 if (RIWAYAT.length) {
   $('riwayat').hidden = false;
   const titik = RIWAYAT.filter(r => typeof r.nilai === 'number' && !r.tertunda).sort((a, b) => a.waktu - b.waktu).slice(-20)
