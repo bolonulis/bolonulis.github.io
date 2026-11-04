@@ -44,6 +44,9 @@ Lembar **Akses**:
 
 Lembar **Kelas**, kolom **Premium sampai** menentukan status Premium; boleh diubah manual (misalnya untuk memperpanjang).
 Kolom **Coba gratis dipakai** terisi ketika guru memakai coba gratis 14 hari (sekali per kelas).
+Kolom **Kode akses** terisi bila guru mengaktifkan Premium dengan kode akses Pembahasan miliknya (tombol di dasbor).
+Satu kode untuk 1 kelas (`PENGATURAN.KELAS_PER_KODE`). Kelas Premium membuka semua latihan untuk siswa;
+kunci & pembahasan hanya tampil di dasbor guru (siswa tetap hanya melihat nilai).
 
 Lembar **Nilai** mencatat setiap pengerjaan: nama, sekolah, kelas, paket, nilai, dan kode yang dipakai.
 

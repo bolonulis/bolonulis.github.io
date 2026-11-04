@@ -342,7 +342,11 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
     <div class="aksi"><a class="btn wa" id="h-wa" href="#" target="_blank" rel="noopener">💬 Minta kode lewat WhatsApp</a></div>
     <div class="kode-in"><input id="h-kode" placeholder="TKA-XXXX-XXXX" maxlength="20" autocomplete="off" aria-label="Kode akses"><button class="btn hijau" type="button" id="h-kode-btn">Buka pembahasan</button></div>
     <p class="salah" id="h-kode-salah"></p>
-    <p class="catatan" id="h-kelas-saran" hidden style="margin:10px 0 0;font-size:13.5px">💡 Kamu mengerjakan lewat kelas gurumu. Bila guru mengaktifkan <b>Kelas Premium</b>, kunci dan pembahasan terbuka otomatis untuk seluruh kelas, tanpa kode.</p>
+  </div>
+  <div class="kartu" id="h-kelas-info" hidden>
+    <h2>📘 Pembahasan bersama gurumu</h2>
+    <p style="margin:0">Nilaimu sudah tercatat di dasbor kelas. Gurumu dapat melihat soal mana yang perlu dipelajari lagi beserta kunci dan pembahasannya, lalu membahasnya bersama di kelas.</p>
+    <p style="margin:10px 0 0;color:var(--muted);font-size:14px">💡 Tips: jangan hanya mengejar nilai 100. Kerjakan ulang setelah memahami pembahasan dari guru, ya!</p>
   </div>
 
   <div id="h-premium" hidden>
@@ -449,7 +453,7 @@ function pasangKodeKelas(f, ps) {
     const n = ++urut; info.textContent = 'Memeriksa kode kelas…';
     const r = await TKA.api({ aksi: 'cekKelas', kode: v });
     if (n !== urut) return;
-    if (r.ok) { f.dataset.kelasOk = r.kode; if (r.premium) f.dataset.kelasPremium = '1'; if (B.latihan && r.premium) $('aw-kunci').hidden = true; TKA.simpan.set('tka-kelas', r.kode); info.className = 'kelas-info ok'; info.textContent = '✔ ' + r.kelas + ' · ' + r.sekolah + ' · Guru: ' + r.guru + (r.premium ? ' · ⭐ Kelas Premium: kunci & pembahasan terbuka setelah selesai' : ''); pilihanNama(f, r.siswa || []); }
+    if (r.ok) { f.dataset.kelasOk = r.kode; if (r.premium) f.dataset.kelasPremium = '1'; if (B.latihan && r.premium) $('aw-kunci').hidden = true; TKA.simpan.set('tka-kelas', r.kode); info.className = 'kelas-info ok'; info.textContent = '✔ ' + r.kelas + ' · ' + r.sekolah + ' · Guru: ' + r.guru + (r.premium ? ' · ⭐ Kelas Premium: semua latihan per indikator terbuka' : ''); pilihanNama(f, r.siswa || []); }
     else { info.className = 'kelas-info x'; info.textContent = r.pesan || 'Kode kelas tidak ditemukan.'; pilihanNama(f, []); }
   };
   el.addEventListener('input', periksa);
@@ -664,7 +668,9 @@ function isiHasil(r, res) {
   $('h-tertunda').hidden = ada;
   $('h-tertunda-teks').textContent = res.pesan || '';
   const premium = res.ok && res.premium;
-  $('h-kunci').hidden = !ada || premium;
+  const lewatKelas = !!(r.peserta && r.peserta.kodeKelas);
+  $('h-kunci').hidden = !ada || premium || lewatKelas;
+  $('h-kelas-info').hidden = !ada || premium || !lewatKelas;
   $('h-premium').hidden = !premium;
   if (ada && !premium) siapkanKunci(r, res);
   if (premium) isiPremium(r, res);
@@ -679,7 +685,6 @@ function siapkanKunci(r, res) {
     '\nPaket yang dikerjakan: TKA ' + B.jenjang + ' ' + judulPaket() + ' (nilai ' + TKA.angka(r.nilai) + ')\n\nMohon info cara pembayarannya. Terima kasih.';
   $('h-wa').href = 'https://wa.me/6281196939694?text=' + encodeURIComponent(pesan);
   $('h-kode-salah').textContent = res.pesanKode || '';
-  $('h-kelas-saran').hidden = !ps.kodeKelas;
 }
 
 $('h-kode-btn').onclick = async () => {
@@ -696,8 +701,7 @@ $('h-kode-btn').onclick = async () => {
 
 function isiPremium(r, res) {
   $('h-analisis').innerHTML = TKA.htmlAnalisis(B, res.rinci);
-  $('h-akses-nama').textContent = res.kelasPremium ? '⭐ Pembahasan terbuka dari Kelas Premium ' + res.kelasPremium + '.' :
-    'Akses Pembahasan aktif' + (res.nama ? ' atas nama ' + res.nama : '') + '. Unduh sebanyak yang diperlukan.';
+  $('h-akses-nama').textContent = 'Akses Pembahasan aktif' + (res.nama ? ' atas nama ' + res.nama : '') + '. Unduh sebanyak yang diperlukan.';
   $('h-tinjau').innerHTML = B.soal.map(q => {
     const rc = res.rinci[q.no] || { skor: 0 };
     const [c, l] = TKA.statusSkor(rc.skor);
