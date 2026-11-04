@@ -133,7 +133,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   <section id="guru" style="margin-top:22px">
     <div style="display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;background:linear-gradient(135deg,#eef6ff,#fff);border:2px solid #bcd7f5;border-radius:22px;padding:22px">
       <div><h2 style="margin:0 0 6px"><img src="guru.svg" alt="" style="width:34px;height:34px;vertical-align:-9px;margin-right:6px">Untuk Guru: Kelas Intensif TKA <span style="font-size:13px;background:#dc2626;color:#fff;border-radius:99px;padding:2px 9px;vertical-align:middle" data-tampil-sampai="2026-11-11">BARU · GRATIS</span></h2>
-      <p class="sub" style="margin:0">Buat kelas dalam 1 menit, bagikan tautannya ke grup WhatsApp siswa, lalu pantau nilai seluruh kelas dan <b>indikator yang perlu diperkuat</b> di dasbor guru. Tanpa akun, tanpa kata sandi. <b>Kelas Premium</b> membuka kunci &amp; pembahasan serta latihan per indikator untuk seluruh siswa; coba gratis 14 hari.</p></div>
+      <p class="sub" style="margin:0">Buat kelas dalam 1 menit, bagikan tautannya ke grup WhatsApp siswa, lalu pantau nilai seluruh kelas dan <b>indikator yang perlu diperkuat</b> di dasbor guru. Tanpa akun, tanpa kata sandi. <b>Kelas Premium</b> membuka semua latihan per indikator untuk siswa serta kunci &amp; pembahasan di dasbor guru; coba gratis 14 hari. Kode akses Pembahasan juga mengaktifkan Kelas Premium untuk 1 kelas.</p></div>
       <a class="btn" href="guru.html" style="background:#1f6fb2">Buka Kelas Intensif ›</a>
     </div>
   </section>
@@ -146,7 +146,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 
   <section id="latihan">
     <h2>Latihan per Indikator <span style="font-size:13px;background:#dc2626;color:#fff;border-radius:99px;padding:2px 9px;vertical-align:middle" data-tampil-sampai="2026-11-11">BARU</span></h2>
-    <p class="sub">Latihan singkat 5 soal (15 menit) untuk setiap indikator TKA, lengkap dengan pembahasan. Cocok untuk memperkuat indikator yang masih lemah. Latihan bertanda <b>Gratis</b> terbuka untuk semua; latihan lainnya untuk siswa <b>Kelas Premium</b> (lewat tautan kelas dari guru) atau pemegang kode akses.</p>
+    <p class="sub">Latihan singkat 5 soal (15 menit) untuk setiap indikator TKA. Cocok untuk memperkuat indikator yang masih lemah. Latihan bertanda <b>Gratis</b> terbuka untuk semua; latihan lainnya untuk siswa <b>Kelas Premium</b> (lewat tautan kelas dari guru) atau pemegang kode akses.</p>
     <div id="daftar-latihan"></div>
     <p style="margin-top:10px;font-size:13px;color:var(--muted)">Latihan Bahasa Indonesia segera hadir.</p>
   </section>
@@ -178,7 +178,8 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
           <li>Pembahasan langkah demi langkah</li>
           <li>Analisis capaian per elemen dan subelemen seperti laporan hasil TKA</li>
           <li>Unduh pembahasan (PDF/HTML) <b>berulang kali tanpa batas</b></li>
-          <li>Berlaku untuk semua paket, termasuk paket baru</li>
+          <li>Berlaku untuk semua paket, termasuk paket baru dan semua latihan per indikator</li>
+          <li><b>Untuk guru:</b> kode yang sama sekaligus mengaktifkan <b>Kelas Premium</b> untuk 1 kelas di <a href="guru.html">Kelas Intensif TKA</a></li>
         </ul>
         <a class="btn wa" href="#akses">Dapatkan kode akses</a>
       </div>
@@ -280,7 +281,7 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
     '<ul><li>' + p.soal + ' soal · ' + p.durasi + ' menit</li><li>Pilihan ganda, pilihan ganda kompleks, benar/salah</li><li>Mengikuti indikator TKA ' + p.jenjang + '</li></ul>' +
     (r ? '<p class="terakhir">Nilai terakhir: ' + TKA.angka(r.nilai) + '</p>' : '') +
     '<div class="aksi"><a class="btn" href="ujian.html?paket=' + p.id + '">Kerjakan ▶</a>' +
-    '<a class="btn pdf" href="pdf/' + p.id + '.pdf?v=1" download="Soal-Simulasi-TKA-' + p.jenjang + '-' + p.mapel.replace(/\s+/g, '-') + '-' + p.paket.replace(/\s+/g, '') + '.pdf" title="Unduh soal untuk dikerjakan di kertas">⬇️ Soal PDF</a></div></article>';
+    '<a class="btn pdf" href="pdf/' + p.id + '.pdf?v=2" download="Soal-Simulasi-TKA-' + p.jenjang + '-' + p.mapel.replace(/\s+/g, '-') + '-' + p.paket.replace(/\s+/g, '') + '.pdf" title="Unduh soal untuk dikerjakan di kertas">⬇️ Soal PDF</a></div></article>';
 }).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket berikutnya segera hadir</b><span style="font-size:14px">Paket 3 sedang disiapkan.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
 
 /* ---------- latihan per indikator ---------- */

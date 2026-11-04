@@ -153,8 +153,7 @@ const TKA = (() => {
         '<div class="bahas"><b>Pembahasan</b><div>' + pecahan(rc.bahas || '') + '</div></div></article>';
     }).join('');
     // gambar berkas (bank/gambar/...) dijadikan alamat lengkap agar tetap tampil di berkas unduhan
-    const akar = new URL('bank/', location.href).href;
-    isi = isi.replace(/src="bank\//g, 'src="' + akar);
+    isi = gambarLengkap(isi);
     return '<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + '</style></head><body>' +
       '<header class="kop"><div><small>SIMULASI TKA · BOLONULIS.GITHUB.IO/TKA</small><h1>' + esc(judul) + '</h1>' +
       '<p>' + esc(ps.nama || '-') + (ps.sekolah ? ' · ' + esc(ps.sekolah) : '') + (ps.kelas ? ' · ' + esc(ps.kelas) : '') + '<br>' + tgl + '</p></div>' +
@@ -192,6 +191,12 @@ const TKA = (() => {
 
   /** Dokumen soal (tanpa kunci) untuk dicetak/PDF: identitas, petunjuk, soal, dan lembar jawaban. */
   /** Dokumen soal siap cetak. Bila `rinci` ({no: {kunci, bahas}}) diberikan: versi guru berisi kunci dan pembahasan. */
+  /** Gambar berkas (bank/...) dijadikan alamat lengkap dan dimuat langsung (bukan lazy) agar tampil di cetakan/PDF/unduhan. */
+  function gambarLengkap(html) {
+    const akar = new URL('bank/', location.href).href;
+    return html.replace(/src="bank\//g, 'src="' + akar).replace(/ loading="lazy"/g, '');
+  }
+
   function dokumenSoal(b, rinci, ket) {
     const judul = (rinci ? 'Kunci & Pembahasan · ' : '') + 'Simulasi TKA ' + b.jenjang + ' ' + b.mapel + ' · ' + b.paket;
     const sudah = {};
@@ -219,11 +224,11 @@ const TKA = (() => {
       return h + '</div></article>';
     }).join('');
     if (rinci) {
-      const akar = new URL('bank/', location.href).href;
-      return ('<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + CSS_SOAL +
+      const html = ('<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + CSS_SOAL +
         '.kunci-guru{background:#eefaf2;border:1px solid #b9e3c6;border-radius:8px;padding:6px 10px;margin:6px 0 2px;font-size:12.5px}.kunci-guru b{color:#1b7f3e}</style></head><body>' +
         '<header class="kop"><div><small>KELAS INTENSIF TKA · UNTUK GURU</small><h1>' + esc(judul) + '</h1><p>' + esc(ket || '') + '</p></div></header>' + butir +
-        '<footer>Dokumen guru Kelas Premium. Mohon tidak disebarkan kepada siswa sebelum mengerjakan. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>').replace(/src="bank\//g, 'src="' + akar);
+        '<footer>Dokumen guru Kelas Premium. Mohon tidak disebarkan kepada siswa sebelum mengerjakan. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>');
+      return gambarLengkap(html);
     }
     const lj = b.soal.map(q => {
       let pil;
@@ -231,7 +236,7 @@ const TKA = (() => {
       else pil = q.opsi.map((_, i) => '<i class="' + (q.tipe === 'pgk' ? 'kt' : 'bl') + '">' + HURUF[i] + '</i>').join('');
       return '<div class="lj-baris"><b>' + q.no + '</b>' + pil + '</div>';
     }).join('');
-    return '<!doctype html><html lang="id"><head><meta charset="utf-8"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + CSS_SOAL + '</style></head><body>' +
+    return gambarLengkap('<!doctype html><html lang="id"><head><meta charset="utf-8"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + CSS_SOAL + '</style></head><body>' +
       '<header class="kop"><div><small>SIMULASI TKA · BOLONULIS.GITHUB.IO/TKA</small><h1>' + esc(judul) + '</h1><p>' + b.soal.length + ' soal · ' + b.durasi + ' menit · pilihan ganda, pilihan ganda kompleks, dan ' + 'benar/salah</p></div></header>' +
       '<table class="identitas"><tr><td>Nama</td><td></td><td>Kelas</td><td></td></tr><tr><td>Sekolah</td><td colspan="3"></td></tr></table>' +
       '<div class="petunjuk"><b>Petunjuk</b><ol><li><b>Pilihan ganda</b>: pilih satu jawaban yang paling tepat.</li><li><b>Pilihan ganda kompleks</b> (bertanda "Jawaban benar lebih dari satu"): pilih semua jawaban yang benar.</li><li><b>Benar/Salah</b> atau <b>Sesuai/Tidak Sesuai</b>: beri tanda centang pada kolom yang tepat untuk setiap pernyataan.</li><li>Tulis jawaban pada soal atau pada <b>Lembar Jawaban</b> di halaman terakhir.</li></ol></div>' +
@@ -239,7 +244,7 @@ const TKA = (() => {
       '<section class="lj"><h2>Lembar Jawaban</h2><p class="lj-ket">Hitamkan lingkaran (pilihan ganda) atau centang kotak (pilihan ganda kompleks dan benar/salah). B = Benar, S = Salah, S/TS = Sesuai/Tidak Sesuai.</p>' +
       '<table class="identitas"><tr><td>Nama</td><td></td><td>Kelas</td><td></td></tr></table><div class="lj-isi">' + lj + '</div>' +
       '<div class="ajak">🔑 <b>Ingin tahu nilai, kunci jawaban, dan pembahasannya?</b> Kerjakan versi komputer di <b>bolonulis.github.io/tka</b>: nilai langsung keluar, gratis.</div></section>' +
-      '<footer>Soal simulasi ini disusun mengikuti kisi-kisi dan indikator TKA, bukan soal resmi. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>';
+      '<footer>Soal simulasi ini disusun mengikuti kisi-kisi dan indikator TKA, bukan soal resmi. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>');
   }
   const CSS_SOAL = '@page{size:A4;margin:14mm 13mm 16mm}body{max-width:none;padding:0;font-size:13px}h1{font-size:19px}' +
     '.identitas{margin:12px 0}.identitas td{height:26px}.identitas td:nth-child(odd){width:70px;font-weight:700;background:#f8fafc}' +

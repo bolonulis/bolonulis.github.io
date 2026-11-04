@@ -141,16 +141,17 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
         <h3>⭐ Kelas Premium</h3><div class="hrg">Rp50.000 <small>/ kelas / tahun ajaran</small></div>
         <ul>
           <li>Semua fitur Kelas Gratis</li>
-          <li><b>Kunci jawaban &amp; pembahasan untuk semua siswa di kelas</b>, otomatis setelah mengerjakan</li>
-          <li><b>Kunci &amp; pembahasan setiap soal di dasbor guru</b>, siap cetak</li>
-          <li>Bantuan prioritas lewat WhatsApp</li>
+          <li><b>Kunci &amp; pembahasan setiap soal di dasbor guru</b>, siap ditampilkan atau dicetak untuk membahas di kelas</li>
           <li><b>Latihan per indikator Matematika</b> (29 set) untuk seluruh siswa, dan tombol <b>kirim latihan</b> langsung dari indikator terlemah</li>
+          <li>Siswa hanya melihat nilai, <b>kunci tetap di tangan guru</b>, sehingga siswa tidak sekadar menghafal jawaban</li>
+          <li>Bantuan prioritas lewat WhatsApp</li>
           <li class="nanti">Latihan per indikator Bahasa Indonesia</li>
           <li class="nanti">Remedial otomatis sesuai kelemahan tiap siswa</li>
           <li class="nanti">Peta kemampuan siswa dan grafik perkembangan</li>
           <li class="nanti">Rapor untuk orang tua dan laporan kepala sekolah</li>
         </ul>
         <p class="catatan" style="margin:10px 0 0">🎁 <b>Coba gratis 14 hari</b>, cukup satu klik dari dasbor kelas. Fitur yang segera hadir otomatis masuk Kelas Premium.</p>
+        <p class="catatan" style="margin:6px 0 0">🔑 <b>Sudah punya kode akses Pembahasan (Rp50.000)?</b> Kode itu sekaligus mengaktifkan Kelas Premium untuk 1 kelas. Masukkan di dasbor kelas, tanpa biaya tambahan.</p>
       </div>
     </div>
   </div>
@@ -254,8 +255,9 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <h3>E. Kelas Premium</h3>
     <ul>
       <li>Ketuk <b>🎁 Coba Premium gratis 14 hari</b> di dasbor. Langsung aktif, tanpa pembayaran, dan berhenti otomatis setelah 14 hari. Coba gratis hanya sekali untuk setiap kelas.</li>
-      <li>Selama Premium, siswa yang mengerjakan lewat tautan kelas (dan namanya ada di daftar siswa) <b>otomatis mendapat kunci dan pembahasan</b>.</li>
-      <li>Siswa dapat mengerjakan <b>semua latihan per indikator</b> (latihan bertanda Gratis terbuka untuk semua kelas).</li>
+      <li>Selama Premium, siswa yang mengerjakan lewat tautan kelas (dan namanya ada di daftar siswa) dapat mengerjakan <b>semua latihan per indikator</b>.</li>
+      <li>Siswa hanya melihat nilai. <b>Kunci dan pembahasan hanya untuk guru</b>, agar siswa belajar memahami, bukan menghafal jawaban.</li>
+      <li><b>Sudah membeli kode akses Pembahasan?</b> Masukkan kode itu di kartu Kelas Premium pada dasbor. Kelas Anda langsung Premium sampai 31 Juli akhir tahun ajaran (1 kode untuk 1 kelas).</li>
       <li>Di dasbor muncul kolom <b>Kunci</b> dan tombol <b>📖 Kunci &amp; pembahasan</b> untuk dicetak.</li>
       <li>Untuk berlangganan (Rp50.000 per kelas per tahun ajaran), ketuk <b>⭐ Aktifkan Premium</b>. Admin mengaktifkan kelas Anda setelah dukungan diterima. Premium berlaku sampai 31 Juli akhir tahun ajaran.</li>
     </ul>
@@ -351,12 +353,26 @@ function gambarPremium() {
   const sisa = p.aktif ? Math.max(1, Math.ceil((p.sampai - Date.now()) / 864e5)) : 0;
   el.classList.toggle('aktif', p.aktif);
   el.innerHTML = p.aktif
-    ? '<div><h2>⭐ Kelas Premium aktif' + (p.masaCoba ? ' (coba gratis)' : '') + '</h2><p>Berlaku sampai <b>' + tglID(p.sampai) + '</b>' + (sisa <= 31 ? ' (sisa ' + sisa + ' hari)' : '') + '. Siswa di daftar kelas otomatis mendapat kunci dan pembahasan.</p></div>' +
+    ? '<div><h2>⭐ Kelas Premium aktif' + (p.masaCoba ? ' (coba gratis)' : '') + '</h2><p>Berlaku sampai <b>' + tglID(p.sampai) + '</b>' + (sisa <= 31 ? ' (sisa ' + sisa + ' hari)' : '') + '. Semua latihan terbuka untuk siswa di daftar kelas; kunci &amp; pembahasan tersedia di dasbor Anda.</p></div>' +
       (p.masaCoba ? '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Lanjutkan Premium: Rp50.000/tahun ajaran</a>' : sisa <= 31 ? '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Perpanjang Premium</a>' : '')
-    : '<div><h2>Kelas Gratis</h2><p>Buka kunci &amp; pembahasan untuk semua siswa dan untuk dasbor Anda dengan <b>Kelas Premium</b> (Rp50.000 per tahun ajaran).</p></div>' +
+    : '<div><h2>Kelas Gratis</h2><p>Buka kunci &amp; pembahasan di dasbor Anda dan semua latihan per indikator untuk siswa dengan <b>Kelas Premium</b> (Rp50.000 per tahun ajaran).</p></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (p.cobaDipakai ? '' : '<button class="btn hijau" id="p-coba" type="button">🎁 Coba Premium gratis ' + (p.hariCoba || 14) + ' hari</button>') +
       '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Aktifkan Premium</a></div>' + (p.cobaDipakai ? '<p style="flex-basis:100%;font-size:12.5px">Masa coba gratis kelas ini sudah selesai.</p>' : '');
+  if (!p.aktif || p.masaCoba) el.innerHTML += '<div style="flex-basis:100%;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px dashed var(--line);padding-top:10px">' +
+    '<span style="font-size:13.5px">🔑 Sudah punya <b>kode akses Pembahasan</b>? Pakai untuk Premium kelas ini:</span>' +
+    '<input id="p-kode" placeholder="TKA-XXXX-XXXX" maxlength="20" autocomplete="off" style="font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;text-transform:uppercase;width:170px">' +
+    '<button class="btn kecil" id="p-kode-btn" type="button">Aktifkan</button><span id="p-kode-pesan" style="font-size:13px;color:var(--merah)"></span></div>';
   el.hidden = false;
+  const bk = $('p-kode-btn');
+  if (bk) bk.onclick = async () => {
+    const v = $('p-kode').value.trim();
+    if (!v) { $('p-kode-pesan').textContent = 'Tuliskan kode akses terlebih dahulu.'; return; }
+    bk.disabled = true; $('p-kode-pesan').textContent = 'Memeriksa…';
+    const r = await TKA.api({ aksi: 'premiumDenganKode', kode: KELAS.kode, pin: KELAS.pin, kodeAkses: v });
+    bk.disabled = false;
+    if (!r.ok) { $('p-kode-pesan').textContent = r.pesan || 'Belum berhasil. Coba lagi.'; return; }
+    DATA.premium = r.premium; gambar();
+  };
   const b = $('p-coba');
   if (b) b.onclick = async () => {
     if (!confirm('Aktifkan coba gratis Kelas Premium selama ' + (p.hariCoba || 14) + ' hari? Coba gratis hanya bisa dipakai sekali untuk kelas ini.')) return;
