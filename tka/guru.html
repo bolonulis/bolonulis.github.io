@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dasbor Guru · Simulasi TKA</title>
+<meta name="description" content="Dasbor guru Simulasi TKA SD: buat kelas, bagikan tautan ke siswa, dan lihat nilai serta analisis per indikator seluruh kelas.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{--biru:#12314f;--biru2:#1f4f7a;--aksen:#1f6fb2;--kuning:#ffd21f;--hijau:#1b7f3e;--merah:#c0392b;--oranye:#d97706;--ink:#16202a;--muted:#5b6b7f;--line:#dfe5ec;--latar:#f3f6fa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--latar);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55}
+a{color:var(--aksen)}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer}
+.bar{background:linear-gradient(90deg,var(--biru),var(--biru2));color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px}
+.bar a{color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px;font-weight:800}
+.bar img{width:32px;height:32px}
+.bar small{display:block;color:var(--kuning);font-size:11px;letter-spacing:.06em}
+.bar .kanan{margin-left:auto;display:flex;gap:8px}
+.wadah{max-width:1080px;margin:22px auto 60px;padding:0 16px}
+.kartu{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 8px 22px rgba(18,49,79,.05);margin-bottom:16px}
+.kartu h2{margin:0 0 6px;color:var(--biru);font-size:19px}
+.kartu p.sub{margin:0 0 14px;color:var(--muted);font-size:14.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:10px 16px;font-weight:800;font-size:14.5px;background:var(--biru);color:#fff;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.1)}.btn:disabled{opacity:.55;cursor:wait}
+.btn.ghost{background:#fff;color:var(--biru);border:1px solid var(--line)}
+.btn.hijau{background:var(--hijau)}.btn.wa{background:#25d366}.btn.kecil{padding:6px 11px;font-size:13px}
+.bar .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
+.form input{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%}
+.form .penuh{grid-column:1/-1}
+.salah{color:var(--merah);font-weight:600;font-size:14px;min-height:1.2em;margin:6px 0 0}
+.dua{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.langkah{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+.langkah div{background:var(--latar);border-radius:12px;padding:12px;font-size:14px}
+.langkah b{display:flex;width:28px;height:28px;border-radius:50%;background:var(--biru);color:#fff;align-items:center;justify-content:center;margin-bottom:6px}
+.daftar-kelas{display:grid;gap:8px;margin-top:8px}
+.daftar-kelas button{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--latar);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left}
+.daftar-kelas button:hover{border-color:var(--aksen)}
+.daftar-kelas small{color:var(--muted)}
+.berhasil{border:2px solid var(--hijau);background:#f0faf3}
+.kode-besar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.kode-besar div{background:#fff;border:1px dashed #9fd2ae;border-radius:12px;padding:12px;text-align:center}
+.kode-besar small{display:block;color:var(--muted);font-weight:700;font-size:12px}
+.kode-besar b{font-size:30px;letter-spacing:.14em;color:var(--biru);font-variant-numeric:tabular-nums}
+.kepala-kelas{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.kepala-kelas h1{margin:0;font-size:22px;color:var(--biru)}
+.kepala-kelas p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.bagikan{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#eef6ff;border:1px solid #bcd7f5;border-radius:12px;padding:10px 12px;margin-top:12px}
+.bagikan code{flex:1 1 260px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;overflow-wrap:anywhere}
+.pilih-paket{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.pilih-paket button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:7px 14px;font-weight:700;font-size:14px}
+.pilih-paket button.aktif{background:var(--biru);color:#fff;border-color:var(--biru)}
+.angka{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.angka div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.angka small{color:var(--muted);font-weight:700;font-size:12.5px}
+.angka b{display:block;font-size:26px;color:var(--biru);font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:middle}
+th{color:var(--muted);font-size:12.5px;cursor:default;white-space:nowrap}
+th[data-urut]{cursor:pointer}th[data-urut]:hover{color:var(--biru)}
+.lencana{display:inline-block;min-width:54px;text-align:center;font-weight:800;border-radius:8px;padding:2px 8px;font-variant-numeric:tabular-nums}
+.l-baik{background:#e3f4e7;color:var(--hijau)}.l-cukup{background:#fff3cd;color:#8a5a00}.l-kurang{background:#fde2e1;color:#a61b1b}
+.bt{display:inline-block;width:120px;height:9px;background:#e6ebf1;border-radius:9px;vertical-align:middle;margin-right:8px;overflow:hidden}
+.bt i{display:block;height:100%}
+.isi-baik{background:var(--hijau)}.isi-cukup{background:#e0a400}.isi-kurang{background:var(--merah)}
+.lemah{display:grid;gap:8px}
+.lemah div{display:grid;grid-template-columns:56px 1fr 170px;gap:10px;align-items:center;background:var(--latar);border-radius:10px;padding:8px 12px;font-size:14px}
+.lemah .no{font-weight:800;color:var(--biru)}
+.lemah small{display:block;color:var(--muted);font-size:12.5px}
+.kosong{text-align:center;color:var(--muted);padding:26px 10px}
+.kosong b{display:block;color:var(--biru);font-size:17px;margin-bottom:4px}
+details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-top:10px}
+.memuat{color:var(--muted);text-align:center;padding:30px}
+.catatan{font-size:13px;color:var(--muted)}
+@media(max-width:820px){.dua,.langkah{grid-template-columns:1fr}.angka{grid-template-columns:repeat(2,1fr)}.lemah div{grid-template-columns:44px 1fr}.lemah div>span:last-child{grid-column:2}}
+@media(max-width:560px){.form,.kode-besar{grid-template-columns:1fr}.bt{width:70px}.sembunyi-hp{display:none}}
+@media print{.bar,.bagikan,.pilih-paket button:not(.aktif),.cetak-sembunyi{display:none!important}body{background:#fff}.kartu{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a href="./"><img src="logo.svg" alt=""><span><small>SIMULASI TKA</small>Dasbor Guru</span></a>
+  <div class="kanan"><a class="btn ghost kecil" id="btn-keluar" href="#" hidden>⇄ Ganti kelas</a></div>
+</header>
+
+<div class="wadah">
+
+<!-- ================= MASUK / BUAT KELAS ================= -->
+<div id="v-masuk">
+  <div class="kartu">
+    <h2>Pantau latihan TKA seluruh kelas dalam satu layar</h2>
+    <p class="sub">Gratis untuk guru. Tanpa akun dan tanpa kata sandi: cukup buat kelas, bagikan tautannya, lalu lihat hasilnya.</p>
+    <div class="langkah">
+      <div><b>1</b>Buat kelas di bawah ini. Anda mendapat <b style="display:inline;background:none;color:inherit;width:auto;height:auto">kode kelas</b> dan PIN.</div>
+      <div><b>2</b>Bagikan tautan kelas ke grup WhatsApp siswa/orang tua.</div>
+      <div><b>3</b>Siswa mengerjakan simulasi. Nilai dan analisis per indikator langsung masuk ke dasbor ini.</div>
+    </div>
+  </div>
+  <div class="dua">
+    <div class="kartu">
+      <h2>Buat kelas baru</h2>
+      <form id="f-buat" class="form" novalidate>
+        <label>Nama guru<input name="nama" maxlength="60" placeholder="Contoh: Bu Sari" required data-label="nama guru"></label>
+        <label>Nama kelas<input name="kelas" maxlength="30" placeholder="Contoh: Kelas 6A" required data-label="nama kelas"></label>
+        <label class="penuh">Asal sekolah<input name="sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju" required data-label="asal sekolah"></label>
+        <label class="penuh">No. WhatsApp <span style="font-weight:400;color:var(--muted)">(opsional, agar Admin dapat membantu bila PIN lupa)</span><input name="wa" type="tel" maxlength="20"></label>
+        <p class="salah penuh" id="buat-salah"></p>
+        <div class="penuh"><button class="btn hijau" type="submit">＋ Buat kelas</button></div>
+      </form>
+    </div>
+    <div class="kartu">
+      <h2>Sudah punya kelas?</h2>
+      <div id="kelas-tersimpan" hidden><p class="sub" style="margin:0">Kelas yang pernah dibuka di perangkat ini:</p><div class="daftar-kelas" id="daftar-kelas"></div><p class="catatan" style="margin:14px 0 6px">Atau masuk dengan kode dan PIN:</p></div>
+      <form id="f-masuk" class="form" novalidate>
+        <label>Kode kelas<input name="kode" maxlength="8" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700" autocomplete="off"></label>
+        <label>PIN guru<input name="pin" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+        <p class="salah penuh" id="masuk-salah"></p>
+        <div class="penuh"><button class="btn" type="submit">Buka dasbor</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= KELAS BARU BERHASIL ================= -->
+<div id="v-berhasil" hidden>
+  <div class="kartu berhasil">
+    <h2>✅ Kelas berhasil dibuat</h2>
+    <p class="sub" id="b-info"></p>
+    <div class="kode-besar"><div><small>KODE KELAS (bagikan ke siswa)</small><b id="b-kode"></b></div><div><small>PIN GURU (rahasia, untuk membuka dasbor)</small><b id="b-pin"></b></div></div>
+    <p style="margin:0 0 12px;font-size:14.5px"><b>Simpan PIN ini.</b> PIN dibutuhkan untuk membuka dasbor dari perangkat lain. Di perangkat ini, dasbor akan terbuka otomatis.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn wa" id="b-simpan-wa" target="_blank" rel="noopener">💬 Simpan kode & PIN ke WhatsApp saya</a><button class="btn" id="b-lanjut" type="button">Buka dasbor ›</button></div>
+  </div>
+</div>
+
+<!-- ================= DASBOR ================= -->
+<div id="v-dasbor" hidden>
+  <div class="kartu">
+    <div class="kepala-kelas">
+      <div><h1 id="d-judul"></h1><p id="d-sub"></p></div>
+      <div class="cetak-sembunyi" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost kecil" id="d-muat" type="button">↻ Perbarui</button><button class="btn ghost kecil" id="d-unduh" type="button">⬇️ Unduh Excel (CSV)</button><button class="btn ghost kecil" type="button" onclick="print()">🖨️ Cetak</button></div>
+    </div>
+    <div class="bagikan">
+      <b style="font-size:14px">🔗 Tautan untuk siswa:</b><code id="d-tautan"></code>
+      <button class="btn kecil" id="d-salin" type="button">Salin</button>
+      <a class="btn wa kecil" id="d-wa" target="_blank" rel="noopener">Bagikan ke WhatsApp</a>
+    </div>
+    <p class="catatan" style="margin:8px 0 0">Siswa yang membuka tautan ini otomatis masuk ke kelas Anda. Siswa juga bisa mengetik kode kelas <b id="d-kode"></b> di halaman ujian.</p>
+  </div>
+
+  <div class="pilih-paket" id="d-paket"></div>
+  <div id="d-isi"><div class="memuat">Memuat data kelas…</div></div>
+</div>
+
+</div>
+
+<script src="konfigurasi.js?v=2"></script>
+<script src="tka.js?v=9"></script>
+<script src="bank/daftar.js?v=3"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = TKA.esc, angka = TKA.angka;
+const SIMPAN = 'tka-guru-kelas';
+let KELAS = null, DATA = null, PAKET = PAKET_TKA[0].id, URUT = { kunci: 'nilai', turun: true };
+
+function tampil(v) { ['v-masuk', 'v-berhasil', 'v-dasbor'].forEach(x => { $(x).hidden = x !== v; }); $('btn-keluar').hidden = v !== 'v-dasbor'; window.scrollTo(0, 0); }
+const tersimpan = () => TKA.simpan.get(SIMPAN, []);
+function ingat(k) { TKA.simpan.set(SIMPAN, [k, ...tersimpan().filter(x => x.kode !== k.kode)].slice(0, 10)); TKA.simpan.set('tka-guru-terakhir', k.kode); }
+const tautanKelas = k => new URL('./?kelas=' + k.kode, location.href).href;
+const kelasLencana = v => v >= 70 ? 'baik' : v >= 50 ? 'cukup' : 'kurang';
+
+/* ---------- masuk ---------- */
+function halamanMasuk() {
+  const t = tersimpan();
+  $('kelas-tersimpan').hidden = !t.length;
+  $('daftar-kelas').innerHTML = t.map(k => '<button type="button" data-kode="' + esc(k.kode) + '"><span><b>' + esc(k.kelas) + '</b><br><small>' + esc(k.sekolah) + ' · ' + esc(k.guru) + '</small></span><small>' + esc(k.kode) + ' ›</small></button>').join('');
+  tampil('v-masuk');
+}
+$('daftar-kelas').onclick = e => { const b = e.target.closest('button'); if (!b) return; bukaKelas(tersimpan().find(k => k.kode === b.dataset.kode)); };
+
+$('f-buat').onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, d = Object.fromEntries(new FormData(f)); for (const k in d) d[k] = d[k].trim();
+  const kosong = [...f.querySelectorAll('[required]')].find(el => !el.value.trim());
+  if (kosong) { $('buat-salah').textContent = 'Lengkapi ' + kosong.dataset.label + ' terlebih dahulu.'; kosong.focus(); return; }
+  const btn = f.querySelector('button'); btn.disabled = true; $('buat-salah').textContent = 'Membuat kelas…';
+  const r = await TKA.api({ aksi: 'buatKelas', ...d });
+  btn.disabled = false;
+  if (!r.ok) { $('buat-salah').textContent = r.pesan || 'Gagal membuat kelas. Coba lagi.'; return; }
+  $('buat-salah').textContent = '';
+  const k = { kode: r.kode, pin: r.pin, guru: r.nama, sekolah: r.sekolah, kelas: r.kelas };
+  ingat(k);
+  $('b-info').textContent = k.kelas + ' · ' + k.sekolah + ' · ' + k.guru;
+  $('b-kode').textContent = k.kode; $('b-pin').textContent = k.pin;
+  $('b-simpan-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Catatan Dasbor Guru Simulasi TKA\n' + k.kelas + ' · ' + k.sekolah + '\nKode kelas: ' + k.kode + '\nPIN guru: ' + k.pin + '\nDasbor: ' + new URL('guru.html', location.href).href + '\nTautan siswa: ' + tautanKelas(k));
+  $('b-lanjut').onclick = () => bukaKelas(k);
+  tampil('v-berhasil');
+};
+
+$('f-masuk').onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, kode = f.elements.kode.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ''), pin = f.elements.pin.value.trim();
+  if (!kode || !pin) { $('masuk-salah').textContent = 'Isi kode kelas dan PIN guru.'; return; }
+  const btn = f.querySelector('button'); btn.disabled = true; $('masuk-salah').textContent = 'Memeriksa…';
+  const r = await TKA.api({ aksi: 'dasbor', kode, pin });
+  btn.disabled = false;
+  if (!r.ok) { $('masuk-salah').textContent = r.pesan || 'Kode kelas atau PIN salah.'; return; }
+  $('masuk-salah').textContent = '';
+  const k = { kode: r.kelas.kode, pin, guru: r.kelas.guru, sekolah: r.kelas.sekolah, kelas: r.kelas.kelas };
+  ingat(k); bukaKelas(k, r);
+};
+$('btn-keluar').onclick = e => { e.preventDefault(); TKA.simpan.hapus('tka-guru-terakhir'); halamanMasuk(); };
+
+/* ---------- dasbor ---------- */
+async function bukaKelas(k, dataAwal) {
+  KELAS = k;
+  $('d-judul').textContent = k.kelas;
+  $('d-sub').textContent = k.sekolah + ' · ' + k.guru;
+  $('d-kode').textContent = k.kode;
+  const t = tautanKelas(k);
+  $('d-tautan').textContent = t;
+  $('d-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Assalamu’alaikum/Salam sejahtera, Bapak/Ibu dan anak-anak ' + k.kelas + ' 🙏\n\nAyo berlatih *Simulasi TKA SD* (gratis) melalui tautan kelas berikut, agar hasilnya dapat dipantau guru:\n👉 ' + t + '\n\nCara: buka tautan → pilih paket → isi nama lengkap → kerjakan sampai selesai.\nTerima kasih.\n— ' + k.guru);
+  tampil('v-dasbor');
+  $('d-paket').innerHTML = PAKET_TKA.map(p => '<button type="button" data-id="' + p.id + '">' + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('');
+  if (dataAwal) { DATA = dataAwal; await gambar(); } else await muat();
+}
+async function muat() {
+  $('d-isi').innerHTML = '<div class="memuat">Memuat data kelas…</div>';
+  const r = await TKA.api({ aksi: 'dasbor', kode: KELAS.kode, pin: KELAS.pin });
+  if (!r.ok) { $('d-isi').innerHTML = '<div class="kartu kosong"><b>Data belum dapat dimuat</b>' + esc(r.pesan || '') + '<br><br><button class="btn" onclick="muat()">Coba lagi</button></div>'; return; }
+  DATA = r; await gambar();
+}
+$('d-muat').onclick = () => muat();
+$('d-paket').onclick = e => { const b = e.target.closest('button'); if (!b) return; PAKET = b.dataset.id; gambar(); };
+$('d-salin').onclick = async () => {
+  try { await navigator.clipboard.writeText($('d-tautan').textContent); $('d-salin').textContent = '✔ Tersalin'; }
+  catch (e) { const r = document.createRange(); r.selectNodeContents($('d-tautan')); getSelection().removeAllRanges(); getSelection().addRange(r); $('d-salin').textContent = 'Tekan Ctrl+C'; }
+  setTimeout(() => { $('d-salin').textContent = 'Salin'; }, 2000);
+};
+
+/** Satu baris per siswa: pengerjaan terakhir, nilai tertinggi, banyak percobaan. */
+function rekapSiswa(baris) {
+  const m = new Map();
+  baris.filter(b => b.paket === PAKET).sort((a, b) => a.waktu - b.waktu).forEach(b => {
+    const kunci = b.nama.trim().toLowerCase().replace(/\s+/g, ' ');
+    const x = m.get(kunci) || { nama: b.nama.trim(), coba: 0, tertinggi: 0 };
+    x.coba++; x.tertinggi = Math.max(x.tertinggi, b.nilai); x.terakhir = b;
+    m.set(kunci, x);
+  });
+  return [...m.values()];
+}
+
+async function gambar() {
+  document.querySelectorAll('#d-paket button').forEach(b => b.classList.toggle('aktif', b.dataset.id === PAKET));
+  const bank = await TKA.muatBank(PAKET);
+  const siswa = rekapSiswa(DATA.baris);
+  const banyakPaket = new Set(DATA.baris.map(b => b.paket));
+  if (!siswa.length) {
+    $('d-isi').innerHTML = '<div class="kartu kosong"><b>Belum ada siswa yang mengerjakan ' + esc(bank.mapel + ' · ' + bank.paket) + '</b>' +
+      (DATA.baris.length ? 'Siswa sudah mengerjakan paket lain (' + banyakPaket.size + ' paket). Pilih paket di atas.' : 'Bagikan tautan kelas di atas ke grup WhatsApp siswa atau orang tua. Hasilnya akan muncul di sini.') + '</div>';
+    return;
+  }
+  const nilai = siswa.map(s => s.terakhir.nilai);
+  const rata = nilai.reduce((a, b) => a + b, 0) / nilai.length;
+
+  // analisis per soal (pengerjaan terakhir setiap siswa)
+  const n = bank.soal.length;
+  const butir = bank.soal.map((q, i) => {
+    const sk = siswa.map(s => s.terakhir.skor[i]).filter(v => typeof v === 'number' && !isNaN(v));
+    return { q, p: sk.length ? sk.reduce((a, b) => a + b, 0) / sk.length * 100 : 0 };
+  });
+  const elemen = new Map();
+  butir.forEach(b => { const e = elemen.get(b.q.elemen) || { t: 0, n: 0 }; e.t += b.p; e.n++; elemen.set(b.q.elemen, e); });
+  const batang = p => '<span class="bt"><i class="isi-' + kelasLencana(p) + '" style="width:' + Math.max(2, p) + '%"></i></span><b>' + angka(Math.round(p)) + '%</b>';
+  const lemah = [...butir].sort((a, b) => a.p - b.p).slice(0, 5);
+
+  const urutkan = [...siswa].sort((a, b) => {
+    const nilaiDari = s => URUT.kunci === 'nama' ? s.nama.toLowerCase() : URUT.kunci === 'tertinggi' ? s.tertinggi : URUT.kunci === 'coba' ? s.coba : URUT.kunci === 'waktu' ? s.terakhir.waktu : s.terakhir.nilai;
+    const x = nilaiDari(a), y = nilaiDari(b);
+    return (x < y ? -1 : x > y ? 1 : 0) * (URUT.turun ? -1 : 1);
+  });
+  const tgl = w => new Date(w).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+
+  $('d-isi').innerHTML =
+    '<div class="angka"><div><small>Siswa mengerjakan</small><b>' + siswa.length + '</b></div><div><small>Rata-rata nilai</small><b>' + angka(Math.round(rata * 10) / 10) + '</b></div>' +
+    '<div><small>Tertinggi</small><b>' + angka(Math.max(...nilai)) + '</b></div><div><small>Terendah</small><b>' + angka(Math.min(...nilai)) + '</b></div></div>' +
+    '<div class="dua"><div class="kartu"><h2>🎯 Indikator yang perlu diperkuat</h2><p class="sub">5 soal dengan capaian kelas terendah. Fokuskan pembelajaran pada indikator ini.</p><div class="lemah">' +
+      lemah.map(b => '<div><span class="no">No. ' + b.q.no + '</span><span>' + esc(b.q.indikator) + '<small>' + esc(b.q.elemen) + '</small></span><span>' + batang(b.p) + '</span></div>').join('') + '</div></div>' +
+    '<div class="kartu"><h2>📊 Capaian per elemen</h2><p class="sub">Rata-rata kelas, seperti laporan hasil TKA.</p><table><tbody>' +
+      [...elemen].map(([nm, e]) => '<tr><td>' + esc(nm) + '</td><td style="white-space:nowrap">' + batang(e.t / e.n) + '</td></tr>').join('') + '</tbody></table></div></div>' +
+    '<div class="kartu"><h2>👩‍🎓 Nilai siswa</h2><p class="sub">Nilai dari pengerjaan terakhir. Ketuk judul kolom untuk mengurutkan.</p><div style="overflow-x:auto"><table id="t-siswa"><thead><tr>' +
+      '<th data-urut="nama">Nama</th><th data-urut="nilai">Nilai terakhir</th><th data-urut="tertinggi">Tertinggi</th><th data-urut="coba">Percobaan</th><th data-urut="waktu" class="sembunyi-hp">Terakhir</th></tr></thead><tbody>' +
+      urutkan.map(s => '<tr><td>' + esc(s.nama) + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td></tr>').join('') +
+      '</tbody></table></div></div>' +
+    '<div class="kartu"><h2>🧩 Capaian setiap soal</h2><p class="sub">Persentase skor rata-rata kelas per nomor soal dan indikatornya.</p><div style="overflow-x:auto"><table><thead><tr><th>No</th><th>Indikator</th><th>Capaian kelas</th></tr></thead><tbody>' +
+      butir.map(b => '<tr><td><b>' + b.q.no + '</b></td><td>' + esc(b.q.indikator) + '</td><td style="white-space:nowrap">' + batang(b.p) + '</td></tr>').join('') + '</tbody></table></div></div>';
+
+  document.querySelectorAll('#t-siswa th[data-urut]').forEach(th => th.onclick = () => {
+    URUT = { kunci: th.dataset.urut, turun: URUT.kunci === th.dataset.urut ? !URUT.turun : th.dataset.urut !== 'nama' };
+    gambar();
+  });
+  $('d-unduh').onclick = () => unduhCSV(bank, siswa);
+}
+
+function unduhCSV(bank, siswa) {
+  const sel = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const kepala = ['Nama', 'Nilai terakhir', 'Nilai tertinggi', 'Percobaan', 'Tanggal terakhir', ...bank.soal.map(q => 'Soal ' + q.no)];
+  const baris = siswa.map(s => [s.nama, String(s.terakhir.nilai).replace('.', ','), String(s.tertinggi).replace('.', ','), s.coba, new Date(s.terakhir.waktu).toLocaleString('id-ID'),
+    ...bank.soal.map((q, i) => String(s.terakhir.skor[i] ?? '').replace('.', ','))]);
+  const csv = '﻿' + [kepala, ...baris].map(r => r.map(sel).join(';')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = ('Nilai-TKA-' + KELAS.kelas + '-' + bank.mapel + '-' + bank.paket).replace(/[^\w-]+/g, '-') + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- mulai ---------- */
+(() => {
+  const terakhir = TKA.simpan.get('tka-guru-terakhir');
+  const k = tersimpan().find(x => x.kode === terakhir);
+  if (k) bukaKelas(k); else halamanMasuk();
+})();
+</script>
+</body>
+</html>

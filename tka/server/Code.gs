@@ -22,7 +22,9 @@ var PENGATURAN = {
 var LEMBAR_AKSES = 'Akses';
 var LEMBAR_NILAI = 'Nilai';
 var KEPALA_AKSES = ['Kode', 'Nama', 'No. WA', 'Dibuat', 'Aktif', 'Perangkat', 'Dipakai', 'Terakhir dipakai', 'Catatan'];
-var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan'];
+var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kode kelas', 'Skor per soal'];
+var LEMBAR_KELAS = 'Kelas';
+var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat'];
 
 /* ============================ WEB APP ============================ */
 
@@ -38,6 +40,9 @@ function doPost(e) {
     if (req.aksi === 'nilai') return json_(nilai_(req));
     if (req.aksi === 'cekKode') return json_(cekKode_(req));
     if (req.aksi === 'statistik') return json_(statistik_());
+    if (req.aksi === 'buatKelas') return json_(buatKelas_(req));
+    if (req.aksi === 'cekKelas') return json_(cekKelas_(req));
+    if (req.aksi === 'dasbor') return json_(dasbor_(req));
     return json_({ ok: false, pesan: 'Aksi tidak dikenal.' });
   } catch (err) {
     return json_({ ok: false, pesan: 'Server sedang sibuk. Coba lagi sebentar lagi. (' + err.message + ')' });
@@ -248,7 +253,8 @@ function catatNilai_(req, h, kode) {
     var p = req.peserta || {};
     var potong = function (s) { return String(s || '').slice(0, 80); };
     lembar_(LEMBAR_NILAI, KEPALA_NILAI).appendRow([new Date(), potong(p.nama), potong(p.sekolah), potong(p.kelas), req.paket, h.nilai, h.terjawab + '/' + h.jumlah, kode, potong(req.perangkat),
-      potong(p.provinsi), potong(p.kabupaten), potong(p.kecamatan)]);
+      potong(p.provinsi), potong(p.kabupaten), potong(p.kecamatan), rapikanKode_(p.kodeKelas).slice(0, 12),
+      Object.keys(h.skor).sort(function (a, b) { return a - b; }).map(function (n) { return Math.round(h.skor[n] * 100) / 100; }).join(',')]);
   } catch (err) { /* pencatatan gagal tidak boleh menggagalkan penilaian */ }
 }
 
@@ -264,6 +270,65 @@ function lembar_(nama, kepala) {
     sh.getRange(1, 1, 1, kepala.length).setValues([kepala]).setFontWeight('bold').setBackground('#12314f').setFontColor('#ffffff');
   }
   return sh;
+}
+
+/* ============================ KELAS & DASBOR GURU ============================ */
+
+/** Guru membuat kelas: mendapat kode kelas (dibagikan ke siswa) dan PIN guru (rahasia, untuk membuka dasbor). */
+function buatKelas_(req) {
+  var potong = function (s, n) { return String(s || '').trim().slice(0, n || 60); };
+  var nama = potong(req.nama), kelas = potong(req.kelas, 30), sekolah = potong(req.sekolah, 80);
+  if (!nama || !kelas || !sekolah) return { ok: false, pesan: 'Lengkapi nama guru, sekolah, dan kelas.' };
+  var huruf = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(15000);
+  try {
+    var sh = lembar_(LEMBAR_KELAS, KEPALA_KELAS);
+    var ada = {};
+    sh.getDataRange().getValues().slice(1).forEach(function (b) { ada[rapikanKode_(b[0])] = true; });
+    var kode;
+    do { kode = ''; for (var i = 0; i < 6; i++) kode += huruf.charAt(Math.floor(Math.random() * huruf.length)); } while (ada[kode]);
+    var pin = String(Math.floor(100000 + Math.random() * 900000));
+    sh.appendRow([kode, "'" + pin, nama, sekolah, kelas, "'" + potong(req.wa, 20), new Date()]);
+    CacheService.getScriptCache().remove('kelas_' + kode);
+    return { ok: true, kode: kode, pin: pin, nama: nama, sekolah: sekolah, kelas: kelas };
+  } finally { kunci.releaseLock(); }
+}
+
+/** Data kelas berdasarkan kode (disimpan sementara 6 jam). */
+function dataKelas_(kode) {
+  kode = rapikanKode_(kode);
+  if (kode.length < 4) return null;
+  var c = CacheService.getScriptCache(), k = c.get('kelas_' + kode);
+  if (k) return JSON.parse(k);
+  var hasil = null;
+  lembar_(LEMBAR_KELAS, KEPALA_KELAS).getDataRange().getValues().slice(1).some(function (b) {
+    if (rapikanKode_(b[0]) !== kode) return false;
+    hasil = { kode: kode, pin: String(b[1]).replace(/^'/, ''), guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]) };
+    return true;
+  });
+  if (hasil) c.put('kelas_' + kode, JSON.stringify(hasil), 21600);
+  return hasil;
+}
+
+/** Siswa memeriksa kode kelas sebelum mengerjakan (tanpa PIN). */
+function cekKelas_(req) {
+  var k = dataKelas_(req.kode);
+  return k ? { ok: true, kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas } : { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.' };
+}
+
+/** Dasbor guru: semua pengerjaan siswa di kelas itu (butuh PIN). */
+function dasbor_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  var data = lembar_(LEMBAR_NILAI, KEPALA_NILAI).getDataRange().getValues().slice(1);
+  var baris = [];
+  data.forEach(function (b) {
+    if (rapikanKode_(b[12]) !== k.kode) return;
+    baris.push({ waktu: b[0] instanceof Date ? b[0].getTime() : String(b[0]), nama: String(b[1]), paket: String(b[4]), nilai: Number(b[5]) || 0,
+      terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number) });
+  });
+  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, baris: baris };
 }
 
 /* ============================ STATISTIK PUBLIK ============================ */

@@ -42,6 +42,11 @@ button{font:inherit;cursor:pointer}
 .petunjuk{margin:0;padding-left:20px;font-size:15px}.petunjuk li{margin:4px 0}
 .form{display:grid;grid-template-columns:1fr 1fr 150px;gap:10px;margin:14px 0}
 .form.wil{grid-template-columns:repeat(3,1fr);margin-top:0}
+.kotak-kelas{background:#eef6ff;border:1px solid #bcd7f5;border-radius:12px;padding:10px 12px;margin:0 0 10px;display:grid;grid-template-columns:220px 1fr;gap:10px;align-items:end}
+.kotak-kelas label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
+.kotak-kelas input{font:inherit;font-size:15px;padding:9px 12px;border:1px solid var(--line);border-radius:10px}
+.kelas-info{margin:0 0 8px;font-size:13.5px;color:var(--muted)}.kelas-info.ok{color:var(--hijau);font-weight:700}.kelas-info.x{color:var(--merah);font-weight:600}
+@media(max-width:640px){.kotak-kelas{grid-template-columns:1fr}}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
 .form input,.form select,.kode-in input{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%;background:#fff;color:var(--ink)}
 .salah{color:var(--merah);font-weight:600;font-size:14px;min-height:1.2em;margin:4px 0}
@@ -254,7 +259,11 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
         <label>Kabupaten/Kota<select name="kabupaten" required data-label="kabupaten/kota" disabled><option value="">Pilih provinsi dulu…</option></select></label>
         <label>Kecamatan<select name="kecamatan" required data-label="kecamatan" disabled><option value="">Pilih kabupaten dulu…</option></select></label>
       </div>
-      <p class="catatan" style="margin:0">Asal sekolah dan wilayah hanya dipakai untuk statistik gabungan (jumlah sekolah, kecamatan, kabupaten, dan provinsi peserta). Nama tidak pernah ditampilkan.</p>
+      <div class="kotak-kelas">
+        <label>Kode kelas <span style="font-weight:400;color:var(--muted)">(opsional, dari guru)</span><input name="kodeKelas" maxlength="8" placeholder="Contoh: K7QP2A" autocomplete="off" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700"></label>
+        <p class="kelas-info" id="aw-kelas-info"></p>
+      </div>
+      <p class="catatan" style="margin:0">Asal sekolah dan wilayah hanya dipakai untuk statistik gabungan. Nama dan nilai hanya dapat dilihat oleh guru kelasmu bila kamu mengisi kode kelas.</p>
       <p class="salah" id="aw-salah"></p>
       <div class="aksi"><button class="btn hijau" type="submit">Mulai mengerjakan ▶</button><a class="btn ghost" href="./">Kembali</a></div>
     </form>
@@ -383,6 +392,7 @@ function halamanAwal() {
   const f = $('f-peserta'), ps = TKA.peserta.get();
   ['nama', 'sekolah', 'kelas'].forEach(k => { if (ps[k]) f.elements[k].value = ps[k]; });
   pasangWilayah(f, ps);
+  pasangKodeKelas(f, ps);
   const s = TKA.simpan.get(KUNCI_SESI);
   if (s && s.batas > Date.now()) {
     const terisi = Object.keys(s.jawaban).filter(k => terjawab(s.jawaban[k])).length;
@@ -398,7 +408,9 @@ function halamanAwal() {
   f.onsubmit = e => {
     e.preventDefault();
     const d = { nama: f.elements.nama.value.trim(), sekolah: f.elements.sekolah.value.trim(), kelas: f.elements.kelas.value,
-      provinsi: f.elements.provinsi.value, kabupaten: f.elements.kabupaten.value, kecamatan: f.elements.kecamatan.value };
+      provinsi: f.elements.provinsi.value, kabupaten: f.elements.kabupaten.value, kecamatan: f.elements.kecamatan.value,
+      kodeKelas: f.dataset.kelasOk || '' };
+    if (f.elements.kodeKelas.value.trim() && !f.dataset.kelasOk) { $('aw-salah').textContent = 'Kode kelas belum benar. Periksa kembali, atau kosongkan bila tidak ada.'; f.elements.kodeKelas.focus(); return; }
     const kosong = [...f.querySelectorAll('[required]')].find(el => !el.value.trim());
     if (kosong) { $('aw-salah').textContent = 'Lengkapi ' + kosong.dataset.label + ' terlebih dahulu.'; kosong.focus(); return; }
     $('aw-salah').textContent = '';
@@ -407,6 +419,26 @@ function halamanAwal() {
     simpanSesi();
     mulaiUjian();
   };
+}
+
+/* Kode kelas: terisi dari tautan guru (?kelas=) atau simpanan, lalu diperiksa ke server. */
+function pasangKodeKelas(f, ps) {
+  const el = f.elements.kodeKelas, info = $('aw-kelas-info');
+  const awal = (par.get('kelas') || TKA.simpan.get('tka-kelas') || ps.kodeKelas || '').toUpperCase();
+  let urut = 0;
+  const periksa = async () => {
+    const v = el.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    delete f.dataset.kelasOk; info.className = 'kelas-info';
+    if (!v) { info.textContent = ''; TKA.simpan.hapus('tka-kelas'); return; }
+    if (v.length < 6) { info.textContent = ''; return; }
+    const n = ++urut; info.textContent = 'Memeriksa kode kelas…';
+    const r = await TKA.api({ aksi: 'cekKelas', kode: v });
+    if (n !== urut) return;
+    if (r.ok) { f.dataset.kelasOk = r.kode; TKA.simpan.set('tka-kelas', r.kode); info.className = 'kelas-info ok'; info.textContent = '✔ ' + r.kelas + ' · ' + r.sekolah + ' · Guru: ' + r.guru; }
+    else { info.className = 'kelas-info x'; info.textContent = r.pesan || 'Kode kelas tidak ditemukan.'; }
+  };
+  el.addEventListener('input', periksa);
+  if (awal) { el.value = awal; periksa(); }
 }
 
 /* Pilihan provinsi → kabupaten/kota → kecamatan (data wilayah bersama aplikasi rapor di /app/). */
