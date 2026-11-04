@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dasbor Guru · Simulasi TKA</title>
-<meta name="description" content="Dasbor guru Simulasi TKA SD: buat kelas, bagikan tautan ke siswa, dan lihat nilai serta analisis per indikator seluruh kelas.">
+<title>Kelas Intensif TKA · Dasbor Guru</title>
+<meta name="description" content="Kelas Intensif TKA SD: buat kelas, bagikan tautan ke siswa, dan lihat nilai serta analisis per indikator seluruh kelas.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <style>
 :root{--biru:#12314f;--biru2:#1f4f7a;--aksen:#1f6fb2;--kuning:#ffd21f;--hijau:#1b7f3e;--merah:#c0392b;--oranye:#d97706;--ink:#16202a;--muted:#5b6b7f;--line:#dfe5ec;--latar:#f3f6fa}
@@ -75,6 +75,18 @@ th[data-urut]{cursor:pointer}th[data-urut]:hover{color:var(--biru)}
 .lemah small{display:block;color:var(--muted);font-size:12.5px}
 .kosong{text-align:center;color:var(--muted);padding:26px 10px}
 .kosong b{display:block;color:var(--biru);font-size:17px;margin-bottom:4px}
+.banding-k{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+.banding-k>div{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:#fff}
+.banding-k .pr{border:2px solid var(--kuning);background:linear-gradient(135deg,#fffbea,#fff)}
+.banding-k h3{margin:0 0 2px;font-size:17px}.banding-k .hrg{font-size:22px;font-weight:800;color:var(--biru)}.banding-k .hrg small{font-size:13px;font-weight:600;color:var(--muted)}
+.banding-k ul{margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.6}
+.banding-k li.nanti{color:var(--muted)}.banding-k li.nanti::after{content:' · segera hadir';font-size:12px;color:var(--oranye);font-weight:700}
+.k-premium{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.k-premium.aktif{border:2px solid var(--kuning);background:linear-gradient(135deg,#fffbea,#fff)}
+.k-premium h2{margin:0 0 2px;font-size:17px}.k-premium p{margin:0;font-size:14px;color:var(--muted)}
+.btn.emas{background:var(--kuning);color:var(--biru)}
+.kunci-k{font-weight:800;color:var(--hijau);white-space:nowrap}
+@media(max-width:820px){.banding-k{grid-template-columns:1fr}}
 details.panduan{background:#fff;border:1px solid var(--garis,#e5e7eb);border-radius:16px;padding:14px 18px;margin-top:16px}
 details.panduan>summary{cursor:pointer;font-weight:800;font-size:16px;color:var(--biru);list-style:none}
 details.panduan>summary::-webkit-details-marker{display:none}
@@ -93,7 +105,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 </head>
 <body>
 <header class="bar">
-  <a href="./"><img src="logo.svg" alt=""><span><small>SIMULASI TKA</small>Dasbor Guru</span></a>
+  <a href="./"><img src="logo.svg" alt=""><span><small>KELAS INTENSIF TKA</small>Dasbor Guru</span></a>
   <div class="kanan"><a class="btn ghost kecil" id="btn-keluar" href="#" hidden>⇄ Ganti kelas</a></div>
 </header>
 
@@ -102,12 +114,42 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 <!-- ================= MASUK / BUAT KELAS ================= -->
 <div id="v-masuk">
   <div class="kartu">
-    <h2>Pantau latihan TKA seluruh kelas dalam satu layar</h2>
-    <p class="sub">Gratis untuk guru. Tanpa akun dan tanpa kata sandi: cukup buat kelas, bagikan tautannya, lalu lihat hasilnya.</p>
+    <h2>Kelas Intensif TKA: pantau latihan seluruh kelas dalam satu layar</h2>
+    <p class="sub">Tanpa akun dan tanpa kata sandi: cukup buat kelas, bagikan tautannya, lalu lihat hasilnya. Semua paket Simulasi TKA otomatis tersedia di kelas Anda.</p>
     <div class="langkah">
       <div><b>1</b>Buat kelas di bawah ini. Anda mendapat <b style="display:inline;background:none;color:inherit;width:auto;height:auto">kode kelas</b> dan PIN.</div>
       <div><b>2</b>Bagikan tautan kelas ke grup WhatsApp siswa/orang tua.</div>
       <div><b>3</b>Siswa mengerjakan simulasi. Nilai dan analisis per indikator langsung masuk ke dasbor ini.</div>
+    </div>
+  </div>
+  <div class="kartu" id="banding">
+    <h2>Kelas Gratis atau Kelas Premium</h2>
+    <div class="banding-k">
+      <div>
+        <h3>Kelas Gratis</h3><div class="hrg">Rp0</div>
+        <ul>
+          <li>Buat kelas, tautan khusus siswa, daftar nama</li>
+          <li>Semua paket soal Simulasi TKA</li>
+          <li>Nilai setiap siswa dan siapa yang belum mengerjakan</li>
+          <li>5 indikator terlemah kelas</li>
+          <li>Capaian per elemen dan per soal</li>
+          <li>Unduh Excel (CSV) dan cetak</li>
+        </ul>
+      </div>
+      <div class="pr">
+        <h3>⭐ Kelas Premium</h3><div class="hrg">Rp50.000 <small>/ kelas / tahun ajaran</small></div>
+        <ul>
+          <li>Semua fitur Kelas Gratis</li>
+          <li><b>Kunci jawaban &amp; pembahasan untuk semua siswa di kelas</b>, otomatis setelah mengerjakan</li>
+          <li><b>Kunci &amp; pembahasan setiap soal di dasbor guru</b>, siap cetak</li>
+          <li>Bantuan prioritas lewat WhatsApp</li>
+          <li class="nanti">Latihan per indikator dan tugas dari guru</li>
+          <li class="nanti">Remedial otomatis sesuai kelemahan tiap siswa</li>
+          <li class="nanti">Peta kemampuan siswa dan grafik perkembangan</li>
+          <li class="nanti">Rapor untuk orang tua dan laporan kepala sekolah</li>
+        </ul>
+        <p class="catatan" style="margin:10px 0 0">🎁 <b>Coba gratis 14 hari</b>, cukup satu klik dari dasbor kelas. Fitur yang segera hadir otomatis masuk Kelas Premium.</p>
+      </div>
     </div>
   </div>
   <div class="dua">
@@ -125,6 +167,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     </div>
     <div class="kartu">
       <h2>Sudah punya kelas?</h2>
+      <p class="catatan" style="margin:-4px 0 10px">Buka dari HP atau laptop lain? Masukkan kode kelas dan PIN.</p>
       <div id="kelas-tersimpan" hidden><p class="sub" style="margin:0">Kelas yang pernah dibuka di perangkat ini:</p><div class="daftar-kelas" id="daftar-kelas"></div><p class="catatan" style="margin:14px 0 6px">Atau masuk dengan kode dan PIN:</p></div>
       <form id="f-masuk" class="form" novalidate>
         <label>Kode kelas<input name="kode" maxlength="8" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700" autocomplete="off"></label>
@@ -143,7 +186,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <p class="sub" id="b-info"></p>
     <div class="kode-besar"><div><small>KODE KELAS (bagikan ke siswa)</small><b id="b-kode"></b></div><div><small>PIN GURU (rahasia, untuk membuka dasbor)</small><b id="b-pin"></b></div></div>
     <p style="margin:0 0 12px;font-size:14.5px"><b>Simpan PIN ini.</b> PIN dibutuhkan untuk membuka dasbor dari perangkat lain. Di perangkat ini, dasbor akan terbuka otomatis.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn wa" id="b-simpan-wa" target="_blank" rel="noopener">💬 Simpan kode & PIN ke WhatsApp saya</a><button class="btn" id="b-lanjut" type="button">Buka dasbor ›</button></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn wa" id="b-simpan-wa" target="_blank" rel="noopener">📲 Simpan akses kelas ke WhatsApp</a><button class="btn" id="b-lanjut" type="button">Buka dasbor ›</button></div>
   </div>
 </div>
 
@@ -163,6 +206,8 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <p class="catatan cetak-sembunyi" style="margin:6px 0 0">📘 Butuh petunjuk? <a href="#" id="d-panduan">Buka panduan untuk guru</a></p>
   </div>
 
+  <div class="kartu k-premium cetak-sembunyi" id="k-premium" hidden></div>
+
   <div class="kartu cetak-sembunyi" id="k-siswa">
     <div class="kepala-kelas"><div><h2 style="margin:0">📋 Daftar siswa <span id="s-jumlah" style="color:var(--muted);font-size:15px"></span></h2><p class="sub" style="margin:2px 0 0" id="s-ket"></p></div><button class="btn ghost kecil" id="s-ubah" type="button">✏️ Ubah daftar</button></div>
     <div class="edit-siswa" id="s-edit" hidden style="margin-top:10px"><textarea id="s-teks" rows="8" placeholder="Satu nama per baris"></textarea>
@@ -179,7 +224,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <li>Isi <b>nama guru</b>, <b>nama kelas</b>, dan <b>asal sekolah</b> pada kotak "Buat kelas baru".</li>
       <li>Tempel <b>daftar nama siswa</b>, satu nama per baris (bisa disalin dari Excel/daftar hadir). Nomor urut di depan nama akan dibuang otomatis.</li>
       <li>Ketuk <b>＋ Buat kelas</b>. Anda mendapat <b>kode kelas</b> (untuk siswa) dan <b>PIN guru</b> (rahasia, hanya untuk Anda).</li>
-      <li>Ketuk <b>Simpan kode &amp; PIN ke WhatsApp saya</b> agar tidak lupa.</li>
+      <li>Ketuk <b>📲 Simpan akses kelas ke WhatsApp</b> agar kode dan PIN tersimpan di WhatsApp Anda.</li>
     </ol>
     <h3>B. Membagikan ke siswa</h3>
     <ol>
@@ -203,18 +248,25 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <li>Siswa boleh mengulang paket. Dasbor memakai nilai pengerjaan terakhir.</li>
       <li>Soal juga tersedia dalam bentuk <b>PDF</b> di halaman Simulasi TKA untuk latihan di kertas.</li>
     </ul>
-    <h3>E. Pertanyaan yang sering muncul</h3>
+    <h3>E. Kelas Premium</h3>
     <ul>
-      <li><b>Membuka dasbor di HP/laptop lain?</b> Masukkan kode kelas dan PIN pada kotak "Sudah punya kelas?".</li>
+      <li>Ketuk <b>🎁 Coba Premium gratis 14 hari</b> di dasbor. Langsung aktif, tanpa pembayaran, dan berhenti otomatis setelah 14 hari. Coba gratis hanya sekali untuk setiap kelas.</li>
+      <li>Selama Premium, siswa yang mengerjakan lewat tautan kelas (dan namanya ada di daftar siswa) <b>otomatis mendapat kunci dan pembahasan</b>.</li>
+      <li>Di dasbor muncul kolom <b>Kunci</b> dan tombol <b>📖 Kunci &amp; pembahasan</b> untuk dicetak.</li>
+      <li>Untuk berlangganan (Rp50.000 per kelas per tahun ajaran), ketuk <b>⭐ Aktifkan Premium</b>. Admin mengaktifkan kelas Anda setelah dukungan diterima. Premium berlaku sampai 31 Juli akhir tahun ajaran.</li>
+    </ul>
+    <h3>F. Pertanyaan yang sering muncul</h3>
+    <ul>
+      <li><b>Buka dari HP atau laptop lain?</b> Masukkan kode kelas dan PIN pada kotak "Sudah punya kelas?". Kode dan PIN ada di pesan WhatsApp yang Anda simpan.</li>
       <li><b>Lupa PIN?</b> Hubungi Admin lewat WhatsApp dengan menyebutkan kode kelas, nama, dan sekolah.</li>
       <li><b>Ada siswa baru atau nama salah ketik?</b> Buka dasbor, lalu ketuk <b>✏️ Ubah daftar</b>.</li>
-      <li><b>Berbayar?</b> Tidak. Dasbor kelas dan semua paket soal <b>gratis</b>.</li>
+      <li><b>Berbayar?</b> Kelas Gratis tetap gratis selamanya. Kelas Premium bersifat pilihan.</li>
     </ul>
   </details>
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=9"></script>
+<script src="tka.js?v=10"></script>
 <script src="bank/daftar.js?v=4"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -280,10 +332,41 @@ async function bukaKelas(k, dataAwal) {
   $('d-kode').textContent = k.kode;
   const t = tautanKelas(k);
   $('d-tautan').textContent = t;
-  $('d-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Assalamu’alaikum/Salam sejahtera, Bapak/Ibu dan anak-anak ' + k.kelas + ' 🙏\n\nAyo berlatih *Simulasi TKA SD* (gratis) melalui tautan kelas berikut, agar hasilnya dapat dipantau guru:\n👉 ' + t + '\n\nCara: buka tautan → pilih paket → pilih namamu dari daftar → kerjakan sampai selesai.\nTerima kasih.\n— ' + k.guru);
+  $('d-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Assalamu’alaikum/Salam sejahtera, Bapak/Ibu dan anak-anak ' + k.kelas + ' 🙏\n\nAyo berlatih di *Kelas Intensif TKA* melalui tautan kelas berikut, agar hasilnya dapat dipantau guru:\n👉 ' + t + '\n\nCara: buka tautan → pilih paket → pilih namamu dari daftar → kerjakan sampai selesai.\nTerima kasih.\n— ' + k.guru);
   tampil('v-dasbor');
   $('d-paket').innerHTML = PAKET_TKA.map(p => '<button type="button" data-id="' + p.id + '">' + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('');
   if (dataAwal) { DATA = dataAwal; await gambar(); } else await muat();
+}
+function tglID(w) { return new Date(w).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); }
+function premiumAktif() { return !!(DATA && DATA.premium && DATA.premium.aktif); }
+function gambarPremium() {
+  const p = (DATA && DATA.premium) || { aktif: false, cobaDipakai: false, hariCoba: 14 };
+  const el = $('k-premium'), k = KELAS;
+  const waAdmin = 'https://wa.me/6281196939694?text=' + encodeURIComponent('Halo Admin, saya ingin mengaktifkan *Kelas Premium* Kelas Intensif TKA (Rp50.000 per tahun ajaran).\n\nKode kelas: ' + k.kode + '\nKelas: ' + k.kelas + '\nSekolah: ' + k.sekolah + '\nGuru: ' + k.guru + '\n\nMohon info cara pembayarannya. Terima kasih.');
+  const sisa = p.aktif ? Math.max(1, Math.ceil((p.sampai - Date.now()) / 864e5)) : 0;
+  el.classList.toggle('aktif', p.aktif);
+  el.innerHTML = p.aktif
+    ? '<div><h2>⭐ Kelas Premium aktif' + (p.masaCoba ? ' (coba gratis)' : '') + '</h2><p>Berlaku sampai <b>' + tglID(p.sampai) + '</b>' + (sisa <= 31 ? ' (sisa ' + sisa + ' hari)' : '') + '. Siswa di daftar kelas otomatis mendapat kunci dan pembahasan.</p></div>' +
+      (p.masaCoba ? '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Lanjutkan Premium: Rp50.000/tahun ajaran</a>' : sisa <= 31 ? '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Perpanjang Premium</a>' : '')
+    : '<div><h2>Kelas Gratis</h2><p>Buka kunci &amp; pembahasan untuk semua siswa dan untuk dasbor Anda dengan <b>Kelas Premium</b> (Rp50.000 per tahun ajaran).</p></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (p.cobaDipakai ? '' : '<button class="btn hijau" id="p-coba" type="button">🎁 Coba Premium gratis ' + (p.hariCoba || 14) + ' hari</button>') +
+      '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Aktifkan Premium</a></div>' + (p.cobaDipakai ? '<p style="flex-basis:100%;font-size:12.5px">Masa coba gratis kelas ini sudah selesai.</p>' : '');
+  el.hidden = false;
+  const b = $('p-coba');
+  if (b) b.onclick = async () => {
+    if (!confirm('Aktifkan coba gratis Kelas Premium selama ' + (p.hariCoba || 14) + ' hari? Coba gratis hanya bisa dipakai sekali untuk kelas ini.')) return;
+    b.disabled = true; b.textContent = 'Mengaktifkan…';
+    const r = await TKA.api({ aksi: 'cobaPremium', kode: KELAS.kode, pin: KELAS.pin });
+    if (!r.ok) { alert(r.pesan || 'Belum berhasil. Coba lagi.'); b.disabled = false; b.textContent = '🎁 Coba Premium gratis'; return; }
+    DATA.premium = r.premium; gambar();
+  };
+}
+const PEMBAHASAN = {};
+async function ambilPembahasan(paket) {
+  if (PEMBAHASAN[paket]) return PEMBAHASAN[paket];
+  const r = await TKA.api({ aksi: 'pembahasanGuru', kode: KELAS.kode, pin: KELAS.pin, paket });
+  if (r.ok) PEMBAHASAN[paket] = r.rinci;
+  return r.ok ? r.rinci : null;
 }
 async function muat() {
   $('d-isi').innerHTML = '<div class="memuat">Memuat data kelas…</div>';
@@ -330,8 +413,11 @@ function rekapSiswa(baris) {
 async function gambar() {
   document.querySelectorAll('#d-paket button').forEach(b => b.classList.toggle('aktif', b.dataset.id === PAKET));
   gambarDaftar();
+  gambarPremium();
   const daftar = DATA.siswa || [], kunciNama = n => n.trim().toLowerCase().replace(/\s+/g, ' ');
   const bank = await TKA.muatBank(PAKET);
+  const rinci = premiumAktif() ? await ambilPembahasan(PAKET) : null;
+  const tombolBahas = rinci ? '<div class="kartu k-premium aktif cetak-sembunyi"><div><h2>📖 Kunci &amp; pembahasan ' + esc(bank.mapel + ' · ' + bank.paket) + '</h2><p>Soal lengkap dengan kunci dan pembahasan, siap dicetak untuk pembahasan di kelas.</p></div><button class="btn emas" type="button" id="d-bahas">📖 Buka &amp; cetak</button></div>' : '';
   const siswa = rekapSiswa(DATA.baris);
   const banyakPaket = new Set(DATA.baris.map(b => b.paket));
   const sudah = new Set(siswa.map(x => kunciNama(x.nama)));
@@ -341,7 +427,8 @@ async function gambar() {
     (belum.length ? '<div class="belum">' + belum.map(n => '<span>' + esc(n) + '</span>').join('') + '</div>' : '<p class="sub" style="margin:0">🎉 Semua siswa sudah mengerjakan paket ini.</p>') + '</div>' : '';
   if (!siswa.length) {
     $('d-isi').innerHTML = '<div class="kartu kosong"><b>Belum ada siswa yang mengerjakan ' + esc(bank.mapel + ' · ' + bank.paket) + '</b>' +
-      (DATA.baris.length ? 'Siswa sudah mengerjakan paket lain (' + banyakPaket.size + ' paket). Pilih paket di atas.' : 'Bagikan tautan kelas di atas ke grup WhatsApp siswa atau orang tua. Hasilnya akan muncul di sini.') + '</div>' + kartuBelum;
+      (DATA.baris.length ? 'Siswa sudah mengerjakan paket lain (' + banyakPaket.size + ' paket). Pilih paket di atas.' : 'Bagikan tautan kelas di atas ke grup WhatsApp siswa atau orang tua. Hasilnya akan muncul di sini.') + '</div>' + kartuBelum + tombolBahas;
+    pasangBahas(bank, rinci);
     return;
   }
   const nilai = siswa.map(s => s.terakhir.nilai);
@@ -376,14 +463,25 @@ async function gambar() {
       '<th data-urut="nama">Nama</th><th data-urut="nilai">Nilai terakhir</th><th data-urut="tertinggi">Tertinggi</th><th data-urut="coba">Percobaan</th><th data-urut="waktu" class="sembunyi-hp">Terakhir</th></tr></thead><tbody>' +
       urutkan.map(s => '<tr><td>' + esc(s.nama) + (daftar.length && !terdaftar.has(kunciNama(s.nama)) ? '<span class="luar" title="Nama ini tidak ada di daftar siswa">di luar daftar</span>' : '') + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td></tr>').join('') +
       '</tbody></table></div></div>' + kartuBelum +
-    '<div class="kartu"><h2>🧩 Capaian setiap soal</h2><p class="sub">Persentase skor rata-rata kelas per nomor soal dan indikatornya.</p><div style="overflow-x:auto"><table><thead><tr><th>No</th><th>Indikator</th><th>Capaian kelas</th></tr></thead><tbody>' +
-      butir.map(b => '<tr><td><b>' + b.q.no + '</b></td><td>' + esc(b.q.indikator) + '</td><td style="white-space:nowrap">' + batang(b.p) + '</td></tr>').join('') + '</tbody></table></div></div>';
+    '<div class="kartu"><h2>🧩 Capaian setiap soal</h2><p class="sub">Persentase skor rata-rata kelas per nomor soal dan indikatornya.</p><div style="overflow-x:auto"><table><thead><tr><th>No</th><th>Indikator</th>' + (rinci ? '<th>Kunci</th>' : '') + '<th>Capaian kelas</th></tr></thead><tbody>' +
+      butir.map(b => '<tr><td><b>' + b.q.no + '</b></td><td>' + esc(b.q.indikator) + '</td>' + (rinci ? '<td class="kunci-k">' + esc(TKA.ringkasJawaban(b.q, (rinci[b.q.no] || {}).kunci)) + '</td>' : '') + '<td style="white-space:nowrap">' + batang(b.p) + '</td></tr>').join('') + '</tbody></table></div></div>' + tombolBahas;
+  pasangBahas(bank, rinci);
 
   document.querySelectorAll('#t-siswa th[data-urut]').forEach(th => th.onclick = () => {
     URUT = { kunci: th.dataset.urut, turun: URUT.kunci === th.dataset.urut ? !URUT.turun : th.dataset.urut !== 'nama' };
     gambar();
   });
   $('d-unduh').onclick = () => unduhCSV(bank, siswa);
+}
+
+function pasangBahas(bank, rinci) {
+  const b = $('d-bahas'); if (!b || !rinci) return;
+  b.onclick = () => {
+    const html = TKA.dokumenSoal(bank, rinci, KELAS.kelas + ' · ' + KELAS.sekolah + ' · Guru: ' + KELAS.guru).replace('</body>', '<script>window.onload=()=>setTimeout(()=>print(),400)<\/script></body>');
+    const w = window.open('', '_blank');
+    if (!w) { alert('Izinkan jendela pop-up untuk membuka dokumen.'); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+  };
 }
 
 function unduhCSV(bank, siswa) {
@@ -402,7 +500,7 @@ function unduhCSV(bank, siswa) {
 (() => {
   const terakhir = TKA.simpan.get('tka-guru-terakhir');
   const k = tersimpan().find(x => x.kode === terakhir);
-  if (k) bukaKelas(k); else halamanMasuk();
+  if (k && location.hash !== '#banding') bukaKelas(k); else { halamanMasuk(); if (location.hash) setTimeout(() => { const t = document.querySelector(location.hash); if (t) t.scrollIntoView(); }, 50); }
 })();
 </script>
 </body>
