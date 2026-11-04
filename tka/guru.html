@@ -71,6 +71,7 @@ th[data-urut]{cursor:pointer}th[data-urut]:hover{color:var(--biru)}
 .isi-baik{background:var(--hijau)}.isi-cukup{background:#e0a400}.isi-kurang{background:var(--merah)}
 .lemah{display:grid;gap:8px}
 .lemah div{display:grid;grid-template-columns:56px 1fr 170px;gap:10px;align-items:center;background:var(--latar);border-radius:10px;padding:8px 12px;font-size:14px}
+.lemah a.tugas{display:inline-block;margin-top:4px;font-size:12.5px;font-weight:700;color:var(--aksen)}
 .lemah .no{font-weight:800;color:var(--biru)}
 .lemah small{display:block;color:var(--muted);font-size:12.5px}
 .kosong{text-align:center;color:var(--muted);padding:26px 10px}
@@ -115,7 +116,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 <div id="v-masuk">
   <div class="kartu">
     <h2>Kelas Intensif TKA: pantau latihan seluruh kelas dalam satu layar</h2>
-    <p class="sub">Tanpa akun dan tanpa kata sandi: cukup buat kelas, bagikan tautannya, lalu lihat hasilnya. Semua paket Simulasi TKA otomatis tersedia di kelas Anda.</p>
+    <p class="sub">Tanpa akun dan tanpa kata sandi: cukup buat kelas, bagikan tautannya, lalu lihat hasilnya. Semua paket Simulasi TKA dan latihan per indikator otomatis tersedia di kelas Anda.</p>
     <div class="langkah">
       <div><b>1</b>Buat kelas di bawah ini. Anda mendapat <b style="display:inline;background:none;color:inherit;width:auto;height:auto">kode kelas</b> dan PIN.</div>
       <div><b>2</b>Bagikan tautan kelas ke grup WhatsApp siswa/orang tua.</div>
@@ -143,7 +144,8 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
           <li><b>Kunci jawaban &amp; pembahasan untuk semua siswa di kelas</b>, otomatis setelah mengerjakan</li>
           <li><b>Kunci &amp; pembahasan setiap soal di dasbor guru</b>, siap cetak</li>
           <li>Bantuan prioritas lewat WhatsApp</li>
-          <li class="nanti">Latihan per indikator dan tugas dari guru</li>
+          <li><b>Latihan per indikator Matematika</b> (29 set) untuk seluruh siswa, dan tombol <b>kirim latihan</b> langsung dari indikator terlemah</li>
+          <li class="nanti">Latihan per indikator Bahasa Indonesia</li>
           <li class="nanti">Remedial otomatis sesuai kelemahan tiap siswa</li>
           <li class="nanti">Peta kemampuan siswa dan grafik perkembangan</li>
           <li class="nanti">Rapor untuk orang tua dan laporan kepala sekolah</li>
@@ -240,6 +242,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <li><b>🎯 Indikator yang perlu diperkuat</b>: 5 soal dengan capaian kelas terendah. Jadikan bahan pembelajaran ulang.</li>
       <li><b>📊 Capaian per elemen</b>: rata-rata kelas per elemen, seperti laporan hasil TKA.</li>
       <li><b>👩‍🎓 Nilai siswa</b>: nilai pengerjaan terakhir setiap siswa. Ketuk judul kolom untuk mengurutkan. Tanda <i>di luar daftar</i> berarti nama diketik sendiri oleh siswa.</li>
+      <li>Di bawah setiap indikator terlemah ada tombol <b>📝 Kirim latihan</b>: tautan latihan 5 soal untuk indikator itu langsung terkirim ke WhatsApp. Hasil latihan siswa muncul sebagai tombol baru (📝) di pilihan paket.</li>
       <li>Ketuk <b>↻ Perbarui</b> untuk melihat nilai terbaru, <b>⬇️ Unduh Excel (CSV)</b> untuk diolah, atau <b>🖨️ Cetak</b> untuk arsip.</li>
     </ul>
     <h3>D. Saran penggunaan</h3>
@@ -252,6 +255,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <ul>
       <li>Ketuk <b>🎁 Coba Premium gratis 14 hari</b> di dasbor. Langsung aktif, tanpa pembayaran, dan berhenti otomatis setelah 14 hari. Coba gratis hanya sekali untuk setiap kelas.</li>
       <li>Selama Premium, siswa yang mengerjakan lewat tautan kelas (dan namanya ada di daftar siswa) <b>otomatis mendapat kunci dan pembahasan</b>.</li>
+      <li>Siswa dapat mengerjakan <b>semua latihan per indikator</b> (latihan bertanda Gratis terbuka untuk semua kelas).</li>
       <li>Di dasbor muncul kolom <b>Kunci</b> dan tombol <b>📖 Kunci &amp; pembahasan</b> untuk dicetak.</li>
       <li>Untuk berlangganan (Rp50.000 per kelas per tahun ajaran), ketuk <b>⭐ Aktifkan Premium</b>. Admin mengaktifkan kelas Anda setelah dukungan diterima. Premium berlaku sampai 31 Juli akhir tahun ajaran.</li>
     </ul>
@@ -268,6 +272,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 <script src="konfigurasi.js?v=2"></script>
 <script src="tka.js?v=10"></script>
 <script src="bank/daftar.js?v=4"></script>
+<script src="bank/latihan.js?v=1"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;
@@ -334,7 +339,7 @@ async function bukaKelas(k, dataAwal) {
   $('d-tautan').textContent = t;
   $('d-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Assalamu’alaikum/Salam sejahtera, Bapak/Ibu dan anak-anak ' + k.kelas + ' 🙏\n\nAyo berlatih di *Kelas Intensif TKA* melalui tautan kelas berikut, agar hasilnya dapat dipantau guru:\n👉 ' + t + '\n\nCara: buka tautan → pilih paket → pilih namamu dari daftar → kerjakan sampai selesai.\nTerima kasih.\n— ' + k.guru);
   tampil('v-dasbor');
-  $('d-paket').innerHTML = PAKET_TKA.map(p => '<button type="button" data-id="' + p.id + '">' + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('');
+
   if (dataAwal) { DATA = dataAwal; await gambar(); } else await muat();
 }
 function tglID(w) { return new Date(w).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); }
@@ -411,6 +416,7 @@ function rekapSiswa(baris) {
 }
 
 async function gambar() {
+  gambarTombolPaket();
   document.querySelectorAll('#d-paket button').forEach(b => b.classList.toggle('aktif', b.dataset.id === PAKET));
   gambarDaftar();
   gambarPremium();
@@ -456,7 +462,9 @@ async function gambar() {
     '<div class="angka"><div><small>Siswa mengerjakan</small><b>' + siswa.length + '</b></div><div><small>Rata-rata nilai</small><b>' + angka(Math.round(rata * 10) / 10) + '</b></div>' +
     '<div><small>Tertinggi</small><b>' + angka(Math.max(...nilai)) + '</b></div><div><small>Terendah</small><b>' + angka(Math.min(...nilai)) + '</b></div></div>' +
     '<div class="dua"><div class="kartu"><h2>🎯 Indikator yang perlu diperkuat</h2><p class="sub">5 soal dengan capaian kelas terendah. Fokuskan pembelajaran pada indikator ini.</p><div class="lemah">' +
-      lemah.map(b => '<div><span class="no">No. ' + b.q.no + '</span><span>' + esc(b.q.indikator) + '<small>' + esc(b.q.elemen) + '</small></span><span>' + batang(b.p) + '</span></div>').join('') + '</div></div>' +
+      lemah.map(b => { const L = latihanUntuk(bank, b.q.no);
+        return '<div><span class="no">No. ' + b.q.no + '</span><span>' + esc(b.q.indikator) + '<small>' + esc(b.q.elemen) + '</small>' +
+          (L ? '<a href="#" class="tugas cetak-sembunyi" data-lt="' + L.id + '">📝 Kirim latihan "' + esc(L.judul) + '" ke siswa' + (L.gratis || premiumAktif() ? '' : ' ⭐') + '</a>' : '') + '</span><span>' + batang(b.p) + '</span></div>'; }).join('') + '</div></div>' +
     '<div class="kartu"><h2>📊 Capaian per elemen</h2><p class="sub">Rata-rata kelas, seperti laporan hasil TKA.</p><table><tbody>' +
       [...elemen].map(([nm, e]) => '<tr><td>' + esc(nm) + '</td><td style="white-space:nowrap">' + batang(e.t / e.n) + '</td></tr>').join('') + '</tbody></table></div></div>' +
     '<div class="kartu"><h2>👩‍🎓 Nilai siswa</h2><p class="sub">Nilai dari pengerjaan terakhir. Ketuk judul kolom untuk mengurutkan.</p><div style="overflow-x:auto"><table id="t-siswa"><thead><tr>' +
@@ -473,6 +481,31 @@ async function gambar() {
   });
   $('d-unduh').onclick = () => unduhCSV(bank, siswa);
 }
+
+/* ---------- latihan per indikator ---------- */
+function latihanUntuk(bank, no) {
+  if (bank.latihan || typeof LATIHAN_TKA === 'undefined') return null;
+  return LATIHAN_TKA.find(l => l.mapel === bank.mapel && l.nomor.includes(no)) || null;
+}
+function gambarTombolPaket() {
+  const ada = new Set((DATA && DATA.baris || []).map(b => b.paket));
+  const lt = (typeof LATIHAN_TKA === 'undefined' ? [] : LATIHAN_TKA).filter(l => ada.has(l.id) || l.id === PAKET);
+  $('d-paket').innerHTML = PAKET_TKA.map(p => '<button type="button" data-id="' + p.id + '">' + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('') +
+    lt.map(l => '<button type="button" data-id="' + l.id + '">📝 ' + esc(l.judul) + '</button>').join('');
+}
+function tautanLatihan(id) { return new URL('ujian.html?paket=' + id + '&kelas=' + KELAS.kode, location.href).href; }
+$('d-isi').addEventListener('click', e => {
+  const a = e.target.closest('a[data-lt]'); if (!a) return;
+  e.preventDefault();
+  const L = LATIHAN_TKA.find(l => l.id === a.dataset.lt);
+  if (!L.gratis && !premiumAktif()) {
+    alert('Latihan per indikator termasuk fitur Kelas Premium. Aktifkan coba gratis 14 hari di kartu Kelas Premium, lalu kirim latihan ini ke siswa.');
+    $('k-premium').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
+  }
+  const pesan = 'Anak-anak ' + KELAS.kelas + ', ayo kerjakan *latihan TKA* berikut (5 soal, 15 menit) untuk memperkuat materi *' + L.judul + '* 💪\n👉 ' + tautanLatihan(L.id) +
+    '\n\nBuka tautan, pilih namamu dari daftar, lalu kerjakan sampai selesai. Setelah selesai, pembahasannya langsung muncul.\n— ' + KELAS.guru;
+  window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
+});
 
 function pasangBahas(bank, rinci) {
   const b = $('d-bahas'); if (!b || !rinci) return;
