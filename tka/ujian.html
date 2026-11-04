@@ -384,7 +384,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=11"></script>
+<script src="tka.js?v=12"></script>
 <script src="bank/latihan.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -408,7 +408,16 @@ async function siapUjianSerentak() {
   TKA.simpan.set('tka-kelas', r.kelas.kode);
 }
 
-siapUjianSerentak().then(() => TKA.muatBank(ID)).then(b => {
+function bankAwal() {
+  if (!(UJ && UJ.eksklusif)) return TKA.muatBank(ID);
+  const ada = TKA.bank[ID] || TKA.simpan.get('tka-bank-' + ID);
+  if (ada && ada.soal) { TKA.daftarkan(ada); return Promise.resolve(ada); }
+  const e = UJ.eksklusif;   // paket eksklusif: soal baru dikirim server saat ujian dimulai
+  return Promise.resolve({ id: ID, stub: true, jenjang: e.jenjang, mapel: e.mapel, paket: e.paket, durasi: e.durasi, stimulus: {}, soal: Array.from({ length: e.jumlah }, (_, i) => ({ no: i + 1 })) });
+}
+function pakaiBank(b) { TKA.daftarkan(b); TKA.simpan.set('tka-bank-' + b.id, b); B = b; }
+
+siapUjianSerentak().then(bankAwal).then(b => {
   B = b;
   document.title = 'Simulasi TKA ' + b.jenjang + ' ' + judulPaket();
   $('judul-bar').textContent = 'TKA ' + b.jenjang + ' · ' + judulPaket();
@@ -452,7 +461,14 @@ function halamanAwal() {
     const terisi = Object.keys(s.jawaban).filter(k => terjawab(s.jawaban[k])).length;
     $('aw-lanjut-teks').innerHTML = '<b>Pengerjaan sebelumnya belum selesai.</b> ' + terisi + ' soal sudah dijawab, sisa waktu ' + Math.ceil((s.batas - Date.now()) / 60000) + ' menit.';
     $('aw-lanjut').hidden = false;
-    $('aw-lanjut-btn').onclick = () => { S = s; mulaiUjian(); };
+    $('aw-lanjut-btn').onclick = async () => {
+      if (B.stub) {
+        const m = await TKA.api({ aksi: 'mulaiUjian', id: SERENTAK, nama: s.peserta.nama });
+        if (!m.ok || !m.bank) { alert(m.pesan || 'Soal ujian belum dapat dimuat. Coba lagi.'); return; }
+        pakaiBank(m.bank);
+      }
+      S = s; mulaiUjian();
+    };
   } else if (s) {
     // waktu habis saat halaman tertutup: kirim jawaban yang ada
     S = s; kirimJawaban();
@@ -485,6 +501,8 @@ function halamanAwal() {
       $('aw-mulai').disabled = false;
       if (!m.ok) { $('aw-salah').textContent = m.pesan || 'Ujian belum dapat dimulai.'; return; }
       if (m.sekarang) SELISIH = m.sekarang - Date.now();
+      if (m.bank) pakaiBank(m.bank);
+      if (B.stub) { $('aw-salah').textContent = 'Soal ujian belum dapat dimuat. Coba lagi.'; return; }
       $('aw-salah').textContent = '';
       S = Object.assign({ paket: ID, ujian: SERENTAK, mulai: Date.now(), batas: UJ.ujian.selesai - SELISIH, jawaban: {}, ragu: {}, posisi: 0, peserta: d }, buatAcakan(SERENTAK + '|' + d.nama.toLowerCase()));
       simpanSesi(); mulaiUjian(); return;

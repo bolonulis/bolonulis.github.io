@@ -174,7 +174,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
           <li><b>Mode ujian serentak</b>: jadwalkan tryout, semua siswa mulai dan selesai bersamaan, satu kali kesempatan, soal dan pilihan diacak, dipantau langsung</li>
           <li>Siswa hanya melihat nilai, <b>kunci tetap di tangan guru</b>, sehingga siswa tidak sekadar menghafal jawaban</li>
           <li>Bantuan prioritas lewat WhatsApp</li>
-          <li class="nanti">Paket tryout eksklusif (Paket 3 dan seterusnya) khusus ujian serentak</li>
+          <li><b>Paket tryout eksklusif</b> khusus ujian serentak: soalnya belum pernah dilihat siswa (Paket 3 Matematika; Bahasa Indonesia menyusul)</li>
           <li class="nanti">Peta kemampuan siswa per indikator</li>
           <li class="nanti">Rapor untuk orang tua dan laporan kepala sekolah</li>
         </ul>
@@ -314,6 +314,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <li>Siswa membuka tautan sebelum jam mulai dan memilih namanya. Tombol <b>Mulai</b> aktif tepat pada jam ujian, dan semua siswa selesai bersamaan. Jawaban terkirim otomatis saat waktu habis.</li>
       <li>Setiap siswa hanya <b>satu kali</b> kesempatan. Urutan soal dan pilihan jawaban diacak per siswa agar tidak saling mencontek.</li>
       <li>Ketuk <b>👀 Pantau</b> untuk melihat siapa yang belum masuk, sedang mengerjakan, dan sudah selesai beserta nilainya.</li>
+      <li><b>⭐ Paket eksklusif</b> (misalnya Matematika Paket 3) hanya bisa dipilih untuk ujian serentak. Soalnya tidak tersedia di halaman umum, jadi belum pernah dilihat siswa. Soal baru terkirim ke HP siswa saat ujian dimulai.</li>
     </ul>
     <h3>G. Pertanyaan yang sering muncul</h3>
     <ul>
@@ -326,8 +327,8 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=11"></script>
-<script src="bank/daftar.js?v=4"></script>
+<script src="tka.js?v=12"></script>
+<script src="bank/daftar.js?v=5"></script>
 <script src="bank/latihan.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -493,7 +494,9 @@ async function gambar() {
   gambarUjian();
   gambarLangkah();
   const daftar = DATA.siswa || [], kunciNama = n => n.trim().toLowerCase().replace(/\s+/g, ' ');
-  const bank = await TKA.muatBank(PAKET);
+  let bank;
+  try { bank = await bankUntuk(PAKET); }
+  catch (e) { $('d-isi').innerHTML = '<div class="kartu kosong"><b>Paket ini belum dapat ditampilkan</b>' + esc(e.message || '') + '</div>'; return; }
   const rinci = premiumAktif() ? await ambilPembahasan(PAKET) : null;
   const tombolBahas = rinci ? '<div class="kartu k-premium aktif cetak-sembunyi"><div><h2>📖 Kunci &amp; pembahasan ' + esc(bank.mapel + ' · ' + bank.paket) + '</h2><p>Soal lengkap dengan kunci dan pembahasan, siap dicetak untuk pembahasan di kelas.</p></div><button class="btn emas" type="button" id="d-bahas">📖 Buka &amp; cetak</button></div>' : '';
   const siswa = rekapSiswa(DATA.baris);
@@ -593,7 +596,7 @@ function remedialSiswa(bank, s) {
   });
 }
 function namaPaket(id) {
-  const p = PAKET_TKA.find(x => x.id === id); if (p) return p.mapel + ' ' + p.paket;
+  const p = PAKET_TKA.concat(typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).find(x => x.id === id); if (p) return p.mapel + ' ' + p.paket + (p.eksklusif ? ' (eksklusif)' : '');
   const l = (typeof LATIHAN_TKA === 'undefined' ? [] : LATIHAN_TKA).find(x => x.id === id); return l ? 'Latihan: ' + l.judul : id;
 }
 function tampilKembang(nama) {
@@ -663,7 +666,7 @@ function gambarUjian() {
     '<li>Jawaban terkirim <b>otomatis</b> saat waktu habis. Bila internet putus, jawaban tetap tersimpan di HP dan dapat dikirim sampai 15 menit setelah ujian berakhir.</li>' +
     '<li>Ujian hanya dapat <b>dibatalkan sebelum dimulai</b>.</li>' +
     '<li>Saran: bagikan tautan sehari sebelumnya, dan minta siswa membuka tautan 10 menit sebelum mulai dengan baterai penuh.</li></ul></details></div>' +
-    '<div class="uj-form"><label>Paket<select id="uj-paket">' + PAKET_TKA.map(p => '<option value="' + p.id + '" data-durasi="' + p.durasi + '">' + esc(p.mapel + ' · ' + p.paket) + '</option>').join('') + '</select><span class="bantu">Mata pelajaran yang diujikan</span></label>' +
+    '<div class="uj-form"><label>Paket<select id="uj-paket">' + (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).concat(PAKET_TKA).map(p => '<option value="' + p.id + '" data-durasi="' + p.durasi + '">' + (p.eksklusif ? '⭐ ' : '') + esc(p.mapel + ' · ' + p.paket) + (p.eksklusif ? ' (eksklusif, soal belum pernah dilihat siswa)' : '') + '</option>').join('') + '</select><span class="bantu">⭐ Paket eksklusif hanya bisa dikerjakan lewat ujian serentak</span></label>' +
     '<label>Tanggal<input type="date" id="uj-tgl" value="' + tgl + '"><span class="bantu">Hari pelaksanaan</span></label><label>Jam mulai<input type="time" id="uj-jam" value="08:00"><span class="bantu">Menurut jam di perangkat Anda</span></label>' +
     '<label>Durasi (menit)<input type="number" id="uj-durasi" min="10" max="180" value="' + PAKET_TKA[0].durasi + '"><span class="bantu">TKA asli: 75 menit</span></label>' +
     '<button class="btn hijau" type="button" id="uj-buat">＋ Jadwalkan</button></div><p class="salah" id="uj-salah" style="margin:6px 0 0"></p>' +
@@ -730,8 +733,18 @@ function latihanUntuk(bank, no) {
 function gambarTombolPaket() {
   const ada = new Set((DATA && DATA.baris || []).map(b => b.paket));
   const lt = (typeof LATIHAN_TKA === 'undefined' ? [] : LATIHAN_TKA).filter(l => ada.has(l.id) || l.id === PAKET);
-  $('d-paket').innerHTML = PAKET_TKA.map(p => '<button type="button" data-id="' + p.id + '">' + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('') +
+  const eks = (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).filter(p => ada.has(p.id) || p.id === PAKET);
+  $('d-paket').innerHTML = PAKET_TKA.concat(eks).map(p => '<button type="button" data-id="' + p.id + '">' + (p.eksklusif ? '⭐ ' : '') + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('') +
     lt.map(l => '<button type="button" data-id="' + l.id + '">📝 ' + esc(l.judul) + '</button>').join('');
+}
+async function bankUntuk(id) {
+  const eks = (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).some(p => p.id === id);
+  if (eks && !TKA.bank[id]) {
+    const r = await TKA.api({ aksi: 'bankGuru', kode: KELAS.kode, pin: KELAS.pin, paket: id });
+    if (!r.ok) throw new Error(r.pesan || 'Soal paket eksklusif hanya tersedia untuk Kelas Premium.');
+    TKA.daftarkan(r.bank);
+  }
+  return TKA.muatBank(id);
 }
 function tautanLatihan(id) { return new URL('ujian.html?paket=' + id + '&kelas=' + KELAS.kode, location.href).href; }
 $('d-isi').addEventListener('click', e => {
