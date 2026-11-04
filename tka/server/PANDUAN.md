@@ -34,6 +34,17 @@ Lembar **Akses**:
 - Kolom **Perangkat**: kosongkan bila siswa ganti HP (satu kode maksimal 50 perangkat, diatur di
   `PENGATURAN.MAKS_PERANGKAT`).
 
+## Melayani guru yang mengaktifkan Kelas Premium
+
+1. Guru mengetuk **⭐ Aktifkan Premium** di dasbor. Pesan WA berisi kode kelas sudah tersusun.
+2. Setelah dukungan Rp50.000 diterima, buka spreadsheet → menu **Simulasi TKA → Aktifkan Kelas Premium…**
+   (bila menu belum muncul, muat ulang spreadsheet).
+3. Masukkan kode kelas (6 huruf). Premium berlaku sampai **31 Juli** akhir tahun ajaran
+   (aktivasi Mei–Desember: 31 Juli tahun berikutnya). Pesan siap kirim untuk guru akan muncul.
+
+Lembar **Kelas**, kolom **Premium sampai** menentukan status Premium; boleh diubah manual (misalnya untuk memperpanjang).
+Kolom **Coba gratis dipakai** terisi ketika guru memakai coba gratis 14 hari (sekali per kelas).
+
 Lembar **Nilai** mencatat setiap pengerjaan: nama, sekolah, kelas, paket, nilai, dan kode yang dipakai.
 
 ## Menambah paket soal

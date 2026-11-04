@@ -16,7 +16,8 @@
 
 var PENGATURAN = {
   MAKS_PERANGKAT: 50,         // satu kode akses boleh dipakai di berapa perangkat (HP/laptop) berbeda
-  WA_ADMIN: '6281196939694'
+  WA_ADMIN: '6281196939694',
+  HARI_COBA_PREMIUM: 14       // coba gratis Kelas Premium (sekali per kelas)
 };
 
 var LEMBAR_AKSES = 'Akses';
@@ -24,7 +25,7 @@ var LEMBAR_NILAI = 'Nilai';
 var KEPALA_AKSES = ['Kode', 'Nama', 'No. WA', 'Dibuat', 'Aktif', 'Perangkat', 'Dipakai', 'Terakhir dipakai', 'Catatan'];
 var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kode kelas', 'Skor per soal'];
 var LEMBAR_KELAS = 'Kelas';
-var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa'];
+var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa', 'Premium sampai', 'Coba gratis dipakai', 'Catatan premium'];
 
 /* ============================ WEB APP ============================ */
 
@@ -44,6 +45,8 @@ function doPost(e) {
     if (req.aksi === 'cekKelas') return json_(cekKelas_(req));
     if (req.aksi === 'dasbor') return json_(dasbor_(req));
     if (req.aksi === 'aturSiswa') return json_(aturSiswa_(req));
+    if (req.aksi === 'cobaPremium') return json_(cobaPremium_(req));
+    if (req.aksi === 'pembahasanGuru') return json_(pembahasanGuru_(req));
     return json_({ ok: false, pesan: 'Aksi tidak dikenal.' });
   } catch (err) {
     return json_({ ok: false, pesan: 'Server sedang sibuk. Coba lagi sebentar lagi. (' + err.message + ')' });
@@ -108,9 +111,10 @@ function nilai_(req) {
   if (!req.lihatUlang) catatNilai_(req, h, akses && akses.ok ? akses.kode : '');
 
   var hasil = { ok: true, nilai: h.nilai, terjawab: h.terjawab, jumlah: h.jumlah, premium: false };
-  if (akses && akses.ok) {
+  var kelasPremium = (akses && akses.ok) ? null : premiumLewatKelas_(req.peserta);
+  if ((akses && akses.ok) || kelasPremium) {
     hasil.premium = true;
-    hasil.nama = akses.nama;
+    if (kelasPremium) hasil.kelasPremium = kelasPremium; else hasil.nama = akses.nama;
     hasil.rinci = {};
     Object.keys(bank).forEach(function (no) { hasil.rinci[no] = { skor: h.skor[no], kunci: bank[no].k, bahas: bank[no].b }; });
   } else if (akses) {
@@ -239,9 +243,14 @@ function periksaKodeLambat_(dicari, perangkat) {
  *  cache dikosongkan agar perubahan langsung berlaku. */
 function onEdit(e) {
   try {
-    if (!e || !e.range || e.range.getSheet().getName() !== LEMBAR_AKSES) return;
+    if (!e || !e.range) return;
     var sh = e.range.getSheet(), awal = e.range.getRow(), n = Math.min(e.range.getNumRows(), 200);
     var cache = CacheService.getScriptCache();
+    if (sh.getName() === LEMBAR_KELAS) {
+      sh.getRange(awal, 1, n, 1).getValues().forEach(function (b) { var k = rapikanKode_(b[0]); if (k) cache.remove('kelas_' + k); });
+      return;
+    }
+    if (sh.getName() !== LEMBAR_AKSES) return;
     cache.remove(CACHE_AKSES);
     sh.getRange(awal, 1, n, 1).getValues().forEach(function (b) { var k = rapikanKode_(b[0]); if (k) cache.remove('dev_' + k); });
   } catch (err) { /* abaikan */ }
@@ -305,7 +314,8 @@ function dataKelas_(kode) {
   var hasil = null;
   lembar_(LEMBAR_KELAS, KEPALA_KELAS).getDataRange().getValues().slice(1).some(function (b) {
     if (rapikanKode_(b[0]) !== kode) return false;
-    hasil = { kode: kode, pin: String(b[1]).replace(/^'/, ''), guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]), siswa: rapikanSiswa_(b[7]) };
+    hasil = { kode: kode, pin: String(b[1]).replace(/^'/, ''), guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]), siswa: rapikanSiswa_(b[7]),
+      premiumSampai: waktu_(b[8]), cobaDipakai: !!b[9], masaCoba: String(b[10] || '').indexOf('Coba') === 0 };
     return true;
   });
   if (hasil) c.put('kelas_' + kode, JSON.stringify(hasil), 21600);
@@ -346,7 +356,7 @@ function aturSiswa_(req) {
 /** Siswa memeriksa kode kelas sebelum mengerjakan (tanpa PIN). */
 function cekKelas_(req) {
   var k = dataKelas_(req.kode);
-  return k ? { ok: true, kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [] } : { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.' };
+  return k ? { ok: true, kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [], premium: premiumAktif_(k) } : { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.' };
 }
 
 /** Dasbor guru: semua pengerjaan siswa di kelas itu (butuh PIN). */
@@ -360,7 +370,116 @@ function dasbor_(req) {
     baris.push({ waktu: b[0] instanceof Date ? b[0].getTime() : String(b[0]), nama: String(b[1]), paket: String(b[4]), nilai: Number(b[5]) || 0,
       terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number) });
   });
-  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris };
+  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k) };
+}
+
+/* ============================ KELAS PREMIUM ============================ */
+/* Kolom "Premium sampai" (I) di lembar Kelas menentukan status Premium. Diisi oleh:
+ *  - guru sendiri: "Coba Premium gratis" sekali per kelas (PENGATURAN.HARI_COBA_PREMIUM hari), atau
+ *  - Admin: menu "Aktifkan Kelas Premium…" setelah dukungan diterima (berlaku satu tahun ajaran). */
+
+function waktu_(v) {
+  if (v instanceof Date) return v.getTime();
+  var t = v ? new Date(v).getTime() : 0;
+  return isNaN(t) ? 0 : t;
+}
+
+function premiumAktif_(k) { return !!(k && k.premiumSampai && k.premiumSampai > Date.now()); }
+
+function infoPremium_(k) {
+  return { aktif: premiumAktif_(k), sampai: k.premiumSampai || 0, cobaDipakai: !!k.cobaDipakai, masaCoba: !!k.masaCoba, hariCoba: PENGATURAN.HARI_COBA_PREMIUM };
+}
+
+/** Siswa di Kelas Premium otomatis mendapat pembahasan. Bila guru mengisi daftar siswa, nama harus ada di daftar. */
+function premiumLewatKelas_(peserta) {
+  var kode = peserta && peserta.kodeKelas;
+  if (!kode) return null;
+  var k = dataKelas_(kode);
+  if (!premiumAktif_(k)) return null;
+  if (k.siswa && k.siswa.length) {
+    var nama = String(peserta.nama || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    if (!k.siswa.some(function (n) { return n.toLowerCase() === nama; })) return null;
+  }
+  return k.kelas + ' · ' + k.sekolah;
+}
+
+function ubahKelas_(kode, ubah) {
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(15000);
+  try {
+    var sh = lembar_(LEMBAR_KELAS, KEPALA_KELAS), data = sh.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      if (rapikanKode_(data[r][0]) !== kode) continue;
+      var baris = data[r].slice(0, KEPALA_KELAS.length);
+      while (baris.length < KEPALA_KELAS.length) baris.push('');
+      var hasil = ubah(baris);
+      if (hasil && hasil.ok === false) return hasil;
+      sh.getRange(r + 1, 9, 1, 3).setValues([baris.slice(8, 11)]);   // hanya kolom Premium (I–K) yang ditulis
+      CacheService.getScriptCache().remove('kelas_' + kode);
+      return hasil || { ok: true };
+    }
+    return { ok: false, pesan: 'Kelas tidak ditemukan.' };
+  } finally { kunci.releaseLock(); }
+}
+
+/** Guru mengaktifkan coba gratis Kelas Premium (sekali per kelas, butuh PIN). */
+function cobaPremium_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  var hasil = ubahKelas_(k.kode, function (b) {
+    if (b[9]) return { ok: false, pesan: 'Coba gratis Premium sudah pernah dipakai untuk kelas ini.' };
+    var sampai = new Date(Date.now() + PENGATURAN.HARI_COBA_PREMIUM * 86400000);
+    if (waktu_(b[8]) < sampai.getTime()) b[8] = sampai;
+    b[9] = new Date();
+    b[10] = 'Coba gratis ' + PENGATURAN.HARI_COBA_PREMIUM + ' hari';
+    return { ok: true };
+  });
+  if (!hasil.ok) return hasil;
+  return { ok: true, premium: infoPremium_(dataKelas_(k.kode)) };
+}
+
+/** Kunci & pembahasan satu paket untuk guru Kelas Premium. */
+function pembahasanGuru_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  if (!premiumAktif_(k)) return { ok: false, pesan: 'Fitur ini tersedia untuk Kelas Premium.' };
+  var bank = KUNCI_TKA[req.paket];
+  if (!bank) return { ok: false, pesan: 'Paket soal tidak dikenal.' };
+  var rinci = {};
+  Object.keys(bank).forEach(function (no) { rinci[no] = { kunci: bank[no].k, bahas: bank[no].b }; });
+  return { ok: true, rinci: rinci };
+}
+
+/** Akhir masa Premium berbayar: 31 Juli setelah tahun ajaran berjalan selesai.
+ *  Aktivasi Januari–April → 31 Juli tahun ini; Mei–Desember → 31 Juli tahun depan (sudah mencakup tahun ajaran berikutnya). */
+function akhirTahunAjaran_(dari) {
+  var th = dari.getFullYear() + (dari.getMonth() >= 4 ? 1 : 0);
+  return new Date(th, 6, 31, 23, 59, 59);
+}
+
+function aktifkanPremium(kode) {
+  kode = rapikanKode_(kode);
+  var sampai = akhirTahunAjaran_(new Date());
+  var h = ubahKelas_(kode, function (b) {
+    if (waktu_(b[8]) < sampai.getTime()) b[8] = sampai;
+    b[10] = 'Premium tahun ajaran, diaktifkan ' + Utilities.formatDate(new Date(), 'Asia/Jakarta', 'd MMM yyyy');
+    return { ok: true, guru: String(b[2]), kelas: String(b[4]), sekolah: String(b[3]), sampai: b[8] };
+  });
+  return h;
+}
+
+function menuAktifkanPremium() {
+  var ui = SpreadsheetApp.getUi();
+  var r = ui.prompt('Aktifkan Kelas Premium', 'Kode kelas (6 huruf, dari guru):', ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK || !r.getResponseText().trim()) return;
+  var h = aktifkanPremium(r.getResponseText());
+  if (!h.ok) { ui.alert(h.pesan); return; }
+  var tgl = Utilities.formatDate(h.sampai, 'Asia/Jakarta', 'd MMMM yyyy');
+  ui.alert('Kelas Premium aktif sampai ' + tgl,
+    'Kirimkan pesan ini kepada guru:\n\nTerima kasih atas dukungannya, ' + h.guru + ' 🙏\n\n' +
+    'Kelas Intensif TKA ' + h.kelas + ' (' + h.sekolah + ') kini *Premium* sampai ' + tgl + '.\n' +
+    'Siswa di kelas ini otomatis mendapat kunci jawaban dan pembahasan setelah mengerjakan, dan Bapak/Ibu dapat melihat kunci & pembahasan setiap soal di dasbor.\n\n' +
+    'Buka dasbor: https://bolonulis.github.io/tka/guru.html', ui.ButtonSet.OK);
 }
 
 /* ============================ STATISTIK PUBLIK ============================ */
@@ -395,6 +514,7 @@ function statistik_() {
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Simulasi TKA')
     .addItem('Buat kode akses baru…', 'menuBuatKode')
+    .addItem('Aktifkan Kelas Premium…', 'menuAktifkanPremium')
     .addItem('Siapkan lembar Akses & Nilai', 'menuSiapkan')
     .addToUi();
 }

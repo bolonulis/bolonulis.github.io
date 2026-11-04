@@ -191,8 +191,9 @@ const TKA = (() => {
     'footer{margin-top:30px;color:#5b6b7f;font-size:12px;text-align:center}@media print{body{padding:0}h2{break-after:avoid}}';
 
   /** Dokumen soal (tanpa kunci) untuk dicetak/PDF: identitas, petunjuk, soal, dan lembar jawaban. */
-  function dokumenSoal(b) {
-    const judul = 'Simulasi TKA ' + b.jenjang + ' ' + b.mapel + ' · ' + b.paket;
+  /** Dokumen soal siap cetak. Bila `rinci` ({no: {kunci, bahas}}) diberikan: versi guru berisi kunci dan pembahasan. */
+  function dokumenSoal(b, rinci, ket) {
+    const judul = (rinci ? 'Kunci & Pembahasan · ' : '') + 'Simulasi TKA ' + b.jenjang + ' ' + b.mapel + ' · ' + b.paket;
     const sudah = {};
     const butir = b.soal.map(q => {
       let h = '';
@@ -214,8 +215,16 @@ const TKA = (() => {
         h += '<table class="bs-cetak"><thead><tr><th>Pernyataan</th>' + q.kolom.map(k => '<th>' + k + '</th>').join('') + '</tr></thead><tbody>' +
           q.pernyataan.map(p => '<tr><td>' + pecahan(p) + '</td><td class="kosong"></td><td class="kosong"></td></tr>').join('') + '</tbody></table>';
       }
+      if (rinci && rinci[q.no]) h += '<div class="kunci-guru"><b>Kunci: ' + esc(ringkasJawaban(q, rinci[q.no].kunci)) + '</b><div>' + pecahan(rinci[q.no].bahas || '') + '</div></div>';
       return h + '</div></article>';
     }).join('');
+    if (rinci) {
+      const akar = new URL('bank/', location.href).href;
+      return ('<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + CSS_SOAL +
+        '.kunci-guru{background:#eefaf2;border:1px solid #b9e3c6;border-radius:8px;padding:6px 10px;margin:6px 0 2px;font-size:12.5px}.kunci-guru b{color:#1b7f3e}</style></head><body>' +
+        '<header class="kop"><div><small>KELAS INTENSIF TKA · UNTUK GURU</small><h1>' + esc(judul) + '</h1><p>' + esc(ket || '') + '</p></div></header>' + butir +
+        '<footer>Dokumen guru Kelas Premium. Mohon tidak disebarkan kepada siswa sebelum mengerjakan. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>').replace(/src="bank\//g, 'src="' + akar);
+    }
     const lj = b.soal.map(q => {
       let pil;
       if (q.tipe === 'bs') pil = q.pernyataan.map((_, i) => '<span class="bs-lj">(' + (i + 1) + ') ' + q.kolom.map(k => '<i class="kt">' + k.split(' ').map(w => w[0]).join('') + '</i>').join('') + '</span>').join('');
