@@ -133,7 +133,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   <section id="guru" style="margin-top:22px">
     <div style="display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;background:linear-gradient(135deg,#eef6ff,#fff);border:2px solid #bcd7f5;border-radius:22px;padding:22px">
       <div><h2 style="margin:0 0 6px"><img src="guru.svg" alt="" style="width:34px;height:34px;vertical-align:-9px;margin-right:6px">Untuk Guru: Kelas Intensif TKA <span style="font-size:13px;background:#dc2626;color:#fff;border-radius:99px;padding:2px 9px;vertical-align:middle" data-tampil-sampai="2026-11-11">BARU · GRATIS</span></h2>
-      <p class="sub" style="margin:0">Buat kelas dalam 1 menit, bagikan tautannya ke grup WhatsApp siswa, lalu pantau nilai seluruh kelas dan <b>indikator yang perlu diperkuat</b> di dasbor guru. Tanpa akun, tanpa kata sandi. <b>Kelas Premium</b> membuka semua latihan per indikator untuk siswa serta kunci &amp; pembahasan di dasbor guru; coba gratis 14 hari. Kode akses Pembahasan juga mengaktifkan Kelas Premium untuk 1 kelas.</p></div>
+      <p class="sub" style="margin:0">Buat kelas dalam 1 menit, bagikan tautannya ke grup WhatsApp siswa, lalu pantau nilai seluruh kelas dan <b>indikator yang perlu diperkuat</b> di dasbor guru. Tanpa akun, tanpa kata sandi. Gratis: latihan per indikator, remedial otomatis, dan grafik perkembangan setiap siswa. <b>Kelas Premium</b> menambahkan kunci &amp; pembahasan di dasbor guru; coba gratis 14 hari. Kode akses Pembahasan juga mengaktifkan Kelas Premium untuk 1 kelas.</p></div>
       <a class="btn" href="guru.html" style="background:#1f6fb2">Buka Kelas Intensif ›</a>
     </div>
   </section>
@@ -146,7 +146,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 
   <section id="latihan">
     <h2>Latihan per Indikator <span style="font-size:13px;background:#dc2626;color:#fff;border-radius:99px;padding:2px 9px;vertical-align:middle" data-tampil-sampai="2026-11-11">BARU</span></h2>
-    <p class="sub">Latihan singkat 5 soal (15 menit) untuk setiap indikator TKA. Cocok untuk memperkuat indikator yang masih lemah. Latihan bertanda <b>Gratis</b> terbuka untuk semua; latihan lainnya untuk siswa <b>Kelas Premium</b> (lewat tautan kelas dari guru) atau pemegang kode akses.</p>
+    <p class="sub">Latihan singkat 5 soal (15 menit) untuk setiap indikator TKA. Cocok untuk memperkuat indikator yang masih lemah. Semua latihan <b>gratis</b>. Setelah mengerjakan paket tryout, kamu langsung mendapat <b>saran latihan</b> sesuai soal yang belum dikuasai.</p>
     <div id="daftar-latihan"></div>
     <p style="margin-top:10px;font-size:13px;color:var(--muted)">Latihan Bahasa Indonesia segera hadir.</p>
   </section>
@@ -222,6 +222,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   <section id="riwayat" hidden>
     <h2>Riwayat pengerjaan di perangkat ini</h2>
     <p class="sub">Ketuk <b>Lihat</b> untuk membuka hasil dan pembahasan.</p>
+    <div id="grafik-saya" hidden style="background:#fff;border:1px solid #dfe5ec;border-radius:16px;padding:12px 14px;margin-bottom:12px"><b style="font-size:15px">📈 Grafik perkembanganku</b><div id="grafik-saya-isi"></div></div>
     <div style="overflow-x:auto"><table class="riwayat"><thead><tr><th>Paket</th><th class="sk">Peserta</th><th>Tanggal</th><th>Nilai</th><th></th></tr></thead><tbody id="isi-riwayat"></tbody></table></div>
   </section>
 
@@ -248,9 +249,9 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 </div>
 <script src="../bersama.js?v=2"></script>
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=10"></script>
+<script src="tka.js?v=11"></script>
 <script src="bank/daftar.js?v=4"></script>
-<script src="bank/latihan.js?v=1"></script>
+<script src="bank/latihan.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
 $('tahun').textContent = new Date().getFullYear();
@@ -291,7 +292,7 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
   $('daftar-latihan').innerHTML = [...grup].map(([g, isi]) => '<h3 class="lt-grup">' + TKA.esc(g) + '</h3><div class="lt-daftar">' + isi.map(l => {
     const r = RIWAYAT.find(x => x.paket === l.id && typeof x.nilai === 'number');
     return '<a class="lt" href="ujian.html?paket=' + l.id + '"><span class="nm"><b>' + TKA.esc(l.judul) + '</b><small>' + TKA.esc(l.indikator) + '</small></span>' +
-      (r ? '<span class="ok">✔ ' + TKA.angka(r.nilai) + '</span>' : '') + '<span class="tg ' + (l.gratis ? 'g">Gratis' : 'p">⭐ Premium') + '</span></a>';
+      (r ? '<span class="ok">✔ ' + TKA.angka(r.nilai) + '</span>' : '') + (l.gratis ? '' : '<span class="tg p">⭐ Premium</span>') + '</a>';
   }).join('') + '</div>').join('');
 })();
 
@@ -299,6 +300,9 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
 const NAMA_PAKET = Object.fromEntries(PAKET_TKA.map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]).concat(LATIHAN_TKA.map(l => [l.id, 'Latihan ' + l.mapel + ': ' + l.judul])));
 if (RIWAYAT.length) {
   $('riwayat').hidden = false;
+  const titik = RIWAYAT.filter(r => typeof r.nilai === 'number' && !r.tertunda).sort((a, b) => a.waktu - b.waktu).slice(-20)
+    .map(r => ({ waktu: r.waktu, nilai: r.nilai, label: NAMA_PAKET[r.paket] || r.paket, latihan: /^lt-/.test(r.paket) }));
+  if (titik.length >= 2) { $('grafik-saya').hidden = false; $('grafik-saya-isi').innerHTML = TKA.grafikNilai(titik); }
   $('isi-riwayat').innerHTML = RIWAYAT.slice(0, 15).map(r => '<tr><td>' + TKA.esc(NAMA_PAKET[r.paket] || r.paket) + '</td><td class="sk">' + TKA.esc(r.peserta && r.peserta.nama) + '</td><td>' +
     new Date(r.waktu).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + '</td><td><b>' + (typeof r.nilai === 'number' && !r.tertunda ? TKA.angka(r.nilai) : '–') + '</b></td>' +
     '<td><a class="btn ghost" href="ujian.html?paket=' + encodeURIComponent(r.paket) + '&lihat=' + encodeURIComponent(r.id) + '">Lihat</a></td></tr>').join('');

@@ -329,6 +329,12 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
     <p class="catatan" style="margin:12px 0 0">🆕 <b>Paket soal lainnya segera hadir</b> dalam waktu dekat. <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">Gabung grup WhatsApp</a> agar tidak ketinggalan kabarnya.</p>
   </div>
 
+  <div class="kartu" id="h-saran" hidden style="border:2px solid #f5c26b;background:linear-gradient(135deg,#fff7e8,#fff)">
+    <h2>📝 Latihan untukmu</h2>
+    <p style="margin:0 0 10px">Berdasarkan jawabanmu, latihan berikut akan membantu memperkuat kemampuan yang belum dikuasai. Setiap latihan 5 soal, 15 menit, <b>gratis</b>.</p>
+    <div id="h-saran-isi" style="display:grid;gap:8px"></div>
+  </div>
+
   <div class="kartu kunci-premium" id="h-kunci" hidden>
     <h2>🔒 Pembahasan lengkap belum terbuka</h2>
     <p style="margin:0">Versi gratis hanya menampilkan nilai akhir. Dengan <b>kode akses Pembahasan</b>, kamu mendapatkan:</p>
@@ -368,7 +374,8 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=10"></script>
+<script src="tka.js?v=11"></script>
+<script src="bank/latihan.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
 const par = new URLSearchParams(location.search);
@@ -644,7 +651,7 @@ async function bukaHasil(r, lihatUlang) {
   const kode = TKA.kode.get();
   const res = await TKA.api({ aksi: 'nilai', paket: ID, jawaban: r.jawaban, peserta: r.peserta, kode: kode && kode.kode, lihatUlang: lihatUlang && !r.tertunda });
   if (res.ok) {
-    Object.assign(r, { nilai: res.nilai, terjawab: res.terjawab, jumlah: res.jumlah, tertunda: false });
+    Object.assign(r, { nilai: res.nilai, terjawab: res.terjawab, jumlah: res.jumlah, tertunda: false, saran: res.saran || [] });
     TKA.riwayat.simpan(r);
     if (res.pesanKode && kode) { TKA.kode.hapus(); }
   }
@@ -667,6 +674,10 @@ function isiHasil(r, res) {
   $('h-terjawab').textContent = ada ? r.terjawab + ' dari ' + r.jumlah + ' soal dijawab · nilai skala 0–100' : '';
   $('h-tertunda').hidden = ada;
   $('h-tertunda-teks').textContent = res.pesan || '';
+  const saran = (ada && r.saran || []).map(id => (typeof LATIHAN_TKA === 'undefined' ? [] : LATIHAN_TKA).find(l => l.id === id)).filter(Boolean);
+  $('h-saran').hidden = !saran.length;
+  $('h-saran-isi').innerHTML = saran.map((l, i) => '<a href="ujian.html?paket=' + l.id + '" style="display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit">' +
+    '<b style="background:#d97706;color:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;flex:none">' + (i + 1) + '</b><span style="flex:1"><b>' + TKA.esc(l.judul) + '</b><br><small style="color:var(--muted)">' + TKA.esc(l.indikator) + '</small></span><span style="font-weight:800;color:#d97706">Kerjakan ›</span></a>').join('');
   const premium = res.ok && res.premium;
   const lewatKelas = !!(r.peserta && r.peserta.kodeKelas);
   $('h-kunci').hidden = !ada || premium || lewatKelas;
