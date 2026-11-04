@@ -54,3 +54,19 @@ function pasangFormWa(formId, susun) {
     window.open('https://wa.me/6281196939694?text=' + encodeURIComponent(susun(data)), '_blank', 'noopener');
   });
 }
+
+/* Penanda "BARU" berbatas waktu: elemen dengan data-tampil-sampai="YYYY-MM-DD" otomatis disembunyikan
+   setelah tanggal itu berakhir (pukul 23.59 WIB). Pakai: masaBaru('2026-11-11') untuk data dari skrip. */
+function masaBaru(sampai) {
+  return !!sampai && Date.now() <= new Date(sampai + 'T23:59:59+07:00').getTime();
+}
+function sembunyikanBaruKedaluwarsa(akar) {
+  (akar || document).querySelectorAll('[data-tampil-sampai]').forEach(el => {
+    if (!masaBaru(el.dataset.tampilSampai)) el.style.display = 'none';
+  });
+  (akar || document).querySelectorAll('[data-sorot-sampai]').forEach(el => {   // kartu kembali biasa setelah masa sorot
+    if (!masaBaru(el.dataset.sorotSampai)) el.classList.remove('sorot');
+  });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => sembunyikanBaruKedaluwarsa());
+else sembunyikanBaruKedaluwarsa();
