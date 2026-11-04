@@ -24,8 +24,12 @@ var PENGATURAN = {
 var LEMBAR_AKSES = 'Akses';
 var LEMBAR_NILAI = 'Nilai';
 var KEPALA_AKSES = ['Kode', 'Nama', 'No. WA', 'Dibuat', 'Aktif', 'Perangkat', 'Dipakai', 'Terakhir dipakai', 'Catatan'];
-var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kode kelas', 'Skor per soal'];
+var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kode kelas', 'Skor per soal', 'Ujian serentak'];
 var LEMBAR_KELAS = 'Kelas';
+var LEMBAR_UJIAN = 'Ujian';
+var KEPALA_UJIAN = ['ID ujian', 'Kode kelas', 'Paket', 'Mulai', 'Selesai', 'Durasi (menit)', 'Dibuat', 'Status'];
+var LEMBAR_PESERTA = 'Peserta Ujian';
+var KEPALA_PESERTA = ['ID ujian', 'Nama', 'Mulai mengerjakan', 'Selesai', 'Nilai'];
 var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa', 'Premium sampai', 'Coba gratis dipakai', 'Catatan premium', 'Kode akses'];
 
 /* ============================ WEB APP ============================ */
@@ -48,6 +52,11 @@ function doPost(e) {
     if (req.aksi === 'aturSiswa') return json_(aturSiswa_(req));
     if (req.aksi === 'cobaPremium') return json_(cobaPremium_(req));
     if (req.aksi === 'premiumDenganKode') return json_(premiumDenganKode_(req));
+    if (req.aksi === 'buatUjian') return json_(buatUjian_(req));
+    if (req.aksi === 'batalUjian') return json_(batalUjian_(req));
+    if (req.aksi === 'cekUjian') return json_(cekUjian_(req));
+    if (req.aksi === 'mulaiUjian') return json_(mulaiUjian_(req));
+    if (req.aksi === 'statusUjian') return json_(statusUjian_(req));
     if (req.aksi === 'pembahasanGuru') return json_(pembahasanGuru_(req));
     return json_({ ok: false, pesan: 'Aksi tidak dikenal.' });
   } catch (err) {
@@ -116,9 +125,17 @@ function nilai_(req) {
   if (latihanTerkunci_(req.paket) && !(akses && akses.ok) && !kelasPremium) {
     return { ok: false, terkunci: true, pesan: 'Latihan ini khusus Kelas Premium atau pemegang kode akses Pembahasan.' };
   }
+  var uj = null;
+  if (req.ujian && !req.lihatUlang) {
+    uj = periksaKirimUjian_(req);
+    if (!uj.ok) return uj;
+    if (uj.sudah) return { ok: true, nilai: uj.nilai, terjawab: h.terjawab, jumlah: h.jumlah, premium: false, ujian: true };
+  }
   if (!req.lihatUlang) catatNilai_(req, h, akses && akses.ok ? akses.kode : '');
+  if (uj) catatPesertaUjian_(uj.id, req.peserta.nama, h.nilai);
 
   var hasil = { ok: true, nilai: h.nilai, terjawab: h.terjawab, jumlah: h.jumlah, premium: false };
+  if (uj) hasil.ujian = true;
   var saran = saranLatihan_(req.paket, h.skor);
   if (saran.length) hasil.saran = saran;
   if (akses && akses.ok) {
@@ -292,7 +309,8 @@ function catatNilai_(req, h, kode) {
     var potong = function (s) { return String(s || '').slice(0, 80); };
     lembar_(LEMBAR_NILAI, KEPALA_NILAI).appendRow([new Date(), potong(p.nama), potong(p.sekolah), potong(p.kelas), req.paket, h.nilai, h.terjawab + '/' + h.jumlah, kode, potong(req.perangkat),
       potong(p.provinsi), potong(p.kabupaten), potong(p.kecamatan), rapikanKode_(p.kodeKelas).slice(0, 12),
-      Object.keys(h.skor).sort(function (a, b) { return a - b; }).map(function (n) { return Math.round(h.skor[n] * 100) / 100; }).join(',')]);
+      Object.keys(h.skor).sort(function (a, b) { return a - b; }).map(function (n) { return Math.round(h.skor[n] * 100) / 100; }).join(','),
+      req.ujian ? String(req.ujian).slice(0, 12) : '']);
   } catch (err) { /* pencatatan gagal tidak boleh menggagalkan penilaian */ }
 }
 
@@ -398,7 +416,7 @@ function dasbor_(req) {
     baris.push({ waktu: b[0] instanceof Date ? b[0].getTime() : String(b[0]), nama: String(b[1]), paket: String(b[4]), nilai: Number(b[5]) || 0,
       terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number) });
   });
-  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k) };
+  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k), ujian: daftarUjian_(k.kode), sekarang: Date.now() };
 }
 
 /* ============================ KELAS PREMIUM ============================ */
@@ -532,6 +550,147 @@ function menuAktifkanPremium() {
     'Kelas Intensif TKA ' + h.kelas + ' (' + h.sekolah + ') kini *Premium* sampai ' + tgl + '.\n' +
     'Semua latihan per indikator kini terbuka untuk siswa di daftar kelas, dan Bapak/Ibu dapat melihat kunci & pembahasan setiap soal di dasbor (siap ditampilkan atau dicetak untuk membahas di kelas).\n\n' +
     'Buka dasbor: https://bolonulis.github.io/tka/guru.html', ui.ButtonSet.OK);
+}
+
+/* ============================ UJIAN SERENTAK (KELAS PREMIUM) ============================ */
+/* Guru menjadwalkan tryout: semua siswa mulai dan selesai pada jam yang sama, hanya satu kali kesempatan.
+ * Lembar "Ujian" menyimpan jadwal; lembar "Peserta Ujian" mencatat siapa yang sedang/sudah mengerjakan. */
+
+function barisUjian_(b) {
+  var mulai = waktu_(b[3]), selesai = waktu_(b[4]);
+  return { id: String(b[0]), kode: rapikanKode_(b[1]), paket: String(b[2]), mulai: mulai, selesai: selesai, durasi: Number(b[5]) || 0, status: String(b[7] || 'AKTIF') };
+}
+
+function daftarUjian_(kode) {
+  var hasil = [];
+  lembar_(LEMBAR_UJIAN, KEPALA_UJIAN).getDataRange().getValues().slice(1).forEach(function (b) {
+    if (rapikanKode_(b[1]) === kode) hasil.push(barisUjian_(b));
+  });
+  return hasil.sort(function (a, b) { return b.mulai - a.mulai; }).slice(0, 30);
+}
+
+function dataUjian_(id) {
+  id = String(id || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (id.length < 6) return null;
+  var c = CacheService.getScriptCache(), simpan = c.get('uj_' + id);
+  if (simpan) return JSON.parse(simpan);
+  var hasil = null;
+  lembar_(LEMBAR_UJIAN, KEPALA_UJIAN).getDataRange().getValues().slice(1).some(function (b) {
+    if (String(b[0]).toUpperCase() !== id) return false;
+    hasil = barisUjian_(b); return true;
+  });
+  if (hasil) c.put('uj_' + id, JSON.stringify(hasil), 600);
+  return hasil;
+}
+
+function buatUjian_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  if (!premiumAktif_(k)) return { ok: false, pesan: 'Ujian serentak tersedia untuk Kelas Premium.' };
+  if (!KUNCI_TKA[req.paket] || /^lt-/.test(String(req.paket))) return { ok: false, pesan: 'Pilih paket tryout.' };
+  var mulai = Number(req.mulai), durasi = Math.round(Number(req.durasi));
+  if (!mulai || mulai < Date.now() - 5 * 60000) return { ok: false, pesan: 'Waktu mulai sudah lewat. Pilih waktu yang akan datang.' };
+  if (mulai > Date.now() + 120 * 86400000) return { ok: false, pesan: 'Jadwal paling lambat 120 hari dari sekarang.' };
+  if (!(durasi >= 10 && durasi <= 180)) return { ok: false, pesan: 'Durasi 10–180 menit.' };
+  var huruf = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', id;
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(15000);
+  try {
+    var sh = lembar_(LEMBAR_UJIAN, KEPALA_UJIAN), ada = {};
+    sh.getDataRange().getValues().slice(1).forEach(function (b) { ada[String(b[0])] = 1; });
+    do { id = 'U'; for (var i = 0; i < 7; i++) id += huruf.charAt(Math.floor(Math.random() * huruf.length)); } while (ada[id]);
+    sh.appendRow([id, k.kode, req.paket, new Date(mulai), new Date(mulai + durasi * 60000), durasi, new Date(), 'AKTIF']);
+  } finally { kunci.releaseLock(); }
+  return { ok: true, ujian: dataUjian_(id), daftar: daftarUjian_(k.kode) };
+}
+
+function batalUjian_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  var sh = lembar_(LEMBAR_UJIAN, KEPALA_UJIAN), data = sh.getDataRange().getValues();
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]) !== String(req.id) || rapikanKode_(data[r][1]) !== k.kode) continue;
+    if (Date.now() >= waktu_(data[r][3])) return { ok: false, pesan: 'Ujian sudah dimulai sehingga tidak dapat dibatalkan.' };
+    sh.getRange(r + 1, 8).setValue('BATAL');
+    CacheService.getScriptCache().remove('uj_' + req.id);
+    return { ok: true, daftar: daftarUjian_(k.kode) };
+  }
+  return { ok: false, pesan: 'Ujian tidak ditemukan.' };
+}
+
+/** Siswa membuka tautan ujian: jadwal, kelas, daftar nama, dan jam server (untuk hitung mundur yang tepat). */
+function cekUjian_(req) {
+  var u = dataUjian_(req.id);
+  if (!u) return { ok: false, pesan: 'Ujian tidak ditemukan. Periksa kembali tautan dari gurumu.' };
+  if (u.status === 'BATAL') return { ok: false, pesan: 'Ujian ini dibatalkan oleh guru.' };
+  var k = dataKelas_(u.kode);
+  if (!k) return { ok: false, pesan: 'Kelas ujian tidak ditemukan.' };
+  return { ok: true, ujian: u, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [] }, sekarang: Date.now() };
+}
+
+function cariPeserta_(id, nama) {
+  var sh = lembar_(LEMBAR_PESERTA, KEPALA_PESERTA), data = sh.getDataRange().getValues(), n = String(nama || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  for (var r = 1; r < data.length; r++) if (String(data[r][0]) === id && String(data[r][1]).replace(/\s+/g, ' ').trim().toLowerCase() === n) return { sh: sh, baris: r + 1, data: data[r] };
+  return { sh: sh, baris: 0 };
+}
+
+function namaTerdaftar_(k, nama) {
+  if (!k.siswa || !k.siswa.length) return true;
+  var n = String(nama || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  return k.siswa.some(function (x) { return x.toLowerCase() === n; });
+}
+
+/** Siswa menekan "Mulai": dicatat sebagai sedang mengerjakan. Menolak bila sudah pernah mengumpulkan. */
+function mulaiUjian_(req) {
+  var u = dataUjian_(req.id);
+  if (!u || u.status === 'BATAL') return { ok: false, pesan: 'Ujian tidak tersedia.' };
+  var now = Date.now();
+  if (now < u.mulai - 60000) return { ok: false, pesan: 'Ujian belum dimulai.', belum: true, sekarang: now };
+  if (now > u.selesai) return { ok: false, pesan: 'Waktu ujian sudah berakhir.' };
+  var k = dataKelas_(u.kode);
+  if (!k || !namaTerdaftar_(k, req.nama)) return { ok: false, pesan: 'Namamu tidak ada di daftar kelas ujian ini.' };
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(20000);
+  try {
+    var p = cariPeserta_(u.id, req.nama);
+    if (p.baris && p.data[3]) return { ok: false, sudah: true, pesan: 'Kamu sudah mengumpulkan ujian ini. Ujian serentak hanya satu kali kesempatan.' };
+    if (!p.baris) p.sh.appendRow([u.id, String(req.nama).slice(0, 60), new Date(), '', '']);
+  } finally { kunci.releaseLock(); }
+  return { ok: true, sekarang: now };
+}
+
+/** Pemeriksaan saat siswa mengumpulkan jawaban ujian serentak. */
+function periksaKirimUjian_(req) {
+  var u = dataUjian_(req.ujian), p = req.peserta || {};
+  if (!u || u.status === 'BATAL') return { ok: false, pesan: 'Ujian tidak tersedia.' };
+  if (u.paket !== req.paket || rapikanKode_(p.kodeKelas) !== u.kode) return { ok: false, pesan: 'Data ujian tidak cocok.' };
+  var c = cariPeserta_(u.id, p.nama);
+  if (c.baris && c.data[3]) return { ok: true, sudah: true, nilai: Number(c.data[4]) || 0, id: u.id };
+  if (Date.now() > u.selesai + 15 * 60000) return { ok: false, pesan: 'Batas pengumpulan ujian sudah lewat.' };
+  return { ok: true, id: u.id };
+}
+
+function catatPesertaUjian_(id, nama, nilai) {
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(20000);
+  try {
+    var p = cariPeserta_(id, nama);
+    if (p.baris) p.sh.getRange(p.baris, 4, 1, 2).setValues([[new Date(), nilai]]);
+    else p.sh.appendRow([id, String(nama).slice(0, 60), '', new Date(), nilai]);
+  } catch (err) { /* abaikan */ } finally { kunci.releaseLock(); }
+}
+
+/** Pantauan guru: siapa yang sedang mengerjakan, sudah selesai, atau belum masuk. */
+function statusUjian_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  var u = dataUjian_(req.id);
+  if (!u || u.kode !== k.kode) return { ok: false, pesan: 'Ujian tidak ditemukan.' };
+  var peserta = [];
+  lembar_(LEMBAR_PESERTA, KEPALA_PESERTA).getDataRange().getValues().slice(1).forEach(function (b) {
+    if (String(b[0]) === u.id) peserta.push({ nama: String(b[1]), mulai: waktu_(b[2]), selesai: waktu_(b[3]), nilai: b[3] ? Number(b[4]) : null });
+  });
+  return { ok: true, ujian: u, siswa: k.siswa || [], peserta: peserta, sekarang: Date.now() };
 }
 
 /* ============================ STATISTIK PUBLIK ============================ */

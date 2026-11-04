@@ -234,6 +234,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
   <div class="kartu">
     <span class="lencana" id="aw-jenjang"></span>
     <h1 id="aw-judul"></h1>
+    <div class="peringatan" id="aw-uj" hidden style="background:#eef6ff;border-color:#bcd7f5"></div>
     <p id="aw-indikator" hidden style="margin:-4px 0 12px;color:var(--muted)"></p>
     <div class="peringatan" id="aw-kunci" hidden style="background:#fffbea;border-color:#f5d76e">⭐ <b>Latihan ini khusus Kelas Premium.</b> Kerjakan lewat <b>tautan kelas dari gurumu</b> (Kelas Premium) dan pilih namamu dari daftar, atau masukkan <a href="./#akses">kode akses Pembahasan</a> terlebih dahulu. Latihan bertanda <b>Gratis</b> dapat dikerjakan siapa saja.</div>
     <div class="fakta">
@@ -268,7 +269,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
       </div>
       <p class="catatan" style="margin:0">Asal sekolah dan wilayah hanya dipakai untuk statistik gabungan. Nama dan nilai hanya dapat dilihat oleh guru kelasmu bila kamu mengisi kode kelas.</p>
       <p class="salah" id="aw-salah"></p>
-      <div class="aksi"><button class="btn hijau" type="submit">Mulai mengerjakan ▶</button><a class="btn ghost" href="./">Kembali</a></div>
+      <div class="aksi"><button class="btn hijau" type="submit" id="aw-mulai">Mulai mengerjakan ▶</button><a class="btn ghost" href="./">Kembali</a></div>
     </form>
   </div>
 </div>
@@ -379,23 +380,50 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 <script>
 const $ = id => document.getElementById(id);
 const par = new URLSearchParams(location.search);
-const ID = par.get('paket') || '';
-const KUNCI_SESI = 'tka-sesi-' + ID;
+const SERENTAK = (par.get('serentak') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+let ID = par.get('paket') || '';
+let KUNCI_SESI = 'tka-sesi-' + ID;
+let UJ = null, SELISIH = 0;   // ujian serentak & selisih jam server − jam perangkat
+const kiniServer = () => Date.now() + SELISIH;
 let B = null, S = null, posisi = 0, detak = null, hasilKini = null, riwayatKini = null;
 
 function tampil(v) { ['v-memuat', 'v-awal', 'v-ujian', 'v-hasil'].forEach(x => { $(x).hidden = x !== v; }); window.scrollTo(0, 0); }
 function judulPaket() { return B.mapel + ' · ' + B.paket; }
 
-TKA.muatBank(ID).then(b => {
+async function siapUjianSerentak() {
+  if (!SERENTAK) return;
+  $('v-memuat').innerHTML = '<div class="putar"></div>Membuka ujian serentak…';
+  const r = await TKA.api({ aksi: 'cekUjian', id: SERENTAK });
+  if (!r.ok) throw new Error(r.pesan || 'Ujian tidak dapat dibuka.');
+  UJ = r; SELISIH = r.sekarang - Date.now(); ID = r.ujian.paket; KUNCI_SESI = 'tka-sesi-uj-' + SERENTAK;
+  TKA.simpan.set('tka-kelas', r.kelas.kode);
+}
+
+siapUjianSerentak().then(() => TKA.muatBank(ID)).then(b => {
   B = b;
   document.title = 'Simulasi TKA ' + b.jenjang + ' ' + judulPaket();
   $('judul-bar').textContent = 'TKA ' + b.jenjang + ' · ' + judulPaket();
   const lihat = par.get('lihat');
   if (lihat && TKA.riwayat.ambil(lihat)) return bukaHasil(TKA.riwayat.ambil(lihat), true);
   halamanAwal();
-}).catch(() => {
-  $('v-memuat').innerHTML = 'Paket soal tidak ditemukan. <a href="./">Kembali ke daftar paket</a>.';
+}).catch(e => {
+  $('v-memuat').innerHTML = TKA.esc(SERENTAK && e && e.message ? e.message : 'Paket soal tidak ditemukan.') + ' <a href="./">Kembali ke halaman Simulasi TKA</a>.';
 });
+
+/* ---------- acak urutan (ujian serentak): soal per kelompok teks, dan pilihan jawaban ---------- */
+function acakDari(teks) { let h = 2166136261; for (const c of teks) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 4294967296; }
+function kocok(a, r) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function buatAcakan(benih) {
+  const r = acakDari(benih), blok = [];
+  B.soal.forEach((q, i) => { const akhir = blok[blok.length - 1]; if (q.stimulus && akhir && B.soal[akhir[0]].stimulus === q.stimulus) akhir.push(i); else blok.push([i]); });
+  const opsi = {};
+  B.soal.forEach(q => {
+    if ((q.tipe === 'pg' || q.tipe === 'pgk') && !q.opsi.some(o => /\b[A-E]\b/.test(o.replace(/<[^>]*>/g, '')))) opsi[q.no] = kocok(q.opsi.map((_, i) => i), r);
+  });
+  return { urut: kocok(blok, r).flat(), opsiAcak: opsi };
+}
+function indeksSoal(i) { return S && S.urut ? S.urut[i] : i; }
+function nomorTampil(i) { return S && S.urut ? i + 1 : B.soal[i].no; }
 
 /* ================= HALAMAN AWAL ================= */
 function halamanAwal() {
@@ -403,7 +431,8 @@ function halamanAwal() {
   $('aw-judul').textContent = B.latihan ? 'Latihan TKA ' + B.jenjang + ' ' + B.mapel + ': ' + B.paket.replace(/^Latihan: /, '') : 'Simulasi TKA ' + B.jenjang + ' ' + judulPaket();
   if (B.latihan) { $('aw-indikator').hidden = false; $('aw-indikator').textContent = 'Indikator: ' + B.soal[0].indikator; $('aw-kunci').hidden = B.gratis || !!TKA.kode.get(); }
   $('aw-soal').textContent = B.soal.length;
-  $('aw-durasi').textContent = B.durasi + ' menit';
+  $('aw-durasi').textContent = (UJ ? UJ.ujian.durasi : B.durasi) + ' menit';
+  if (UJ) siapkanAwalSerentak();
   $('aw-server').hidden = TKA.siapServer();
   const f = $('f-peserta'), ps = TKA.peserta.get();
   ['nama', 'sekolah', 'kelas'].forEach(k => { if (ps[k]) f.elements[k].value = ps[k]; });
@@ -421,7 +450,7 @@ function halamanAwal() {
     return;
   }
   tampil('v-awal');
-  f.onsubmit = e => {
+  f.onsubmit = async e => {
     e.preventDefault();
     const d = { nama: f.elements.nama.value.trim(), sekolah: f.elements.sekolah.value.trim(), kelas: f.elements.kelas.value,
       provinsi: f.elements.provinsi.value, kabupaten: f.elements.kabupaten.value, kecamatan: f.elements.kecamatan.value,
@@ -441,10 +470,44 @@ function halamanAwal() {
     }
     $('aw-salah').textContent = '';
     TKA.peserta.set(d);
+    if (UJ) {
+      $('aw-mulai').disabled = true; $('aw-salah').textContent = 'Memeriksa ujian…';
+      const m = await TKA.api({ aksi: 'mulaiUjian', id: SERENTAK, nama: d.nama });
+      $('aw-mulai').disabled = false;
+      if (!m.ok) { $('aw-salah').textContent = m.pesan || 'Ujian belum dapat dimulai.'; return; }
+      if (m.sekarang) SELISIH = m.sekarang - Date.now();
+      $('aw-salah').textContent = '';
+      S = Object.assign({ paket: ID, ujian: SERENTAK, mulai: Date.now(), batas: UJ.ujian.selesai - SELISIH, jawaban: {}, ragu: {}, posisi: 0, peserta: d }, buatAcakan(SERENTAK + '|' + d.nama.toLowerCase()));
+      simpanSesi(); mulaiUjian(); return;
+    }
     S = { paket: ID, mulai: Date.now(), batas: Date.now() + B.durasi * 60000, jawaban: {}, ragu: {}, posisi: 0, peserta: d };
     simpanSesi();
     mulaiUjian();
   };
+}
+
+/* Ujian serentak: info jadwal, hitung mundur, tombol mulai hanya aktif pada jam ujian. */
+function siapkanAwalSerentak() {
+  const u = UJ.ujian, f = $('f-peserta'), jam = w => new Date(w).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  $('aw-jenjang').textContent = 'UJIAN SERENTAK · TKA ' + B.jenjang;
+  $('aw-judul').textContent = 'Tryout Serentak ' + B.mapel + ' · ' + B.paket;
+  f.elements.kodeKelas.readOnly = true;
+  const sudah = TKA.simpan.get('tka-uj-' + SERENTAK);
+  const box = $('aw-uj'); box.hidden = false;
+  const gambar = () => {
+    const now = kiniServer();
+    let status;
+    if (now >= u.selesai) status = '⛔ <b>Waktu ujian sudah berakhir.</b>';
+    else if (now < u.mulai) { const d = Math.ceil((u.mulai - now) / 1000); status = '⏳ Ujian dimulai dalam <b style="font-size:20px">' + [Math.floor(d / 3600), Math.floor(d / 60) % 60, d % 60].map(x => String(x).padStart(2, '0')).join(':') + '</b>. Isi datamu sekarang, tombol Mulai aktif tepat pada jam ujian.'; }
+    else if (now < u.selesai) status = '🟢 <b>Ujian sedang berlangsung.</b> Sisa waktu ' + Math.ceil((u.selesai - now) / 60000) + ' menit. Segera mulai!';
+    else status = '⛔ <b>Waktu ujian sudah berakhir.</b>';
+    if (sudah && sudah.nama) status += '<br><br>✔ <b>' + TKA.esc(sudah.nama) + '</b> sudah mengumpulkan ujian ini dari perangkat ini' + (TKA.riwayat.ambil(sudah.rid) ? ' (<a href="?paket=' + encodeURIComponent(ID) + '&lihat=' + sudah.rid + '">lihat nilai</a>)' : '') + '. Setiap siswa hanya satu kali kesempatan; siswa lain tetap dapat memakai perangkat ini.';
+    box.innerHTML = '🕘 <b>Ujian serentak ' + TKA.esc(UJ.kelas.kelas + ' · ' + UJ.kelas.sekolah) + '</b><br>' +
+      new Date(u.mulai).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ', pukul ' + jam(u.mulai) + '–' + jam(u.selesai) +
+      '. Semua siswa selesai bersamaan pada pukul ' + jam(u.selesai) + '. Urutan soal dan pilihan jawaban diacak.<br><br>' + status;
+    $('aw-mulai').disabled = now < u.mulai - 60000 || now >= u.selesai;
+  };
+  gambar(); clearInterval(siapkanAwalSerentak.t); siapkanAwalSerentak.t = setInterval(gambar, 1000);
 }
 
 /* Kode kelas: terisi dari tautan guru (?kelas=) atau simpanan, lalu diperiksa ke server. */
@@ -541,13 +604,19 @@ function jalankanWaktu() {
   const j = Math.floor(sisa / 3600000), m = Math.floor(sisa / 60000) % 60, d = Math.floor(sisa / 1000) % 60;
   $('sisa').textContent = [j, m, d].map(x => String(x).padStart(2, '0')).join(':');
   $('waktu').classList.toggle('genting', sisa < 5 * 60000);
-  if (sisa <= 0) { clearInterval(detak); alert('Waktu habis. Jawaban akan dikirim.'); kirimJawaban(); }
+  if (sisa <= 0) {
+    clearInterval(detak);
+    if (S.ujian) { // semua siswa selesai bersamaan: kirim dengan jeda acak agar server tidak penuh
+      $('waktu').hidden = true; $('v-memuat').innerHTML = '<div class="putar"></div>Waktu ujian habis. Jawabanmu sedang dikirim…'; tampil('v-memuat');
+      setTimeout(kirimJawaban, Math.random() * 20000);
+    } else { alert('Waktu habis. Jawaban akan dikirim.'); kirimJawaban(); }
+  }
 }
 
 const NAMA_TIPE = { pg: 'Pilihan ganda', pgk: 'Pilihan ganda kompleks', bs: 'Benar/Salah' };
 function tampilSoal() {
-  const q = B.soal[posisi], j = S.jawaban[q.no];
-  $('u-no').textContent = q.no;
+  const q = B.soal[indeksSoal(posisi)], j = S.jawaban[q.no];
+  $('u-no').textContent = nomorTampil(posisi);
   $('u-jenis').textContent = q.tipe === 'bs' ? (q.kolom.join('/')) : NAMA_TIPE[q.tipe];
   const st = q.stimulus ? B.stimulus[q.stimulus] : null;
   $('u-stim').hidden = !st;
@@ -560,9 +629,10 @@ function tampilSoal() {
   if (q.tipe === 'pg' || q.tipe === 'pgk') {
     const jenis = q.tipe === 'pg' ? 'radio' : 'checkbox';
     if (q.tipe === 'pgk') h += '<span class="ket-pgk">Jawaban benar lebih dari satu</span>';
-    h += '<ul class="opsi' + (q.tipe === 'pgk' ? ' kotak' : '') + (q.opsi.every(o => o.includes('<svg')) ? ' gambar' : '') + '">' + q.opsi.map((o, i) => {
-      const L = TKA.HURUF[i], cek = q.tipe === 'pg' ? j === L : (j || []).includes(L);
-      return '<li><input type="' + jenis + '" name="o" id="o' + i + '" value="' + L + '"' + (cek ? ' checked' : '') + '><label for="o' + i + '"><span class="huruf">' + L + '</span><span class="isi">' + TKA.pecahan(o) + '</span></label></li>';
+    const urutOpsi = (S.opsiAcak && S.opsiAcak[q.no]) || q.opsi.map((_, i) => i);
+    h += '<ul class="opsi' + (q.tipe === 'pgk' ? ' kotak' : '') + (q.opsi.every(o => o.includes('<svg')) ? ' gambar' : '') + '">' + urutOpsi.map((asal, i) => {
+      const L = TKA.HURUF[asal], cek = q.tipe === 'pg' ? j === L : (j || []).includes(L);
+      return '<li><input type="' + jenis + '" name="o" id="o' + i + '" value="' + L + '"' + (cek ? ' checked' : '') + '><label for="o' + i + '"><span class="huruf">' + TKA.HURUF[i] + '</span><span class="isi">' + TKA.pecahan(q.opsi[asal]) + '</span></label></li>';
     }).join('') + '</ul>';
   } else {
     h += '<table class="bs"><thead><tr><th>Pernyataan</th>' + q.kolom.map(k => '<th>' + k + '</th>').join('') + '</tr></thead><tbody>' +
@@ -597,9 +667,10 @@ function catatJawaban(q) {
 }
 
 function isiKisi() {
-  $('u-kisi').innerHTML = B.soal.map((q, i) => {
+  $('u-kisi').innerHTML = B.soal.map((_, i) => {
+    const q = B.soal[indeksSoal(i)];
     const c = [S.ragu[q.no] ? 'ragu-r' : terjawab(S.jawaban[q.no]) ? 'isi' : '', i === posisi ? 'kini' : ''].join(' ');
-    return '<button type="button" class="' + c + '" data-i="' + i + '">' + q.no + '</button>';
+    return '<button type="button" class="' + c + '" data-i="' + i + '">' + nomorTampil(i) + '</button>';
   }).join('');
 }
 
@@ -613,7 +684,7 @@ document.querySelectorAll('.ukuran button').forEach(b => b.addEventListener('cli
 }));
 $('u-mundur').onclick = () => { if (posisi > 0) { posisi--; tampilSoal(); } };
 $('u-maju').onclick = () => { if (posisi < B.soal.length - 1) { posisi++; tampilSoal(); } else tanyaSelesai(); };
-$('u-ragu').onchange = e => { const q = B.soal[posisi]; if (e.target.checked) S.ragu[q.no] = true; else delete S.ragu[q.no]; simpanSesi(); isiKisi(); };
+$('u-ragu').onchange = e => { const q = B.soal[indeksSoal(posisi)]; if (e.target.checked) S.ragu[q.no] = true; else delete S.ragu[q.no]; simpanSesi(); isiKisi(); };
 function bukaDaftar(b) { $('u-daftar').hidden = !b; $('u-latar').hidden = !b; }
 $('u-daftar-btn').onclick = () => bukaDaftar(true);
 $('u-daftar-tutup').onclick = $('u-latar').onclick = () => bukaDaftar(false);
@@ -636,7 +707,7 @@ async function kirimJawaban() {
   $('waktu').hidden = true;
   $('v-memuat').innerHTML = '<div class="putar"></div>Mengirim jawaban dan menghitung nilai…';
   tampil('v-memuat');
-  const r = { id: 'r' + Date.now().toString(36), paket: ID, waktu: Date.now(), peserta: S.peserta, jawaban: S.jawaban, tertunda: true };
+  const r = { id: 'r' + Date.now().toString(36), paket: ID, waktu: Date.now(), peserta: S.peserta, jawaban: S.jawaban, tertunda: true, ujian: S.ujian || '' };
   TKA.riwayat.simpan(r);
   TKA.simpan.hapus(KUNCI_SESI);
   history.replaceState(null, '', '?paket=' + encodeURIComponent(ID) + '&lihat=' + r.id);
@@ -649,11 +720,12 @@ async function bukaHasil(r, lihatUlang) {
   tampil('v-memuat');
   $('siswa-bar').hidden = true;
   const kode = TKA.kode.get();
-  const res = await TKA.api({ aksi: 'nilai', paket: ID, jawaban: r.jawaban, peserta: r.peserta, kode: kode && kode.kode, lihatUlang: lihatUlang && !r.tertunda });
+  const res = await TKA.api({ aksi: 'nilai', paket: ID, jawaban: r.jawaban, peserta: r.peserta, kode: kode && kode.kode, lihatUlang: lihatUlang && !r.tertunda, ujian: r.ujian || '' });
   if (res.ok) {
     Object.assign(r, { nilai: res.nilai, terjawab: res.terjawab, jumlah: res.jumlah, tertunda: false, saran: res.saran || [] });
     TKA.riwayat.simpan(r);
     if (res.pesanKode && kode) { TKA.kode.hapus(); }
+    if (r.ujian) TKA.simpan.set('tka-uj-' + r.ujian, { nama: r.peserta.nama, rid: r.id });
   }
   hasilKini = res.ok ? res : null;
   isiHasil(r, res);
@@ -667,6 +739,8 @@ function isiHasil(r, res) {
   $('h-peserta').textContent = [ps.nama, ps.sekolah, ps.kelas].filter(Boolean).join(' · ');
   $('h-waktu').textContent = 'Dikerjakan ' + new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
   $('h-ulang').href = '?paket=' + encodeURIComponent(ID);
+  $('h-ulang').hidden = !!r.ujian;
+  if (r.ujian) $('h-jenjang').textContent = 'HASIL UJIAN SERENTAK TKA ' + B.jenjang;
   const ada = typeof r.nilai === 'number' && !r.tertunda;
   $('h-nilai').textContent = ada ? TKA.angka(r.nilai) : '–';
   $('h-bulat').style.setProperty('--p', ada ? r.nilai : 0);

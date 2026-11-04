@@ -83,3 +83,10 @@ Pengaturan sekali saja:
 Keamanan: siapa pun yang dapat mengubah workflow di repositori ini (pemilik/admin/kolaborator dengan akses tulis)
 secara tidak langsung dapat memakai kredensial Apps Script tersebut. Bila kredensial bocor atau tidak dipakai lagi,
 cabut akses "clasp" di https://myaccount.google.com/permissions lalu hapus secret-nya.
+
+## Ujian serentak (Kelas Premium)
+
+Guru menjadwalkan ujian dari dasbor. Lembar **Ujian** menyimpan jadwal (kolom Status `BATAL` bila dibatalkan),
+lembar **Peserta Ujian** mencatat siswa yang mulai dan mengumpulkan beserta nilainya (satu kali per nama).
+Kolom **Ujian serentak** di lembar Nilai menandai pengerjaan yang berasal dari ujian serentak.
+
