@@ -1,6 +1,336 @@
 /* Daftar Latihan per Indikator (5 soal, 15 menit per set). Dibuat otomatis oleh build. */
 const LATIHAN_TKA = [
  {
+  "id": "lt-bi-01",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Bagan kerangka isi teks",
+  "nomor": [
+   1
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan bagan kerangka isi/informasi dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-02",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Makna ungkapan",
+  "nomor": [
+   2
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menentukan makna ungkapan dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-03",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Kesesuaian judul dengan isi",
+  "nomor": [
+   3
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Menentukan kesesuaian antara judul dengan isi teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-04",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Menyimpulkan isi teks",
+  "nomor": [
+   4
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyusun kesimpulan untuk menentukan relevansi isi dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-05",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Menyimpulkan perbedaan informasi",
+  "nomor": [
+   5
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyimpulkan perbedaan informasi dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-06",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Nilai dalam teks",
+  "nomor": [
+   6
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyimpulkan nilai-nilai yang terdapat dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-07",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Makna idiom",
+  "nomor": [
+   7
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menjelaskan makna ungkapan atau idiom dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-08",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Merefleksi peristiwa dalam teks",
+  "nomor": [
+   8
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Merefleksi peristiwa/kejadian dalam teks dengan kehidupan sehari-hari.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-09",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Informasi tersurat: teks berita",
+  "nomor": [
+   9
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan informasi tersurat pada teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-10",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Menyimpulkan isi (inferensi)",
+  "nomor": [
+   10
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyusun inferensi atau kesimpulan isi dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-11",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Informasi tersurat: fabel",
+  "nomor": [
+   11
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan informasi tersurat pada teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-12",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Informasi tersurat: teks prosedur",
+  "nomor": [
+   12
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan informasi tersurat dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-13",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Informasi tersurat: keterangan waktu",
+  "nomor": [
+   13
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan informasi tersurat pada teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-14",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Unsur intrinsik cerita",
+  "nomor": [
+   14
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyusun kesimpulan berdasarkan unsur intrinsik dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-15",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Merefleksikan pengetahuan baru",
+  "nomor": [
+   15
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Merefleksikan pengetahuan baru dari teks dalam kehidupan sehari-hari.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-16",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Ide pokok teks",
+  "nomor": [
+   16
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menjelaskan ide pokok atau fokus utama teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-17",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Menyimpulkan isi teks",
+  "nomor": [
+   17
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyimpulkan isi atau substansi dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-18",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Kesesuaian ilustrasi dengan teks",
+  "nomor": [
+   18
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Menilai kesesuaian antara ilustrasi dengan isi teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-19",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Informasi tersurat: pengumuman",
+  "nomor": [
+   19
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan informasi tersurat pada teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-20",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Perasaan dan sifat tokoh",
+  "nomor": [
+   20
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyimpulkan perasaan dan sifat tokoh dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-21",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Merefleksikan pengetahuan baru",
+  "nomor": [
+   21
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Merefleksikan pengetahuan baru dari teks dengan kehidupan sehari-hari.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-22",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Makna peribahasa",
+  "nomor": [
+   22
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menentukan makna ungkapan/peribahasa sederhana dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-23",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Perubahan watak tokoh",
+  "nomor": [
+   23
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyimpulkan perubahan karakter atau watak tokoh dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-24",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Nilai keteladanan tokoh",
+  "nomor": [
+   24
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Merefleksikan nilai-nilai keteladanan dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-25",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Kosakata yang sesuai dengan objek",
+  "nomor": [
+   25
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan kosakata yang sesuai dengan objek dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-26",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Perubahan karakter tokoh",
+  "nomor": [
+   26
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyimpulkan perubahan karakter tokoh dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-27",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Respons emosional terhadap cerita",
+  "nomor": [
+   27
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Menentukan respons emosional terhadap peristiwa/konflik yang dialami tokoh dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-28",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Informasi tersurat: tokoh cerita",
+  "nomor": [
+   28
+  ],
+  "elemen": "Pemahaman Tekstual",
+  "indikator": "Menentukan informasi tersurat dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-29",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Sifat tokoh dan buktinya",
+  "nomor": [
+   29
+  ],
+  "elemen": "Pemahaman Inferensial",
+  "indikator": "Menyimpulkan sifat atau karakter tokoh dalam teks.",
+  "gratis": true
+ },
+ {
+  "id": "lt-bi-30",
+  "mapel": "Bahasa Indonesia",
+  "judul": "Respons emosional pembaca",
+  "nomor": [
+   30
+  ],
+  "elemen": "Evaluasi dan Apresiasi",
+  "indikator": "Menentukan respons emosional dari peristiwa/konflik dalam teks.",
+  "gratis": true
+ },
+ {
   "id": "lt-mat-01",
   "mapel": "Matematika",
   "judul": "Pecahan dari gambar",
