@@ -32,6 +32,18 @@ button{font:inherit;cursor:pointer}
 .form input,.form textarea,.edit-siswa textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%}
 .form textarea,.edit-siswa textarea{resize:vertical;line-height:1.5}
 .belum{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.belum span{background:#fde2e1;color:#7a1712;border-radius:99px;padding:3px 10px;font-size:13px;font-weight:600}
+.bantu{display:block;font-weight:400;color:var(--muted);font-size:12.5px;line-height:1.4;margin-top:1px}
+.panduan-kecil{background:#f0f7ff;border:1px solid #cfe2f7;border-radius:12px;padding:10px 14px;font-size:14px;margin:10px 0 0}
+.panduan-kecil ol,.panduan-kecil ul{margin:4px 0 0;padding-left:20px}.panduan-kecil li{margin:2px 0}
+.langkah-kini{display:grid;gap:8px;margin-top:10px}
+.lk{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:#fff}
+.lk .tanda{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--latar);color:var(--muted)}
+.lk.ok{background:#f3fbf5;border-color:#cdebd6}.lk.ok .tanda{background:var(--hijau);color:#fff}
+.lk.kini{border:2px solid var(--kuning);background:#fffdf3}.lk.kini .tanda{background:var(--kuning);color:var(--biru)}
+.lk b{display:block;font-size:14.5px}.lk small{color:var(--muted);font-size:12.5px}
+.lk .lbl{font-size:10.5px;font-weight:800;color:#7a5200;letter-spacing:.04em}
+.ukuran-huruf{display:flex;gap:4px}.ukuran-huruf button{border:1px solid rgba(255,255,255,.5);background:transparent;color:#fff;border-radius:8px;padding:3px 8px;font-weight:800;cursor:pointer}
+@media(max-width:560px){.lk{grid-template-columns:30px 1fr}.lk button{grid-column:2;justify-self:start}}
 .uj-form{display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr auto;gap:8px;align-items:end;margin-top:10px}
 .uj-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
 .uj-form input,.uj-form select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
@@ -120,7 +132,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 <body>
 <header class="bar">
   <a href="./"><img src="logo.svg" alt=""><span><small>KELAS INTENSIF TKA</small>Dasbor Guru</span></a>
-  <div class="kanan"><a class="btn ghost kecil" id="btn-keluar" href="#" hidden>⇄ Ganti kelas</a></div>
+  <div class="kanan" style="display:flex;gap:8px;align-items:center"><div class="ukuran-huruf" title="Ukuran tulisan"><button type="button" data-z="-1" aria-label="Perkecil tulisan">A−</button><button type="button" data-z="1" aria-label="Perbesar tulisan">A+</button></div><a class="btn ghost kecil" id="btn-keluar" href="#" hidden>⇄ Ganti kelas</a></div>
 </header>
 
 <div class="wadah">
@@ -135,6 +147,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <div><b>2</b>Bagikan tautan kelas ke grup WhatsApp siswa/orang tua.</div>
       <div><b>3</b>Siswa mengerjakan simulasi. Nilai dan analisis per indikator langsung masuk ke dasbor ini.</div>
     </div>
+    <div class="panduan-kecil">⏱️ <b>Hanya 1–2 menit.</b> Tidak perlu mendaftar akun, email, atau kata sandi. <b>Baru pertama kali?</b> Isi kotak <b>Buat kelas baru</b> di bawah. <b>Sudah pernah membuat kelas?</b> Pakai kotak <b>Sudah punya kelas?</b>. Butuh bantuan lengkap? Buka <a href="#panduan-guru" onclick="document.getElementById('panduan-guru').open=true">panduan untuk guru</a> di bagian paling bawah. Tulisan terlalu kecil? Ketuk <b>A+</b> di pojok kanan atas.</div>
   </div>
   <div class="kartu" id="banding">
     <h2>Kelas Gratis atau Kelas Premium</h2>
@@ -166,6 +179,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
           <li class="nanti">Rapor untuk orang tua dan laporan kepala sekolah</li>
         </ul>
         <p class="catatan" style="margin:10px 0 0">🎁 <b>Coba gratis 14 hari</b>, cukup satu klik dari dasbor kelas. Fitur yang segera hadir otomatis masuk Kelas Premium.</p>
+        <p class="catatan" style="margin:6px 0 0">📋 <b>Ketentuan:</b> berlaku untuk 1 kelas sampai 31 Juli akhir tahun ajaran; coba gratis hanya sekali per kelas dan berhenti sendiri setelah 14 hari; pembayaran lewat WhatsApp Admin, lalu Admin mengaktifkan kelas Anda.</p>
         <p class="catatan" style="margin:6px 0 0">🔑 <b>Sudah punya kode akses Pembahasan (Rp50.000)?</b> Kode itu sekaligus mengaktifkan Kelas Premium untuk 1 kelas. Masukkan di dasbor kelas, tanpa biaya tambahan.</p>
       </div>
     </div>
@@ -174,11 +188,11 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <div class="kartu">
       <h2>Buat kelas baru</h2>
       <form id="f-buat" class="form" novalidate>
-        <label>Nama guru<input name="nama" maxlength="60" placeholder="Contoh: Bu Sari" required data-label="nama guru"></label>
-        <label>Nama kelas<input name="kelas" maxlength="30" placeholder="Contoh: Kelas 6A" required data-label="nama kelas"></label>
-        <label class="penuh">Asal sekolah<input name="sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju" required data-label="asal sekolah"></label>
+        <label>Nama guru<input name="nama" maxlength="60" placeholder="Contoh: Bu Sari" required data-label="nama guru"><span class="bantu">Tampil kepada siswa saat masuk kelas. Contoh: Bu Sari, Pak Ahmad.</span></label>
+        <label>Nama kelas<input name="kelas" maxlength="30" placeholder="Contoh: Kelas 6A" required data-label="nama kelas"><span class="bantu">Satu kelas untuk satu rombel. Mengajar 6A dan 6B? Buat dua kelas.</span></label>
+        <label class="penuh">Asal sekolah<input name="sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju" required data-label="asal sekolah"><span class="bantu">Tulis lengkap agar siswa yakin masuk ke kelas yang benar.</span></label>
         <label class="penuh">Daftar nama siswa <span style="font-weight:400;color:var(--muted)">(disarankan, bisa diisi nanti)</span><textarea name="siswa" rows="5" placeholder="Satu nama per baris, misalnya:&#10;Andi Pratama&#10;Bunga Lestari&#10;Citra Ayu"></textarea><span style="font-weight:400;color:var(--muted);font-size:12.5px">Siswa akan <b>memilih namanya dari daftar</b>, sehingga ejaan nama selalu sama dan nilainya tidak tercecer. Bisa disalin langsung dari Excel atau WhatsApp.</span></label>
-        <label class="penuh">No. WhatsApp <span style="font-weight:400;color:var(--muted)">(opsional, agar Admin dapat membantu bila PIN lupa)</span><input name="wa" type="tel" maxlength="20"></label>
+        <label class="penuh">No. WhatsApp <span style="font-weight:400;color:var(--muted)">(opsional, agar Admin dapat membantu bila PIN lupa)</span><input name="wa" type="tel" maxlength="20" placeholder="Contoh: 081234567890"><span class="bantu">Hanya dilihat Admin, tidak ditampilkan kepada siswa.</span></label>
         <p class="salah penuh" id="buat-salah"></p>
         <div class="penuh"><button class="btn hijau" type="submit">＋ Buat kelas</button></div>
       </form>
@@ -188,8 +202,8 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <p class="catatan" style="margin:-4px 0 10px">Buka dari HP atau laptop lain? Masukkan kode kelas dan PIN.</p>
       <div id="kelas-tersimpan" hidden><p class="sub" style="margin:0">Kelas yang pernah dibuka di perangkat ini:</p><div class="daftar-kelas" id="daftar-kelas"></div><p class="catatan" style="margin:14px 0 6px">Atau masuk dengan kode dan PIN:</p></div>
       <form id="f-masuk" class="form" novalidate>
-        <label>Kode kelas<input name="kode" maxlength="8" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700" autocomplete="off"></label>
-        <label>PIN guru<input name="pin" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+        <label>Kode kelas<input name="kode" maxlength="8" placeholder="Contoh: K7QP2A" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700" autocomplete="off"><span class="bantu">6 huruf/angka. Ada di pesan WhatsApp yang Anda simpan saat membuat kelas.</span></label>
+        <label>PIN guru<input name="pin" inputmode="numeric" maxlength="6" placeholder="6 angka" autocomplete="off"><span class="bantu">Rahasia, jangan dibagikan kepada siswa. Lupa PIN? Hubungi Admin lewat WhatsApp.</span></label>
         <p class="salah penuh" id="masuk-salah"></p>
         <div class="penuh"><button class="btn" type="submit">Buka dasbor</button></div>
       </form>
@@ -205,6 +219,12 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <div class="kode-besar"><div><small>KODE KELAS (bagikan ke siswa)</small><b id="b-kode"></b></div><div><small>PIN GURU (rahasia, untuk membuka dasbor)</small><b id="b-pin"></b></div></div>
     <p style="margin:0 0 12px;font-size:14.5px"><b>Simpan PIN ini.</b> PIN dibutuhkan untuk membuka dasbor dari perangkat lain. Di perangkat ini, dasbor akan terbuka otomatis.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn wa" id="b-simpan-wa" target="_blank" rel="noopener">📲 Simpan akses kelas ke WhatsApp</a><button class="btn" id="b-lanjut" type="button">Buka dasbor ›</button></div>
+    <div class="panduan-kecil"><b>🧭 Langkah berikutnya:</b><ol>
+      <li>Ketuk <b>📲 Simpan akses kelas ke WhatsApp</b>, lalu kirim ke nomor Anda sendiri. Kode dan PIN tersimpan rapi di WA.</li>
+      <li>Ketuk <b>Buka dasbor</b>.</li>
+      <li>Di dasbor, ketuk <b>Bagikan ke WhatsApp</b> untuk mengirim tautan kelas ke grup siswa/orang tua.</li>
+      <li>Tunggu siswa mengerjakan, lalu buka dasbor ini lagi untuk melihat hasilnya.</li>
+    </ol></div>
   </div>
 </div>
 
@@ -224,6 +244,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <p class="catatan cetak-sembunyi" style="margin:6px 0 0">📘 Butuh petunjuk? <a href="#" id="d-panduan">Buka panduan untuk guru</a></p>
   </div>
 
+  <div class="kartu cetak-sembunyi" id="k-langkah"></div>
   <div class="kartu k-premium cetak-sembunyi" id="k-premium" hidden></div>
   <div class="kartu cetak-sembunyi" id="k-ujian" hidden></div>
 
@@ -238,6 +259,15 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 
   <details class="panduan cetak-sembunyi" id="panduan-guru">
     <summary>📘 Panduan lengkap untuk guru (ketuk untuk membuka)</summary>
+    <h3>Istilah penting</h3>
+    <ul>
+      <li><b>Kode kelas</b>: 6 huruf/angka (misalnya K7QP2A). Boleh dibagikan kepada siswa.</li>
+      <li><b>PIN guru</b>: 6 angka. <b>Rahasia</b>, hanya untuk guru membuka dasbor.</li>
+      <li><b>Tautan kelas</b>: alamat yang dibagikan ke grup WA. Siswa yang membukanya otomatis masuk ke kelas Anda.</li>
+      <li><b>Tryout/paket</b>: 30 soal, 75 menit, seperti TKA. <b>Latihan per indikator</b>: 5 soal, 15 menit, satu kemampuan saja.</li>
+      <li><b>Remedial otomatis</b>: latihan yang dipilih sistem untuk setiap siswa sesuai soal yang belum dijawab benar.</li>
+      <li><b>Ujian serentak</b>: tryout terjadwal, semua siswa mulai dan selesai bersamaan (Kelas Premium).</li>
+    </ul>
     <h3>A. Membuat kelas (sekali saja)</h3>
     <ol>
       <li>Isi <b>nama guru</b>, <b>nama kelas</b>, dan <b>asal sekolah</b> pada kotak "Buat kelas baru".</li>
@@ -461,6 +491,7 @@ async function gambar() {
   gambarDaftar();
   gambarPremium();
   gambarUjian();
+  gambarLangkah();
   const daftar = DATA.siswa || [], kunciNama = n => n.trim().toLowerCase().replace(/\s+/g, ' ');
   const bank = await TKA.muatBank(PAKET);
   const rinci = premiumAktif() ? await ambilPembahasan(PAKET) : null;
@@ -580,6 +611,37 @@ function tampilKembang(nama) {
   el.hidden = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+/* ---------- panduan langkah berikutnya (berubah sesuai keadaan kelas) ---------- */
+function gambarLangkah() {
+  const baris = (DATA && DATA.baris) || [], siswa = (DATA && DATA.siswa) || [];
+  const k = n => String(n).trim().toLowerCase().replace(/\s+/g, ' ');
+  const tryout = baris.filter(b => !/^lt-/.test(b.paket)), latihan = baris.filter(b => /^lt-/.test(b.paket));
+  const sudahNama = new Set(tryout.map(b => k(b.nama)));
+  const jmlSudah = siswa.length ? siswa.filter(n => sudahNama.has(k(n))).length : sudahNama.size;
+  const ujianAda = ((DATA && DATA.ujian) || []).some(u => u.status !== 'BATAL');
+  const ke = id => () => { const t = $(id) || $('d-isi'); t.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  const L = [
+    { ok: siswa.length > 0, judul: 'Isi daftar nama siswa', ket: 'Agar siswa cukup memilih namanya dan nilainya tidak tercecer karena salah ketik.', tombol: 'Isi sekarang', aksi: () => { $('s-ubah').click(); ke('k-siswa')(); } },
+    { ok: baris.length > 0, judul: 'Bagikan tautan kelas ke grup WhatsApp', ket: 'Siswa membuka tautan, memilih paket, memilih namanya, lalu mengerjakan.', tombol: 'Bagikan', aksi: () => $('d-wa').click() },
+    { ok: siswa.length ? jmlSudah >= siswa.length : jmlSudah > 0, judul: 'Siswa mengerjakan tryout', ket: siswa.length ? jmlSudah + ' dari ' + siswa.length + ' siswa sudah mengerjakan. Ingatkan yang belum lewat grup WA.' : jmlSudah + ' siswa sudah mengerjakan.', tombol: 'Lihat nilai', aksi: ke('t-siswa') },
+    { ok: latihan.length > 0, judul: 'Kirim latihan remedial', ket: 'Di tabel Nilai siswa, ketuk 📲 pada setiap siswa atau "Kirim remedial ke grup kelas".', tombol: 'Ke tabel nilai', aksi: ke('t-siswa') },
+    { ok: ujianAda, premium: true, judul: 'Jadwalkan tryout serentak', ket: 'Simulasi seperti hari TKA: mulai dan selesai bersamaan. Fitur Kelas Premium (bisa coba gratis 14 hari).', tombol: 'Jadwalkan', aksi: () => ke(premiumAktif() ? 'k-ujian' : 'k-premium')() }
+  ];
+  const kini = L.findIndex(x => !x.ok);
+  $('k-langkah').innerHTML = '<h2 style="margin:0">🧭 Langkah berikutnya</h2><p class="sub" style="margin:2px 0 0">' +
+    (kini < 0 ? '🎉 Semua langkah sudah dijalankan. Ulangi tryout secara berkala untuk melihat perkembangan siswa.' : 'Ikuti urutan ini. Langkah yang perlu dikerjakan sekarang ditandai kuning.') + '</p><div class="langkah-kini">' +
+    L.map((x, i) => '<div class="lk' + (x.ok ? ' ok' : i === kini ? ' kini' : '') + '"><span class="tanda">' + (x.ok ? '✓' : i + 1) + '</span><span>' + (i === kini ? '<span class="lbl">LANGKAH BERIKUTNYA</span>' : '') + '<b>' + x.judul + (x.premium ? ' <span style="font-size:11px;color:#7a5200">⭐ Premium</span>' : '') + '</b><small>' + x.ket + '</small></span>' +
+      (x.ok ? '' : '<button class="btn kecil' + (i === kini ? ' emas' : ' ghost') + '" type="button" data-lk="' + i + '">' + x.tombol + '</button>') + '</div>').join('') + '</div>';
+  $('k-langkah').querySelectorAll('[data-lk]').forEach(b => b.onclick = () => L[+b.dataset.lk].aksi());
+}
+
+/* ---------- ukuran tulisan ---------- */
+(() => {
+  const atur = z => { z = Math.max(-1, Math.min(3, z)); TKA.simpan.set('tka-zoom', z); document.body.style.zoom = String(1 + z * 0.1); };
+  atur(TKA.simpan.get('tka-zoom', 0));
+  document.querySelectorAll('.ukuran-huruf button').forEach(b => b.onclick = () => atur(TKA.simpan.get('tka-zoom', 0) + +b.dataset.z));
+})();
+
 /* ---------- ujian serentak ---------- */
 let PANTAU = null;
 function statusUj(u, now) { return u.status === 'BATAL' ? ['batal', 'Dibatalkan'] : now < u.mulai ? ['akan', 'Terjadwal'] : now < u.selesai ? ['jalan', 'Sedang berlangsung'] : ['usai', 'Selesai']; }
@@ -592,9 +654,18 @@ function gambarUjian() {
   if (!premiumAktif()) { el.innerHTML = kepala + '<p style="margin:10px 0 0;font-size:14px">🔒 Aktifkan <b>Kelas Premium</b> (atau coba gratis 14 hari di kartu di atas) untuk menjadwalkan ujian serentak.</p>'; return; }
   const besok = new Date(Date.now() + 86400000), tgl = besok.toISOString().slice(0, 10);
   el.innerHTML = kepala +
-    '<div class="uj-form"><label>Paket<select id="uj-paket">' + PAKET_TKA.map(p => '<option value="' + p.id + '" data-durasi="' + p.durasi + '">' + esc(p.mapel + ' · ' + p.paket) + '</option>').join('') + '</select></label>' +
-    '<label>Tanggal<input type="date" id="uj-tgl" value="' + tgl + '"></label><label>Jam mulai<input type="time" id="uj-jam" value="08:00"></label>' +
-    '<label>Durasi (menit)<input type="number" id="uj-durasi" min="10" max="180" value="' + PAKET_TKA[0].durasi + '"></label>' +
+    '<div class="panduan-kecil"><b>Cara menjadwalkan:</b> pilih paket → tanggal → jam mulai → durasi, lalu ketuk <b>Jadwalkan</b> dan bagikan tautannya ke grup WA siswa. ' +
+    '<details style="margin-top:6px"><summary style="cursor:pointer;font-weight:700;color:var(--aksen)">📋 Aturan ujian serentak (ketuk untuk membaca)</summary><ul>' +
+    '<li>Tombol <b>Mulai</b> di HP siswa aktif tepat pada jam mulai, mengikuti jam server (jam HP yang salah tidak berpengaruh).</li>' +
+    '<li>Semua siswa <b>selesai bersamaan</b> pada jam selesai. Siswa yang terlambat tidak mendapat tambahan waktu.</li>' +
+    '<li>Setiap nama siswa hanya <b>satu kali kesempatan</b>, walaupun berganti HP.</li>' +
+    '<li>Urutan soal dan pilihan jawaban <b>diacak</b> untuk setiap siswa.</li>' +
+    '<li>Jawaban terkirim <b>otomatis</b> saat waktu habis. Bila internet putus, jawaban tetap tersimpan di HP dan dapat dikirim sampai 15 menit setelah ujian berakhir.</li>' +
+    '<li>Ujian hanya dapat <b>dibatalkan sebelum dimulai</b>.</li>' +
+    '<li>Saran: bagikan tautan sehari sebelumnya, dan minta siswa membuka tautan 10 menit sebelum mulai dengan baterai penuh.</li></ul></details></div>' +
+    '<div class="uj-form"><label>Paket<select id="uj-paket">' + PAKET_TKA.map(p => '<option value="' + p.id + '" data-durasi="' + p.durasi + '">' + esc(p.mapel + ' · ' + p.paket) + '</option>').join('') + '</select><span class="bantu">Mata pelajaran yang diujikan</span></label>' +
+    '<label>Tanggal<input type="date" id="uj-tgl" value="' + tgl + '"><span class="bantu">Hari pelaksanaan</span></label><label>Jam mulai<input type="time" id="uj-jam" value="08:00"><span class="bantu">Menurut jam di perangkat Anda</span></label>' +
+    '<label>Durasi (menit)<input type="number" id="uj-durasi" min="10" max="180" value="' + PAKET_TKA[0].durasi + '"><span class="bantu">TKA asli: 75 menit</span></label>' +
     '<button class="btn hijau" type="button" id="uj-buat">＋ Jadwalkan</button></div><p class="salah" id="uj-salah" style="margin:6px 0 0"></p>' +
     (daftar.length ? daftar.map(u => {
       const [c, l] = statusUj(u, now), jam = w => new Date(w).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });

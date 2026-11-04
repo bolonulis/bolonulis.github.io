@@ -40,6 +40,10 @@ nav{display:flex;align-items:center;justify-content:space-between;gap:12px;paddi
 section{margin-top:44px}
 h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-spacing:-.02em}
 .sub{color:var(--muted);margin:0 0 20px}
+.mulai-sini{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mulai-sini>div{background:#fff;border:1px solid #dfe5ec;border-radius:18px;padding:16px 18px}
+.mulai-sini h3{margin:0 0 6px;font-size:17px}.mulai-sini ol{margin:0 0 10px;padding-left:20px;font-size:14.5px;line-height:1.6}
+@media(max-width:820px){.mulai-sini{grid-template-columns:1fr}}
 .lt-grup{margin:14px 0 4px;font-size:15px;color:var(--blue)}
 .lt-daftar{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
 .lt{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #dfe5ec;border-radius:14px;padding:10px 12px;text-decoration:none;color:inherit}
@@ -129,6 +133,31 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   </header>
 
   <div class="segera-info" role="note" data-tampil-sampai="2026-11-11"><span class="ikon">🆕</span><span><b>Baru! Paket 2 Matematika dan Bahasa Indonesia sudah tersedia.</b>Soal lebih menantang dan bergambar, mengikuti pola TKA terbaru. Paket berikutnya segera menyusul.</span><a class="ajak" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">Gabung grup WA →</a></div>
+
+  <section id="mulai" style="margin-top:22px">
+    <h2>Mulai dari sini</h2>
+    <p class="sub">Pilih sesuai peran Anda. Semua langkah bisa dilakukan dari HP.</p>
+    <div class="mulai-sini">
+      <div><h3>🧒 Siswa</h3><ol>
+        <li>Pilih <b>paket soal</b> di bawah, lalu ketuk <b>Kerjakan</b>.</li>
+        <li>Isi nama, sekolah, kelas, dan lokasi sekolah. Punya <b>kode kelas</b> dari guru? Isi juga.</li>
+        <li>Kerjakan 30 soal dalam 75 menit. Ketuk <b>Ragu-ragu</b> bila belum yakin.</li>
+        <li>Lihat nilai, lalu kerjakan <b>latihan yang disarankan</b>.</li>
+      </ol><a class="btn" href="#paket">Pilih paket soal ›</a></div>
+      <div><h3>👪 Orang tua</h3><ol>
+        <li>Dampingi anak mengerjakan paket soal di HP atau laptop.</li>
+        <li>Ingin anak berlatih di kertas? Ketuk <b>⬇️ Soal PDF</b> untuk mengunduh dan mencetak.</li>
+        <li>Ingin melihat kunci dan pembahasan? Dapatkan <b>kode akses</b> lewat WhatsApp Admin.</li>
+        <li>Pantau kemajuan anak di <b>Riwayat</b> dan grafik perkembangan.</li>
+      </ol><a class="btn ghost" href="#akses">Tentang kode akses ›</a></div>
+      <div><h3>👩‍🏫 Guru</h3><ol>
+        <li>Buka <b>Kelas Intensif TKA</b>, buat kelas (1–2 menit, tanpa akun).</li>
+        <li>Tempel daftar nama siswa, lalu bagikan <b>tautan kelas</b> ke grup WA.</li>
+        <li>Pantau nilai, siswa yang belum mengerjakan, dan indikator terlemah.</li>
+        <li>Kirim <b>remedial otomatis</b>; ikuti kotak <b>🧭 Langkah berikutnya</b> di dasbor.</li>
+      </ol><a class="btn" href="guru.html" style="background:#1f6fb2">Buka Kelas Intensif ›</a></div>
+    </div>
+  </section>
 
   <section id="guru" style="margin-top:22px">
     <div style="display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;background:linear-gradient(135deg,#eef6ff,#fff);border:2px solid #bcd7f5;border-radius:22px;padding:22px">
