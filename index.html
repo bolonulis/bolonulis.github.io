@@ -48,6 +48,11 @@ h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-sp
 .app .aksi .btn{flex:1}
 .app.segera{background:transparent;border:2px dashed var(--line);box-shadow:none;border-top-width:2px;align-items:center;justify-content:center;text-align:center;color:var(--muted);min-height:220px}
 .app.segera b{display:block;font-size:17px;color:var(--blue);margin:6px 0 4px}
+.app.sorot{position:relative;border:2px solid #0f766e;border-top-width:6px;background:linear-gradient(160deg,#ecfdf5,#fff 55%);box-shadow:0 16px 34px rgba(15,118,110,.18)}
+.app .pita{position:absolute;top:-13px;right:16px;background:#dc2626;color:#fff;font-size:11.5px;font-weight:800;letter-spacing:.04em;border-radius:99px;padding:3px 11px;box-shadow:0 4px 10px rgba(220,38,38,.3)}
+.sorot-baru{display:flex;gap:14px;align-items:center;margin:16px 0 0;padding:14px 18px;border-radius:18px;background:#ecfdf5;border:2px solid #5eead4;color:#134e4a;text-decoration:none}
+.sorot-baru:hover{border-color:#0f766e}.sorot-baru img{width:46px;height:46px;flex:none}.sorot-baru b{display:block;font-size:16.5px;color:#0f766e}.sorot-baru span.ajak{margin-left:auto;flex:none;background:#0f766e;color:#fff;font-weight:800;border-radius:999px;padding:9px 16px;white-space:nowrap}
+@media(max-width:600px){.sorot-baru{flex-wrap:wrap}.sorot-baru span.ajak{margin-left:0}}
 .dev{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px}
 .dev .ava{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));color:var(--yellow);display:grid;place-items:center;font-size:30px;font-weight:900}
 .dev h3{margin:0;color:var(--blue);font-size:19px}
@@ -75,15 +80,24 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <small>APLIKASI UNTUK GURU SD · KURIKULUM MERDEKA</small>
     <h1>Dibuat oleh guru, untuk meringankan pekerjaan guru.</h1>
     <p>Kumpulan aplikasi untuk administrasi pembelajaran SD: dari menyusun RPP sampai mencetak rapor. Tanpa instal, cukup dibuka dari laptop atau HP.</p>
-    <div class="aksi"><a class="btn" href="#karya">Lihat aplikasi</a><a class="btn ghost" href="ebook/">E-book gratis</a><a class="btn ghost" href="poster/">Poster IPAS</a><a class="btn ghost" href="tka/">Simulasi TKA</a><a class="btn ghost" href="#pengembang">Hubungi Admin</a></div>
+    <div class="aksi"><a class="btn" href="#karya">Lihat aplikasi</a><a class="btn ghost" href="ebook/">E-book gratis</a><a class="btn ghost" href="poster/">Poster IPAS</a><a class="btn ghost" href="tka/">Simulasi TKA</a><a class="btn ghost" href="tka/guru.html">👩‍🏫 Dasbor Kelas TKA</a><a class="btn ghost" href="#pengembang">Hubungi Admin</a></div>
     <a class="grup-wa saluran-wa" href="https://whatsapp.com/channel/0029VbEAwBWBKfi7fUl1z731" target="_blank" rel="noopener"><span class="ikon">📢</span><span><b>Ikuti Saluran WhatsApp Admin</b>Pengumuman resmi yang tidak tenggelam: pembaruan aplikasi, panduan, dan karya baru. Nomor Anda tidak terlihat pengikut lain.</span><span class="ajak">Ikuti →</span></a>
     <a class="grup-wa" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener"><span class="ikon">👥</span><span><b>Gabung Grup WhatsApp Guru</b>Kabar terbaru Rapor Merdeka Digital, RPP Flash, e-book, dan masa promo, langsung ke WhatsApp Anda.</span><span class="ajak">Gabung →</span></a>
   </header>
+  <a class="sorot-baru" href="tka/guru.html"><img src="tka/guru.svg" alt=""><span><b>BARU untuk Guru: Dasbor Kelas TKA</b>Pantau nilai latihan TKA seluruh siswa, siswa yang belum mengerjakan, dan indikator yang perlu diperkuat. Gratis, tanpa akun.</span><span class="ajak">Coba sekarang →</span></a>
 
   <section id="karya">
     <h2>Aplikasi</h2>
     <p class="sub">Pilih aplikasi yang Bapak/Ibu butuhkan.</p>
     <div class="karya">
+      <article class="app sorot" style="--warna:#0f766e">
+        <span class="pita">BARU · GRATIS</span>
+        <div class="kepala"><img src="tka/guru.svg" alt=""><div><div class="jenis">UNTUK GURU · PANTAU KELAS</div><h3>Dasbor Kelas TKA</h3></div></div>
+        <div><span class="lencana">Inovasi baru · tanpa akun</span></div>
+        <p>Pantau latihan TKA seluruh siswa dalam satu layar. Ketahui siswa yang belum mengerjakan dan <b>indikator yang perlu diperkuat</b> sebelum TKA tiba.</p>
+        <ul><li>Buat kelas 1 menit, bagikan tautan ke grup WA</li><li>Siswa cukup memilih namanya dari daftar</li><li>Nilai, capaian per elemen &amp; per soal, unduh Excel</li></ul>
+        <div class="aksi"><a class="btn" style="background:#0f766e" href="tka/guru.html">Buka Dasbor Kelas</a><a class="btn ghost" href="tka/#guru">Pelajari</a></div>
+      </article>
       <article class="app" style="--warna:var(--red)">
         <div class="kepala"><img src="logo.svg" alt=""><div><div class="jenis">RAPOR SD · KELAS 1–6</div><h3>Rapor Merdeka Digital</h3></div></div>
         <div><span class="lencana">Gratis untuk semua SD</span></div>
