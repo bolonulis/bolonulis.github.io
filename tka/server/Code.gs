@@ -416,7 +416,7 @@ function dasbor_(req) {
   data.forEach(function (b) {
     if (rapikanKode_(b[12]) !== k.kode) return;
     baris.push({ waktu: b[0] instanceof Date ? b[0].getTime() : String(b[0]), nama: String(b[1]), paket: String(b[4]), nilai: Number(b[5]) || 0,
-      terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number) });
+      terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number), ujian: String(b[14] || '') });
   });
   return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k), ujian: daftarUjian_(k.kode), sekarang: Date.now() };
 }
