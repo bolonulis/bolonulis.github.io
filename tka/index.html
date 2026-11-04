@@ -120,7 +120,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     </div>
   </header>
 
-  <div class="segera-info" role="note"><span class="ikon">🆕</span><span><b>Baru! Paket 2 Matematika sudah tersedia.</b>Soal lebih menantang dan bergambar, mengikuti pola TKA terbaru. Paket 2 Bahasa Indonesia segera menyusul.</span><a class="ajak" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">Gabung grup WA →</a></div>
+  <div class="segera-info" role="note"><span class="ikon">🆕</span><span><b>Baru! Paket 2 Matematika dan Bahasa Indonesia sudah tersedia.</b>Soal lebih menantang dan bergambar, mengikuti pola TKA terbaru. Paket berikutnya segera menyusul.</span><a class="ajak" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">Gabung grup WA →</a></div>
 
   <section id="paket">
     <h2>Paket soal</h2>
@@ -225,7 +225,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 <script src="../bersama.js"></script>
 <script src="konfigurasi.js?v=2"></script>
 <script src="tka.js?v=9"></script>
-<script src="bank/daftar.js?v=2"></script>
+<script src="bank/daftar.js?v=3"></script>
 <script>
 const $ = id => document.getElementById(id);
 $('tahun').textContent = new Date().getFullYear();
@@ -244,7 +244,7 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
     (r ? '<p class="terakhir">Nilai terakhir: ' + TKA.angka(r.nilai) + '</p>' : '') +
     '<div class="aksi"><a class="btn" href="ujian.html?paket=' + p.id + '">Kerjakan ▶</a>' +
     '<a class="btn pdf" href="pdf/' + p.id + '.pdf?v=1" download="Soal-Simulasi-TKA-' + p.jenjang + '-' + p.mapel.replace(/\s+/g, '-') + '-' + p.paket.replace(/\s+/g, '') + '.pdf" title="Unduh soal untuk dikerjakan di kertas">⬇️ Soal PDF</a></div></article>';
-}).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket berikutnya segera hadir</b><span style="font-size:14px">Paket 2 Bahasa Indonesia sedang disiapkan.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
+}).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket berikutnya segera hadir</b><span style="font-size:14px">Paket 3 sedang disiapkan.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
 
 /* ---------- riwayat ---------- */
 const NAMA_PAKET = Object.fromEntries(PAKET_TKA.map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]));
