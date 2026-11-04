@@ -2,5 +2,6 @@
 const PAKET_TKA = [
   { id: 'sd-mat-1', jenjang: 'SD', mapel: 'Matematika', paket: 'Paket 1', soal: 30, durasi: 75, warna: '#1f6fb2', ikon: '➗' },
   { id: 'sd-bi-1', jenjang: 'SD', mapel: 'Bahasa Indonesia', paket: 'Paket 1', soal: 30, durasi: 75, warna: '#c0392b', ikon: '📖' },
-  { id: 'sd-mat-2', jenjang: 'SD', mapel: 'Matematika', paket: 'Paket 2', soal: 30, durasi: 75, warna: '#1f6fb2', ikon: '📐', baru: true }
+  { id: 'sd-mat-2', jenjang: 'SD', mapel: 'Matematika', paket: 'Paket 2', soal: 30, durasi: 75, warna: '#1f6fb2', ikon: '📐', baru: true },
+  { id: 'sd-bi-2', jenjang: 'SD', mapel: 'Bahasa Indonesia', paket: 'Paket 2', soal: 30, durasi: 75, warna: '#c0392b', ikon: '📚', baru: true }
 ];
