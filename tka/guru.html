@@ -75,6 +75,14 @@ th[data-urut]{cursor:pointer}th[data-urut]:hover{color:var(--biru)}
 .lemah small{display:block;color:var(--muted);font-size:12.5px}
 .kosong{text-align:center;color:var(--muted);padding:26px 10px}
 .kosong b{display:block;color:var(--biru);font-size:17px;margin-bottom:4px}
+details.panduan{background:#fff;border:1px solid var(--garis,#e5e7eb);border-radius:16px;padding:14px 18px;margin-top:16px}
+details.panduan>summary{cursor:pointer;font-weight:800;font-size:16px;color:var(--biru);list-style:none}
+details.panduan>summary::-webkit-details-marker{display:none}
+details.panduan>summary::after{content:' ▾';color:var(--muted)}
+details.panduan[open]>summary::after{content:' ▴'}
+details.panduan h3{font-size:15px;margin:16px 0 6px}
+details.panduan ol,details.panduan ul{margin:0;padding-left:22px;font-size:14.5px;line-height:1.6}
+details.panduan p{font-size:14.5px;margin:6px 0}
 details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-top:10px}
 .memuat{color:var(--muted);text-align:center;padding:30px}
 .catatan{font-size:13px;color:var(--muted)}
@@ -152,6 +160,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <a class="btn wa kecil" id="d-wa" target="_blank" rel="noopener">Bagikan ke WhatsApp</a>
     </div>
     <p class="catatan" style="margin:8px 0 0">Siswa yang membuka tautan ini otomatis masuk ke kelas Anda. Siswa juga bisa mengetik kode kelas <b id="d-kode"></b> di halaman ujian.</p>
+    <p class="catatan cetak-sembunyi" style="margin:6px 0 0">📘 Butuh petunjuk? <a href="#" id="d-panduan">Buka panduan untuk guru</a></p>
   </div>
 
   <div class="kartu cetak-sembunyi" id="k-siswa">
@@ -163,6 +172,45 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
   <div id="d-isi"><div class="memuat">Memuat data kelas…</div></div>
 </div>
 
+  <details class="panduan cetak-sembunyi" id="panduan-guru">
+    <summary>📘 Panduan lengkap untuk guru (ketuk untuk membuka)</summary>
+    <h3>A. Membuat kelas (sekali saja)</h3>
+    <ol>
+      <li>Isi <b>nama guru</b>, <b>nama kelas</b>, dan <b>asal sekolah</b> pada kotak "Buat kelas baru".</li>
+      <li>Tempel <b>daftar nama siswa</b>, satu nama per baris (bisa disalin dari Excel/daftar hadir). Nomor urut di depan nama akan dibuang otomatis.</li>
+      <li>Ketuk <b>＋ Buat kelas</b>. Anda mendapat <b>kode kelas</b> (untuk siswa) dan <b>PIN guru</b> (rahasia, hanya untuk Anda).</li>
+      <li>Ketuk <b>Simpan kode &amp; PIN ke WhatsApp saya</b> agar tidak lupa.</li>
+    </ol>
+    <h3>B. Membagikan ke siswa</h3>
+    <ol>
+      <li>Di dasbor, ketuk <b>Bagikan ke WhatsApp</b> lalu kirim ke grup kelas/orang tua. Pesan dan tautan sudah disiapkan.</li>
+      <li>Siswa cukup <b>membuka tautan</b>, memilih paket, lalu <b>memilih namanya dari daftar</b>. Tidak perlu akun atau kata sandi.</li>
+      <li>Siswa yang tidak membuka lewat tautan dapat mengetik <b>kode kelas</b> di halaman ujian.</li>
+      <li>Siswa bisa mengerjakan di HP, laptop, atau komputer sekolah, di rumah maupun di lab.</li>
+    </ol>
+    <h3>C. Membaca hasil di dasbor</h3>
+    <ul>
+      <li><b>Pilih paket</b> di bagian atas untuk melihat hasil paket tersebut.</li>
+      <li><b>⏳ Belum mengerjakan</b>: siswa dalam daftar yang belum mengirim nilai, untuk diingatkan.</li>
+      <li><b>🎯 Indikator yang perlu diperkuat</b>: 5 soal dengan capaian kelas terendah. Jadikan bahan pembelajaran ulang.</li>
+      <li><b>📊 Capaian per elemen</b>: rata-rata kelas per elemen, seperti laporan hasil TKA.</li>
+      <li><b>👩‍🎓 Nilai siswa</b>: nilai pengerjaan terakhir setiap siswa. Ketuk judul kolom untuk mengurutkan. Tanda <i>di luar daftar</i> berarti nama diketik sendiri oleh siswa.</li>
+      <li>Ketuk <b>↻ Perbarui</b> untuk melihat nilai terbaru, <b>⬇️ Unduh Excel (CSV)</b> untuk diolah, atau <b>🖨️ Cetak</b> untuk arsip.</li>
+    </ul>
+    <h3>D. Saran penggunaan</h3>
+    <ul>
+      <li>Kerjakan satu paket sebagai <b>tes awal</b>, perkuat indikator yang lemah, lalu kerjakan paket lain sebagai <b>tes ulang</b> untuk melihat kemajuan.</li>
+      <li>Siswa boleh mengulang paket. Dasbor memakai nilai pengerjaan terakhir.</li>
+      <li>Soal juga tersedia dalam bentuk <b>PDF</b> di halaman Simulasi TKA untuk latihan di kertas.</li>
+    </ul>
+    <h3>E. Pertanyaan yang sering muncul</h3>
+    <ul>
+      <li><b>Membuka dasbor di HP/laptop lain?</b> Masukkan kode kelas dan PIN pada kotak "Sudah punya kelas?".</li>
+      <li><b>Lupa PIN?</b> Hubungi Admin lewat WhatsApp dengan menyebutkan kode kelas, nama, dan sekolah.</li>
+      <li><b>Ada siswa baru atau nama salah ketik?</b> Buka dasbor, lalu ketuk <b>✏️ Ubah daftar</b>.</li>
+      <li><b>Berbayar?</b> Tidak. Dasbor kelas dan semua paket soal <b>gratis</b>.</li>
+    </ul>
+  </details>
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
@@ -174,6 +222,7 @@ const esc = TKA.esc, angka = TKA.angka;
 const SIMPAN = 'tka-guru-kelas';
 let KELAS = null, DATA = null, PAKET = PAKET_TKA[0].id, URUT = { kunci: 'nilai', turun: true };
 
+$('d-panduan').onclick = e => { e.preventDefault(); const d = $('panduan-guru'); d.open = true; d.scrollIntoView({ behavior: 'smooth' }); };
 function tampil(v) { ['v-masuk', 'v-berhasil', 'v-dasbor'].forEach(x => { $(x).hidden = x !== v; }); $('btn-keluar').hidden = v !== 'v-dasbor'; window.scrollTo(0, 0); }
 const tersimpan = () => TKA.simpan.get(SIMPAN, []);
 function ingat(k) { TKA.simpan.set(SIMPAN, [k, ...tersimpan().filter(x => x.kode !== k.kode)].slice(0, 10)); TKA.simpan.set('tka-guru-terakhir', k.kode); }
@@ -231,7 +280,7 @@ async function bukaKelas(k, dataAwal) {
   $('d-kode').textContent = k.kode;
   const t = tautanKelas(k);
   $('d-tautan').textContent = t;
-  $('d-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Assalamu’alaikum/Salam sejahtera, Bapak/Ibu dan anak-anak ' + k.kelas + ' 🙏\n\nAyo berlatih *Simulasi TKA SD* (gratis) melalui tautan kelas berikut, agar hasilnya dapat dipantau guru:\n👉 ' + t + '\n\nCara: buka tautan → pilih paket → isi nama lengkap → kerjakan sampai selesai.\nTerima kasih.\n— ' + k.guru);
+  $('d-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Assalamu’alaikum/Salam sejahtera, Bapak/Ibu dan anak-anak ' + k.kelas + ' 🙏\n\nAyo berlatih *Simulasi TKA SD* (gratis) melalui tautan kelas berikut, agar hasilnya dapat dipantau guru:\n👉 ' + t + '\n\nCara: buka tautan → pilih paket → pilih namamu dari daftar → kerjakan sampai selesai.\nTerima kasih.\n— ' + k.guru);
   tampil('v-dasbor');
   $('d-paket').innerHTML = PAKET_TKA.map(p => '<button type="button" data-id="' + p.id + '">' + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('');
   if (dataAwal) { DATA = dataAwal; await gambar(); } else await muat();
