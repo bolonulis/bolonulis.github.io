@@ -29,7 +29,10 @@ button{font:inherit;cursor:pointer}
 .bar .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
 .form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
-.form input{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%}
+.form input,.form textarea,.edit-siswa textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;width:100%}
+.form textarea,.edit-siswa textarea{resize:vertical;line-height:1.5}
+.belum{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.belum span{background:#fde2e1;color:#7a1712;border-radius:99px;padding:3px 10px;font-size:13px;font-weight:600}
+.luar{background:#fff3cd;color:#7a5200;border-radius:6px;padding:1px 6px;font-size:11.5px;font-weight:700;margin-left:6px}
 .form .penuh{grid-column:1/-1}
 .salah{color:var(--merah);font-weight:600;font-size:14px;min-height:1.2em;margin:6px 0 0}
 .dua{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
@@ -106,6 +109,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
         <label>Nama guru<input name="nama" maxlength="60" placeholder="Contoh: Bu Sari" required data-label="nama guru"></label>
         <label>Nama kelas<input name="kelas" maxlength="30" placeholder="Contoh: Kelas 6A" required data-label="nama kelas"></label>
         <label class="penuh">Asal sekolah<input name="sekolah" maxlength="80" placeholder="Contoh: SD N 1 Sukamaju" required data-label="asal sekolah"></label>
+        <label class="penuh">Daftar nama siswa <span style="font-weight:400;color:var(--muted)">(disarankan, bisa diisi nanti)</span><textarea name="siswa" rows="5" placeholder="Satu nama per baris, misalnya:&#10;Andi Pratama&#10;Bunga Lestari&#10;Citra Ayu"></textarea><span style="font-weight:400;color:var(--muted);font-size:12.5px">Siswa akan <b>memilih namanya dari daftar</b>, sehingga ejaan nama selalu sama dan nilainya tidak tercecer. Bisa disalin langsung dari Excel atau WhatsApp.</span></label>
         <label class="penuh">No. WhatsApp <span style="font-weight:400;color:var(--muted)">(opsional, agar Admin dapat membantu bila PIN lupa)</span><input name="wa" type="tel" maxlength="20"></label>
         <p class="salah penuh" id="buat-salah"></p>
         <div class="penuh"><button class="btn hijau" type="submit">＋ Buat kelas</button></div>
@@ -150,6 +154,11 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <p class="catatan" style="margin:8px 0 0">Siswa yang membuka tautan ini otomatis masuk ke kelas Anda. Siswa juga bisa mengetik kode kelas <b id="d-kode"></b> di halaman ujian.</p>
   </div>
 
+  <div class="kartu cetak-sembunyi" id="k-siswa">
+    <div class="kepala-kelas"><div><h2 style="margin:0">📋 Daftar siswa <span id="s-jumlah" style="color:var(--muted);font-size:15px"></span></h2><p class="sub" style="margin:2px 0 0" id="s-ket"></p></div><button class="btn ghost kecil" id="s-ubah" type="button">✏️ Ubah daftar</button></div>
+    <div class="edit-siswa" id="s-edit" hidden style="margin-top:10px"><textarea id="s-teks" rows="8" placeholder="Satu nama per baris"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn hijau kecil" id="s-simpan" type="button">Simpan daftar</button><button class="btn ghost kecil" id="s-batal" type="button">Batal</button><span class="catatan" id="s-pesan" style="align-self:center"></span></div></div>
+  </div>
   <div class="pilih-paket" id="d-paket"></div>
   <div id="d-isi"><div class="memuat">Memuat data kelas…</div></div>
 </div>
@@ -191,8 +200,9 @@ $('f-buat').onsubmit = async e => {
   if (!r.ok) { $('buat-salah').textContent = r.pesan || 'Gagal membuat kelas. Coba lagi.'; return; }
   $('buat-salah').textContent = '';
   const k = { kode: r.kode, pin: r.pin, guru: r.nama, sekolah: r.sekolah, kelas: r.kelas };
+  $('b-info').dataset.siswa = (r.siswa || []).length;
   ingat(k);
-  $('b-info').textContent = k.kelas + ' · ' + k.sekolah + ' · ' + k.guru;
+  $('b-info').textContent = k.kelas + ' · ' + k.sekolah + ' · ' + k.guru + ' · ' + ($('b-info').dataset.siswa > 0 ? $('b-info').dataset.siswa + ' siswa terdaftar' : 'daftar siswa bisa diisi di dasbor');
   $('b-kode').textContent = k.kode; $('b-pin').textContent = k.pin;
   $('b-simpan-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Catatan Dasbor Guru Simulasi TKA\n' + k.kelas + ' · ' + k.sekolah + '\nKode kelas: ' + k.kode + '\nPIN guru: ' + k.pin + '\nDasbor: ' + new URL('guru.html', location.href).href + '\nTautan siswa: ' + tautanKelas(k));
   $('b-lanjut').onclick = () => bukaKelas(k);
@@ -232,6 +242,22 @@ async function muat() {
   if (!r.ok) { $('d-isi').innerHTML = '<div class="kartu kosong"><b>Data belum dapat dimuat</b>' + esc(r.pesan || '') + '<br><br><button class="btn" onclick="muat()">Coba lagi</button></div>'; return; }
   DATA = r; await gambar();
 }
+function gambarDaftar() {
+  const d = DATA.siswa || [];
+  $('s-jumlah').textContent = d.length ? '(' + d.length + ' siswa)' : '';
+  $('s-ket').innerHTML = d.length ? 'Siswa memilih namanya dari daftar ini saat mengerjakan, sehingga nilainya selalu tercatat dengan nama yang sama.' :
+    '<b style="color:var(--merah)">Belum diisi.</b> Isi daftar nama agar siswa cukup memilih namanya (tidak mengetik), sehingga nilai tidak tercecer karena ejaan berbeda.';
+  $('k-siswa').style.borderColor = d.length ? '' : '#f5b5b0';
+}
+$('s-ubah').onclick = () => { $('s-teks').value = (DATA.siswa || []).join('\n'); $('s-edit').hidden = false; $('s-teks').focus(); };
+$('s-batal').onclick = () => { $('s-edit').hidden = true; };
+$('s-simpan').onclick = async () => {
+  $('s-simpan').disabled = true; $('s-pesan').textContent = 'Menyimpan…';
+  const r = await TKA.api({ aksi: 'aturSiswa', kode: KELAS.kode, pin: KELAS.pin, siswa: $('s-teks').value });
+  $('s-simpan').disabled = false;
+  if (!r.ok) { $('s-pesan').textContent = r.pesan || 'Gagal menyimpan.'; return; }
+  DATA.siswa = r.siswa; $('s-pesan').textContent = ''; $('s-edit').hidden = true; gambar();
+};
 $('d-muat').onclick = () => muat();
 $('d-paket').onclick = e => { const b = e.target.closest('button'); if (!b) return; PAKET = b.dataset.id; gambar(); };
 $('d-salin').onclick = async () => {
@@ -254,12 +280,19 @@ function rekapSiswa(baris) {
 
 async function gambar() {
   document.querySelectorAll('#d-paket button').forEach(b => b.classList.toggle('aktif', b.dataset.id === PAKET));
+  gambarDaftar();
+  const daftar = DATA.siswa || [], kunciNama = n => n.trim().toLowerCase().replace(/\s+/g, ' ');
   const bank = await TKA.muatBank(PAKET);
   const siswa = rekapSiswa(DATA.baris);
   const banyakPaket = new Set(DATA.baris.map(b => b.paket));
+  const sudah = new Set(siswa.map(x => kunciNama(x.nama)));
+  const belum = daftar.filter(n => !sudah.has(kunciNama(n)));
+  const terdaftar = new Set(daftar.map(kunciNama));
+  const kartuBelum = daftar.length ? '<div class="kartu"><h2>⏳ Belum mengerjakan <span style="color:var(--muted);font-size:15px">(' + belum.length + ' dari ' + daftar.length + ' siswa)</span></h2>' +
+    (belum.length ? '<div class="belum">' + belum.map(n => '<span>' + esc(n) + '</span>').join('') + '</div>' : '<p class="sub" style="margin:0">🎉 Semua siswa sudah mengerjakan paket ini.</p>') + '</div>' : '';
   if (!siswa.length) {
     $('d-isi').innerHTML = '<div class="kartu kosong"><b>Belum ada siswa yang mengerjakan ' + esc(bank.mapel + ' · ' + bank.paket) + '</b>' +
-      (DATA.baris.length ? 'Siswa sudah mengerjakan paket lain (' + banyakPaket.size + ' paket). Pilih paket di atas.' : 'Bagikan tautan kelas di atas ke grup WhatsApp siswa atau orang tua. Hasilnya akan muncul di sini.') + '</div>';
+      (DATA.baris.length ? 'Siswa sudah mengerjakan paket lain (' + banyakPaket.size + ' paket). Pilih paket di atas.' : 'Bagikan tautan kelas di atas ke grup WhatsApp siswa atau orang tua. Hasilnya akan muncul di sini.') + '</div>' + kartuBelum;
     return;
   }
   const nilai = siswa.map(s => s.terakhir.nilai);
@@ -292,8 +325,8 @@ async function gambar() {
       [...elemen].map(([nm, e]) => '<tr><td>' + esc(nm) + '</td><td style="white-space:nowrap">' + batang(e.t / e.n) + '</td></tr>').join('') + '</tbody></table></div></div>' +
     '<div class="kartu"><h2>👩‍🎓 Nilai siswa</h2><p class="sub">Nilai dari pengerjaan terakhir. Ketuk judul kolom untuk mengurutkan.</p><div style="overflow-x:auto"><table id="t-siswa"><thead><tr>' +
       '<th data-urut="nama">Nama</th><th data-urut="nilai">Nilai terakhir</th><th data-urut="tertinggi">Tertinggi</th><th data-urut="coba">Percobaan</th><th data-urut="waktu" class="sembunyi-hp">Terakhir</th></tr></thead><tbody>' +
-      urutkan.map(s => '<tr><td>' + esc(s.nama) + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td></tr>').join('') +
-      '</tbody></table></div></div>' +
+      urutkan.map(s => '<tr><td>' + esc(s.nama) + (daftar.length && !terdaftar.has(kunciNama(s.nama)) ? '<span class="luar" title="Nama ini tidak ada di daftar siswa">di luar daftar</span>' : '') + '</td><td><span class="lencana l-' + kelasLencana(s.terakhir.nilai) + '">' + angka(s.terakhir.nilai) + '</span></td><td>' + angka(s.tertinggi) + '</td><td>' + s.coba + '×</td><td class="sembunyi-hp">' + tgl(s.terakhir.waktu) + '</td></tr>').join('') +
+      '</tbody></table></div></div>' + kartuBelum +
     '<div class="kartu"><h2>🧩 Capaian setiap soal</h2><p class="sub">Persentase skor rata-rata kelas per nomor soal dan indikatornya.</p><div style="overflow-x:auto"><table><thead><tr><th>No</th><th>Indikator</th><th>Capaian kelas</th></tr></thead><tbody>' +
       butir.map(b => '<tr><td><b>' + b.q.no + '</b></td><td>' + esc(b.q.indikator) + '</td><td style="white-space:nowrap">' + batang(b.p) + '</td></tr>').join('') + '</tbody></table></div></div>';
 

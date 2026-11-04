@@ -24,7 +24,7 @@ var LEMBAR_NILAI = 'Nilai';
 var KEPALA_AKSES = ['Kode', 'Nama', 'No. WA', 'Dibuat', 'Aktif', 'Perangkat', 'Dipakai', 'Terakhir dipakai', 'Catatan'];
 var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kode kelas', 'Skor per soal'];
 var LEMBAR_KELAS = 'Kelas';
-var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat'];
+var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa'];
 
 /* ============================ WEB APP ============================ */
 
@@ -43,6 +43,7 @@ function doPost(e) {
     if (req.aksi === 'buatKelas') return json_(buatKelas_(req));
     if (req.aksi === 'cekKelas') return json_(cekKelas_(req));
     if (req.aksi === 'dasbor') return json_(dasbor_(req));
+    if (req.aksi === 'aturSiswa') return json_(aturSiswa_(req));
     return json_({ ok: false, pesan: 'Aksi tidak dikenal.' });
   } catch (err) {
     return json_({ ok: false, pesan: 'Server sedang sibuk. Coba lagi sebentar lagi. (' + err.message + ')' });
@@ -289,9 +290,9 @@ function buatKelas_(req) {
     var kode;
     do { kode = ''; for (var i = 0; i < 6; i++) kode += huruf.charAt(Math.floor(Math.random() * huruf.length)); } while (ada[kode]);
     var pin = String(Math.floor(100000 + Math.random() * 900000));
-    sh.appendRow([kode, "'" + pin, nama, sekolah, kelas, "'" + potong(req.wa, 20), new Date()]);
+    sh.appendRow([kode, "'" + pin, nama, sekolah, kelas, "'" + potong(req.wa, 20), new Date(), rapikanSiswa_(req.siswa).join('\n')]);
     CacheService.getScriptCache().remove('kelas_' + kode);
-    return { ok: true, kode: kode, pin: pin, nama: nama, sekolah: sekolah, kelas: kelas };
+    return { ok: true, kode: kode, pin: pin, nama: nama, sekolah: sekolah, kelas: kelas, siswa: rapikanSiswa_(req.siswa) };
   } finally { kunci.releaseLock(); }
 }
 
@@ -304,17 +305,48 @@ function dataKelas_(kode) {
   var hasil = null;
   lembar_(LEMBAR_KELAS, KEPALA_KELAS).getDataRange().getValues().slice(1).some(function (b) {
     if (rapikanKode_(b[0]) !== kode) return false;
-    hasil = { kode: kode, pin: String(b[1]).replace(/^'/, ''), guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]) };
+    hasil = { kode: kode, pin: String(b[1]).replace(/^'/, ''), guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]), siswa: rapikanSiswa_(b[7]) };
     return true;
   });
   if (hasil) c.put('kelas_' + kode, JSON.stringify(hasil), 21600);
   return hasil;
 }
 
+/** Daftar nama siswa: dari teks (satu nama per baris) atau array; dirapikan, tanpa duplikat, maksimal 60 nama. */
+function rapikanSiswa_(v) {
+  var a = Array.isArray(v) ? v : String(v || '').split(/\r?\n|;/);
+  var lihat = {}, hasil = [];
+  a.forEach(function (n) {
+    n = String(n || '').replace(/^\s*\d+[.)]\s*/, '').replace(/\s+/g, ' ').trim().slice(0, 60);
+    var k = n.toLowerCase();
+    if (n && !lihat[k] && hasil.length < 60) { lihat[k] = 1; hasil.push(n); }
+  });
+  return hasil;
+}
+
+/** Guru mengubah daftar nama siswa (butuh PIN). */
+function aturSiswa_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  var siswa = rapikanSiswa_(req.siswa);
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(15000);
+  try {
+    var sh = lembar_(LEMBAR_KELAS, KEPALA_KELAS), data = sh.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      if (rapikanKode_(data[r][0]) !== k.kode) continue;
+      sh.getRange(r + 1, 8).setValue(siswa.join('\n'));
+      CacheService.getScriptCache().remove('kelas_' + k.kode);
+      return { ok: true, siswa: siswa };
+    }
+    return { ok: false, pesan: 'Kelas tidak ditemukan.' };
+  } finally { kunci.releaseLock(); }
+}
+
 /** Siswa memeriksa kode kelas sebelum mengerjakan (tanpa PIN). */
 function cekKelas_(req) {
   var k = dataKelas_(req.kode);
-  return k ? { ok: true, kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas } : { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.' };
+  return k ? { ok: true, kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [] } : { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.' };
 }
 
 /** Dasbor guru: semua pengerjaan siswa di kelas itu (butuh PIN). */
@@ -328,7 +360,7 @@ function dasbor_(req) {
     baris.push({ waktu: b[0] instanceof Date ? b[0].getTime() : String(b[0]), nama: String(b[1]), paket: String(b[4]), nilai: Number(b[5]) || 0,
       terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number) });
   });
-  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, baris: baris };
+  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris };
 }
 
 /* ============================ STATISTIK PUBLIK ============================ */
