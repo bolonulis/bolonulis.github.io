@@ -108,10 +108,14 @@ function nilai_(req) {
   var jawaban = (req.jawaban && typeof req.jawaban === 'object') ? req.jawaban : {};
   var h = hitung_(bank, jawaban);
   var akses = req.kode ? periksaKode_(req.kode, req.perangkat) : null;
+  var kelasPremium = (akses && akses.ok) ? null : premiumLewatKelas_(req.peserta);
+  // Latihan per indikator: hanya set gratis yang terbuka untuk semua; set lain untuk Kelas Premium atau pemegang kode akses.
+  if (latihanTerkunci_(req.paket) && !(akses && akses.ok) && !kelasPremium) {
+    return { ok: false, terkunci: true, pesan: 'Latihan ini khusus Kelas Premium atau pemegang kode akses Pembahasan.' };
+  }
   if (!req.lihatUlang) catatNilai_(req, h, akses && akses.ok ? akses.kode : '');
 
   var hasil = { ok: true, nilai: h.nilai, terjawab: h.terjawab, jumlah: h.jumlah, premium: false };
-  var kelasPremium = (akses && akses.ok) ? null : premiumLewatKelas_(req.peserta);
   if ((akses && akses.ok) || kelasPremium) {
     hasil.premium = true;
     if (kelasPremium) hasil.kelasPremium = kelasPremium; else hasil.nama = akses.nama;
@@ -121,6 +125,12 @@ function nilai_(req) {
     hasil.pesanKode = akses.pesan;
   }
   return hasil;
+}
+
+function latihanTerkunci_(paket) {
+  if (!/^lt-/.test(String(paket))) return false;
+  var gratis = typeof LATIHAN_GRATIS !== 'undefined' ? LATIHAN_GRATIS : [];
+  return gratis.indexOf(paket) < 0;
 }
 
 /* ============================ KODE AKSES ============================ */

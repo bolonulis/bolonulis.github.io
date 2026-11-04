@@ -40,6 +40,14 @@ nav{display:flex;align-items:center;justify-content:space-between;gap:12px;paddi
 section{margin-top:44px}
 h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-spacing:-.02em}
 .sub{color:var(--muted);margin:0 0 20px}
+.lt-grup{margin:14px 0 4px;font-size:15px;color:var(--blue)}
+.lt-daftar{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.lt{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #dfe5ec;border-radius:14px;padding:10px 12px;text-decoration:none;color:inherit}
+.lt:hover{border-color:#1f6fb2}
+.lt .nm{flex:1;min-width:0}.lt .nm b{display:block;font-size:14.5px}.lt .nm small{display:block;color:#5b6b7f;font-size:12.5px;line-height:1.35}
+.lt .tg{font-size:11.5px;font-weight:800;border-radius:99px;padding:2px 9px;white-space:nowrap}
+.lt .tg.g{background:#e3f4e7;color:#1b7f3e}.lt .tg.p{background:#fff6cc;color:#7a5200}
+.lt .ok{font-size:12px;color:#1b7f3e;font-weight:700;white-space:nowrap}
 .paket{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
 .pk{position:relative;background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 12px 28px rgba(18,49,79,.07);display:flex;flex-direction:column;border-top:6px solid var(--w)}
 .pk .kepala{display:flex;gap:12px;align-items:center;margin-bottom:10px}
@@ -125,7 +133,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
   <section id="guru" style="margin-top:22px">
     <div style="display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;background:linear-gradient(135deg,#eef6ff,#fff);border:2px solid #bcd7f5;border-radius:22px;padding:22px">
       <div><h2 style="margin:0 0 6px"><img src="guru.svg" alt="" style="width:34px;height:34px;vertical-align:-9px;margin-right:6px">Untuk Guru: Kelas Intensif TKA <span style="font-size:13px;background:#dc2626;color:#fff;border-radius:99px;padding:2px 9px;vertical-align:middle" data-tampil-sampai="2026-11-11">BARU · GRATIS</span></h2>
-      <p class="sub" style="margin:0">Buat kelas dalam 1 menit, bagikan tautannya ke grup WhatsApp siswa, lalu pantau nilai seluruh kelas dan <b>indikator yang perlu diperkuat</b> di dasbor guru. Tanpa akun, tanpa kata sandi. <b>Kelas Premium</b> membuka kunci &amp; pembahasan untuk seluruh siswa; coba gratis 14 hari.</p></div>
+      <p class="sub" style="margin:0">Buat kelas dalam 1 menit, bagikan tautannya ke grup WhatsApp siswa, lalu pantau nilai seluruh kelas dan <b>indikator yang perlu diperkuat</b> di dasbor guru. Tanpa akun, tanpa kata sandi. <b>Kelas Premium</b> membuka kunci &amp; pembahasan serta latihan per indikator untuk seluruh siswa; coba gratis 14 hari.</p></div>
       <a class="btn" href="guru.html" style="background:#1f6fb2">Buka Kelas Intensif ›</a>
     </div>
   </section>
@@ -134,6 +142,13 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
     <h2>Paket soal</h2>
     <p class="sub">Pilih mata pelajaran. Setiap paket dapat dikerjakan berulang kali.</p>
     <div class="paket" id="daftar-paket"></div>
+  </section>
+
+  <section id="latihan">
+    <h2>Latihan per Indikator <span style="font-size:13px;background:#dc2626;color:#fff;border-radius:99px;padding:2px 9px;vertical-align:middle" data-tampil-sampai="2026-11-11">BARU</span></h2>
+    <p class="sub">Latihan singkat 5 soal (15 menit) untuk setiap indikator TKA, lengkap dengan pembahasan. Cocok untuk memperkuat indikator yang masih lemah. Latihan bertanda <b>Gratis</b> terbuka untuk semua; latihan lainnya untuk siswa <b>Kelas Premium</b> (lewat tautan kelas dari guru) atau pemegang kode akses.</p>
+    <div id="daftar-latihan"></div>
+    <p style="margin-top:10px;font-size:13px;color:var(--muted)">Latihan Bahasa Indonesia segera hadir.</p>
   </section>
 
   <section id="versi">
@@ -234,6 +249,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 <script src="konfigurasi.js?v=2"></script>
 <script src="tka.js?v=10"></script>
 <script src="bank/daftar.js?v=4"></script>
+<script src="bank/latihan.js?v=1"></script>
 <script>
 const $ = id => document.getElementById(id);
 $('tahun').textContent = new Date().getFullYear();
@@ -267,8 +283,19 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
     '<a class="btn pdf" href="pdf/' + p.id + '.pdf?v=1" download="Soal-Simulasi-TKA-' + p.jenjang + '-' + p.mapel.replace(/\s+/g, '-') + '-' + p.paket.replace(/\s+/g, '') + '.pdf" title="Unduh soal untuk dikerjakan di kertas">⬇️ Soal PDF</a></div></article>';
 }).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>Paket berikutnya segera hadir</b><span style="font-size:14px">Paket 3 sedang disiapkan.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
 
+/* ---------- latihan per indikator ---------- */
+(() => {
+  const grup = new Map();
+  LATIHAN_TKA.forEach(l => { const k = l.mapel + ' · ' + l.elemen; if (!grup.has(k)) grup.set(k, []); grup.get(k).push(l); });
+  $('daftar-latihan').innerHTML = [...grup].map(([g, isi]) => '<h3 class="lt-grup">' + TKA.esc(g) + '</h3><div class="lt-daftar">' + isi.map(l => {
+    const r = RIWAYAT.find(x => x.paket === l.id && typeof x.nilai === 'number');
+    return '<a class="lt" href="ujian.html?paket=' + l.id + '"><span class="nm"><b>' + TKA.esc(l.judul) + '</b><small>' + TKA.esc(l.indikator) + '</small></span>' +
+      (r ? '<span class="ok">✔ ' + TKA.angka(r.nilai) + '</span>' : '') + '<span class="tg ' + (l.gratis ? 'g">Gratis' : 'p">⭐ Premium') + '</span></a>';
+  }).join('') + '</div>').join('');
+})();
+
 /* ---------- riwayat ---------- */
-const NAMA_PAKET = Object.fromEntries(PAKET_TKA.map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]));
+const NAMA_PAKET = Object.fromEntries(PAKET_TKA.map(p => [p.id, 'TKA ' + p.jenjang + ' ' + p.mapel + ' · ' + p.paket]).concat(LATIHAN_TKA.map(l => [l.id, 'Latihan ' + l.mapel + ': ' + l.judul])));
 if (RIWAYAT.length) {
   $('riwayat').hidden = false;
   $('isi-riwayat').innerHTML = RIWAYAT.slice(0, 15).map(r => '<tr><td>' + TKA.esc(NAMA_PAKET[r.paket] || r.paket) + '</td><td class="sk">' + TKA.esc(r.peserta && r.peserta.nama) + '</td><td>' +
