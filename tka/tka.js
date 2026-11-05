@@ -293,9 +293,9 @@ const TKA = (() => {
     if (!siapServer()) return Promise.resolve(null);
     // disimpan di perangkat 30 menit agar membuka halaman tidak selalu menjalankan proses di server
     const lama = simpan.get('tka-statistik');
-    if (lama && Date.now() - lama.waktu < 30 * 60000) return Promise.resolve(lama.data);
+    if (lama && lama.data && lama.data.kelas && Date.now() - lama.waktu < 30 * 60000) return Promise.resolve(lama.data);
     return fetch(TKA_API + '?aksi=statistik').then(r => r.json()).then(s => {
-      const d = s && s.ok && s.pengerjaan ? s : null;
+      const d = s && s.ok && s.pengerjaan ? s : null;   // termasuk s.kelas (pemakai Kelas Intensif)
       if (d) simpan.set('tka-statistik', { waktu: Date.now(), data: d });
       return d || (lama && lama.data) || null;
     }).catch(() => (lama && lama.data) || null);
@@ -306,8 +306,15 @@ const TKA = (() => {
     return 'Sudah dikerjakan ' + f(s.pengerjaan) + ' kali oleh ' + f(s.siswa) + ' siswa' + (wil.length ? ' dari ' + wil.join(' · ') : '');
   }
 
+  function kalimatKelas(s) {
+    const k = s && s.kelas; if (!k || !k.kelas) return '';
+    const f = x => x.toLocaleString('id-ID');
+    return 'Dipakai ' + f(k.guru) + ' guru untuk ' + f(k.kelas) + ' kelas dari ' + f(k.sekolah) + ' sekolah' +
+      (k.aktif ? ' · ' + f(k.aktif) + ' siswa aktif berlatih' : '') + (k.pengerjaan ? ' · ' + f(k.pengerjaan) + ' pengerjaan tercatat di dasbor guru' : '');
+  }
+
   return {
-    statistik, kalimatStatistik, dokumenSoal,
+    statistik, kalimatStatistik, kalimatKelas, dokumenSoal,
     bank, simpan, esc, pecahan, api, siapServer, muatBank, kode, peserta, riwayat, idPerangkat, HURUF,
     ringkasJawaban, htmlTinjau, statusSkor, htmlAnalisis, dokumenPembahasan, angka, grafikNilai,
     daftarkan: b => { bank[b.id] = b; }

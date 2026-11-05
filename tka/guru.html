@@ -160,6 +160,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <div><b>2</b>Bagikan tautan kelas ke grup WhatsApp siswa/orang tua.</div>
       <div><b>3</b>Siswa mengerjakan simulasi. Nilai dan analisis per indikator langsung masuk ke dasbor ini.</div>
     </div>
+    <p id="st-kelas" hidden style="margin:10px 0 0;font-weight:700;color:var(--biru2)"></p>
     <div class="panduan-kecil">⏱️ <b>Hanya 1–2 menit.</b> Tidak perlu mendaftar akun, email, atau kata sandi. <b>Baru pertama kali?</b> Isi kotak <b>Buat kelas baru</b> di bawah. <b>Sudah pernah membuat kelas?</b> Pakai kotak <b>Sudah punya kelas?</b>. Butuh bantuan lengkap? Buka <a href="#panduan-guru" onclick="document.getElementById('panduan-guru').open=true">panduan untuk guru</a> di bagian paling bawah. Tulisan terlalu kecil? Ketuk <b>A+</b> di pojok kanan atas.</div>
   </div>
   <div class="kartu" id="banding">
@@ -352,7 +353,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=12"></script>
+<script src="tka.js?v=13"></script>
 <script src="bank/daftar.js?v=6"></script>
 <script src="bank/latihan.js?v=3"></script>
 <script>
@@ -665,6 +666,9 @@ function gambarLangkah() {
       (x.ok ? '' : '<button class="btn kecil' + (i === kini ? ' emas' : ' ghost') + '" type="button" data-lk="' + i + '">' + x.tombol + '</button>') + '</div>').join('') + '</div>';
   $('k-langkah').querySelectorAll('[data-lk]').forEach(b => b.onclick = () => L[+b.dataset.lk].aksi());
 }
+
+/* ---------- jumlah pemakai Kelas Intensif ---------- */
+TKA.statistik().then(st => { const k = TKA.kalimatKelas(st); if (k) { $('st-kelas').textContent = '👩‍🏫 ' + k; $('st-kelas').hidden = false; } });
 
 /* ---------- ukuran tulisan ---------- */
 (() => {

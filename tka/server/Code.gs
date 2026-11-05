@@ -736,6 +736,21 @@ function statistik_() {
   });
   var n = function (o) { return Object.keys(o).length; };
   var hasil = { ok: true, pengerjaan: pengerjaan, siswa: n(siswa), sekolah: n(sekolah), kecamatan: n(kec), kabupaten: n(kab), provinsi: n(prov) };
+  // Pemakai Kelas Intensif TKA (tanpa nama; baris uji tidak dihitung)
+  var kelasSah = {}, guru = {}, sekolahKelas = {}, terdaftar = 0;
+  lembar_(LEMBAR_KELAS, KEPALA_KELAS).getDataRange().getValues().slice(1).forEach(function (b) {
+    var kode = rapikanKode_(b[0]), g = rapi(b[2]), sk = rapi(b[3]);
+    if (!kode || g.indexOf('uji sistem') === 0 || sk.indexOf('uji sistem') === 0) return;
+    kelasSah[kode] = 1; guru[g + '|' + sk] = 1; if (sk) sekolahKelas[sk] = 1;
+    terdaftar += rapikanSiswa_(b[7]).length;
+  });
+  var aktif = {}, pengerjaanKelas = 0;
+  data.forEach(function (b) {
+    var kode = rapikanKode_(b[12]), nama = rapi(b[1]);
+    if (!kode || !kelasSah[kode] || !nama || nama.indexOf('uji sistem') === 0) return;
+    pengerjaanKelas++; aktif[kode + '|' + nama] = 1;
+  });
+  hasil.kelas = { kelas: n(kelasSah), guru: n(guru), sekolah: n(sekolahKelas), terdaftar: terdaftar, aktif: n(aktif), pengerjaan: pengerjaanKelas };
   cache.put('statistik', JSON.stringify(hasil), 600);
   return hasil;
 }
