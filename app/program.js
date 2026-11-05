@@ -384,7 +384,7 @@ function renderDepan(){
     $('#pg-kuota-teks').textContent = 'Dihitung untuk seluruh sekolah (NPSN), bukan per guru. Memperbaiki, menyusun ulang, dan mengunduh ulang program tidak mengurangi kuota.';
   }
   const wa = nomorWa(PG.narahubung);
-  const ajak = 'Assalamualaikum, kami dari ' + PG.sekolah.nama + ' (NPSN ' + PG.sekolah.npsn + ') ingin mengaktifkan Lisensi Sekolah Program Kokurikuler di Rapor Merdeka Digital. Mohon informasi kontribusinya.';
+  const ajak = 'Assalamualaikum, kami dari ' + PG.sekolah.nama + ' (NPSN ' + PG.sekolah.npsn + ') ingin mengaktifkan Lisensi Sekolah Program Kokurikuler di Daftar Nilai Digital. Mohon informasi kontribusinya.';
   $('#pg-kontribusi').innerHTML = '<b>Merasa terbantu?</b> Sekolah dapat melanjutkan dengan <b>Lisensi Sekolah</b> selama <b>' + k.masaHari + ' hari untuk semua guru</b>, ' +
     'melalui kontribusi pengembangan <b>' + esc(k.kontribusi) + '</b>. Kontribusi ini dipakai untuk memelihara dan mengembangkan aplikasi agar tetap bisa dimanfaatkan guru-guru lain. ' +
     (wa ? '<a href="https://wa.me/' + wa + '?text=' + encodeURIComponent(ajak) + '" target="_blank" rel="noopener"><b>Hubungi Admin lewat WhatsApp</b></a>' : 'Hubungi ' + esc(PG.narahubung)) +
@@ -1091,7 +1091,7 @@ async function dokumenProgram(){
     isi.push(par([run('5. Pengolahan hasil asesmen', { bold: true })], { before: 120, keepNext: true }));
     isi.push(...butir(['Untuk setiap subdimensi, kumpulkan bukti dari observasi (formatif), kinerja/produk, dan refleksi tertulis (sumatif).',
       'Tetapkan capaian akhir per subdimensi dengan melihat bukti yang paling sering muncul. Bila bukti seimbang, utamakan hasil kinerja/produk.',
-      'Tuliskan capaian Berkembang/Cakap/Mahir di menu Kokurikuler Rapor Merdeka Digital; deskripsi rapor tersusun otomatis.',
+      'Tuliskan capaian Berkembang/Cakap/Mahir di menu Kokurikuler Daftar Nilai Digital; deskripsi rapor tersusun otomatis.',
       'Penilaian diri, umpan balik teman, dan jurnal dipakai untuk umpan balik dan refleksi, bukan untuk dijumlahkan.']));
     isi.push(jarak());
     isi.push(tabel(['No', 'Nama murid'].concat(sub.map(s => s + '\n(Obs / Kinerja / Refleksi → Akhir)')), Array.from({ length: 10 }, (_, n) => [String(n + 1), ''].concat(sub.map(() => '…/…/… → …'))),
@@ -1107,10 +1107,10 @@ async function dokumenProgram(){
     sel(ttd('……………, ……………\nGuru Kelas ' + ROMAWI[p.kelas], (p.guru || '……………………………') + '\nNIP. …………………'), { w: LEBAR - 2 * k3w })] })] }));
 
   return new D.Document({
-    creator: 'Rapor Merdeka Digital', title: 'Program Kokurikuler ' + PG.sekolah.nama,
+    creator: 'Daftar Nilai Digital', title: 'Program Kokurikuler ' + PG.sekolah.nama,
     styles: { default: { document: { run: { font: HURUF, size: UKURAN }, paragraph: { spacing: { line: SPASI } } } } },
     sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } } },
-      footers: { default: new D.Footer({ children: [par([run('Program Kokurikuler · ' + PG.sekolah.nama + ' (NPSN ' + PG.sekolah.npsn + ') · disusun dengan Rapor Merdeka Digital', { size: 16, color: '64748B' })], { line: 240 })] }) },
+      footers: { default: new D.Footer({ children: [par([run('Program Kokurikuler · ' + PG.sekolah.nama + ' (NPSN ' + PG.sekolah.npsn + ') · disusun dengan Daftar Nilai Digital', { size: 16, color: '64748B' })], { line: 240 })] }) },
       children: isi }]
   });
 }

@@ -1,5 +1,5 @@
 /* Data pengunduh untuk seluruh situs (e-book; halaman poster memakai kunci penyimpanan yang sama).
-   Pengunduh mengisi data sekali per perangkat; setiap unduhan dicatat ke server Rapor Merdeka Digital
+   Pengunduh mengisi data sekali per perangkat; setiap unduhan dicatat ke server Daftar Nilai Digital
    lewat antrean di perangkat, sehingga catatan tidak hilang saat server tak terjangkau.
    Pakai: Pengunduh.pasang(akar) lalu Pengunduh.minta(fn) — fn dijalankan setelah data tersedia. */
 const Pengunduh = (() => {
