@@ -164,6 +164,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
       <div><h2 style="margin:0 0 6px"><img src="guru.svg" alt="" style="width:34px;height:34px;vertical-align:-9px;margin-right:6px">Untuk Guru: Kelas Intensif TKA <span style="font-size:13px;background:#dc2626;color:#fff;border-radius:99px;padding:2px 9px;vertical-align:middle" data-tampil-sampai="2026-11-11">BARU · GRATIS</span></h2>
       <p class="sub" style="margin:0">Buat kelas dalam 1 menit, bagikan tautannya ke grup WhatsApp siswa, lalu pantau nilai seluruh kelas dan <b>indikator yang perlu diperkuat</b> di dasbor guru. Tanpa akun, tanpa kata sandi. Gratis: latihan per indikator, remedial otomatis, dan grafik perkembangan setiap siswa. <b>Kelas Premium</b> menambahkan kunci &amp; pembahasan di dasbor guru; coba gratis 14 hari. Kode akses Pembahasan juga mengaktifkan Kelas Premium untuk 1 kelas.</p></div>
       <a class="btn" href="guru.html" style="background:#1f6fb2">Buka Kelas Intensif ›</a>
+      <p id="st-kelas" hidden style="grid-column:1/-1;margin:0;font-size:14px;font-weight:700;color:#1f4f7a"></p>
     </div>
   </section>
 
@@ -277,7 +278,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 </div>
 <script src="../bersama.js?v=2"></script>
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=12"></script>
+<script src="tka.js?v=13"></script>
 <script src="bank/daftar.js?v=6"></script>
 <script src="bank/latihan.js?v=3"></script>
 <script>
@@ -301,6 +302,7 @@ TKA.statistik().then(st => {
   const el = $('statistik');
   el.innerHTML = '📊 ' + TKA.esc(TKA.kalimatStatistik(st)).replace(/(\d[\d.]*)/g, '<b>$1</b>');
   el.classList.add('ada');
+  const k = TKA.kalimatKelas(st); if (k) { $('st-kelas').textContent = '👩‍🏫 ' + k; $('st-kelas').hidden = false; }
 });
 const RIWAYAT = TKA.riwayat.semua();
 
