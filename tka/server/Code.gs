@@ -353,7 +353,7 @@ function buatKelas_(req) {
   } finally { kunci.releaseLock(); }
 }
 
-/** Data kelas berdasarkan kode (disimpan sementara 6 jam). */
+/** Data kelas berdasarkan kode (disimpan sementara 5 menit agar perubahan manual di lembar Kelas cepat terbaca). */
 function dataKelas_(kode) {
   kode = rapikanKode_(kode);
   if (kode.length < 4) return null;
@@ -366,7 +366,7 @@ function dataKelas_(kode) {
       premiumSampai: waktu_(b[8]), cobaDipakai: !!b[9], masaCoba: String(b[10] || '').indexOf('Coba') === 0 };
     return true;
   });
-  if (hasil) c.put('kelas_' + kode, JSON.stringify(hasil), 21600);
+  if (hasil) c.put('kelas_' + kode, JSON.stringify(hasil), 300);
   return hasil;
 }
 
