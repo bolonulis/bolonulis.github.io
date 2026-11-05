@@ -1,7 +1,7 @@
 /* Dipakai bersama halaman depan, /rapor/, dan /rpp-flash/: angka pemakai dan testimoni yang disetujui pengembang.
    Semua hanya hiasan: bila server tidak terjangkau, bagiannya tetap tersembunyi. */
 const LAYANAN = {
-  rapor: { nama: 'Rapor Merdeka Digital', url: 'https://script.google.com/macros/s/AKfycbzTAde0R7qTZ3V3Tk_bjI9ue7_lkdKxW4DygSKuoBnvlgKMlRcFBnithtKEhau92LPQ/exec', post: true },
+  rapor: { nama: 'Daftar Nilai Digital', url: 'https://script.google.com/macros/s/AKfycbzTAde0R7qTZ3V3Tk_bjI9ue7_lkdKxW4DygSKuoBnvlgKMlRcFBnithtKEhau92LPQ/exec', post: true },
   rpp: { nama: 'RPP Flash', url: 'https://script.google.com/macros/s/AKfycbyIqhmej0QdEedB0DisrnUsfUW4g0W5ubCQPhLavHAk-EWb_QTozx7Xu9f-t2vIRTpcAQ/exec', post: false }
 };
 function tanyaLayanan(kunci, aksi) {
