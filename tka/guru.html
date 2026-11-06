@@ -217,9 +217,10 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
       <div id="kelas-tersimpan" hidden><p class="sub" style="margin:0">Kelas yang pernah dibuka di perangkat ini:</p><div class="daftar-kelas" id="daftar-kelas"></div><p class="catatan" style="margin:14px 0 6px">Atau masuk dengan kode dan PIN:</p></div>
       <form id="f-masuk" class="form" novalidate>
         <label>Kode kelas<input name="kode" maxlength="8" placeholder="Contoh: K7QP2A" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700" autocomplete="off"><span class="bantu">6 huruf/angka. Ada di pesan WhatsApp yang Anda simpan saat membuat kelas.</span></label>
-        <label>PIN guru<input name="pin" inputmode="numeric" maxlength="6" placeholder="6 angka" autocomplete="off"><span class="bantu">Rahasia, jangan dibagikan kepada siswa. Lupa PIN? Hubungi Admin lewat WhatsApp.</span></label>
+        <label>PIN guru<input name="pin" inputmode="numeric" maxlength="6" placeholder="6 angka" autocomplete="off"><span class="bantu">Rahasia, jangan dibagikan kepada siswa.</span></label>
         <p class="salah penuh" id="masuk-salah"></p>
-        <div class="penuh"><button class="btn" type="submit">Buka dasbor</button></div>
+        <div class="penuh" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" type="submit">Buka dasbor</button><a class="btn ghost" id="m-lupa" href="#" target="_blank" rel="noopener">📲 Lupa PIN? Hubungi Admin</a></div>
+        <p class="catatan penuh" style="margin:0">PIN dibuat otomatis saat kelas dibuat, jadi tidak perlu diatur sendiri. Lupa PIN atau kode kelas? Ketuk <b>Lupa PIN</b>, lengkapi nama dan sekolah di pesan WhatsApp, lalu kirim. Admin akan membalas dengan kode dan PIN kelas Anda.</p>
       </form>
     </div>
   </div>
@@ -247,7 +248,13 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
   <div class="kartu">
     <div class="kepala-kelas">
       <div><h1 id="d-judul"></h1><p id="d-sub"></p></div>
-      <div class="cetak-sembunyi" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost kecil" id="d-muat" type="button">↻ Perbarui</button><button class="btn ghost kecil" id="d-laporan" type="button" onclick="laporanKepsek()">📑 Laporan kepala sekolah</button><button class="btn ghost kecil" id="d-unduh" type="button">⬇️ Unduh Excel (CSV)</button><button class="btn ghost kecil" type="button" onclick="print()">🖨️ Cetak</button></div>
+      <div class="cetak-sembunyi" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost kecil" id="d-muat" type="button">↻ Perbarui</button><button class="btn ghost kecil" id="d-pin-btn" type="button">🔑 Lihat &amp; simpan PIN</button><button class="btn ghost kecil" id="d-laporan" type="button" onclick="laporanKepsek()">📑 Laporan kepala sekolah</button><button class="btn ghost kecil" id="d-unduh" type="button">⬇️ Unduh Excel (CSV)</button><button class="btn ghost kecil" type="button" onclick="print()">🖨️ Cetak</button></div>
+    </div>
+    <div class="panduan-kecil cetak-sembunyi" id="d-pin" hidden style="margin:0 0 12px">
+      <b>🔑 Akses dasbor kelas ini</b>
+      <div class="kode-besar" style="margin:8px 0"><div><small>KODE KELAS (bagikan ke siswa)</small><b id="d-pin-kode"></b></div><div><small>PIN GURU (rahasia)</small><b id="d-pin-isi"></b></div></div>
+      <p style="margin:0 0 8px;font-size:14px">Kode kelas dan PIN dibutuhkan untuk membuka dasbor dari HP/laptop lain. Simpan ke WhatsApp (kirim ke nomor Anda sendiri) agar tidak lupa. <b>Jangan bagikan PIN kepada siswa.</b></p>
+      <a class="btn wa kecil" id="d-pin-wa" target="_blank" rel="noopener">📲 Simpan akses kelas ke WhatsApp</a>
     </div>
     <div class="bagikan">
       <b style="font-size:14px">🔗 Tautan untuk siswa:</b><code id="d-tautan"></code>
@@ -276,7 +283,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <h3>Istilah penting</h3>
     <ul>
       <li><b>Kode kelas</b>: 6 huruf/angka (misalnya K7QP2A). Boleh dibagikan kepada siswa.</li>
-      <li><b>PIN guru</b>: 6 angka. <b>Rahasia</b>, hanya untuk guru membuka dasbor.</li>
+      <li><b>PIN guru</b>: 6 angka, <b>dibuat otomatis</b> saat kelas dibuat (tidak perlu diatur sendiri). <b>Rahasia</b>, hanya untuk guru membuka dasbor. Bisa dilihat lagi kapan saja lewat tombol <b>🔑 Lihat &amp; simpan PIN</b> di dasbor.</li>
       <li><b>Tautan kelas</b>: alamat yang dibagikan ke grup WA. Siswa yang membukanya otomatis masuk ke kelas Anda.</li>
       <li><b>Tryout/paket</b>: 30 soal, 75 menit, seperti TKA. <b>Latihan per indikator</b>: 5 soal, 15 menit, satu kemampuan saja.</li>
       <li><b>Remedial otomatis</b>: latihan yang dipilih sistem untuk setiap siswa sesuai soal yang belum dijawab benar.</li>
@@ -345,7 +352,7 @@ details.semua summary{cursor:pointer;font-weight:700;color:var(--aksen);margin-t
     <h3>H. Pertanyaan yang sering muncul</h3>
     <ul>
       <li><b>Buka dari HP atau laptop lain?</b> Masukkan kode kelas dan PIN pada kotak "Sudah punya kelas?". Kode dan PIN ada di pesan WhatsApp yang Anda simpan.</li>
-      <li><b>Lupa PIN?</b> Hubungi Admin lewat WhatsApp dengan menyebutkan kode kelas, nama, dan sekolah.</li>
+      <li><b>Lupa PIN?</b> Bila dasbor masih terbuka di HP lama, ketuk <b>🔑 Lihat &amp; simpan PIN</b>. Bila tidak, ketuk <b>📲 Lupa PIN? Hubungi Admin</b> di halaman masuk, lengkapi nama dan sekolah, lalu kirim.</li>
       <li><b>Ada siswa baru atau nama salah ketik?</b> Buka dasbor, lalu ketuk <b>✏️ Ubah daftar</b>.</li>
       <li><b>Berbayar?</b> Kelas Gratis tetap gratis selamanya. Kelas Premium bersifat pilihan.</li>
     </ul>
@@ -393,11 +400,23 @@ $('f-buat').onsubmit = async e => {
   ingat(k);
   $('b-info').textContent = k.kelas + ' · ' + k.sekolah + ' · ' + k.guru + ' · ' + ($('b-info').dataset.siswa > 0 ? $('b-info').dataset.siswa + ' siswa terdaftar' : 'daftar siswa bisa diisi di dasbor');
   $('b-kode').textContent = k.kode; $('b-pin').textContent = k.pin;
-  $('b-simpan-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Catatan Dasbor Guru Simulasi TKA\n' + k.kelas + ' · ' + k.sekolah + '\nKode kelas: ' + k.kode + '\nPIN guru: ' + k.pin + '\nDasbor: ' + new URL('guru.html', location.href).href + '\nTautan siswa: ' + tautanKelas(k));
+  $('b-simpan-wa').href = waSimpanAkses(k);
   $('b-lanjut').onclick = () => bukaKelas(k);
   tampil('v-berhasil');
 };
 
+function waSimpanAkses(k) {
+  return 'https://wa.me/?text=' + encodeURIComponent('Catatan Dasbor Guru Simulasi TKA\n' + k.kelas + ' · ' + k.sekolah + '\nKode kelas: ' + k.kode + '\nPIN guru: ' + k.pin + '\nDasbor: ' + new URL('guru.html', location.href).href + '\nTautan siswa: ' + tautanKelas(k));
+}
+$('m-lupa').onclick = () => {
+  const kode = $('f-masuk').elements.kode.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  $('m-lupa').href = 'https://wa.me/6281196939694?text=' + encodeURIComponent('Halo Admin, saya lupa PIN/kode kelas *Kelas Intensif TKA*. Mohon dibantu.\n\nNama guru: \nAsal sekolah: \nNama kelas (contoh: Kelas 6A): \nKode kelas (bila ingat): ' + kode + '\n\nTerima kasih.');
+};
+$('d-pin-btn').onclick = () => {
+  const el = $('d-pin'); el.hidden = !el.hidden;
+  $('d-pin-btn').textContent = el.hidden ? '🔑 Lihat & simpan PIN' : '🔑 Sembunyikan PIN';
+  if (!el.hidden) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
 $('f-masuk').onsubmit = async e => {
   e.preventDefault();
   const f = e.target, kode = f.elements.kode.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ''), pin = f.elements.pin.value.trim();
@@ -405,7 +424,7 @@ $('f-masuk').onsubmit = async e => {
   const btn = f.querySelector('button'); btn.disabled = true; $('masuk-salah').textContent = 'Memeriksa…';
   const r = await TKA.api({ aksi: 'dasbor', kode, pin });
   btn.disabled = false;
-  if (!r.ok) { $('masuk-salah').textContent = r.pesan || 'Kode kelas atau PIN salah.'; return; }
+  if (!r.ok) { $('masuk-salah').textContent = (r.pesan || 'Kode kelas atau PIN salah.') + ' Lupa PIN? Ketuk tombol 📲 Lupa PIN di bawah.'; return; }
   $('masuk-salah').textContent = '';
   const k = { kode: r.kelas.kode, pin, guru: r.kelas.guru, sekolah: r.kelas.sekolah, kelas: r.kelas.kelas };
   ingat(k); bukaKelas(k, r);
@@ -418,6 +437,8 @@ async function bukaKelas(k, dataAwal) {
   $('d-judul').textContent = k.kelas;
   $('d-sub').textContent = k.sekolah + ' · ' + k.guru;
   $('d-kode').textContent = k.kode;
+  $('d-pin').hidden = true; $('d-pin-btn').textContent = '🔑 Lihat & simpan PIN';
+  $('d-pin-kode').textContent = k.kode; $('d-pin-isi').textContent = k.pin; $('d-pin-wa').href = waSimpanAkses(k);
   const t = tautanKelas(k);
   $('d-tautan').textContent = t;
   $('d-wa').href = 'https://wa.me/?text=' + encodeURIComponent('Assalamu’alaikum/Salam sejahtera, Bapak/Ibu dan anak-anak ' + k.kelas + ' 🙏\n\nAyo berlatih di *Kelas Intensif TKA* melalui tautan kelas berikut, agar hasilnya dapat dipantau guru:\n👉 ' + t + '\n\nCara: buka tautan → pilih paket → pilih namamu dari daftar → kerjakan sampai selesai.\nTerima kasih.\n— ' + k.guru);
