@@ -541,10 +541,11 @@ async function gambar() {
   gambarUjian();
   gambarLangkah();
   const daftar = DATA.siswa || [], kunciNama = n => n.trim().toLowerCase().replace(/\s+/g, ' ');
-  let bank;
-  try { bank = await bankUntuk(PAKET); }
+  let bank; const idPaket = PAKET;
+  try { bank = await bankUntuk(idPaket); }
   catch (e) { $('d-isi').innerHTML = '<div class="kartu kosong"><b>Paket ini belum dapat ditampilkan</b>' + esc(e.message || '') + '</div>'; return; }
-  const rinci = premiumAktif() ? await ambilPembahasan(PAKET) : null;
+  const rinci = premiumAktif() ? await ambilPembahasan(idPaket) : null;
+  if (PAKET !== idPaket) return;   // guru sudah memilih paket lain selagi memuat
   const tombolBahas = rinci ? '<div class="kartu k-premium aktif cetak-sembunyi"><div><h2>📖 Kunci &amp; pembahasan ' + esc(bank.mapel + ' · ' + bank.paket) + '</h2><p>Soal lengkap dengan kunci dan pembahasan, siap dicetak untuk pembahasan di kelas.</p></div><button class="btn emas" type="button" id="d-bahas">📖 Buka &amp; cetak</button></div>' : '';
   const siswa = rekapSiswa(DATA.baris);
   const banyakPaket = new Set(DATA.baris.map(b => b.paket));
@@ -553,6 +554,17 @@ async function gambar() {
   const terdaftar = new Set(daftar.map(kunciNama));
   const kartuBelum = daftar.length ? '<div class="kartu"><h2>⏳ Belum mengerjakan <span style="color:var(--muted);font-size:15px">(' + belum.length + ' dari ' + daftar.length + ' siswa)</span></h2>' +
     (belum.length ? '<div class="belum">' + belum.map(n => '<span>' + esc(n) + '</span>').join('') + '</div>' : '<p class="sub" style="margin:0">🎉 Semua siswa sudah mengerjakan paket ini.</p>') + '</div>' : '';
+  const eksklusif = (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).some(p => p.id === idPaket);
+  if (!siswa.length && eksklusif) {
+    $('d-isi').innerHTML = '<div class="kartu kosong"><b>⭐ ' + esc(bank.mapel + ' · ' + bank.paket) + ' adalah paket eksklusif untuk ujian serentak</b>' +
+      'Paket ini tidak dibagikan lewat tautan kelas biasa, sehingga soalnya belum pernah dilihat siswa. Cara memakainya:' +
+      '<ol style="text-align:left;max-width:560px;margin:10px auto 12px;line-height:1.6"><li>Buka kartu <strong>🕘 Ujian serentak</strong>.</li><li>Pilih paket bertanda <strong>⭐ ' + esc(bank.mapel + ' · ' + bank.paket) + '</strong>, lalu atur tanggal, jam mulai, dan durasi.</li><li>Ketuk <strong>＋ Jadwalkan</strong>, lalu <strong>💬 Bagikan WA</strong> ke grup siswa.</li><li>Setelah ujian selesai, hasil siswa muncul di sini.</li></ol>' +
+      '<button class="btn" type="button" id="ke-ujian">🕘 Buka kartu Ujian serentak</button>' +
+      (rinci ? '<p class="catatan" style="margin:10px 0 0">Ingin melihat soalnya lebih dulu? Ketuk <strong>📖 Buka &amp; cetak</strong> di bawah (hanya untuk guru).</p>' : '') + '</div>' + tombolBahas;
+    $('ke-ujian').onclick = () => $('k-ujian').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    pasangBahas(bank, rinci);
+    return;
+  }
   if (!siswa.length) {
     $('d-isi').innerHTML = '<div class="kartu kosong"><b>Belum ada siswa yang mengerjakan ' + esc(bank.mapel + ' · ' + bank.paket) + '</b>' +
       (DATA.baris.length ? 'Siswa sudah mengerjakan paket lain (' + banyakPaket.size + ' paket). Pilih paket di atas.' : 'Bagikan tautan kelas di atas ke grup WhatsApp siswa atau orang tua. Hasilnya akan muncul di sini.') + '</div>' + kartuBelum + tombolBahas;
@@ -1003,7 +1015,7 @@ function latihanUntuk(bank, no) {
 function gambarTombolPaket() {
   const ada = new Set((DATA && DATA.baris || []).map(b => b.paket));
   const lt = (typeof LATIHAN_TKA === 'undefined' ? [] : LATIHAN_TKA).filter(l => ada.has(l.id) || l.id === PAKET);
-  const eks = (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).filter(p => ada.has(p.id) || p.id === PAKET);
+  const eks = (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).filter(p => premiumAktif() || ada.has(p.id) || p.id === PAKET);
   $('d-paket').innerHTML = PAKET_TKA.concat(eks).map(p => '<button type="button" data-id="' + p.id + '">' + (p.eksklusif ? '⭐ ' : '') + esc(p.mapel) + ' · ' + esc(p.paket) + '</button>').join('') +
     lt.map(l => '<button type="button" data-id="' + l.id + '">📝 ' + esc(l.judul) + '</button>').join('');
 }
