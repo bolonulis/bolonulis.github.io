@@ -532,9 +532,8 @@ function premiumDenganKode_(req) {
 function pembahasanGuru_(req) {
   var k = dataKelas_(req.kode);
   if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
-  var it = infoItem_(req.paket);
-  // Pembahasan latihan Jalur Belajar juga dilihat siswa setelah mengerjakan, jadi terbuka untuk semua guru.
-  if (!(it && it.jenis === 'jb') && !premiumAktif_(k)) return { ok: false, pesan: 'Fitur ini tersedia untuk Kelas Premium.' };
+  // Kunci & pembahasan di dasbor guru (termasuk cetak kunci latihan Jalur Belajar) khusus Kelas Premium.
+  if (!premiumAktif_(k)) return { ok: false, pesan: 'Kunci & pembahasan untuk guru tersedia di Kelas Premium.' };
   var bank = KUNCI_TKA[req.paket];
   if (!bank) return { ok: false, pesan: 'Paket soal tidak dikenal.' };
   var rinci = {};
