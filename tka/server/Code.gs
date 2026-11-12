@@ -18,7 +18,9 @@ var PENGATURAN = {
   MAKS_PERANGKAT: 50,         // satu kode akses boleh dipakai di berapa perangkat (HP/laptop) berbeda
   WA_ADMIN: '6281196939694',
   HARI_COBA_PREMIUM: 14,      // coba gratis Kelas Premium (sekali per kelas)
-  KELAS_PER_KODE: 1           // satu kode akses Pembahasan dapat mengaktifkan Kelas Premium untuk berapa kelas
+  KELAS_PER_KODE: 1,          // satu kode akses Pembahasan dapat mengaktifkan Kelas Premium untuk berapa kelas
+  JALUR_AKTIF: false,         // Jalur Belajar Bertahap: true = soal lama tidak lagi tercatat ke dasbor kelas (semua soal kelas lewat rilis guru)
+  JEDA_KUMPUL_MENIT: 15       // tenggang pengumpulan setelah waktu mengerjakan habis (koneksi lambat)
 };
 
 var LEMBAR_AKSES = 'Akses';
@@ -30,6 +32,10 @@ var LEMBAR_UJIAN = 'Ujian';
 var KEPALA_UJIAN = ['ID ujian', 'Kode kelas', 'Paket', 'Mulai', 'Selesai', 'Durasi (menit)', 'Dibuat', 'Status'];
 var LEMBAR_PESERTA = 'Peserta Ujian';
 var KEPALA_PESERTA = ['ID ujian', 'Nama', 'Mulai mengerjakan', 'Selesai', 'Nilai'];
+var LEMBAR_RILIS = 'Rilis';
+var KEPALA_RILIS = ['Kode kelas', 'Dibuka', 'Diperbarui'];
+var LEMBAR_KEMAJUAN = 'Kemajuan';
+var KEPALA_KEMAJUAN = ['Kunci', 'Kode kelas', 'Nama', 'Data', 'Diperbarui'];
 var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa', 'Premium sampai', 'Coba gratis dipakai', 'Catatan premium', 'Kode akses'];
 
 /* ============================ WEB APP ============================ */
@@ -59,6 +65,10 @@ function doPost(e) {
     if (req.aksi === 'statusUjian') return json_(statusUjian_(req));
     if (req.aksi === 'bankGuru') return json_(bankGuru_(req));
     if (req.aksi === 'pembahasanGuru') return json_(pembahasanGuru_(req));
+    if (req.aksi === 'simpanRilis') return json_(simpanRilis_(req));
+    if (req.aksi === 'izinUlang') return json_(izinUlang_(req));
+    if (req.aksi === 'petaSiswa') return json_(petaSiswa_(req));
+    if (req.aksi === 'mulaiItem') return json_(mulaiItem_(req));
     return json_({ ok: false, pesan: 'Aksi tidak dikenal.' });
   } catch (err) {
     return json_({ ok: false, pesan: 'Server sedang sibuk. Coba lagi sebentar lagi. (' + err.message + ')' });
@@ -117,8 +127,11 @@ function hitung_(bank, jawaban) {
 function nilai_(req) {
   var bank = KUNCI_TKA[req.paket];
   if (!bank) return { ok: false, pesan: 'Paket soal tidak dikenal.' };
-  if (bankEksklusif_(req.paket) && !req.ujian && !req.lihatUlang) return { ok: false, pesan: 'Paket ini hanya dapat dikerjakan lewat ujian serentak.' };
   var jawaban = (req.jawaban && typeof req.jawaban === 'object') ? req.jawaban : {};
+  if (infoItem_(req.paket) && !req.ujian) return nilaiItem_(req, bank, jawaban);
+  if (bankEksklusif_(req.paket) && !req.ujian && !req.lihatUlang) return { ok: false, pesan: 'Paket ini hanya dapat dikerjakan lewat ujian serentak.' };
+  // Jalur Belajar aktif: soal umum (Paket 1–2 lama dan latihan lama) tidak lagi masuk dasbor kelas, kecuali lewat ujian serentak.
+  if (PENGATURAN.JALUR_AKTIF && !req.ujian && req.peserta && req.peserta.kodeKelas) req.peserta.kodeKelas = '';
   var h = hitung_(bank, jawaban);
   var akses = req.kode ? periksaKode_(req.kode, req.perangkat) : null;
   // Kelas Premium membuka semua latihan untuk siswa, tetapi kunci & pembahasan hanya untuk guru (dasbor) dan pemegang kode akses.
@@ -293,6 +306,10 @@ function onEdit(e) {
     if (!e || !e.range) return;
     var sh = e.range.getSheet(), awal = e.range.getRow(), n = Math.min(e.range.getNumRows(), 200);
     var cache = CacheService.getScriptCache();
+    if (sh.getName() === LEMBAR_RILIS) {
+      sh.getRange(awal, 1, n, 1).getValues().forEach(function (b) { var k = rapikanKode_(b[0]); if (k) cache.remove('rilis_' + k); });
+      return;
+    }
     if (sh.getName() === LEMBAR_KELAS) {
       sh.getRange(awal, 1, n, 1).getValues().forEach(function (b) { var k = rapikanKode_(b[0]); if (k) cache.remove('kelas_' + k); });
       return;
@@ -404,7 +421,7 @@ function aturSiswa_(req) {
 /** Siswa memeriksa kode kelas sebelum mengerjakan (tanpa PIN). */
 function cekKelas_(req) {
   var k = dataKelas_(req.kode);
-  return k ? { ok: true, kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [], premium: premiumAktif_(k) } : { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.' };
+  return k ? { ok: true, kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [], premium: premiumAktif_(k), jalur: PENGATURAN.JALUR_AKTIF } : { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.' };
 }
 
 /** Dasbor guru: semua pengerjaan siswa di kelas itu (butuh PIN). */
@@ -418,7 +435,8 @@ function dasbor_(req) {
     baris.push({ waktu: b[0] instanceof Date ? b[0].getTime() : String(b[0]), nama: String(b[1]), paket: String(b[4]), nilai: Number(b[5]) || 0,
       terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number), ujian: String(b[14] || '') });
   });
-  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k), ujian: daftarUjian_(k.kode), sekarang: Date.now() };
+  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k), ujian: daftarUjian_(k.kode),
+    rilis: dataRilis_(k.kode), kemajuan: kemajuanKelas_(k.kode), jalurAktif: PENGATURAN.JALUR_AKTIF, sekarang: Date.now() };
 }
 
 /* ============================ KELAS PREMIUM ============================ */
@@ -514,7 +532,9 @@ function premiumDenganKode_(req) {
 function pembahasanGuru_(req) {
   var k = dataKelas_(req.kode);
   if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
-  if (!premiumAktif_(k)) return { ok: false, pesan: 'Fitur ini tersedia untuk Kelas Premium.' };
+  var it = infoItem_(req.paket);
+  // Pembahasan latihan Jalur Belajar juga dilihat siswa setelah mengerjakan, jadi terbuka untuk semua guru.
+  if (!(it && it.jenis === 'jb') && !premiumAktif_(k)) return { ok: false, pesan: 'Fitur ini tersedia untuk Kelas Premium.' };
   var bank = KUNCI_TKA[req.paket];
   if (!bank) return { ok: false, pesan: 'Paket soal tidak dikenal.' };
   var rinci = {};
@@ -589,7 +609,7 @@ function buatUjian_(req) {
   var k = dataKelas_(req.kode);
   if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
   if (!premiumAktif_(k)) return { ok: false, pesan: 'Ujian serentak tersedia untuk Kelas Premium.' };
-  if (!KUNCI_TKA[req.paket] || /^lt-/.test(String(req.paket))) return { ok: false, pesan: 'Pilih paket tryout.' };
+  if (!KUNCI_TKA[req.paket] || /^(lt|jb)-/.test(String(req.paket))) return { ok: false, pesan: 'Pilih paket tryout.' };
   var mulai = Number(req.mulai), durasi = Math.round(Number(req.durasi));
   if (!mulai || mulai < Date.now() - 5 * 60000) return { ok: false, pesan: 'Waktu mulai sudah lewat. Pilih waktu yang akan datang.' };
   if (mulai > Date.now() + 120 * 86400000) return { ok: false, pesan: 'Jadwal paling lambat 120 hari dari sekarang.' };
@@ -667,14 +687,16 @@ function mulaiUjian_(req) {
 
 /** Paket eksklusif (soal hanya di server). */
 function bankEksklusif_(paket) {
-  return typeof BANK_EKSKLUSIF !== 'undefined' && BANK_EKSKLUSIF[paket] ? BANK_EKSKLUSIF[paket] : null;
+  if (typeof BANK_EKSKLUSIF !== 'undefined' && BANK_EKSKLUSIF[paket]) return BANK_EKSKLUSIF[paket];
+  if (typeof BANK_KELAS !== 'undefined' && BANK_KELAS[paket]) return BANK_KELAS[paket];
+  return null;
 }
 
 /** Soal paket eksklusif untuk dasbor guru Kelas Premium (analisis dan dokumen kunci). */
 function bankGuru_(req) {
   var k = dataKelas_(req.kode);
   if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
-  if (!premiumAktif_(k)) return { ok: false, pesan: 'Fitur ini tersedia untuk Kelas Premium.' };
+  if (!infoItem_(req.paket) && !premiumAktif_(k)) return { ok: false, pesan: 'Fitur ini tersedia untuk Kelas Premium.' };
   var bx = bankEksklusif_(req.paket);
   return bx ? { ok: true, bank: bx } : { ok: false, pesan: 'Paket tidak ditemukan.' };
 }
@@ -711,6 +733,225 @@ function statusUjian_(req) {
     if (String(b[0]) === u.id) peserta.push({ nama: String(b[1]), mulai: waktu_(b[2]), selesai: waktu_(b[3]), nilai: b[3] ? Number(b[4]) : null });
   });
   return { ok: true, ujian: u, siswa: k.siswa || [], peserta: peserta, sekarang: Date.now() };
+}
+
+
+/* ============================ JALUR BELAJAR BERTAHAP ============================ */
+/* Soal Kelas Intensif hanya ada di server dan baru terbuka setelah dirilis guru.
+ *  - Latihan per indikator: jb-<mapel>-<NN>-v<1..4>. V1 boleh diulang; V2–V4 sekali kesempatan; V4 khusus Kelas Premium.
+ *    Setelah selesai, siswa langsung melihat pembahasan.
+ *  - Paket tes akhir edisi kelas: kls-<mapel>-<1|2>. Sekali kesempatan, siswa hanya melihat nilai.
+ * Lembar "Rilis": soal yang dibuka guru per kelas. Lembar "Kemajuan": satu baris per siswa per kelas (data percobaan dalam JSON). */
+
+/** Jenis dan aturan sebuah soal Jalur Belajar dari ID-nya; null bila bukan soal Jalur Belajar. */
+function infoItem_(id) {
+  id = String(id || '');
+  var m = /^jb-(mat|bi)-(\d\d)-v([1-4])$/.exec(id);
+  if (m) {
+    var v = Number(m[3]);
+    return { id: id, jenis: 'jb', mapel: m[1], no: Number(m[2]), versi: v, sekali: v > 1, premium: v === 4, durasi: v === 4 ? 30 : v === 3 ? 20 : 15 };
+  }
+  m = /^kls-(mat|bi)-([12])$/.exec(id);
+  if (m) return { id: id, jenis: 'kls', mapel: m[1], paket: Number(m[2]), sekali: true, premium: false, durasi: 75 };
+  return null;
+}
+function itemAda_(id) { return !!(infoItem_(id) && KUNCI_TKA[id] && bankEksklusif_(id)); }
+function rapiNama_(n) { return String(n || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
+
+/** Daftar soal yang dibuka guru untuk kelas ini. */
+function dataRilis_(kode) {
+  var c = CacheService.getScriptCache(), s = c.get('rilis_' + kode);
+  if (s !== null) return s ? s.split(',') : [];
+  var dibuka = [];
+  lembar_(LEMBAR_RILIS, KEPALA_RILIS).getDataRange().getValues().slice(1).some(function (b) {
+    if (rapikanKode_(b[0]) !== kode) return false;
+    dibuka = String(b[1] || '').split(',').map(function (x) { return x.trim(); }).filter(function (x) { return !!infoItem_(x); });
+    return true;
+  });
+  c.put('rilis_' + kode, dibuka.join(','), 300);
+  return dibuka;
+}
+
+/** Guru menyimpan centang rilis (butuh PIN). V4 hanya untuk Kelas Premium. */
+function simpanRilis_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  var premium = premiumAktif_(k), lihat = {}, dibuka = [];
+  (Array.isArray(req.dibuka) ? req.dibuka : []).forEach(function (id) {
+    id = String(id); var it = infoItem_(id);
+    if (!it || lihat[id] || !itemAda_(id)) return;
+    if (it.premium && !premium) return;
+    lihat[id] = 1; dibuka.push(id);
+  });
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(15000);
+  try {
+    var sh = lembar_(LEMBAR_RILIS, KEPALA_RILIS), data = sh.getDataRange().getValues(), baris = 0;
+    for (var r = 1; r < data.length; r++) if (rapikanKode_(data[r][0]) === k.kode) { baris = r + 1; break; }
+    if (baris) sh.getRange(baris, 2, 1, 2).setValues([[dibuka.join(','), new Date()]]);
+    else sh.appendRow([k.kode, dibuka.join(','), new Date()]);
+    CacheService.getScriptCache().put('rilis_' + k.kode, dibuka.join(','), 300);
+  } finally { kunci.releaseLock(); }
+  return { ok: true, rilis: dibuka };
+}
+
+/** Baris kemajuan seorang siswa: { sh, baris, data }. */
+function cariKemajuan_(kode, nama) {
+  var sh = lembar_(LEMBAR_KEMAJUAN, KEPALA_KEMAJUAN), kunci = kode + '|' + rapiNama_(nama);
+  var akhir = sh.getLastRow();
+  if (akhir >= 2) {
+    var kol = sh.getRange(2, 1, akhir - 1, 1).getValues();
+    for (var i = 0; i < kol.length; i++) {
+      if (String(kol[i][0]) !== kunci) continue;
+      var d = {};
+      try { d = JSON.parse(String(sh.getRange(i + 2, 4).getValue() || '{}')) || {}; } catch (err) { d = {}; }
+      return { sh: sh, baris: i + 2, data: d, kunci: kunci };
+    }
+  }
+  return { sh: sh, baris: 0, data: {}, kunci: kunci };
+}
+function simpanKemajuan_(p, kode, nama) {
+  var isi = JSON.stringify(p.data);
+  if (p.baris) p.sh.getRange(p.baris, 4, 1, 2).setValues([[isi, new Date()]]);
+  else { p.sh.appendRow([p.kunci, kode, String(nama).replace(/\s+/g, ' ').trim().slice(0, 60), isi, new Date()]); p.baris = p.sh.getLastRow(); }
+}
+/** Semua kemajuan siswa di satu kelas (untuk dasbor guru). */
+function kemajuanKelas_(kode) {
+  var hasil = [];
+  lembar_(LEMBAR_KEMAJUAN, KEPALA_KEMAJUAN).getDataRange().getValues().slice(1).forEach(function (b) {
+    if (rapikanKode_(b[1]) !== kode) return;
+    var d = {}; try { d = JSON.parse(String(b[3] || '{}')) || {}; } catch (err) { d = {}; }
+    hasil.push({ nama: String(b[2]), data: d });
+  });
+  return hasil;
+}
+
+/** Status satu soal bagi siswa: bisa dikerjakan atau tidak, dan alasannya. */
+function statusItem_(it, d, now) {
+  if (!d) return { boleh: true, baru: true };
+  if (!it.sekali) return { boleh: true, lanjut: d.s === 'mulai' && now < d.m + it.durasi * 60000 };
+  if (d.s === 'izin') return { boleh: true, baru: true };
+  if (d.s === 'mulai' && now < d.m + it.durasi * 60000) return { boleh: true, lanjut: true };
+  if (d.s === 'mulai') return { boleh: false, habis: true, pesan: 'Waktu mengerjakan sudah habis dan jawaban tidak terkumpul. Minta gurumu menekan "Izinkan ulang" agar kamu bisa mengerjakan lagi.' };
+  return { boleh: false, selesai: true, pesan: 'Kamu sudah mengerjakan soal ini. Kesempatannya hanya sekali, jadi nilaimu sudah tersimpan di dasbor guru.' };
+}
+
+/** Peta Belajar siswa: soal yang dibuka guru dan kemajuan siswa itu sendiri (tanpa PIN, hanya data milik siswa). */
+function petaSiswa_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k) return { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali tautan dari gurumu.' };
+  var info = { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [], premium: premiumAktif_(k) };
+  if (!req.nama) return { ok: true, kelas: info, rilis: dataRilis_(k.kode), sekarang: Date.now() };
+  if (!namaTerdaftar_(k, req.nama)) return { ok: false, pesan: 'Namamu tidak ada di daftar kelas. Pilih namamu dari daftar.' };
+  var p = cariKemajuan_(k.kode, req.nama), now = Date.now(), milik = {};
+  Object.keys(p.data).forEach(function (id) {
+    var it = infoItem_(id), d = p.data[id]; if (!it) return;
+    var st = statusItem_(it, d, now);
+    milik[id] = { s: d.s, j: d.j || 0, p: d.p, t: d.t, b: d.b, iz: d.iz || 0, boleh: st.boleh, lanjut: !!st.lanjut, habis: !!st.habis };
+  });
+  return { ok: true, kelas: info, rilis: dataRilis_(k.kode), milik: milik, sekarang: now };
+}
+
+/** Siswa menekan "Mulai" pada soal Jalur Belajar: diperiksa, dicatat, lalu soal dikirim. */
+function mulaiItem_(req) {
+  var it = infoItem_(req.item), k = dataKelas_(req.kode);
+  if (!it || !itemAda_(it.id)) return { ok: false, pesan: 'Soal tidak ditemukan.' };
+  if (!k) return { ok: false, pesan: 'Kode kelas tidak ditemukan.' };
+  if (!req.nama || !namaTerdaftar_(k, req.nama)) return { ok: false, pesan: 'Namamu tidak ada di daftar kelas. Pilih namamu dari daftar.' };
+  if (dataRilis_(k.kode).indexOf(it.id) < 0) return { ok: false, terkunci: true, pesan: 'Soal ini belum dibuka oleh gurumu. Tunggu sampai gurumu merilisnya, ya.' };
+  if (it.premium && !premiumAktif_(k)) return { ok: false, terkunci: true, pesan: 'Soal ini khusus Kelas Premium.' };
+  var now = Date.now(), st, d;
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(20000);
+  try {
+    var p = cariKemajuan_(k.kode, req.nama);
+    d = p.data[it.id];
+    st = statusItem_(it, d, now);
+    if (!st.boleh) return { ok: false, sudah: !!st.selesai, habis: !!st.habis, pesan: st.pesan };
+    if (!st.lanjut) {
+      d = d || { j: 0, iz: 0 };
+      d.s = 'mulai'; d.m = now;
+      p.data[it.id] = d;
+      simpanKemajuan_(p, k.kode, req.nama);
+    }
+  } finally { kunci.releaseLock(); }
+  return { ok: true, bank: bankEksklusif_(it.id), mulai: d.m, batas: d.m + it.durasi * 60000, durasi: it.durasi, sekali: it.sekali, lanjut: !!st.lanjut, sekarang: now };
+}
+
+/** Penilaian soal Jalur Belajar. */
+function nilaiItem_(req, bank, jawaban) {
+  var it = infoItem_(req.paket), ps = req.peserta || {}, k = dataKelas_(ps.kodeKelas);
+  if (!k || !ps.nama) return { ok: false, pesan: 'Data kelas atau nama tidak lengkap.' };
+  var h = hitung_(bank, jawaban), now = Date.now(), d;
+  if (req.lihatUlang) {
+    var lihat = cariKemajuan_(k.kode, ps.nama).data[it.id];
+    if (!lihat || !lihat.j) return { ok: false, pesan: 'Belum ada nilai untuk soal ini.' };
+    return hasilItem_(it, bank, h, req, lihat);
+  }
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(20000);
+  try {
+    var p = cariKemajuan_(k.kode, ps.nama);
+    d = p.data[it.id];
+    if (!d) return { ok: false, pesan: 'Mulai soal ini dari Peta Belajar terlebih dahulu.' };
+    if (d.s !== 'mulai') {
+      // sudah dikumpulkan (mis. kiriman ulang karena koneksi putus): kembalikan nilai yang tersimpan
+      if (d.j) return hasilItem_(it, bank, { nilai: d.t, terjawab: h.terjawab, jumlah: h.jumlah, skor: h.skor }, req, d, true);
+      return { ok: false, pesan: 'Mulai soal ini dari Peta Belajar terlebih dahulu.' };
+    }
+    if (it.sekali && now > d.m + (it.durasi + PENGATURAN.JEDA_KUMPUL_MENIT) * 60000) return { ok: false, pesan: 'Batas waktu pengumpulan sudah lewat. Minta gurumu menekan "Izinkan ulang".' };
+    d.j = (d.j || 0) + 1;
+    if (d.p === undefined || d.p === null) d.p = h.nilai;
+    d.t = h.nilai;
+    d.b = Math.max(Number(d.b) || 0, h.nilai);
+    d.s = 'selesai'; d.w = now;
+    p.data[it.id] = d;
+    simpanKemajuan_(p, k.kode, ps.nama);
+  } finally { kunci.releaseLock(); }
+  catatNilai_(req, h, '');
+  return hasilItem_(it, bank, h, req, d);
+}
+
+function hasilItem_(it, bank, h, req, d, sudah) {
+  var hasil = { ok: true, nilai: h.nilai, terjawab: h.terjawab, jumlah: h.jumlah, premium: false, item: it.id, sekali: it.sekali, jumlahCoba: d.j || 0, pertama: d.p, terbaik: d.b };
+  if (sudah) hasil.sudah = true;
+  if (it.jenis === 'jb') {
+    hasil.rinci = {};
+    Object.keys(bank).forEach(function (no) { hasil.rinci[no] = { skor: h.skor[no], kunci: bank[no].k, bahas: bank[no].b }; });
+  } else {
+    hasil.saranJalur = saranJalur_(it, bank, h.skor, rapikanKode_((req.peserta || {}).kodeKelas));
+  }
+  return hasil;
+}
+
+/** Setelah paket tes akhir: latihan yang sudah dibuka guru untuk indikator yang belum dikuasai (maksimal 5). */
+function saranJalur_(it, bank, skor, kode) {
+  var dibuka = dataRilis_(kode), hasil = [];
+  Object.keys(skor).filter(function (no) { return skor[no] < 1 && bank[no] && bank[no].i; })
+    .sort(function (a, b) { return skor[a] - skor[b] || a - b; })
+    .forEach(function (no) {
+      var dasar = 'jb-' + it.mapel + '-' + ('0' + bank[no].i).slice(-2) + '-v';
+      for (var v = 1; v <= 3; v++) if (dibuka.indexOf(dasar + v) >= 0 && hasil.indexOf(dasar + v) < 0 && hasil.length < 5) { hasil.push(dasar + v); break; }
+    });
+  return hasil;
+}
+
+/** Guru memberi satu kesempatan lagi kepada siswa (mis. HP mati saat mengerjakan). */
+function izinUlang_(req) {
+  var k = dataKelas_(req.kode);
+  if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
+  var it = infoItem_(req.item);
+  if (!it || !req.nama) return { ok: false, pesan: 'Pilih siswa dan soal.' };
+  var kunci = LockService.getScriptLock();
+  kunci.waitLock(15000);
+  try {
+    var p = cariKemajuan_(k.kode, req.nama), d = p.data[it.id];
+    if (!d) return { ok: false, pesan: 'Siswa ini belum pernah membuka soal tersebut, jadi tidak perlu diizinkan ulang.' };
+    d.s = 'izin'; d.iz = (d.iz || 0) + 1;
+    p.data[it.id] = d;
+    simpanKemajuan_(p, k.kode, req.nama);
+  } finally { kunci.releaseLock(); }
+  return { ok: true, kemajuan: kemajuanKelas_(k.kode) };
 }
 
 /* ============================ STATISTIK PUBLIK ============================ */

@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peta Belajarku · Kelas Intensif TKA</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ede9fe">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{
+  --ink:#2e3150;--muted:#6b6f8c;--line:#e7e4f3;--latar:#f7f6fd;--putih:#fff;
+  --ungu:#7c5cff;--ungu-l:#efeaff;--mint:#2f9e7a;--mint-l:#dcf6ec;--langit:#3b82d6;--langit-l:#e1eeff;
+  --persik:#e0784f;--persik-l:#ffe8dc;--mentega:#a87b00;--mentega-l:#fff4c7;--merah:#d0475d;--merah-l:#ffe4e8;--abu-l:#f0eff6
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--latar);color:var(--ink);font-family:Nunito,Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer}
+a{color:var(--ungu)}
+.bar{background:linear-gradient(120deg,#ede9fe,#e0f2fe 60%,#dcfce7);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.bar a.merk{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);min-width:0}
+.bar img{width:34px;height:34px;flex:none}
+.bar span{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.bar small{font-size:11px;font-weight:800;letter-spacing:.07em;color:var(--ungu)}
+.bar b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .kanan{margin-left:auto;font-size:13px;color:var(--muted);text-align:right;min-width:0}
+.bar .kanan b{display:block;color:var(--ink);font-size:14px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wadah{max-width:860px;margin:18px auto 70px;padding:0 16px}
+.kartu{background:var(--putih);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;box-shadow:0 6px 18px rgba(124,92,255,.06)}
+.kartu h1{margin:0 0 4px;font-size:clamp(1.35rem,4vw,1.75rem);letter-spacing:-.01em}
+.kartu h2{margin:0 0 8px;font-size:18px}
+.sub{margin:0;color:var(--muted);font-size:14.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:14px;padding:12px 18px;font-weight:800;font-size:15px;background:var(--ungu);color:#fff;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.06)}.btn:disabled{opacity:.55;cursor:wait}
+.btn.lembut{background:var(--ungu-l);color:var(--ungu)}
+.btn.kecil{padding:7px 12px;font-size:13px;border-radius:11px}
+.memuat{text-align:center;padding:70px 16px;color:var(--muted)}
+.putar{width:40px;height:40px;border:4px solid var(--ungu-l);border-top-color:var(--ungu);border-radius:50%;margin:0 auto 14px;animation:putar 1s linear infinite}
+@keyframes putar{to{transform:rotate(360deg)}}
+.form{display:grid;gap:12px;margin-top:14px}
+.form label{display:flex;flex-direction:column;gap:5px;font-weight:800;font-size:14px}
+.form input,.form select{font:inherit;font-size:16px;padding:12px 14px;border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink)}
+.form input:focus,.form select:focus{outline:none;border-color:#c4b5fd}
+.bantu{font-weight:600;color:var(--muted);font-size:12.5px}
+.salah{color:var(--merah);font-weight:700;font-size:14px;min-height:1.2em;margin:4px 0 0}
+/* sapaan */
+.sapa{background:linear-gradient(135deg,#f5f3ff,#ecfeff);border-color:#e0dbff}
+.sapa .atas{display:flex;gap:14px;align-items:center}
+.sapa .emo{font-size:42px;line-height:1;flex:none}
+.kemajuan{margin-top:14px}
+.kemajuan .pita{height:14px;background:#fff;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.kemajuan .pita i{display:block;height:100%;background:linear-gradient(90deg,#a7f3d0,#7dd3fc,#c4b5fd);border-radius:99px;transition:width .6s}
+.kemajuan p{margin:6px 0 0;font-size:14px;font-weight:700}
+.pesan-guru{margin:12px 0 0;background:#fff;border:1px dashed #d8d1ff;border-radius:14px;padding:10px 12px;font-size:14px}
+/* info pembaruan */
+.info-baru{background:linear-gradient(135deg,#fff7ed,#fef9c3);border-color:#fde7b0;position:relative}
+.info-baru .tutup{position:absolute;top:10px;right:12px;border:0;background:transparent;font-size:18px;color:var(--muted)}
+.info-baru ul{margin:6px 0 0;padding-left:20px;font-size:14.5px}
+/* tangga versi */
+.tangga{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.tangga div{border-radius:16px;padding:10px;font-size:12.5px;line-height:1.35}
+.tangga b{display:block;font-size:14px;margin-bottom:2px}
+.v1{background:var(--mint-l);color:#195f49}.v2{background:var(--langit-l);color:#1f4f8c}.v3{background:var(--persik-l);color:#8a3b1c}.v4{background:var(--ungu-l);color:#4b2fbf}
+@media(max-width:600px){.tangga{grid-template-columns:1fr 1fr}}
+/* tab mapel */
+.tab{display:flex;gap:8px;margin:4px 0 14px;flex-wrap:wrap}
+.tab button{border:2px solid var(--line);background:#fff;border-radius:99px;padding:9px 16px;font-weight:800;font-size:14.5px;color:var(--ink)}
+.tab button.aktif{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab small{font-weight:700;opacity:.75}
+/* tugas terbuka */
+.tugas{display:grid;gap:10px}
+.tg{display:flex;gap:12px;align-items:center;border-radius:18px;padding:12px 14px;border:2px solid transparent;text-decoration:none;color:inherit}
+.tg .lambang{font-size:28px;flex:none;width:44px;height:44px;border-radius:14px;background:#fff;display:grid;place-items:center}
+.tg .isi{flex:1;min-width:0}
+.tg .isi b{display:block;font-size:15px}
+.tg .isi small{display:block;font-size:12.5px;opacity:.85}
+.tg .aksi{font-weight:900;font-size:14px;white-space:nowrap}
+.tg:hover{border-color:currentColor}
+/* peta indikator */
+.elemen{margin:18px 0 8px;font-size:13px;font-weight:900;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.ind{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin-bottom:8px;background:#fff}
+.ind .judul b{display:block;font-size:14.5px;line-height:1.35}
+.ind .judul small{color:var(--muted);font-size:12px}
+.pil{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pl{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;border-radius:12px;padding:5px 6px;font-size:11px;font-weight:800;line-height:1.2;border:0;text-decoration:none;text-align:center}
+.pl span{font-size:12.5px}
+.pl.kunci,.pl.segera{background:var(--abu-l);color:#9a9cb5}
+.pl.siap{box-shadow:0 0 0 2px currentColor inset}
+.pl.v1{color:#1d7a5c}.pl.v2{color:#2563b0}.pl.v3{color:#b4552f}.pl.v4{color:#5b3fd6}
+.pl.selesai{opacity:.95}
+.pl.habis{background:var(--merah-l);color:var(--merah)}
+@media(max-width:600px){.ind{grid-template-columns:1fr}.pil{justify-content:flex-start}}
+.paket{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pk{border-radius:18px;padding:14px;border:1px solid var(--line);background:#fff}
+.pk b{display:block;font-size:15px}.pk small{color:var(--muted);font-size:12.5px;display:block;margin:2px 0 8px}
+@media(max-width:600px){.paket{grid-template-columns:1fr}}
+.kosong{text-align:center;padding:24px 12px;color:var(--muted)}
+.kosong .emo{font-size:46px;display:block;margin-bottom:6px}
+.legenda{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.legenda span{display:inline-flex;gap:4px;align-items:center}
+.catatan{font-size:13px;color:var(--muted)}
+.dialog-latar{position:fixed;inset:0;background:rgba(46,49,80,.35);display:grid;place-items:center;padding:16px;z-index:30}
+.dialog{background:#fff;border-radius:22px;padding:20px;max-width:420px;width:100%;box-shadow:0 20px 50px rgba(46,49,80,.25)}
+.dialog h3{margin:0 0 6px}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="merk" href="./"><img src="logo.svg" alt=""><span><small>KELAS INTENSIF TKA</small><b>Peta Belajarku</b></span></a>
+  <div class="kanan" id="bar-siswa" hidden><span>Hai,</span><b id="bar-nama"></b></div>
+</header>
+
+<div class="wadah">
+  <div id="v-memuat" class="memuat"><div class="putar"></div>Membuka Peta Belajar…</div>
+
+  <!-- kode kelas -->
+  <div id="v-kode" class="kartu" hidden>
+    <h1>🗺️ Peta Belajarku</h1>
+    <p class="sub">Masukkan <b>kode kelas</b> dari gurumu untuk membuka latihan yang sudah disiapkan.</p>
+    <form class="form" id="f-kode" novalidate>
+      <label>Kode kelas<input name="kode" maxlength="8" placeholder="Contoh: K7QP2A" autocomplete="off" style="text-transform:uppercase;letter-spacing:.12em;font-weight:800"><span class="bantu">6 huruf/angka. Ada di pesan WhatsApp dari gurumu.</span></label>
+      <p class="salah" id="kode-salah"></p>
+      <button class="btn" type="submit">Buka Peta Belajar ›</button>
+    </form>
+  </div>
+
+  <!-- pilih nama -->
+  <div id="v-nama" class="kartu" hidden>
+    <h1>👋 Selamat datang!</h1>
+    <p class="sub" id="nama-kelas"></p>
+    <form class="form" id="f-nama" novalidate>
+      <label id="nama-label">Pilih namamu<select name="pilih"></select><input name="ketik" maxlength="60" placeholder="Tulis nama lengkapmu" hidden><span class="bantu" id="nama-bantu">Pilih namamu sendiri, ya. Nilaimu akan tercatat atas nama ini.</span></label>
+      <p class="salah" id="nama-salah"></p>
+      <button class="btn" type="submit">Masuk ke Peta Belajar ›</button>
+    </form>
+  </div>
+
+  <!-- peta -->
+  <div id="v-peta" hidden>
+    <div class="kartu sapa">
+      <div class="atas"><div class="emo" id="sapa-emo">🌟</div><div><h1 id="sapa-judul"></h1><p class="sub" id="sapa-kelas"></p></div></div>
+      <div class="kemajuan"><div class="pita"><i id="maju-pita" style="width:0"></i></div><p id="maju-teks"></p></div>
+      <p class="pesan-guru" id="sapa-pesan"></p>
+      <p class="catatan" style="margin:10px 0 0">Bukan kamu? <a href="#" id="ganti-nama">Ganti nama</a> · <a href="#" id="muat-ulang">↻ Perbarui</a></p>
+    </div>
+
+    <div class="kartu info-baru" id="info-baru" hidden>
+      <button class="tutup" type="button" id="info-tutup" aria-label="Tutup">✕</button>
+      <h2>🎉 Kelasmu punya cara belajar baru!</h2>
+      <ul>
+        <li>Gurumu akan <b>membuka latihan satu per satu</b>, dari yang mudah sampai setara TKA.</li>
+        <li><b>V1 Pemahaman</b> boleh diulang. Latihan lain (V2, V3, dan tes akhir) <b>hanya sekali</b>, jadi kerjakan dengan teliti.</li>
+        <li>Setelah selesai latihan, <b>baca pembahasannya</b> supaya kamu benar-benar paham alasannya.</li>
+      </ul>
+      <p style="margin:8px 0 0;font-weight:800">Semangat! Sedikit demi sedikit, lama-lama jadi bukit. 💪</p>
+    </div>
+
+    <div class="kartu">
+      <h2>🪜 Tangga belajarmu</h2>
+      <div class="tangga">
+        <div class="v1"><b>🌱 V1 Pemahaman</b>Kenali konsepnya. Ada petunjuk, boleh diulang.</div>
+        <div class="v2"><b>🧩 V2 Model TKA</b>Berlatih bentuk soal TKA. Sekali kesempatan.</div>
+        <div class="v3"><b>🎯 V3 Prediksi TKA</b>Tantangan setara TKA. Sekali kesempatan.</div>
+        <div class="v4"><b>🚀 V4 Lanjutan</b>Untuk juara, khusus Kelas Premium.</div>
+      </div>
+    </div>
+
+    <div class="kartu" id="k-tugas">
+      <h2>▶️ Siap dikerjakan</h2>
+      <p class="sub" id="tugas-sub" style="margin-bottom:12px"></p>
+      <div class="tugas" id="tugas"></div>
+    </div>
+
+    <div class="kartu">
+      <h2>🗺️ Peta semua latihan</h2>
+      <div class="tab" id="tab"></div>
+      <div id="peta"></div>
+      <div class="legenda"><span>▶ siap dikerjakan</span><span>✅ selesai</span><span>⏳ lanjutkan</span><span>🔒 belum dibuka guru</span><span>⭐ Kelas Premium</span></div>
+    </div>
+
+    <div class="kartu" id="k-paket">
+      <h2>🏁 Tes akhir</h2>
+      <p class="sub" style="margin-bottom:12px">Paket 30 soal seperti TKA, untuk mengukur kemampuanmu setelah berlatih. Dibuka gurumu, sekali kesempatan.</p>
+      <div class="paket" id="paket"></div>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-latar" id="dlg" hidden><div class="dialog"><h3 id="dlg-judul"></h3><p id="dlg-isi" style="margin:0 0 14px;font-size:14.5px"></p><div style="display:flex;gap:8px;flex-wrap:wrap" id="dlg-aksi"></div></div></div>
+
+<script src="konfigurasi.js?v=2"></script>
+<script src="tka.js?v=14"></script>
+<script src="bank/jalur.js?v=1"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = TKA.esc, J = TKA.jalur, V = J.VERSI;
+const par = new URLSearchParams(location.search);
+let KODE = (par.get('kelas') || TKA.simpan.get('tka-kelas') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+let KELAS = null, NAMA = '', PETA = null, MAPEL = TKA.simpan.get('tka-jalur-mapel', 'mat');
+const ADA = new Set(JALUR_TKA.ada);
+
+function tampil(v) { ['v-memuat', 'v-kode', 'v-nama', 'v-peta'].forEach(x => { $(x).hidden = x !== v; }); }
+function memuat(t) { $('v-memuat').innerHTML = '<div class="putar"></div>' + esc(t); tampil('v-memuat'); }
+function gagal(pesan, ulang) {
+  $('v-memuat').innerHTML = '<div class="kosong"><span class="emo">🌧️</span><b>' + esc(pesan) + '</b><br><br><button class="btn" type="button" id="coba-lagi">↻ Coba lagi</button></div>';
+  tampil('v-memuat'); $('coba-lagi').onclick = ulang;
+}
+const namaTersimpan = () => (TKA.simpan.get('tka-jalur-nama', {}) || {})[KODE] || '';
+function simpanNama(n) { const o = TKA.simpan.get('tka-jalur-nama', {}) || {}; if (n) o[KODE] = n; else delete o[KODE]; TKA.simpan.set('tka-jalur-nama', o); }
+function dialog(judul, isi, aksi) {
+  $('dlg-judul').textContent = judul; $('dlg-isi').innerHTML = isi;
+  $('dlg-aksi').innerHTML = ''; (aksi || [['Mengerti', null]]).forEach(([t, f, kelas]) => { const b = document.createElement('button'); b.className = 'btn ' + (kelas || ''); b.type = 'button'; b.textContent = t; b.onclick = () => { $('dlg').hidden = true; if (f) f(); }; $('dlg-aksi').appendChild(b); });
+  $('dlg').hidden = false;
+}
+
+/* ---------- 1. kode kelas ---------- */
+async function mulai() {
+  if (!KODE) { tampil('v-kode'); return; }
+  memuat('Membuka kelasmu…');
+  const r = await TKA.api({ aksi: 'petaSiswa', kode: KODE });
+  if (!r.ok) {
+    if (r.putus) return gagal(r.pesan, mulai);
+    TKA.simpan.hapus('tka-kelas'); $('kode-salah').textContent = r.pesan || 'Kode kelas tidak ditemukan.'; KODE = ''; tampil('v-kode'); return;
+  }
+  KELAS = r.kelas; TKA.simpan.set('tka-kelas', KELAS.kode);
+  const n = namaTersimpan();
+  if (n && (!KELAS.siswa.length || KELAS.siswa.some(x => x.toLowerCase() === n.toLowerCase()))) { NAMA = n; return bukaPeta(); }
+  pilihNama();
+}
+$('f-kode').onsubmit = e => {
+  e.preventDefault();
+  const v = e.target.elements.kode.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (v.length < 6) { $('kode-salah').textContent = 'Kode kelas terdiri atas 6 huruf/angka.'; return; }
+  $('kode-salah').textContent = ''; KODE = v; history.replaceState(null, '', '?kelas=' + v); mulai();
+};
+
+/* ---------- 2. nama ---------- */
+function pilihNama() {
+  tampil('v-nama');
+  $('nama-kelas').innerHTML = '<b>' + esc(KELAS.kelas + ' · ' + KELAS.sekolah) + '</b><br>Guru: ' + esc(KELAS.guru);
+  const f = $('f-nama'), sel = f.elements.pilih, ketik = f.elements.ketik;
+  if (KELAS.siswa.length) {
+    sel.hidden = false; ketik.hidden = true;
+    sel.innerHTML = '<option value="">Pilih namamu…</option>' + KELAS.siswa.map(n => '<option>' + esc(n) + '</option>').join('');
+    $('nama-bantu').textContent = 'Pilih namamu sendiri, ya. Nilaimu akan tercatat atas nama ini. Namamu tidak ada? Sampaikan ke gurumu.';
+  } else {
+    sel.hidden = true; ketik.hidden = false; ketik.value = (TKA.peserta.get().nama || '');
+    $('nama-label').firstChild.textContent = 'Tulis nama lengkapmu';
+    $('nama-bantu').textContent = 'Tulis nama yang sama setiap kali belajar, supaya kemajuanmu tidak terpisah.';
+  }
+  f.onsubmit = e => {
+    e.preventDefault();
+    const n = (KELAS.siswa.length ? sel.value : ketik.value).replace(/\s+/g, ' ').trim();
+    if (!n) { $('nama-salah').textContent = KELAS.siswa.length ? 'Pilih namamu dari daftar.' : 'Tulis namamu terlebih dahulu.'; return; }
+    $('nama-salah').textContent = ''; NAMA = n; simpanNama(n);
+    const ps = TKA.peserta.get(); TKA.peserta.set(Object.assign({}, ps, { nama: n, sekolah: ps.sekolah || KELAS.sekolah, kelas: ps.kelas || 'Kelas 6' }));
+    bukaPeta();
+  };
+}
+$('ganti-nama').onclick = e => { e.preventDefault(); simpanNama(''); NAMA = ''; $('bar-siswa').hidden = true; pilihNama(); };
+$('muat-ulang').onclick = e => { e.preventDefault(); bukaPeta(); };
+
+/* ---------- 3. peta ---------- */
+async function bukaPeta() {
+  memuat('Menyiapkan Peta Belajarmu…');
+  const r = await TKA.api({ aksi: 'petaSiswa', kode: KODE, nama: NAMA });
+  if (!r.ok) {
+    if (r.putus) return gagal(r.pesan, bukaPeta);
+    simpanNama(''); $('nama-salah').textContent = r.pesan || ''; return pilihNama();
+  }
+  KELAS = r.kelas; PETA = r;
+  $('bar-nama').textContent = NAMA; $('bar-siswa').hidden = false;
+  gambarPeta();
+  tampil('v-peta');
+}
+
+/** Status satu item bagi siswa ini. */
+function status(id) {
+  const it = J.info(id), m = (PETA.milik || {})[id];
+  if (!ADA.has(id)) return { k: 'segera', it };
+  if (it.premium && !KELAS.premium) return { k: 'premium', it };
+  if (!PETA.rilis.includes(id)) return { k: 'kunci', it, m };
+  if (m && m.lanjut) return { k: 'lanjut', it, m };
+  if (m && m.habis) return { k: 'habis', it, m };
+  if (m && m.s === 'selesai') return { k: it.sekali ? 'selesai' : 'ulang', it, m };
+  return { k: 'siap', it, m };
+}
+const tautan = id => J.hal('ujian') + '?kelas=' + encodeURIComponent(KODE) + '&item=' + encodeURIComponent(id);
+const angka = TKA.angka;
+
+function judulItem(id) {
+  const it = J.info(id);
+  if (it.jenis === 'kls') return JALUR_TKA.mapel[it.m].nama + ' · Paket ' + it.paket;
+  const d = JALUR_TKA.mapel[it.m].indikator.find(x => x.no === it.no);
+  return d ? d.judul : 'Indikator ' + it.no;
+}
+
+function gambarPeta() {
+  const dibuka = PETA.rilis.filter(id => ADA.has(id) && !(J.info(id).premium && !KELAS.premium));
+  const selesai = dibuka.filter(id => { const m = (PETA.milik || {})[id]; return m && m.j > 0; });
+  const persen = dibuka.length ? Math.round(selesai.length / dibuka.length * 100) : 0;
+  const depan = NAMA.split(' ')[0];
+  $('sapa-judul').textContent = 'Halo, ' + depan + '!';
+  $('sapa-kelas').textContent = KELAS.kelas + ' · ' + KELAS.sekolah + ' · Guru: ' + KELAS.guru;
+  $('maju-pita').style.width = Math.max(persen, dibuka.length ? 3 : 0) + '%';
+  $('maju-teks').textContent = dibuka.length ? selesai.length + ' dari ' + dibuka.length + ' latihan yang dibuka sudah kamu kerjakan (' + persen + '%)' : 'Belum ada latihan yang dibuka gurumu.';
+  const [emo, pesan] = !dibuka.length ? ['🌤️', KELAS.guru + ' sedang menyiapkan latihan untukmu. Buka halaman ini lagi nanti, ya. Sambil menunggu, ulangi materi yang sudah dipelajari di kelas.']
+    : persen === 0 ? ['🌱', KELAS.guru + ' sudah membuka ' + dibuka.length + ' latihan untukmu. Ayo mulai dari yang paling atas!']
+    : persen < 50 ? ['🚶', 'Langkah yang bagus! Kerjakan satu per satu dengan tenang, tidak perlu terburu-buru.']
+    : persen < 100 ? ['🏃', 'Sedikit lagi! Kamu sudah menyelesaikan lebih dari separuh latihan. Pertahankan semangatmu!']
+    : ['🏆', 'Luar biasa! Semua latihan yang dibuka sudah selesai. Baca lagi pembahasannya, lalu tunggu latihan berikutnya dari gurumu.'];
+  $('sapa-emo').textContent = emo; $('sapa-pesan').textContent = pesan;
+  let infoTutup = false; try { infoTutup = !!localStorage.getItem('tka-jalur-info'); } catch (e) { infoTutup = false; }
+  $('info-baru').hidden = infoTutup;
+
+  // siap dikerjakan
+  const urut = (a, b) => { const x = J.info(a), y = J.info(b); return (x.jenis === 'kls') - (y.jenis === 'kls') || (x.m === MAPEL ? 0 : 1) - (y.m === MAPEL ? 0 : 1) || x.m.localeCompare(y.m) || (x.no || 0) - (y.no || 0) || (x.versi || 0) - (y.versi || 0); };
+  const tugas = dibuka.map(id => [id, status(id)]).filter(([, s]) => ['siap', 'lanjut', 'habis'].includes(s.k)).sort((a, b) => urut(a[0], b[0]));
+  $('tugas-sub').textContent = tugas.length ? 'Mulailah dari yang paling atas. Setiap latihan singkat, jadi kerjakan dengan tenang dan teliti.' : dibuka.length ? 'Semua latihan yang dibuka sudah kamu kerjakan. Hebat! 🎉' : 'Belum ada latihan yang dibuka. Nanti latihan dari gurumu muncul di sini.';
+  $('tugas').innerHTML = tugas.length ? tugas.slice(0, 8).map(([id, s]) => {
+    const it = s.it, vv = it.jenis === 'kls' ? null : V[it.versi];
+    const warna = it.jenis === 'kls' ? 'v3' : 'v' + it.versi;
+    const lbl = it.jenis === 'kls' ? '🏁 Tes akhir' : vv.ikon + ' ' + vv.kode + ' ' + vv.nama;
+    const aksi = s.k === 'lanjut' ? 'Lanjutkan ›' : s.k === 'habis' ? 'Minta izin ulang' : 'Mulai ›';
+    return '<a class="tg ' + warna + '" href="' + (s.k === 'habis' ? '#' : tautan(id)) + '" data-id="' + id + '" data-k="' + s.k + '"><span class="lambang">' + (it.jenis === 'kls' ? '🏁' : vv.ikon) + '</span><span class="isi"><small>' + esc(lbl + ' · ' + JALUR_TKA.mapel[it.m].nama) + '</small><b>' + esc(judulItem(id)) + '</b><small>' + it.soal + ' soal · ' + it.durasi + ' menit · ' + (it.sekali ? 'sekali kesempatan' : 'boleh diulang') + '</small></span><span class="aksi">' + aksi + '</span></a>';
+  }).join('') + (tugas.length > 8 ? '<p class="catatan" style="margin:2px 0 0">… dan ' + (tugas.length - 8) + ' latihan lain di peta di bawah.</p>' : '') : '<div class="kosong"><span class="emo">' + (dibuka.length ? '🎉' : '📭') + '</span></div>';
+
+  // tab mapel
+  const hitung = m => dibuka.filter(id => J.info(id).m === m && J.info(id).jenis === 'jb').length;
+  $('tab').innerHTML = Object.keys(JALUR_TKA.mapel).map(m => '<button type="button" data-m="' + m + '" class="' + (m === MAPEL ? 'aktif' : '') + '">' + esc(JALUR_TKA.mapel[m].nama) + ' <small>(' + hitung(m) + ' dibuka)</small></button>').join('');
+  gambarMapel();
+
+  // tes akhir
+  $('paket').innerHTML = JALUR_TKA.paket.map(p => {
+    const s = status(p.id);
+    const isi = s.k === 'segera' ? '<span class="pl segera"><span>⏳</span>Segera hadir</span>'
+      : s.k === 'kunci' ? '<span class="pl kunci"><span>🔒</span>Belum dibuka</span>'
+      : s.k === 'selesai' ? '<span class="pl v2 selesai" style="background:var(--langit-l)"><span>✅ ' + angka(s.m.t) + '</span>Selesai</span>'
+      : s.k === 'habis' ? '<a class="pl habis" href="#" data-id="' + p.id + '" data-k="habis"><span>⚠️</span>Izin ulang</a>'
+      : '<a class="btn kecil" href="' + tautan(p.id) + '">' + (s.k === 'lanjut' ? '⏳ Lanjutkan' : '▶ Mulai tes') + '</a>';
+    return '<div class="pk"><b>🏁 ' + esc(p.mapel + ' · ' + p.paket) + '</b><small>30 soal · 75 menit · sekali kesempatan</small>' + isi + '</div>';
+  }).join('');
+}
+
+function gambarMapel() {
+  const d = JALUR_TKA.mapel[MAPEL];
+  const grup = [];
+  d.indikator.forEach(x => { let g = grup.find(g => g.el === x.elemen); if (!g) grup.push(g = { el: x.elemen, isi: [] }); g.isi.push(x); });
+  $('peta').innerHTML = grup.map(g => '<div class="elemen">' + esc(g.el) + '</div>' + g.isi.map(x => {
+    const pil = [1, 2, 3, 4].map(v => {
+      const id = J.id(MAPEL, x.no, v), s = status(id), vv = V[v];
+      if (s.k === 'segera') return '<span class="pl segera" title="' + vv.nama + ': segera hadir"><span>' + vv.kode + '</span>segera</span>';
+      if (s.k === 'premium') return '<span class="pl kunci" title="' + vv.nama + ': khusus Kelas Premium"><span>' + vv.kode + '</span>⭐</span>';
+      if (s.k === 'kunci') return '<span class="pl kunci" title="' + vv.nama + ': belum dibuka guru"><span>' + vv.kode + '</span>🔒</span>';
+      const bg = 'style="background:var(--' + vv.warna + '-l)"';
+      if (s.k === 'selesai') return '<a class="pl v' + v + ' selesai" ' + bg + ' href="#" data-id="' + id + '" data-k="selesai" title="Nilai ' + angka(s.m.t) + '"><span>✅ ' + angka(s.m.t) + '</span>' + vv.kode + '</a>';
+      if (s.k === 'ulang') return '<a class="pl v' + v + ' selesai" ' + bg + ' href="' + tautan(id) + '" title="Nilai terbaik ' + angka(s.m.b) + ', ketuk untuk mengulang"><span>✅ ' + angka(s.m.b) + '</span>' + vv.kode + ' ↻</a>';
+      if (s.k === 'habis') return '<a class="pl habis" href="#" data-id="' + id + '" data-k="habis"><span>⚠️</span>' + vv.kode + '</a>';
+      return '<a class="pl v' + v + ' siap" ' + bg + ' href="' + tautan(id) + '"><span>' + (s.k === 'lanjut' ? '⏳' : '▶') + '</span>' + vv.kode + '</a>';
+    }).join('');
+    return '<div class="ind"><div class="judul"><b>' + x.no + '. ' + esc(x.judul) + '</b><small>' + esc(x.indikator) + '</small></div><div class="pil">' + pil + '</div></div>';
+  }).join('')).join('');
+}
+
+$('tab').onclick = e => { const b = e.target.closest('button'); if (!b) return; MAPEL = b.dataset.m; TKA.simpan.set('tka-jalur-mapel', MAPEL); $('tab').querySelectorAll('button').forEach(x => x.classList.toggle('aktif', x === b)); gambarMapel(); };
+$('info-tutup').onclick = () => { try { localStorage.setItem('tka-jalur-info', '1'); } catch (e) { /* abaikan */ } $('info-baru').hidden = true; };
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[data-k]'); if (!a) return;
+  const k = a.dataset.k, id = a.dataset.id;
+  if (k === 'habis') {
+    e.preventDefault();
+    dialog('⚠️ Jawabanmu belum terkumpul', 'Waktu mengerjakan <b>' + esc(judulItem(id)) + '</b> sudah habis, tetapi jawabanmu tidak sampai ke gurumu (mungkin karena internet putus). Sampaikan ke gurumu agar menekan <b>Izinkan ulang</b>, lalu kamu bisa mengerjakan lagi.');
+  } else if (k === 'selesai') {
+    e.preventDefault();
+    const m = PETA.milik[id], r = TKA.riwayat.semua().find(x => x.item === id && x.kelas === KODE && typeof x.nilai === 'number');
+    dialog('✅ Sudah selesai', 'Nilaimu untuk <b>' + esc(judulItem(id)) + '</b> adalah <b>' + angka(m.t) + '</b>. Kesempatannya hanya sekali, jadi nilai ini sudah tersimpan di dasbor gurumu.' + (r ? '' : '<br><br>Pembahasannya tersimpan di HP yang dipakai saat mengerjakan.'),
+      r ? [['📖 Lihat pembahasan', () => { location.href = J.hal('ujian') + '?kelas=' + KODE + '&item=' + id + '&lihat=' + r.id; }], ['Tutup', null, 'lembut']] : null);
+  }
+});
+
+mulai();
+</script>
+</body>
+</html>
