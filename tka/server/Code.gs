@@ -19,7 +19,7 @@ var PENGATURAN = {
   WA_ADMIN: '6281196939694',
   HARI_COBA_PREMIUM: 14,      // coba gratis Kelas Premium (sekali per kelas)
   KELAS_PER_KODE: 1,          // satu kode akses Pembahasan dapat mengaktifkan Kelas Premium untuk berapa kelas
-  JALUR_AKTIF: false,         // Jalur Belajar Bertahap: true = soal lama tidak lagi tercatat ke dasbor kelas (semua soal kelas lewat rilis guru)
+  JALUR_AKTIF: true,          // Jalur Belajar Bertahap: true = soal lama tidak lagi tercatat ke dasbor kelas (semua soal kelas lewat rilis guru)
   JEDA_KUMPUL_MENIT: 15       // tenggang pengumpulan setelah waktu mengerjakan habis (koneksi lambat)
 };
 

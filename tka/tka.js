@@ -331,11 +331,9 @@ const TKA = (() => {
       if (m) return { id, jenis: 'kls', m: m[1], paket: +m[2], sekali: true, premium: false, durasi: 75, soal: 30 };
       return null;
     },
-    /** Halaman uji coba (uji-*.html) saling menaut; halaman resmi menaut ke halaman resmi. */
-    hal(n) { return (simpan.get('tka-uji') ? 'uji-' : '') + n + '.html'; }
+    hal(n) { return n + '.html'; }
   };
-  if (/\/uji-[a-z]+\.html/.test(location.pathname)) simpan.set('tka-uji', 1);
-  else if (/\/(guru|ujian)\.html/.test(location.pathname)) simpan.hapus('tka-uji');
+  simpan.hapus('tka-uji');   // sisa masa uji coba
 
   return {
     jalur,
