@@ -18,6 +18,7 @@ var PENGATURAN = {
   MAKS_PERANGKAT: 50,         // satu kode akses boleh dipakai di berapa perangkat (HP/laptop) berbeda
   WA_ADMIN: '6281196939694',
   HARI_COBA_PREMIUM: 14,      // coba gratis Kelas Premium (sekali per kelas)
+  COBA_ULANG_SEJAK: '2026-11-12T22:10:00Z',   // coba gratis yang dipakai sebelum tanggal ini dianggap belum dipakai (reset)
   KELAS_PER_KODE: 1,          // satu kode akses Pembahasan dapat mengaktifkan Kelas Premium untuk berapa kelas
   JALUR_AKTIF: true,          // Jalur Belajar Bertahap: true = soal lama tidak lagi tercatat ke dasbor kelas (semua soal kelas lewat rilis guru)
   JEDA_KUMPUL_MENIT: 15       // tenggang pengumpulan setelah waktu mengerjakan habis (koneksi lambat)
@@ -380,7 +381,7 @@ function dataKelas_(kode) {
   lembar_(LEMBAR_KELAS, KEPALA_KELAS).getDataRange().getValues().slice(1).some(function (b) {
     if (rapikanKode_(b[0]) !== kode) return false;
     hasil = { kode: kode, pin: String(b[1]).replace(/^'/, ''), guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]), siswa: rapikanSiswa_(b[7]),
-      premiumSampai: waktu_(b[8]), cobaDipakai: !!b[9], masaCoba: String(b[10] || '').indexOf('Coba') === 0 };
+      premiumSampai: waktu_(b[8]), cobaDipakai: cobaDipakai_(b[9]), masaCoba: String(b[10] || '').indexOf('Coba') === 0 };
     return true;
   });
   if (hasil) c.put('kelas_' + kode, JSON.stringify(hasil), 300);
@@ -450,6 +451,9 @@ function waktu_(v) {
   return isNaN(t) ? 0 : t;
 }
 
+/** Coba gratis dianggap terpakai hanya bila dipakai sejak tanggal reset terakhir. */
+function cobaDipakai_(v) { return !!v && waktu_(v) >= waktu_(PENGATURAN.COBA_ULANG_SEJAK); }
+
 function premiumAktif_(k) { return !!(k && k.premiumSampai && k.premiumSampai > Date.now()); }
 
 function infoPremium_(k) {
@@ -493,7 +497,7 @@ function cobaPremium_(req) {
   var k = dataKelas_(req.kode);
   if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
   var hasil = ubahKelas_(k.kode, function (b) {
-    if (b[9]) return { ok: false, pesan: 'Coba gratis Premium sudah pernah dipakai untuk kelas ini.' };
+    if (cobaDipakai_(b[9])) return { ok: false, pesan: 'Coba gratis Premium sudah pernah dipakai untuk kelas ini.' };
     var sampai = new Date(Date.now() + PENGATURAN.HARI_COBA_PREMIUM * 86400000);
     if (waktu_(b[8]) < sampai.getTime()) b[8] = sampai;
     b[9] = new Date();
