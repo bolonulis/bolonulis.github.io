@@ -313,7 +313,32 @@ const TKA = (() => {
       (k.aktif ? ' · ' + f(k.aktif) + ' siswa aktif berlatih' : '') + (k.pengerjaan ? ' · ' + f(k.pengerjaan) + ' pengerjaan tercatat di dasbor guru' : '');
   }
 
+  /* ---------- Jalur Belajar Bertahap (Kelas Intensif) ---------- */
+  const VERSI = {
+    1: { kode: 'V1', nama: 'Pemahaman', ikon: '🌱', warna: 'mint', ajak: 'Pahami dulu konsepnya pelan-pelan. Ada petunjuk di setiap soal, dan kamu boleh mengulang.' },
+    2: { kode: 'V2', nama: 'Model TKA', ikon: '🧩', warna: 'langit', ajak: 'Sekarang coba bentuk soal seperti TKA. Kesempatannya sekali, kerjakan dengan teliti.' },
+    3: { kode: 'V3', nama: 'Prediksi TKA', ikon: '🎯', warna: 'persik', ajak: 'Tantangan prediksi TKA! Baca soal dengan cermat. Kesempatannya sekali.' },
+    4: { kode: 'V4', nama: 'Prediksi Lanjutan', ikon: '🚀', warna: 'ungu', ajak: 'Tantangan tingkat lanjut untuk juara. Kesempatannya sekali.', premium: true }
+  };
+  const jalur = {
+    VERSI,
+    id: (m, no, v) => 'jb-' + m + '-' + String(no).padStart(2, '0') + '-v' + v,
+    /** Info item dari ID (sama dengan aturan server). */
+    info(id) {
+      let m = /^jb-(mat|bi)-(\d\d)-v([1-4])$/.exec(id || '');
+      if (m) { const v = +m[3]; return { id, jenis: 'jb', m: m[1], no: +m[2], versi: v, sekali: v > 1, premium: v === 4, durasi: v === 4 ? 30 : v === 3 ? 20 : 15, soal: v === 4 ? 10 : 5 }; }
+      m = /^kls-(mat|bi)-([12])$/.exec(id || '');
+      if (m) return { id, jenis: 'kls', m: m[1], paket: +m[2], sekali: true, premium: false, durasi: 75, soal: 30 };
+      return null;
+    },
+    /** Halaman uji coba (uji-*.html) saling menaut; halaman resmi menaut ke halaman resmi. */
+    hal(n) { return (simpan.get('tka-uji') ? 'uji-' : '') + n + '.html'; }
+  };
+  if (/\/uji-[a-z]+\.html/.test(location.pathname)) simpan.set('tka-uji', 1);
+  else if (/\/(guru|ujian)\.html/.test(location.pathname)) simpan.hapus('tka-uji');
+
   return {
+    jalur,
     statistik, kalimatStatistik, kalimatKelas, dokumenSoal,
     bank, simpan, esc, pecahan, api, siapServer, muatBank, kode, peserta, riwayat, idPerangkat, HURUF,
     ringkasJawaban, htmlTinjau, statusSkor, htmlAnalisis, dokumenPembahasan, angka, grafikNilai,
