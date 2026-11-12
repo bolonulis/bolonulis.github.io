@@ -184,7 +184,8 @@ details.strategi summary{cursor:pointer;font-weight:800;color:#8a6200}
 .rl-paket b{display:block}.rl-paket small{display:block;color:var(--muted);font-size:12.5px;margin:2px 0 6px}
 .rl-saklar{display:inline-flex;gap:6px;align-items:center;font-weight:800;font-size:14px;cursor:pointer}
 .rl-saklar input{width:20px;height:20px;accent-color:#2f9e7a}
-.ct-tabel .btn-mini{margin:2px;font-size:12px}.ct-tabel .rl-c{width:auto;white-space:nowrap}.btn-mini.kunci{background:#eefaf2;border-color:#b9e3c6}
+.ct-tabel .btn-mini{margin:2px;font-size:12px}.ct-tabel .rl-c{width:auto;white-space:nowrap}.btn-mini.kunci{background:#eefaf2;border-color:#b9e3c6}.btn-mini.kunci-tutup{background:#fff8e1;border-color:#f5d58a;color:#7a5200}
+.ajak-premium{margin:12px 0 0;background:linear-gradient(135deg,#fffbea,#fff);border:2px solid #ffd21f;border-radius:14px;padding:10px 14px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .rl-paket .btn-mini{margin:4px 4px 0 0;display:inline-block;text-decoration:none;color:inherit}
 .rl-simpan{position:sticky;bottom:0;margin:16px -20px -20px;padding:12px 20px;background:#fbfaff;border-top:1px solid var(--line);border-radius:0 0 16px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;font-size:14px}
 .rl-simpan.ubah{background:#fff8e6;border-top-color:#f5d58a}
@@ -252,6 +253,7 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
           <li><b>Tabel analisis per indikator</b>: siapa sudah menguasai, indikator yang perlu pendalaman</li>
           <li><b>Tes akhir</b> Paket 1 dan 2 edisi kelas (soal baru, sekali kesempatan)</li>
           <li><b>Nilai Awal → Tes Akhir</b> untuk melihat perkembangan setiap siswa</li>
+          <li>Cetak lembar soal (PDF) untuk kelas tanpa HP</li>
           <li>Izinkan ulang per siswa, unduh Excel (CSV), dan cetak</li>
         </ul>
       </div>
@@ -260,7 +262,7 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
         <ul>
           <li>Semua fitur Kelas Gratis</li>
           <li class="nanti"><b>🚀 V4 Prediksi Lanjutan</b>: 10 soal per indikator untuk siswa yang ingin juara</li>
-          <li><b>Kunci &amp; pembahasan tes akhir dan tryout di dasbor guru</b>, siap ditampilkan atau dicetak untuk membahas di kelas</li>
+          <li><b>Kunci &amp; pembahasan setiap soal di dasbor guru</b> (latihan V1–V3, tes akhir, tryout), siap dicetak untuk membahas di kelas</li>
           <li><b>Mode ujian serentak</b>: jadwalkan tryout, semua siswa mulai dan selesai bersamaan, satu kali kesempatan, soal dan pilihan diacak, dipantau langsung</li>
           <li>Siswa hanya melihat nilai, <b>kunci tetap di tangan guru</b>, sehingga siswa tidak sekadar menghafal jawaban</li>
           <li>Bantuan prioritas lewat WhatsApp</li>
@@ -419,7 +421,7 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
     <h3>Cetak soal untuk kelas tanpa HP (tab 🖨️ Cetak Soal)</h3>
     <ul>
       <li>Ketuk <b>📄 Soal</b> pada indikator dan versi yang diinginkan, atau <b>📄 Semua V1/V2</b> pada baris kelompok untuk satu berkas berisi satu elemen. Lembar jawaban ikut tercetak.</li>
-      <li>Ketuk <b>🔑 Kunci</b> untuk kunci &amp; pembahasan (pegangan guru). Kunci latihan V1–V3 gratis; kunci tes akhir dan Paket 3 untuk Kelas Premium.</li>
+      <li>Ketuk <b>🔑 Kunci</b> untuk kunci &amp; pembahasan sebagai pegangan guru. Fitur ini <b>khusus Kelas Premium</b> (bisa coba gratis 14 hari). Lembar soal tetap gratis.</li>
       <li>Pada jendela cetak, pilih printer atau <b>Simpan sebagai PDF</b>.</li>
       <li>Nilai dari kertas tidak masuk dasbor. Soal yang sudah dikerjakan di kertas sebaiknya tidak dirilis lagi di HP untuk siswa yang sama.</li>
     </ul>
@@ -465,7 +467,7 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
       <li><b>Ada siswa baru atau nama salah ketik?</b> Buka dasbor, lalu ketuk <b>✏️ Ubah daftar</b>.</li>
       <li><b>Siswa tidak sengaja keluar saat mengerjakan V2?</b> Minta siswa membuka lagi latihan itu dari HP yang sama sebelum waktunya habis. Bila waktunya sudah habis, ketuk kotaknya di tab Analisis lalu <b>🔁 Izinkan ulang</b>.</li>
       <li><b>Mengapa soal lama tidak masuk dasbor lagi?</b> Soal di halaman umum Simulasi TKA boleh dikerjakan siapa saja dan berkali-kali, sehingga tidak menggambarkan pemahaman siswa. Di kelas, gunakan latihan dari Peta Belajar.</li>
-      <li><b>Berbayar?</b> Kelas Gratis tetap gratis selamanya: semua latihan V1–V3, analisis, dan tes akhir Paket 1–2. Kelas Premium menambah V4, ujian serentak dengan Paket 3, kunci &amp; pembahasan tes akhir, peta kemampuan, rapor orang tua, dan laporan kepala sekolah.</li>
+      <li><b>Berbayar?</b> Kelas Gratis tetap gratis selamanya: semua latihan V1–V3, analisis, tes akhir Paket 1–2, dan cetak lembar soal. Kelas Premium menambah V4, ujian serentak dengan Paket 3, kunci &amp; pembahasan setiap soal untuk guru (termasuk cetak kunci), peta kemampuan, rapor orang tua, dan laporan kepala sekolah.</li>
     </ul>
   </details>
 </div>
@@ -475,7 +477,7 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
 <script src="bank/daftar.js?v=6"></script>
 <script src="bank/latihan.js?v=3"></script>
 <script src="bank/jalur.js?v=2"></script>
-<script src="jalur-guru.js?v=2"></script>
+<script src="jalur-guru.js?v=3"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;

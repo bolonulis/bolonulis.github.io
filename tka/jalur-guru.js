@@ -268,6 +268,7 @@ const JG = (() => {
     return 'Latihan ' + V[it.versi].kode + ' ' + V[it.versi].nama + ' · ' + JALUR_TKA.mapel[it.m].nama + ' · ' + it.no + '. ' + judulInd(it.m, it.no);
   }
   async function cetak(ids, kunci) {
+    if (kunci && !premiumAktif()) { ajakPremium(); return; }
     const w = window.open('', '_blank');
     if (!w) { alert('Izinkan jendela pop-up untuk membuka dokumen cetak.'); return; }
     w.document.write('<p style="font-family:sans-serif;padding:30px;text-align:center">⏳ Menyiapkan ' + ids.length + ' dokumen soal… Mohon tunggu.</p>');
@@ -289,14 +290,24 @@ const JG = (() => {
     w.document.write(kepala + '<body>' + alat + bagian.join('<div style="break-before:page;page-break-before:always"></div>') + '<script>window.onload=()=>setTimeout(()=>print(),500)<\/script></body></html>');
     w.document.close();
   }
+  function ajakPremium() {
+    dialogInfo('⭐ Kunci & pembahasan khusus Kelas Premium',
+      'Cetak <b>kunci jawaban dan pembahasan lengkap</b> setiap soal (latihan V1–V3, tes akhir, dan Paket 3) untuk membahas soal bersama siswa di kelas.<br><br>' +
+      '🎁 <b>Coba gratis 14 hari</b>, cukup satu klik, atau berlangganan <b>Rp50.000 per kelas per tahun ajaran</b>. Kelas Premium juga membuka ujian serentak, Paket 3 eksklusif, peta kemampuan, rapor orang tua, dan laporan kepala sekolah.<br><br>' +
+      '<b>Langkah berikutnya:</b> ketuk <b>⭐ Lihat Kelas Premium</b>, lalu pilih <b>🎁 Coba Premium gratis 14 hari</b> atau <b>⭐ Aktifkan Premium</b>.', []);
+    const d = $('dlg-jg'), b = document.createElement('button');
+    b.className = 'btn emas'; b.type = 'button'; b.textContent = '⭐ Lihat Kelas Premium';
+    b.onclick = () => { d.close(); bukaTab('ringkas', false); setTimeout(() => $('k-premium').scrollIntoView({ behavior: 'smooth', block: 'center' }), 50); };
+    d.querySelector('div').prepend(b);
+  }
   function gambarCetak() {
     const el = $('k-cetak'); if (!el) return;
     const d = JALUR_TKA.mapel[MCETAK], premium = premiumAktif();
     const grup = []; d.indikator.forEach(x => { let g = grup.find(g => g.el === x.elemen); if (!g) grup.push(g = { el: x.elemen, isi: [] }); g.isi.push(x); });
-    const tombol = (ids, kunci, label, kecil) => '<button type="button" class="btn-mini' + (kunci ? ' kunci' : '') + '" data-cetak="' + ids.join(',') + '"' + (kunci ? ' data-kunci="1"' : '') + '>' + label + '</button>';
+    const tombol = (ids, kunci, label) => '<button type="button" class="btn-mini' + (kunci ? (premium ? ' kunci' : ' kunci-tutup') : '') + '" data-cetak="' + ids.join(',') + '"' + (kunci ? ' data-kunci="1" title="' + (premium ? 'Kunci & pembahasan untuk guru' : 'Khusus Kelas Premium') + '"' : '') + '>' + (kunci && !premium ? label.replace('🔑', '🔒') + ' ⭐' : label) + '</button>';
     const versi = [1, 2, 3];
     el.innerHTML = '<div class="kepala-kelas"><div><h2 style="margin:0">🖨️ Cetak Soal (PDF)</h2><p class="sub" style="margin:2px 0 0">Untuk pembelajaran di kelas bila tidak semua siswa memiliki HP. Soal dicetak lengkap dengan <b>lembar jawaban</b>.</p></div></div>' +
-      '<div class="panduan-kecil"><b>Cara memakai:</b><ol><li>Ketuk <b>📄 Soal</b> untuk lembar soal siswa, atau <b>🔑 Kunci</b> untuk kunci &amp; pembahasan (pegangan guru).</li><li>Jendela cetak terbuka otomatis. Pilih printer untuk mencetak, atau pilih <b>Simpan sebagai PDF</b> untuk menyimpan berkas.</li><li>Ingin satu berkas untuk satu elemen? Ketuk tombol di baris kelompok (misalnya <b>📄 Semua V1</b>).</li></ol>' +
+      '<div class="panduan-kecil"><b>Cara memakai:</b><ol><li>Ketuk <b>📄 Soal</b> untuk lembar soal siswa (gratis), atau <b>🔑 Kunci</b> untuk kunci &amp; pembahasan sebagai pegangan guru (Kelas Premium).</li><li>Jendela cetak terbuka otomatis. Pilih printer untuk mencetak, atau pilih <b>Simpan sebagai PDF</b> untuk menyimpan berkas.</li><li>Ingin satu berkas untuk satu elemen? Ketuk tombol di baris kelompok (misalnya <b>📄 Semua V1</b>).</li></ol>' +
       '<p style="margin:6px 0 0"><b>Perlu diingat:</b> nilai dari lembar kertas tidak masuk dasbor secara otomatis. Soal yang sudah dikerjakan siswa di kertas sebaiknya <b>tidak dirilis lagi di HP</b> untuk siswa yang sama, agar nilai di dasbor tetap murni. Latihan V1 dicetak beserta 💡 petunjuknya.</p></div>' +
       '<div class="tab-mini">' + Object.keys(JALUR_TKA.mapel).map(m => '<button type="button" data-m="' + m + '" class="' + (m === MCETAK ? 'aktif' : '') + '">' + esc(JALUR_TKA.mapel[m].nama) + '</button>').join('') + '</div>' +
       '<div style="overflow-x:auto"><table class="rl-tabel ct-tabel"><thead><tr><th>Indikator</th>' + versi.map(v => '<th class="rl-v v' + v + '">' + V[v].ikon + ' ' + V[v].kode + '<small>' + V[v].nama + '</small></th>').join('') + '</tr></thead><tbody>' +
@@ -306,12 +317,13 @@ const JG = (() => {
           g.isi.map(x => '<tr><td><b>' + x.no + '. ' + esc(x.judul) + '</b><small>' + esc(x.indikator) + '</small></td>' + versi.map(v => { const id = J.id(MCETAK, x.no, v); return '<td class="rl-c">' + (ADA.has(id) ? tombol([id], false, '📄 Soal') + tombol([id], true, '🔑 Kunci') : '<span class="rl-segera">segera</span>') + '</td>'; }).join('') + '</tr>').join('');
       }).join('') + '</tbody></table></div>' +
       '<h3 style="margin:18px 0 6px">🏁 Paket soal 30 butir</h3><div class="rl-paket">' +
-      JALUR_TKA.paket.filter(p => p.ada).map(p => '<div><b>' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Edisi kelas (soal hanya di Kelas Intensif) · 30 soal · 75 menit</small>' + tombol([p.id], false, '📄 Soal + lembar jawaban') + tombol([p.id], true, '🔑 Kunci' + (premium ? '' : ' ⭐')) + '</div>').join('') +
+      JALUR_TKA.paket.filter(p => p.ada).map(p => '<div><b>' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Edisi kelas (soal hanya di Kelas Intensif) · 30 soal · 75 menit</small>' + tombol([p.id], false, '📄 Soal + lembar jawaban') + tombol([p.id], true, '🔑 Kunci') + '</div>').join('') +
       (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).map(p => '<div><b>⭐ ' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Eksklusif ujian serentak · Kelas Premium</small>' + (premium ? tombol([p.id], false, '📄 Soal + lembar jawaban') + tombol([p.id], true, '🔑 Kunci') : '<span class="rl-segera">⭐ Kelas Premium</span>') + '</div>').join('') +
       PAKET_TKA.map(p => '<div><b>' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Paket umum (juga terbuka di halaman Simulasi TKA)</small><a class="btn-mini" href="pdf/' + p.id + '.pdf?v=2" target="_blank" rel="noopener">📄 Unduh PDF</a></div>').join('') + '</div>' +
-      '<p class="catatan" style="margin:10px 0 0">Kunci tes akhir edisi kelas dan Paket 3 termasuk fitur Kelas Premium. Kunci latihan V1–V3 gratis, karena siswa juga melihat pembahasannya setelah mengerjakan di HP.</p>';
+      (premium ? '<p class="catatan" style="margin:10px 0 0">⭐ Kelas Premium aktif: semua kunci &amp; pembahasan dapat dicetak.</p>' : '<div class="ajak-premium"><b>🔒 Kunci &amp; pembahasan khusus Kelas Premium.</b> Lembar soal tetap gratis. Ingin mencetak kunci untuk membahas soal di kelas? <button type="button" class="btn emas kecil" id="ct-premium">🎁 Coba gratis 14 hari / ⭐ Aktifkan Premium</button></div>');
     el.querySelector('.tab-mini').onclick = e => { const b = e.target.closest('button'); if (!b) return; MCETAK = b.dataset.m; gambarCetak(); };
     el.querySelectorAll('[data-cetak]').forEach(b => b.onclick = () => cetak(b.dataset.cetak.split(','), !!b.dataset.kunci));
+    const ap = $('ct-premium'); if (ap) ap.onclick = ajakPremium;
   }
 
   /** Dipanggil setiap data dasbor dimuat ulang. */
