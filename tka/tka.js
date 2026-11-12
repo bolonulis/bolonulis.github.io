@@ -224,8 +224,9 @@ const TKA = (() => {
     return html.replace(/src="bank\//g, 'src="' + akar).replace(/ loading="lazy"/g, '');
   }
 
-  function dokumenSoal(b, rinci, ket) {
-    const judul = (rinci ? 'Kunci & Pembahasan · ' : '') + 'Simulasi TKA ' + b.jenjang + ' ' + b.mapel + ' · ' + b.paket;
+  /** opsi (Kelas Intensif): { judul, kop, petunjuk: tampilkan petunjuk V1, tanpaAjak: tanpa ajakan ke situs } */
+  function dokumenSoal(b, rinci, ket, opsi = {}) {
+    const judul = (rinci ? 'Kunci & Pembahasan · ' : '') + (opsi.judul || ('Simulasi TKA ' + b.jenjang + ' ' + b.mapel + ' · ' + b.paket));
     const sudah = {};
     const butir = b.soal.map(q => {
       let h = '';
@@ -239,6 +240,7 @@ const TKA = (() => {
       if (q.teks) h += '<div class="tj-teks">' + pecahan(q.teks) + '</div>';
       if (q.gambar) h += '<div class="tj-gbr">' + q.gambar + '</div>';
       if (q.tanya) h += '<div class="tj-teks">' + pecahan(q.tanya) + '</div>';
+      if (opsi.petunjuk && q.petunjuk) h += '<div class="petunjuk-cetak">💡 <b>Petunjuk:</b> ' + pecahan(q.petunjuk) + '</div>';
       if (q.tipe === 'pgk') h += '<div class="ket-pgk">Jawaban benar lebih dari satu.</div>';
       if (q.tipe === 'pg' || q.tipe === 'pgk') {
         const gbr = q.opsi.every(o => o.includes('<svg'));
@@ -254,7 +256,7 @@ const TKA = (() => {
       const html = ('<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + CSS_SOAL +
         '.kunci-guru{background:#eefaf2;border:1px solid #b9e3c6;border-radius:8px;padding:6px 10px;margin:6px 0 2px;font-size:12.5px}.kunci-guru b{color:#1b7f3e}</style></head><body>' +
         '<header class="kop"><div><small>KELAS INTENSIF TKA · UNTUK GURU</small><h1>' + esc(judul) + '</h1><p>' + esc(ket || '') + '</p></div></header>' + butir +
-        '<footer>Dokumen guru Kelas Premium. Mohon tidak disebarkan kepada siswa sebelum mengerjakan. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>');
+        '<footer>' + (opsi.kop ? 'Dokumen guru Kelas Intensif TKA.' : 'Dokumen guru Kelas Premium.') + ' Mohon tidak disebarkan kepada siswa sebelum mengerjakan. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>');
       return gambarLengkap(html);
     }
     const lj = b.soal.map(q => {
@@ -264,16 +266,16 @@ const TKA = (() => {
       return '<div class="lj-baris"><b>' + q.no + '</b>' + pil + '</div>';
     }).join('');
     return gambarLengkap('<!doctype html><html lang="id"><head><meta charset="utf-8"><title>' + esc(judul) + '</title><style>' + CSS_LAPORAN + CSS_SOAL + '</style></head><body>' +
-      '<header class="kop"><div><small>SIMULASI TKA · BOLONULIS.GITHUB.IO/TKA</small><h1>' + esc(judul) + '</h1><p>' + b.soal.length + ' soal · ' + b.durasi + ' menit · pilihan ganda, pilihan ganda kompleks, dan ' + 'benar/salah</p></div></header>' +
+      '<header class="kop"><div><small>' + esc(opsi.kop || 'SIMULASI TKA · BOLONULIS.GITHUB.IO/TKA') + '</small><h1>' + esc(judul) + '</h1><p>' + b.soal.length + ' soal · ' + b.durasi + ' menit · pilihan ganda, pilihan ganda kompleks, dan ' + 'benar/salah</p></div></header>' +
       '<table class="identitas"><tr><td>Nama</td><td></td><td>Kelas</td><td></td></tr><tr><td>Sekolah</td><td colspan="3"></td></tr></table>' +
       '<div class="petunjuk"><b>Petunjuk</b><ol><li><b>Pilihan ganda</b>: pilih satu jawaban yang paling tepat.</li><li><b>Pilihan ganda kompleks</b> (bertanda "Jawaban benar lebih dari satu"): pilih semua jawaban yang benar.</li><li><b>Benar/Salah</b> atau <b>Sesuai/Tidak Sesuai</b>: beri tanda centang pada kolom yang tepat untuk setiap pernyataan.</li><li>Tulis jawaban pada soal atau pada <b>Lembar Jawaban</b> di halaman terakhir.</li></ol></div>' +
       butir +
       '<section class="lj"><h2>Lembar Jawaban</h2><p class="lj-ket">Hitamkan lingkaran (pilihan ganda) atau centang kotak (pilihan ganda kompleks dan benar/salah). B = Benar, S = Salah, S/TS = Sesuai/Tidak Sesuai.</p>' +
       '<table class="identitas"><tr><td>Nama</td><td></td><td>Kelas</td><td></td></tr></table><div class="lj-isi">' + lj + '</div>' +
-      '<div class="ajak">🔑 <b>Ingin tahu nilai, kunci jawaban, dan pembahasannya?</b> Kerjakan versi komputer di <b>bolonulis.github.io/tka</b>: nilai langsung keluar, gratis.</div></section>' +
+      (opsi.tanpaAjak ? '' : '<div class="ajak">🔑 <b>Ingin tahu nilai, kunci jawaban, dan pembahasannya?</b> Kerjakan versi komputer di <b>bolonulis.github.io/tka</b>: nilai langsung keluar, gratis.</div>') + '</section>' +
       '<footer>Soal simulasi ini disusun mengikuti kisi-kisi dan indikator TKA, bukan soal resmi. © ' + new Date().getFullYear() + ' Karya untuk Guru SD · bolonulis.github.io/tka</footer></body></html>');
   }
-  const CSS_SOAL = '@page{size:A4;margin:14mm 13mm 16mm}body{max-width:none;padding:0;font-size:13px}h1{font-size:19px}' +
+  const CSS_SOAL = '.petunjuk-cetak{background:#fffbeb;border:1px dashed #f5d58a;border-radius:8px;padding:4px 10px;margin:6px 0;font-size:12.5px}@page{size:A4;margin:14mm 13mm 16mm}body{max-width:none;padding:0;font-size:13px}h1{font-size:19px}' +
     '.identitas{margin:12px 0}.identitas td{height:26px}.identitas td:nth-child(odd){width:70px;font-weight:700;background:#f8fafc}' +
     '.petunjuk{border:1px solid #dfe5ec;border-radius:10px;padding:8px 14px;margin-bottom:12px;font-size:12.5px}.petunjuk ol{margin:4px 0;padding-left:18px}' +
     '.stim{margin:14px 0 8px}.stim-ket{font-size:12px;font-style:italic;color:#5b6b7f;margin-bottom:4px}' +
