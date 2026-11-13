@@ -269,6 +269,7 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
           <li><b>Paket tryout eksklusif</b> khusus ujian serentak: soalnya belum pernah dilihat siswa (Paket 3 Matematika dan Bahasa Indonesia)</li>
           <li><b>Peta kemampuan per soal</b> pada tes akhir dan tryout: tabel warna setiap siswa × soal, lengkap dengan daftar siswa yang belum menguasai</li>
           <li><b>Rapor untuk orang tua</b> (cetak/PDF dan ringkasan WA) dan <b>laporan kepala sekolah</b> siap tanda tangan</li>
+          <li><b>Impor hasil TKA sekolah</b> dari web TKA: bandingkan pola sekolah tahun lalu dengan nasional dan latihan tahun ini, lalu dapatkan saran indikator yang perlu dirilis lebih dulu</li>
         </ul>
         <p class="catatan" style="margin:10px 0 0">🎁 <b>Coba gratis 14 hari</b>, cukup satu klik dari dasbor kelas. Fitur yang segera hadir otomatis masuk Kelas Premium.</p>
         <p class="catatan" style="margin:6px 0 0">📋 <b>Ketentuan:</b> berlaku untuk 1 kelas sampai 31 Juli akhir tahun ajaran; coba gratis hanya sekali per kelas dan berhenti sendiri setelah 14 hari; pembayaran lewat WhatsApp Admin, lalu Admin mengaktifkan kelas Anda.</p>
@@ -453,6 +454,14 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
       <li>Di tab <b>🏁 Hasil Tes</b>, di bawah tabel <b>Capaian setiap soal</b> ada <b>🗺️ Peta kemampuan</b>: setiap baris satu siswa, setiap kotak satu soal. Hijau = benar, kuning = benar sebagian, merah = salah atau tidak dijawab.</li>
       <li>Ketuk nomor soal (atau kotak mana pun) untuk melihat indikatornya, capaian kelas, nama siswa yang belum menguasai, dan tombol <b>📝 Kirim latihan</b> khusus untuk siswa tersebut.</li>
     </ul>
+    <h3>Impor hasil TKA sekolah (Kelas Premium)</h3>
+    <ul>
+      <li>Buka <a href="https://tka.kemendikdasmen.go.id/hasiltka" target="_blank" rel="noopener">tka.kemendikdasmen.go.id/hasiltka</a> dan masuk dengan <b>akun proktor TKA</b> sekolah (biasanya dipegang proktor atau operator sekolah). Pilih jenjang SD, tingkat <b>Sekolah</b>, lalu unduh tampilan <b>Hierarki</b> sebagai Excel untuk Matematika dan Bahasa Indonesia.</li>
+      <li>Di tab <b>📊 Analisis</b>, bagian <b>🏫 Hasil TKA Sekolah Tahun Lalu</b>, ketuk <b>📂 Pilih berkas</b> dan pilih kedua berkas. Berkas dibaca di perangkat Anda dan tidak dikirim ke server.</li>
+      <li>Setiap indikator diberi status: <b>🔴 Prioritas</b> (lemah tahun lalu dan lemah di latihan tahun ini), <b>🟠 Waspada</b> (lemah tahun lalu, belum dilatih), <b>🟡 Pantau</b>, dan <b>🟢 Aman</b>. "Lemah tahun lalu" berarti di bawah rata-rata nasional.</li>
+      <li>Ketuk <b>📋 Centang V1 untuk indikator prioritas</b> agar V1 indikator tersebut langsung dicentang di Atur Rilis, lalu simpan.</li>
+      <li>Hasil tahun lalu milik angkatan sebelumnya, jadi <b>tidak dipakai untuk menilai siswa tahun ini</b>. Begitu siswa berlatih, status mengikuti nilai latihan kelas. Ringkasannya ikut masuk laporan kepala sekolah.</li>
+    </ul>
     <h3>G. Rapor orang tua dan laporan kepala sekolah (Kelas Premium)</h3>
     <ul>
       <li><b>Rapor orang tua</b>: ketuk 📄 di samping nama siswa (atau tombol <b>📄 Rapor untuk orang tua</b> pada grafik). Tulis catatan guru bila perlu, lalu pilih <b>Buat rapor</b> untuk mencetak/menyimpan PDF, atau <b>Kirim ringkasan ke WA</b> untuk mengirim ringkasan beserta tautan latihan ke orang tua.</li>
@@ -477,7 +486,8 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
 <script src="bank/daftar.js?v=6"></script>
 <script src="bank/latihan.js?v=3"></script>
 <script src="bank/jalur.js?v=3"></script>
-<script src="jalur-guru.js?v=3"></script>
+<script src="impor-tka.js?v=1"></script>
+<script src="jalur-guru.js?v=4"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;
@@ -1031,6 +1041,8 @@ async function laporanKepsek() {
   if (belum.length) rek.push('Mengingatkan ' + belum.length + ' siswa yang belum mengerjakan tryout, termasuk melalui orang tua.');
   if (perhatian.size) rek.push('Memberikan bimbingan khusus kepada ' + perhatian.size + ' siswa dengan nilai di bawah 55.');
   if (kelompokRemedial.total) rek.push('Menuntaskan latihan remedial (saat ini ' + kelompokRemedial.tuntas + ' dari ' + kelompokRemedial.total + ' latihan tuntas).');
+  const prImpor = (() => { try { return Object.keys(JALUR_TKA.mapel).reduce((a, m) => a + (ImporTKA.ambil(KELAS.kode)[m] ? 1 : 0), 0); } catch (e) { return 0; } })();
+  if (prImpor) rek.push('Memberi porsi lebih pada indikator berstatus Prioritas/Waspada dari hasil TKA sekolah tahun lalu.');
   rek.push('Membahas indikator terlemah bersama di kelas menggunakan kunci & pembahasan di dasbor.', 'Mengadakan tryout serentak berkala untuk memantau kemajuan menjelang TKA.');
   const isi = '<div class="kop"><div><small>KELAS INTENSIF TKA · LAPORAN KELAS</small><h1>Laporan Hasil Latihan TKA</h1>Disampaikan kepada Kepala Sekolah</div><div style="text-align:right">' + tglID(Date.now()) + '</div></div>' +
     '<table class="id"><tr><td>Kelas</td><td>' + esc(KELAS.kelas) + '</td><td>Sekolah</td><td>' + esc(KELAS.sekolah) + '</td></tr><tr><td>Guru</td><td>' + esc(KELAS.guru) + '</td><td>Jumlah siswa</td><td>' + (daftar.length || namaUnik.size) + '</td></tr></table>' +
@@ -1043,6 +1055,7 @@ async function laporanKepsek() {
     '<h2>Siswa yang memerlukan perhatian</h2>' + (perhatian.size || belum.length ? '<table><tr><th>Nama</th><th>Keterangan</th></tr>' +
       [...perhatian].map(([n, v]) => '<tr><td>' + esc(DATA.baris.find(b => k(b.nama) === n).nama) + '</td><td>Nilai di bawah 55: ' + esc(v.join('; ')) + '</td></tr>').join('') +
       belum.map(n => '<tr><td>' + esc(n) + '</td><td>Belum mengerjakan tryout</td></tr>').join('') + '</table>' : '<p>🎉 Tidak ada siswa yang memerlukan perhatian khusus.</p>') +
+    JG.laporanImpor() +
     '<h2>Rencana tindak lanjut</h2><ol>' + rek.map(x => '<li>' + x + '</li>').join('') + '</ol>' +
     '<div class="ttd"><div><p>Mengetahui,<br>Kepala Sekolah</p><div class="isi"></div><p>(............................)</p></div><div><p>' + esc(KELAS.sekolah) + ', ' + tglID(Date.now()) + '<br>Guru Kelas</p><div class="isi"></div><p><b>' + esc(KELAS.guru) + '</b></p></div></div>';
   bukaDokumen('Laporan TKA ' + KELAS.kelas, isi);

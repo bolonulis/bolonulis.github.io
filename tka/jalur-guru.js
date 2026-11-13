@@ -213,7 +213,8 @@ const JG = (() => {
         '<tr><td class="hm-nama">Status</td>' + ind.map(g => { const st = statusInd.find(x => x.g === g); return '<td colspan="' + g.ids.length + '" class="hm-st">' + (st.r === null ? '–' : st.r >= 80 ? '✅' : st.r >= 60 ? '⚠️' : '🔴') + '</td>'; }).join('') + '<td></td></tr></tfoot></table></div>' +
         '<div class="hm-detail" id="hm-detail" hidden></div>';
     }
-    el.innerHTML = kepala + isi + gambarPerkembangan();
+    el.innerHTML = kepala + isi + gambarImpor() + gambarPerkembangan();
+    pasangImpor(el);
     el.querySelector('.tab-mini').onclick = e => { const b = e.target.closest('button'); if (!b) return; MANALISIS = b.dataset.m; gambarAnalisis(); };
     const ke = el.querySelector('[data-ke]'); if (ke) ke.onclick = () => bukaTab('rilis', true);
     el.querySelectorAll('td[data-id]').forEach(td => td.onclick = () => detail(td.dataset.s, td.dataset.id));
@@ -240,6 +241,100 @@ const JG = (() => {
       DATA.kemajuan = r.kemajuan; gambarAnalisis();
       const bx = $('hm-detail'); if (bx) { bx.hidden = false; bx.innerHTML = '✅ <b>' + esc(nama) + '</b> sekarang bisa mengerjakan <b>' + esc(namaItem(id)) + '</b> lagi dari Peta Belajarnya.'; }
     };
+  }
+
+  /* ---------- impor hasil TKA sekolah (tahun lalu) ---------- */
+  const TKA_WEB = 'https://tka.kemendikdasmen.go.id/hasiltka';
+  /** Rata-rata kelas per indikator dari latihan tahun ini (versi tertinggi yang sudah ada nilainya). */
+  function rataIndikator(m) {
+    const km = petaKemajuan(), siswa = namaSiswa(), hasil = {};
+    for (let no = 1; no <= 30; no++) {
+      for (let v = 4; v >= 1; v--) {
+        const id = J.id(m, no, v), n = siswa.map(s => keadaan(id, (km.get(kn(s)) || { data: {} }).data[id])).filter(x => x.k === 'nilai').map(x => x.n);
+        if (n.length) { hasil[no] = { r: n.reduce((a, b) => a + b, 0) / n.length, v, jml: n.length }; break; }
+      }
+    }
+    return hasil;
+  }
+  /** Label tiap indikator: gabungan pola sekolah tahun lalu dan latihan kelas tahun ini. */
+  function labelImpor(m) {
+    const d = ImporTKA.ambil(KELAS.kode)[m]; if (!d) return null;
+    const kini = rataIndikator(m);
+    return JALUR_TKA.mapel[m].indikator.map(x => {
+      const t = d.ind[x.no] || {}, k = kini[x.no], lemahLalu = t.s !== null && t.n !== null && t.s !== undefined && t.s < t.n;
+      let lb;
+      if (k) lb = k.r < 60 ? (lemahLalu ? 'prioritas' : 'pantau') : k.r < 80 ? (lemahLalu ? 'pantau' : 'aman') : 'aman';
+      else lb = lemahLalu ? 'waspada' : 'aman';
+      return { no: x.no, judul: x.judul, t, k, lemahLalu, lb };
+    });
+  }
+  const LB = { prioritas: ['🔴', 'Prioritas', 'Lemah tahun lalu dan lemah juga di latihan tahun ini'], waspada: ['🟠', 'Waspada', 'Lemah tahun lalu, latihan tahun ini belum ada'], pantau: ['🟡', 'Pantau', 'Salah satu sumber menunjukkan kelemahan'], aman: ['🟢', 'Aman', 'Baik tahun lalu atau sudah dikuasai tahun ini'] };
+  const persen = v => v === null || v === undefined ? '–' : angka(Math.round(v * 10) / 10) + '%';
+  function panduanUnduh() {
+    return '<details class="strategi"' + (Object.keys(ImporTKA.ambil(KELAS.kode)).length ? '' : ' open') + '><summary>📥 Cara mengunduh berkas hasil TKA sekolah</summary><div class="panduan-kecil" style="margin:8px 0 0"><ol>' +
+      '<li>Buka <a href="' + TKA_WEB + '" target="_blank" rel="noopener"><b>tka.kemendikdasmen.go.id/hasiltka</b></a>.</li>' +
+      '<li>Masuk dengan <b>akun proktor TKA</b> sekolah Anda. Akun ini biasanya dipegang proktor atau operator sekolah; mintalah bantuan bila bukan Anda yang memegangnya. Jangan bagikan kata sandi proktor kepada siapa pun.</li>' +
+      '<li>Pilih jenjang <b>SD</b>, tingkat wilayah <b>Sekolah</b>, dan mata pelajaran <b>Matematika</b>.</li>' +
+      '<li>Buka tampilan <b>Hierarki</b> (Elemen → Indikator), lalu unduh sebagai <b>Excel</b>. Nama berkasnya berawalan <code>Hierarki_Matematika_Sekolah_…</code>.</li>' +
+      '<li>Ulangi untuk <b>Bahasa Indonesia</b>.</li>' +
+      '<li>Kembali ke halaman ini, ketuk <b>📂 Pilih berkas</b>, lalu pilih kedua berkas sekaligus.</li></ol>' +
+      '<p style="margin:6px 0 0">🔒 Berkas dibaca langsung di perangkat ini dan <b>tidak dikirim</b> ke server Kelas Intensif. Datanya tersimpan di perangkat ini saja, jadi ulangi impor bila Anda membuka dasbor dari HP/laptop lain.</p></div></details>';
+  }
+  function gambarImpor() {
+    const premium = premiumAktif(), m = MANALISIS, nama = JALUR_TKA.mapel[m].nama;
+    let h = '<h3 style="margin:22px 0 4px">🏫 Hasil TKA Sekolah Tahun Lalu</h3><p class="sub" style="margin:0 0 8px">Pola sekolah dari angkatan sebelumnya, dibandingkan dengan rata-rata nasional dan latihan kelas tahun ini. <b>Bukan penilaian siswa tahun ini</b>, melainkan petunjuk materi yang perlu mendapat porsi lebih.</p>';
+    if (!premium) return h + '<div class="ajak-premium"><b>⭐ Fitur Kelas Premium.</b> Impor berkas hasil TKA sekolah dari web TKA, lalu dapatkan saran indikator yang perlu dirilis lebih dulu. <button type="button" class="btn emas kecil" id="im-premium">🎁 Coba gratis 14 hari / ⭐ Aktifkan Premium</button></div>';
+    const data = ImporTKA.ambil(KELAS.kode), d = data[m];
+    h += panduanUnduh() + '<div class="rl-alat" style="margin-top:8px"><label class="btn kecil" style="cursor:pointer">📂 Pilih berkas<input type="file" id="im-berkas" accept=".xlsx,.xls" multiple hidden></label>' +
+      (d ? '<button type="button" class="btn ghost kecil" id="im-hapus">🗑️ Hapus data ' + esc(nama) + '</button>' : '') + '<span id="im-pesan" class="catatan"></span></div>';
+    if (!d) return h + '<div class="kosong" style="padding:14px"><b>Belum ada data hasil TKA ' + esc(nama) + '</b>Ikuti langkah di atas untuk mengunduh berkas Hierarki dari web TKA, lalu impor di sini.' + (Object.keys(data).length ? '<br>Data mapel lain sudah ada; pilih tab mapelnya di atas.' : '') + '</div>';
+    const L = labelImpor(m), hit = k => L.filter(x => x.lb === k).length;
+    const rataS = L.filter(x => x.t.s !== null && x.t.s !== undefined), rs = rataS.reduce((a, x) => a + x.t.s, 0) / (rataS.length || 1), rn = rataS.reduce((a, x) => a + (x.t.n || 0), 0) / (rataS.length || 1);
+    const urut = L.filter(x => x.lb === 'prioritas' || x.lb === 'waspada').sort((a, b) => (a.lb === 'prioritas' ? 0 : 1) - (b.lb === 'prioritas' ? 0 : 1) || (a.t.s - a.t.n) - (b.t.s - b.t.n));
+    h += '<p class="catatan" style="margin:8px 0">Sumber: <b>' + esc(d.berkas) + '</b>' + (d.diunduh ? ' · diunduh ' + esc(d.diunduh) : '') + (d.peserta ? ' · ' + d.peserta + ' peserta' : '') + (d.kabupaten ? ' · ' + esc(d.kabupaten) : '') + '. Rata-rata sekolah <b>' + persen(rs) + '</b>, nasional <b>' + persen(rn) + '</b>.' + (d.peserta && d.peserta < 15 ? ' Jumlah peserta kecil, jadi angkanya cukup dijadikan petunjuk.' : '') + '</p>' +
+      '<div class="ringkas-an">' + ['prioritas', 'waspada', 'pantau', 'aman'].map(k => '<div class="ra ' + (k === 'prioritas' ? 'merah' : k === 'aman' ? 'hijau' : 'kuning') + '"><b>' + LB[k][0] + ' ' + hit(k) + ' ' + LB[k][1] + '</b><small>' + LB[k][2] + '.</small></div>').join('') + '</div>' +
+      (urut.length ? '<div class="rl-alat" style="margin-top:8px"><button type="button" class="btn hijau kecil" id="im-saran">📋 Centang V1 untuk ' + Math.min(4, urut.length) + ' indikator prioritas</button><span class="catatan">Indikator: ' + urut.slice(0, 4).map(x => x.no).join(', ') + '. Anda tetap bisa mengubah centangnya sebelum menyimpan.</span></div>' : '') +
+      '<div style="overflow-x:auto;margin-top:8px"><table class="pk-tabel"><thead><tr><th>Indikator</th><th>TKA sekolah<br><small>tahun lalu</small></th><th>Nasional</th><th>Latihan kelas<br><small>tahun ini</small></th><th>Status</th></tr></thead><tbody>' +
+      L.map(x => '<tr><td><b>' + x.no + '.</b> ' + esc(x.judul) + '</td><td' + (x.lemahLalu ? ' style="color:#b91c1c;font-weight:700"' : '') + '>' + persen(x.t.s) + '</td><td>' + persen(x.t.n) + '</td><td>' + (x.k ? '<b class="' + warna(x.k.r) + '">' + angka(Math.round(x.k.r)) + '</b> <small>' + V[x.k.v].kode + ', ' + x.k.jml + ' siswa</small>' : '<span class="catatan">belum</span>') + '</td><td title="' + esc(LB[x.lb][2]) + '">' + LB[x.lb][0] + ' ' + LB[x.lb][1] + '</td></tr>').join('') +
+      '</tbody></table></div><p class="catatan" style="margin:6px 0 0">Angka merah = di bawah rata-rata nasional. Untuk beberapa indikator Matematika, angka nasional dari web TKA dihitung per kompetensi sehingga sama untuk indikator sekelompok.</p>';
+    return h;
+  }
+  function pasangImpor(el) {
+    const ap = el.querySelector('#im-premium'); if (ap) ap.onclick = ajakPremium;
+    const f = el.querySelector('#im-berkas');
+    if (f) f.onchange = async () => {
+      const pesan = el.querySelector('#im-pesan'), data = ImporTKA.ambil(KELAS.kode), ok = [], galat = [];
+      pesan.textContent = '⏳ Membaca berkas…';
+      for (const file of f.files) { try { const d = await ImporTKA.baca(file); data[d.m] = d; ok.push(JALUR_TKA.mapel[d.m].nama); } catch (e) { galat.push(e.message); } }
+      if (ok.length && !ImporTKA.simpan(KELAS.kode, data)) galat.push('Data tidak dapat disimpan di perangkat ini (mode penyamaran?).');
+      if (ok.length) { const m1 = Object.keys(data).find(m => JALUR_TKA.mapel[m].nama === ok[0]); if (m1 && !data[MANALISIS]) MANALISIS = m1; gambarAnalisis(); }
+      const p2 = $('im-pesan'); if (p2) p2.innerHTML = (ok.length ? '✅ Berhasil: ' + ok.map(esc).join(', ') + '. ' : '') + (galat.length ? '<span style="color:#b91c1c">⚠️ ' + galat.map(esc).join(' ') + '</span>' : '');
+    };
+    const hp = el.querySelector('#im-hapus');
+    if (hp) hp.onclick = () => { if (!confirm('Hapus data hasil TKA ' + JALUR_TKA.mapel[MANALISIS].nama + ' dari perangkat ini?')) return; ImporTKA.hapus(KELAS.kode, MANALISIS); gambarAnalisis(); };
+    const sr = el.querySelector('#im-saran');
+    if (sr) sr.onclick = () => {
+      const L = labelImpor(MANALISIS).filter(x => x.lb === 'prioritas' || x.lb === 'waspada').sort((a, b) => (a.lb === 'prioritas' ? 0 : 1) - (b.lb === 'prioritas' ? 0 : 1) || (a.t.s - a.t.n) - (b.t.s - b.t.n)).slice(0, 4);
+      if (!CENTANG) CENTANG = new Set(DATA.rilis || []);
+      L.forEach(x => { const id = J.id(MANALISIS, x.no, 1); if (ADA.has(id)) CENTANG.add(id); });
+      MRILIS = MANALISIS; bukaTab('rilis', true); gambarRilis();
+      const ps = $('rl-pesan'); if (ps) ps.textContent = '📋 V1 indikator ' + L.map(x => x.no).join(', ') + ' sudah dicentang dari saran hasil TKA. Ketuk 💾 Simpan untuk membukanya bagi siswa.';
+    };
+  }
+  /** Bagian laporan kepala sekolah (kosong bila belum ada data impor). */
+  function laporanImpor() {
+    if (typeof KELAS === 'undefined' || !KELAS) return '';
+    const data = ImporTKA.ambil(KELAS.kode), ms = Object.keys(JALUR_TKA.mapel).filter(m => data[m]);
+    if (!ms.length) return '';
+    return '<h2>Hasil TKA sekolah tahun lalu dan tindak lanjutnya</h2><p>Data angkatan sebelumnya dari web hasil TKA, dipakai sebagai petunjuk materi yang perlu mendapat porsi lebih. Bukan penilaian siswa tahun ini.</p>' +
+      ms.map(m => {
+        const L = labelImpor(m), d = data[m], ada = L.filter(x => x.t.s !== null && x.t.s !== undefined);
+        const rs = ada.reduce((a, x) => a + x.t.s, 0) / (ada.length || 1), rn = ada.reduce((a, x) => a + (x.t.n || 0), 0) / (ada.length || 1);
+        const pr = L.filter(x => x.lb === 'prioritas'), ws = L.filter(x => x.lb === 'waspada');
+        return '<section><h3>' + esc(JALUR_TKA.mapel[m].nama) + '</h3><div class="kotak"><div><small>Rata-rata sekolah</small><b>' + persen(rs) + '</b></div><div><small>Rata-rata nasional</small><b>' + persen(rn) + '</b></div><div><small>Peserta</small><b>' + (d.peserta || '–') + '</b></div><div><small>Indikator di bawah nasional</small><b>' + L.filter(x => x.lemahLalu).length + '</b></div></div>' +
+          (pr.length ? '<p style="margin:8px 0 2px"><b>🔴 Prioritas</b> (lemah tahun lalu dan lemah juga di latihan tahun ini):</p><ol>' + pr.map(x => '<li>' + x.no + '. ' + esc(x.judul) + ' — TKA ' + persen(x.t.s) + ' (nasional ' + persen(x.t.n) + '), latihan ' + angka(Math.round(x.k.r)) + '</li>').join('') + '</ol>' : '') +
+          (ws.length ? '<p style="margin:8px 0 2px"><b>🟠 Waspada</b> (lemah tahun lalu, belum dilatih tahun ini):</p><p>' + ws.map(x => x.no + '. ' + esc(x.judul)).join('; ') + '</p>' : '') + '</section>';
+      }).join('');
   }
 
   /* ---------- nilai awal → tes akhir ---------- */
@@ -337,5 +432,5 @@ const JG = (() => {
     if (tb) tb.textContent = jml ? ' (' + jml + ')' : '';
   }
 
-  return { gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
+  return { laporanImpor, gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
 })();
