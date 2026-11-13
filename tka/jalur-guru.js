@@ -35,6 +35,14 @@ const JG = (() => {
     return { k: 'jalan', d };
   }
   const warna = n => n >= 80 ? 'hm-b' : n >= 60 ? 'hm-c' : 'hm-k';
+  /* ---------- acuan rata-rata nasional TKA ---------- */
+  const NAS = typeof NASIONAL_TKA === 'undefined' ? null : NASIONAL_TKA;
+  const nas = (m, no) => NAS && NAS[m] ? NAS[m][no] : undefined;
+  const pctNas = v => String(Math.round(v * 10) / 10).replace('.', ',') + '%';
+  /** 6 indikator dengan rata-rata nasional terendah pada mapel itu. */
+  const SULIT = {}; if (NAS) ['mat', 'bi'].forEach(m => { SULIT[m] = new Set(Object.entries(NAS[m] || {}).sort((a, b) => a[1] - b[1]).slice(0, 6).map(x => +x[0])); });
+  const sulit = (m, no) => !!(SULIT[m] && SULIT[m].has(no));
+  const lencanaSulit = (m, no) => sulit(m, no) ? ' <span class="rl-sulit" title="Termasuk 6 indikator dengan rata-rata nasional TKA terendah">🔥 Sulit nasional · ' + pctNas(nas(m, no)) + '</span>' : '';
 
   /* ---------- tab ---------- */
   function pasangTab() {
@@ -118,7 +126,7 @@ const JG = (() => {
       grup.map(g => '<tr class="rl-grup"><td>' + esc(g.el) + '</td>' + [1, 2, 3, 4].map(v => '<td class="rl-c">' + grupCek(g.isi, v) + '</td>').join('') + '<td></td></tr>' +
         g.isi.map(x => {
           const dibuka = [1, 2, 3, 4].map(v => J.id(MRILIS, x.no, v)).filter(id => awal.has(id));
-          return '<tr><td><b>' + x.no + '. ' + esc(x.judul) + '</b><small>' + esc(x.indikator) + '</small></td>' + [1, 2, 3, 4].map(v => '<td class="rl-c">' + kotak(J.id(MRILIS, x.no, v)) + '</td>').join('') +
+          return '<tr><td><b>' + x.no + '. ' + esc(x.judul) + '</b>' + lencanaSulit(MRILIS, x.no) + '<small>' + esc(x.indikator) + '</small></td>' + [1, 2, 3, 4].map(v => '<td class="rl-c">' + kotak(J.id(MRILIS, x.no, v)) + '</td>').join('') +
             '<td class="rl-maju">' + (dibuka.length ? dibuka.map(id => '<span class="rl-pil v' + J.info(id).versi + '">' + V[J.info(id).versi].kode + ' ' + selesaiItem(id) + (siswa.length ? '/' + siswa.length : '') + '</span>').join('') : '<span class="catatan">belum dibuka</span>') + '</td></tr>';
         }).join('')).join('') + '</tbody></table></div>' +
       '<h3 style="margin:18px 0 6px">🏁 Tes akhir (paket 30 soal edisi kelas)</h3><p class="sub" style="margin:0 0 8px">Rilis setelah siswa berlatih semua indikator. Sekali kesempatan, siswa hanya melihat nilai.</p>' +
@@ -187,7 +195,7 @@ const JG = (() => {
       const perhatian = siswa.map(s => { const x = km.get(kn(s)); if (!x) return null; const n = kolom.map(id => keadaan(id, x.data[id])).filter(k => k.k === 'nilai').map(k => k.n); return n.length ? { s, r: n.reduce((a, b) => a + b, 0) / n.length } : null; }).filter(x => x && x.r < 60);
       const habis = []; siswa.forEach(s => { const x = km.get(kn(s)); if (x) kolom.forEach(id => { if (keadaan(id, x.data[id]).k === 'habis') habis.push([s, id]); }); });
       isi += '<div class="ringkas-an">' +
-        '<div class="ra merah"><b>🔴 ' + merah.length + ' indikator perlu pendalaman</b>' + (merah.length ? '<ul>' + merah.map(x => '<li>' + x.g.no + '. ' + esc(judulInd(m, x.g.no)) + ' <small>(rata-rata ' + angka(Math.round(x.r)) + ')</small></li>').join('') + '</ul><small>Ajarkan ulang, lalu minta siswa mengulang V1.</small>' : '<small>Tidak ada. 👍</small>') + '</div>' +
+        '<div class="ra merah"><b>🔴 ' + merah.length + ' indikator perlu pendalaman</b>' + (merah.length ? '<ul>' + merah.map(x => '<li>' + x.g.no + '. ' + esc(judulInd(m, x.g.no)) + ' <small>(rata-rata ' + angka(Math.round(x.r)) + (nas(m, x.g.no) !== undefined ? ' · nasional ' + pctNas(nas(m, x.g.no)) : '') + ')</small>' + (sulit(m, x.g.no) ? ' 🔥' : '') + '</li>').join('') + '</ul><small>Ajarkan ulang, lalu minta siswa mengulang V1.</small>' : '<small>Tidak ada. 👍</small>') + '</div>' +
         '<div class="ra kuning"><b>⚠️ ' + kuning.length + ' indikator hampir dikuasai</b>' + (kuning.length ? '<ul>' + kuning.map(x => '<li>' + x.g.no + '. ' + esc(judulInd(m, x.g.no)) + ' <small>(' + angka(Math.round(x.r)) + ')</small></li>').join('') + '</ul>' : '<small>–</small>') + '</div>' +
         '<div class="ra hijau"><b>✅ ' + hijau.length + ' indikator sudah dikuasai</b><small>' + (hijau.length ? 'Siap lanjut ke versi berikutnya.' : 'Belum ada.') + '</small></div></div>' +
         (belumSama.length ? '<p class="catatan" style="margin:8px 0 0">⏳ <b>Belum mengerjakan sama sekali:</b> ' + belumSama.map(esc).join(', ') + '</p>' : '') +
@@ -210,7 +218,9 @@ const JG = (() => {
           return '<tr><td class="hm-nama">' + esc(s) + '</td>' + sel + '<td class="hm-rata">' + (r === null ? '–' : '<b class="' + warna(r) + '">' + angka(Math.round(r)) + '</b>') + '</td></tr>';
         }).join('') +
         '</tbody><tfoot><tr><td class="hm-nama">Rata-rata kelas</td>' + kolom.map(id => '<td>' + (rata[id] === null ? '–' : '<b class="' + warna(rata[id]) + '">' + angka(Math.round(rata[id])) + '</b>') + '<small>' + jumlah[id] + ' siswa</small></td>').join('') + '<td></td></tr>' +
-        '<tr><td class="hm-nama">Status</td>' + ind.map(g => { const st = statusInd.find(x => x.g === g); return '<td colspan="' + g.ids.length + '" class="hm-st">' + (st.r === null ? '–' : st.r >= 80 ? '✅' : st.r >= 60 ? '⚠️' : '🔴') + '</td>'; }).join('') + '<td></td></tr></tfoot></table></div>' +
+        '<tr><td class="hm-nama">Status</td>' + ind.map(g => { const st = statusInd.find(x => x.g === g); return '<td colspan="' + g.ids.length + '" class="hm-st">' + (st.r === null ? '–' : st.r >= 80 ? '✅' : st.r >= 60 ? '⚠️' : '🔴') + '</td>'; }).join('') + '<td></td></tr>' +
+        (NAS ? '<tr><td class="hm-nama" title="Persentase benar rata-rata nasional pada TKA, sebagai acuan tingkat kesulitan">Nasional TKA</td>' + ind.map(g => '<td colspan="' + g.ids.length + '" class="hm-nas">' + (nas(m, g.no) === undefined ? '–' : pctNas(nas(m, g.no)) + (sulit(m, g.no) ? '<small>🔥 sulit</small>' : '')) + '</td>').join('') + '<td></td></tr>' : '') + '</tfoot></table></div>' +
+        (NAS ? '<p class="catatan" style="margin:6px 0 0"><b>Nasional TKA</b> = persentase jawaban benar rata-rata nasional pada TKA SD, sebagai acuan tingkat kesulitan indikator. Nilai latihan kelas dan angka nasional berasal dari soal yang berbeda, jadi bandingkan polanya, bukan angkanya persis. 🔥 = 6 indikator tersulit secara nasional.</p>' : '') +
         '<div class="hm-detail" id="hm-detail" hidden></div>';
     }
     el.innerHTML = kepala + isi + gambarImpor() + gambarPerkembangan();
@@ -320,6 +330,16 @@ const JG = (() => {
       MRILIS = MANALISIS; bukaTab('rilis', true); gambarRilis();
       const ps = $('rl-pesan'); if (ps) ps.textContent = '📋 V1 indikator ' + L.map(x => x.no).join(', ') + ' sudah dicentang dari saran hasil TKA. Ketuk 💾 Simpan untuk membukanya bagi siswa.';
     };
+  }
+  /** Bagian laporan kepala sekolah: indikator tersulit nasional dan capaian latihan kelas. */
+  function laporanNasional() {
+    if (!NAS || typeof KELAS === 'undefined' || !KELAS) return '';
+    return '<h2>Indikator tersulit secara nasional</h2><p>Enam indikator dengan persentase benar terendah pada TKA SD tingkat nasional, beserta capaian latihan kelas ini. Indikator-indikator ini layak mendapat porsi latihan lebih.</p>' +
+      Object.keys(JALUR_TKA.mapel).map(m => {
+        const kini = rataIndikator(m), daf = [...SULIT[m]].sort((a, b) => nas(m, a) - nas(m, b));
+        return '<section><h3>' + esc(JALUR_TKA.mapel[m].nama) + '</h3><table><tr><th>Indikator</th><th>Nasional TKA</th><th>Latihan kelas</th></tr>' +
+          daf.map(no => '<tr><td>' + no + '. ' + esc(judulInd(m, no)) + '</td><td style="text-align:center">' + pctNas(nas(m, no)) + '</td><td style="text-align:center">' + (kini[no] ? angka(Math.round(kini[no].r)) + ' <small>(' + V[kini[no].v].kode + ', ' + kini[no].jml + ' siswa)</small>' : 'belum dilatih') + '</td></tr>').join('') + '</table></section>';
+      }).join('');
   }
   /** Bagian laporan kepala sekolah (kosong bila belum ada data impor). */
   function laporanImpor() {
@@ -432,5 +452,5 @@ const JG = (() => {
     if (tb) tb.textContent = jml ? ' (' + jml + ')' : '';
   }
 
-  return { laporanImpor, gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
+  return { laporanImpor, laporanNasional, gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
 })();
