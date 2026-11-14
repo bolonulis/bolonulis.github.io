@@ -91,6 +91,40 @@ const JG = (() => {
     el.querySelector('[data-ke-panduan]').onclick = () => { const d = $('panduan-guru'); d.open = true; const s = $('pg-jalur'); (s || d).scrollIntoView({ behavior: 'smooth' }); };
   }
 
+  /* ---------- pengingat siswa (kartu Ringkasan) ---------- */
+  function selesai(x, id) { return !!(x && x.data[id] && x.data[id].j > 0); }
+  function gambarIngat() {
+    const el = $('k-ingat'); if (!el) return;
+    const rilis = (DATA.rilis || []).filter(id => J.info(id)), rw = DATA.rilisWaktu || {}, km = petaKemajuan(), siswa = namaSiswa();
+    if (!rilis.length || !siswa.length) { el.hidden = true; return; }
+    const now = Date.now(), MINGGU = 7 * 864e5;
+    const baru = rilis.filter(id => rw[id] && rw[id] > now - MINGGU), fokus = baru.length ? baru : rilis;
+    const belum = siswa.filter(s => { const x = km.get(kn(s)); return fokus.some(id => !selesai(x, id)); });
+    const terakhir = s => { const x = km.get(kn(s)); return x ? Math.max(0, ...Object.values(x.data).map(d => d.w || d.m || 0)) : 0; };
+    const diam = siswa.filter(s => terakhir(s) < now - MINGGU);
+    const daftar = fokus.slice().sort((a, b) => (rw[b] || 0) - (rw[a] || 0));
+    el.innerHTML = '<div class="kepala-kelas"><div><h2 style="margin:0">📣 Pengingat siswa</h2><p class="sub" style="margin:2px 0 0">' +
+      (baru.length ? '<b>' + baru.length + ' latihan dibuka minggu ini.</b> ' : 'Belum ada latihan baru minggu ini. ') + 'Siswa melihat tanda 🆕 dan target 3 latihan per minggu di Peta Belajar.</p></div></div>' +
+      '<div class="ingat-angka"><div><b>' + (siswa.length - belum.length) + '/' + siswa.length + '</b><small>siswa menyelesaikan ' + (baru.length ? 'semua latihan baru' : 'semua latihan yang dibuka') + '</small></div>' +
+      '<div><b>' + belum.length + '</b><small>siswa belum selesai</small></div><div><b>' + diam.length + '</b><small>siswa tidak berlatih 7 hari terakhir</small></div></div>' +
+      '<details style="margin:8px 0"><summary style="cursor:pointer;font-weight:700;font-size:14px">Lihat rincian</summary><ul style="margin:6px 0;padding-left:20px;font-size:14px">' +
+      daftar.slice(0, 10).map(id => '<li>' + esc(namaItem(id)) + ' — ' + siswa.filter(s => selesai(km.get(kn(s)), id)).length + '/' + siswa.length + ' selesai</li>').join('') + '</ul>' +
+      (belum.length ? '<p style="margin:4px 0;font-size:14px"><b>Belum selesai:</b> ' + belum.map(esc).join(', ') + '</p>' : '') +
+      (diam.length ? '<p style="margin:4px 0;font-size:14px"><b>Tidak berlatih 7 hari:</b> ' + diam.map(esc).join(', ') + '</p>' : '') + '</details>' +
+      '<label style="display:flex;gap:6px;align-items:center;font-size:13.5px;margin:4px 0 10px"><input type="checkbox" id="ig-nama"> Sebutkan nama siswa yang belum selesai <span style="color:var(--muted)">(sebaiknya tidak untuk grup)</span></label>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn wa" type="button" id="ig-wa">💬 Kirim pengingat ke grup WA kelas</button></div>';
+    el.hidden = false;
+    $('ig-wa').onclick = () => {
+      const pakaiNama = $('ig-nama').checked;
+      const pesan = 'Assalamu’alaikum/Salam sejahtera, anak-anak ' + KELAS.kelas + ' 🙏\n\n📚 *' + (baru.length ? 'Latihan baru minggu ini' : 'Latihan yang sudah dibuka') + '* di Peta Belajar:\n' +
+        daftar.slice(0, 8).map(id => '• ' + namaItem(id)).join('\n') + (daftar.length > 8 ? '\n• dan ' + (daftar.length - 8) + ' latihan lainnya' : '') +
+        '\n\n✅ ' + (siswa.length - belum.length) + ' dari ' + siswa.length + ' siswa sudah menyelesaikan semuanya. ' + (belum.length ? 'Ayo yang belum, kerjakan sedikit demi sedikit!' : 'Hebat, semuanya sudah selesai! 🎉') +
+        (pakaiNama && belum.length ? '\nBelum selesai: ' + belum.join(', ') : '') +
+        '\n🎯 Target minggu ini: 3 latihan.\n\n👉 ' + tautanKelas(KELAS) + '\n\n— ' + KELAS.guru;
+      window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
+    };
+  }
+
   /* ---------- atur rilis ---------- */
   function gambarRilis() {
     const el = $('k-rilis'); if (!el) return;
@@ -536,7 +570,7 @@ const JG = (() => {
   function gambarSemua() {
     if (DATA && !DATA._diterima) DATA._diterima = Date.now();
     CENTANG = new Set(DATA.rilis || []);
-    pasangTab(); gambarBaru(); gambarRilis(); gambarAnalisis(); gambarCetak();
+    pasangTab(); gambarBaru(); gambarIngat(); gambarRilis(); gambarAnalisis(); gambarCetak();
     if (!PBR_DICEK) { PBR_DICEK = true; mulaiCatat(); setTimeout(() => cekPembaruan(false), 600); }
     document.querySelectorAll('#tab-dasbor button').forEach(b => b.classList.toggle('aktif', b.dataset.tab === TAB));
     document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== TAB; });

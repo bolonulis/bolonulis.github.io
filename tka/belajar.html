@@ -77,6 +77,17 @@ a{color:var(--ungu)}
 .tg .isi b{display:block;font-size:15px}
 .tg .isi small{display:block;font-size:12.5px;opacity:.85}
 .tg .aksi{font-weight:900;font-size:14px;white-space:nowrap}
+.lbl-baru{display:inline-block;background:#ff4d6d;color:#fff;border-radius:99px;padding:1px 8px;font-size:11px;font-weight:900;margin-left:6px;vertical-align:1px;letter-spacing:.02em}
+.pl.baru{position:relative;box-shadow:0 0 0 2px #ff4d6d}.pl.baru::after{content:"BARU";position:absolute;top:-8px;right:-6px;background:#ff4d6d;color:#fff;border-radius:99px;font-size:8.5px;padding:1px 4px;font-weight:900}
+.baru-pesan{display:block;text-decoration:none;background:#fff0f3;border:2px solid #ffb3c1;border-radius:18px;padding:12px 14px;margin:0 0 16px;font-weight:700;color:#9f1239}
+.target{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.target .ikon{font-size:34px}
+.target .isi{flex:1;min-width:200px}
+.target h2{margin:0 0 4px}
+.target .bintang{display:flex;gap:6px;margin:6px 0}
+.target .bintang span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:#eef1f6;color:#94a3b8;font-weight:900}
+.target .bintang span.ok{background:#fde68a;color:#92400e}
+.target .api{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:6px 10px;font-weight:800;color:#9a3412;font-size:13.5px}
 .tg:hover{border-color:currentColor}
 /* peta indikator */
 .elemen{margin:18px 0 8px;font-size:13px;font-weight:900;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
@@ -145,6 +156,9 @@ a{color:var(--ungu)}
       <p class="pesan-guru" id="sapa-pesan"></p>
       <p class="catatan" style="margin:10px 0 0">Bukan kamu? <a href="#" id="ganti-nama">Ganti nama</a> · <a href="#" id="muat-ulang">↻ Perbarui</a></p>
     </div>
+
+    <a class="baru-pesan" id="baru-pesan" href="#k-tugas" hidden></a>
+    <div class="kartu target" id="k-target" hidden></div>
 
     <div class="kartu info-baru" id="info-baru" hidden>
       <button class="tutup" type="button" id="info-tutup" aria-label="Tutup">✕</button>
@@ -270,7 +284,7 @@ async function bukaPeta() {
     if (r.putus) return gagal(r.pesan, bukaPeta);
     simpanNama(''); $('nama-salah').textContent = r.pesan || ''; return pilihNama();
   }
-  KELAS = r.kelas; PETA = r;
+  KELAS = r.kelas; PETA = r; PETA._diterima = Date.now();
   $('bar-nama').textContent = NAMA; $('bar-siswa').hidden = false;
   gambarPeta();
   tampil('v-peta');
@@ -297,6 +311,28 @@ function judulItem(id) {
   return d ? d.judul : 'Indikator ' + it.no;
 }
 
+const HARI = 864e5, TARGET_MINGGU = 3;
+/** Awal minggu (Senin pukul 00.00, waktu perangkat). */
+function awalMinggu(t) { const d = new Date(t); const h = (d.getDay() + 6) % 7; d.setHours(0, 0, 0, 0); return d.getTime() - h * HARI; }
+function sekarang() { return Date.now() + (PETA.sekarang ? PETA.sekarang - (PETA._diterima || Date.now()) : 0); }
+/** Latihan yang dibuka guru dalam 7 hari terakhir dan belum dikerjakan. */
+function itemBaru(id) { const w = (PETA.rilisWaktu || {})[id]; return !!w && w > sekarang() - 7 * HARI && ['siap', 'lanjut'].includes(status(id).k); }
+function gambarTarget(dibuka) {
+  const now = sekarang(), mulai = awalMinggu(now);
+  const waktu = Object.values(PETA.milik || {}).filter(m => m.j > 0 && m.w).map(m => m.w);
+  const minggu = waktu.filter(w => w >= mulai).length;
+  const sisa = dibuka.filter(id => ['siap', 'lanjut'].includes(status(id).k)).length;
+  const target = Math.min(TARGET_MINGGU, minggu + sisa);
+  const el = $('k-target');
+  if (!target) { el.hidden = true; return; }
+  const ada = new Set(waktu.map(awalMinggu)); let runtun = 0, w = mulai; if (!ada.has(w)) w -= 7 * HARI; while (ada.has(w)) { runtun++; w -= 7 * HARI; }
+  const capai = Math.min(minggu, target), tuntas = minggu >= target;
+  el.innerHTML = '<div class="ikon">' + (tuntas ? '🏅' : '🎯') + '</div><div class="isi"><h2>' + (tuntas ? 'Target minggu ini tercapai!' : 'Target minggu ini: ' + target + ' latihan') + '</h2>' +
+    '<div class="bintang">' + Array.from({ length: target }, (_, i) => '<span class="' + (i < capai ? 'ok' : '') + '">' + (i < capai ? '★' : i + 1) + '</span>').join('') + '</div>' +
+    '<p class="sub" style="margin:0">' + (tuntas ? 'Hebat! Kamu sudah menyelesaikan ' + minggu + ' latihan minggu ini.' + (sisa ? ' Masih ada ' + sisa + ' latihan lagi bila ingin menambah.' : '') : 'Sudah ' + minggu + ' dari ' + target + '. ' + (target - minggu === 1 ? 'Tinggal satu lagi!' : 'Kerjakan sedikit setiap hari, ya.')) + ' Target dihitung mulai Senin.</p></div>' +
+    (runtun >= 2 ? '<div class="api">🔥 ' + runtun + ' minggu berturut-turut</div>' : '');
+  el.hidden = false;
+}
 function gambarPeta() {
   const dibuka = PETA.rilis.filter(id => ADA.has(id) && !(J.info(id).premium && !KELAS.premium));
   const selesai = dibuka.filter(id => { const m = (PETA.milik || {})[id]; return m && m.j > 0; });
@@ -314,17 +350,21 @@ function gambarPeta() {
   $('sapa-emo').textContent = emo; $('sapa-pesan').textContent = pesan;
   let infoTutup = false; try { infoTutup = !!localStorage.getItem('tka-jalur-info'); } catch (e) { infoTutup = false; }
   $('info-baru').hidden = infoTutup;
+  gambarTarget(dibuka);
+  const baru = dibuka.filter(itemBaru);
+  $('baru-pesan').hidden = !baru.length;
+  $('baru-pesan').innerHTML = baru.length ? '🆕 Gurumu membuka <b>' + baru.length + ' latihan baru</b> minggu ini. Ketuk untuk mulai ›' : '';
 
   // siap dikerjakan
   const urut = (a, b) => { const x = J.info(a), y = J.info(b); return (x.jenis === 'kls') - (y.jenis === 'kls') || (x.m === MAPEL ? 0 : 1) - (y.m === MAPEL ? 0 : 1) || x.m.localeCompare(y.m) || (x.no || 0) - (y.no || 0) || (x.versi || 0) - (y.versi || 0); };
-  const tugas = dibuka.map(id => [id, status(id)]).filter(([, s]) => ['siap', 'lanjut', 'habis'].includes(s.k)).sort((a, b) => urut(a[0], b[0]));
+  const tugas = dibuka.map(id => [id, status(id)]).filter(([, s]) => ['siap', 'lanjut', 'habis'].includes(s.k)).sort((a, b) => itemBaru(b[0]) - itemBaru(a[0]) || urut(a[0], b[0]));
   $('tugas-sub').textContent = tugas.length ? 'Mulailah dari yang paling atas. Setiap latihan singkat, jadi kerjakan dengan tenang dan teliti.' : dibuka.length ? 'Semua latihan yang dibuka sudah kamu kerjakan. Hebat! 🎉' : 'Belum ada latihan yang dibuka. Nanti latihan dari gurumu muncul di sini.';
   $('tugas').innerHTML = tugas.length ? tugas.slice(0, 8).map(([id, s]) => {
     const it = s.it, vv = it.jenis === 'kls' ? null : V[it.versi];
     const warna = it.jenis === 'kls' ? 'v3' : 'v' + it.versi;
     const lbl = it.jenis === 'kls' ? '🏁 Tes akhir' : vv.ikon + ' ' + vv.kode + ' ' + vv.nama;
     const aksi = s.k === 'lanjut' ? 'Lanjutkan ›' : s.k === 'habis' ? 'Minta izin ulang' : 'Mulai ›';
-    return '<a class="tg ' + warna + '" href="' + (s.k === 'habis' ? '#' : tautan(id)) + '" data-id="' + id + '" data-k="' + s.k + '"><span class="lambang">' + (it.jenis === 'kls' ? '🏁' : vv.ikon) + '</span><span class="isi"><small>' + esc(lbl + ' · ' + JALUR_TKA.mapel[it.m].nama) + '</small><b>' + esc(judulItem(id)) + '</b><small>' + it.soal + ' soal · ' + it.durasi + ' menit · ' + (it.sekali ? 'sekali kesempatan' : 'boleh diulang') + '</small></span><span class="aksi">' + aksi + '</span></a>';
+    return '<a class="tg ' + warna + '" href="' + (s.k === 'habis' ? '#' : tautan(id)) + '" data-id="' + id + '" data-k="' + s.k + '"><span class="lambang">' + (it.jenis === 'kls' ? '🏁' : vv.ikon) + '</span><span class="isi"><small>' + esc(lbl + ' · ' + JALUR_TKA.mapel[it.m].nama) + (itemBaru(id) ? '<span class="lbl-baru">🆕 BARU</span>' : '') + '</small><b>' + esc(judulItem(id)) + '</b><small>' + it.soal + ' soal · ' + it.durasi + ' menit · ' + (it.sekali ? 'sekali kesempatan' : 'boleh diulang') + '</small></span><span class="aksi">' + aksi + '</span></a>';
   }).join('') + (tugas.length > 8 ? '<p class="catatan" style="margin:2px 0 0">… dan ' + (tugas.length - 8) + ' latihan lain di peta di bawah.</p>' : '') : '<div class="kosong"><span class="emo">' + (dibuka.length ? '🎉' : '📭') + '</span></div>';
 
   // tab mapel
@@ -358,7 +398,7 @@ function gambarMapel() {
       if (s.k === 'selesai') return '<a class="pl v' + v + ' selesai" ' + bg + ' href="#" data-id="' + id + '" data-k="selesai" title="Nilai ' + angka(s.m.t) + '"><span>✅ ' + angka(s.m.t) + '</span>' + vv.kode + '</a>';
       if (s.k === 'ulang') return '<a class="pl v' + v + ' selesai" ' + bg + ' href="' + tautan(id) + '" title="Nilai terbaik ' + angka(s.m.b) + ', ketuk untuk mengulang"><span>✅ ' + angka(s.m.b) + '</span>' + vv.kode + ' ↻</a>';
       if (s.k === 'habis') return '<a class="pl habis" href="#" data-id="' + id + '" data-k="habis"><span>⚠️</span>' + vv.kode + '</a>';
-      return '<a class="pl v' + v + ' siap" ' + bg + ' href="' + tautan(id) + '"><span>' + (s.k === 'lanjut' ? '⏳' : '▶') + '</span>' + vv.kode + '</a>';
+      return '<a class="pl v' + v + ' siap' + (itemBaru(id) ? ' baru' : '') + '" ' + bg + ' href="' + tautan(id) + '"><span>' + (s.k === 'lanjut' ? '⏳' : '▶') + '</span>' + vv.kode + '</a>';
     }).join('');
     return '<div class="ind"><div class="judul"><b>' + x.no + '. ' + esc(x.judul) + '</b><small>' + esc(x.indikator) + '</small></div><div class="pil">' + pil + '</div></div>';
   }).join('')).join('');
