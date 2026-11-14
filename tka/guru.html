@@ -473,8 +473,8 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
     </ul>
     <h3>G. Rapor orang tua dan laporan kepala sekolah (Kelas Premium)</h3>
     <ul>
-      <li><b>Rapor orang tua</b>: ketuk 📄 di samping nama siswa (atau tombol <b>📄 Rapor untuk orang tua</b> pada grafik). Tulis catatan guru bila perlu, lalu pilih <b>Buat rapor</b> untuk mencetak/menyimpan PDF, atau <b>Kirim ringkasan ke WA</b> untuk mengirim ringkasan beserta tautan latihan ke orang tua.</li>
-      <li>Rapor berisi nilai terakhir dan predikat, perkembangan, grafik, capaian per elemen, indikator yang perlu ditingkatkan, status latihan remedial, saran untuk orang tua, dan kolom tanda tangan.</li>
+      <li><b>Rapor orang tua</b>: ketuk 📄 di samping nama siswa di tab <b>📊 Analisis</b> atau di tabel nilai (atau tombol <b>📄 Rapor untuk orang tua</b> pada grafik). Tulis catatan guru bila perlu, lalu pilih <b>Buat rapor</b> untuk mencetak/menyimpan PDF, atau <b>Kirim ringkasan ke WA</b> untuk mengirim ringkasan beserta tautan latihan ke orang tua.</li>
+      <li>Rapor berisi kemajuan <b>Jalur Belajar</b> per indikator (V1–V4) beserta latihan yang sudah dibuka tetapi belum dikerjakan, nilai tes akhir, nilai terakhir dan predikat, perkembangan, grafik, capaian per elemen, indikator yang perlu ditingkatkan, status latihan remedial, saran untuk orang tua, dan kolom tanda tangan.</li>
       <li><b>Laporan kepala sekolah</b>: ketuk <b>📑 Laporan kepala sekolah</b> di bagian atas dasbor. Berisi ringkasan kegiatan kelas, hasil setiap paket, sebaran predikat, indikator terlemah, hasil ujian serentak, siswa yang memerlukan perhatian, dan rencana tindak lanjut.</li>
       <li>Untuk menyimpan sebagai PDF, pilih <b>Simpan sebagai PDF</b> pada jendela cetak.</li>
     </ul>
@@ -498,7 +498,7 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 <script src="bank/nasional.js?v=1"></script>
 <script src="impor-tka.js?v=1"></script>
 <script src="bank/pembaruan.js?v=1"></script>
-<script src="jalur-guru.js?v=7"></script>
+<script src="jalur-guru.js?v=8"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;
@@ -794,7 +794,7 @@ function remedialSiswa(bank, s) {
   const nama = kunciNamaG(s.nama), sejak = waktuMs(s.terakhir.waktu);
   return pilih.map(L => {
     const lt = DATA.baris.filter(b => b.paket === L.id && kunciNamaG(b.nama) === nama && waktuMs(b.waktu) >= sejak);
-    return { L, terbaik: lt.length ? Math.max(...lt.map(b => b.nilai)) : null };
+    return { L, terbaik: lt.length ? Math.max(...lt.map(b => b.nilai)) : null, dibuka: !TKA.jalur.info(L.id) || (DATA.rilis || []).includes(L.id) };
   });
 }
 function namaPaket(id) {
@@ -805,7 +805,7 @@ function namaPaket(id) {
 function tampilKembang(nama) {
   const k = kunciNamaG(nama);
   const semua = DATA.baris.filter(b => kunciNamaG(b.nama) === k).sort((a, b) => waktuMs(a.waktu) - waktuMs(b.waktu));
-  const titik = semua.map(b => ({ waktu: waktuMs(b.waktu), nilai: b.nilai, label: namaPaket(b.paket), latihan: /^lt-/.test(b.paket) }));
+  const titik = semua.map(b => ({ waktu: waktuMs(b.waktu), nilai: b.nilai, label: namaPaket(b.paket), latihan: /^(lt|jb)-/.test(b.paket) }));
   const tryout = titik.filter(t => !t.latihan), latihan = titik.filter(t => t.latihan);
   const naik = tryout.length > 1 ? tryout[tryout.length - 1].nilai - tryout[0].nilai : null;
   const el = $('k-kembang');
@@ -946,6 +946,18 @@ async function ringkasSiswa(nama) {
   return { nama, milik, hasil, latihan };
 }
 
+/* ---- bagian Jalur Belajar di rapor ---- */
+function jmlJalur(jl) { return jl.reduce((a, x) => a + x.baris.reduce((b, y) => b + Object.keys(y.sel).length, 0) + x.tes.length, 0); }
+function bagianJalur(jl) {
+  if (!jl.some(x => x.baris.length || x.tes.length)) return '<h2>Jalur Belajar Bertahap</h2><p>Belum ada latihan Jalur Belajar yang dikerjakan.' + (jl.some(x => x.belum.length) ? ' Latihan yang sudah dibuka guru dapat dikerjakan dari Peta Belajar.' : '') + '</p>';
+  const sel = v => v === undefined ? '<td style="color:#94a3b8;text-align:center">–</td>' : '<td style="text-align:center;font-weight:700;background:' + (v >= 80 ? '#dcfce7' : v >= 60 ? '#fef3c7' : '#fee2e2') + '">' + angka(v) + '</td>';
+  return '<h2>Jalur Belajar Bertahap</h2><p style="margin:0 0 6px;font-size:12.5px;color:#475569">Latihan per indikator TKA: 🌱 V1 Pemahaman → 🧩 V2 Model TKA → 🎯 V3 Prediksi TKA → 🚀 V4 Prediksi Lanjutan. Warna: hijau ≥ 80 (dikuasai), kuning 60–79 (hampir), merah &lt; 60 (perlu bimbingan).</p>' +
+    jl.map(x => !x.baris.length && !x.tes.length ? '<h3>' + x.mapel + '</h3><p>Belum mengerjakan latihan ' + x.mapel + '.' + (x.belum.length ? ' Sudah dibuka guru: ' + x.belum.slice(0, 6).map(b => esc(b.nama)).join(', ') + '.' : '') + '</p>' :
+      '<section><h3>' + x.mapel + ' <span style="font-weight:400;color:#5b6b7f">(' + x.baris.length + ' indikator dilatih, ' + x.tuntas + ' dikuasai)</span></h3>' +
+      (x.baris.length ? '<table><tr><th>Indikator</th><th style="width:52px">V1</th><th style="width:52px">V2</th><th style="width:52px">V3</th><th style="width:52px">V4</th></tr>' + x.baris.map(b => '<tr><td>' + b.no + '. ' + esc(b.judul) + '</td>' + [1, 2, 3, 4].map(v => sel(b.sel[v])).join('') + '</tr>').join('') + '</table>' : '') +
+      (x.tes.length ? '<p style="margin:6px 0 0"><b>Tes akhir:</b> ' + x.tes.map(t => esc(t.nama) + ' = ' + angka(t.nilai) + ' ' + lencanaPred(t.nilai)).join(', ') + '</p>' : '') +
+      (x.belum.length ? '<p style="margin:6px 0 0"><b>Sudah dibuka guru, belum dikerjakan:</b> ' + x.belum.slice(0, 8).map(b => esc(b.nama)).join(', ') + (x.belum.length > 8 ? ', dan ' + (x.belum.length - 8) + ' latihan lainnya' : '') + '.</p>' : '') + '</section>').join('');
+}
 /* ---- rapor orang tua ---- */
 function mintaCatatan(nama, lanjut) {
   let d = $('dlg-rapor');
@@ -965,33 +977,39 @@ function mintaCatatan(nama, lanjut) {
 function saranOrtu(r) {
   const s = [];
   r.hasil.filter(h => !h.kosong).forEach(h => {
-    const sisa = h.remedial.filter(x => !(x.terbaik >= 80));
+    const sisa = h.remedial.filter(x => !(x.terbaik >= 80) && x.dibuka);
     if (sisa.length) s.push('Dampingi anak mengerjakan latihan <b>' + h.mapel + '</b>: ' + sisa.map(x => esc(x.L.judul)).join(', ') + '. Setiap latihan hanya 5 soal (15 menit) dan dapat dibuka dari tautan kelas.');
+  });
+  (r.jalur || []).forEach(x => {
+    if (x.perlu.length) s.push('Dampingi anak mengulang materi <b>' + x.mapel + '</b> yang nilainya masih di bawah 60: ' + x.perlu.slice(0, 4).map(b => esc(b.judul)).join(', ') + '.');
+    if (x.belum.length) s.push('Ingatkan anak mengerjakan latihan <b>' + x.mapel + '</b> yang sudah dibuka guru di <b>Peta Belajar</b> (' + x.belum.length + ' latihan). Setiap latihan 5–10 soal.');
   });
   const nilai = r.hasil.filter(h => !h.kosong).map(h => h.akhir.nilai);
   if (nilai.some(v => v < 55)) s.push('Sediakan waktu belajar rutin 20–30 menit setiap hari di rumah, lebih baik sedikit tetapi teratur.');
-  if (r.hasil.some(h => h.kosong)) s.push('Ajak anak mencoba tryout ' + r.hasil.filter(h => h.kosong).map(h => h.mapel).join(' dan ') + ' agar kemampuannya dapat diketahui.');
+  if (r.hasil.some(h => h.kosong) && !jmlJalur(r.jalur || [])) s.push('Ajak anak mencoba tryout ' + r.hasil.filter(h => h.kosong).map(h => h.mapel).join(' dan ') + ' agar kemampuannya dapat diketahui.');
   s.push('Berikan pujian atas usaha anak, bukan hanya pada nilainya.', 'Pastikan anak cukup tidur dan sarapan sebelum belajar atau ujian.');
   return s;
 }
 async function raporSiswa(nama) {
   if (!cekPremiumUntuk('Rapor untuk orang tua')) return;
   mintaCatatan(nama, async (mode, catatan) => {
-    const r = await ringkasSiswa(nama);
+    const r = await ringkasSiswa(nama); r.jalur = JG.raporJalur(nama);
     if (mode === 'wa') return kirimRaporWA(r, catatan);
     const isiMapel = r.hasil.map(h => h.kosong ? '<h3>' + h.mapel + '</h3><p>Belum mengerjakan tryout ' + h.mapel + '.</p>' :
       '<section><h3>' + h.mapel + ' <span style="font-weight:400;color:#5b6b7f">(' + esc(namaPaket(h.akhir.paket)) + ', ' + tglID(waktuMs(h.akhir.waktu)) + ')</span></h3>' +
       '<table><tr><th>Elemen</th><th>Capaian</th></tr>' + h.elemen.map(([n, v]) => '<tr><td>' + esc(n) + '</td><td>' + batangR(v) + '</td></tr>').join('') + '</table>' +
       (h.lemah.length ? '<p style="margin:8px 0 2px"><b>Perlu ditingkatkan:</b></p><ul>' + h.lemah.map(x => '<li>' + esc(x.q.indikator) + '</li>').join('') + '</ul>' : '<p>🎉 Semua soal dijawab benar.</p>') +
-      (h.remedial.length ? '<p style="margin:8px 0 2px"><b>Latihan remedial:</b></p><ul>' + h.remedial.map(x => '<li>' + esc(x.L.judul) + ' — ' + (x.terbaik >= 80 ? '✔ tuntas (' + angka(x.terbaik) + ')' : x.terbaik != null ? 'sudah dicoba, nilai ' + angka(x.terbaik) : 'belum dikerjakan') + '</li>').join('') + '</ul>' : '') + '</section>').join('');
-    const titik = r.milik.map(b => ({ waktu: waktuMs(b.waktu), nilai: b.nilai, label: namaPaket(b.paket), latihan: /^lt-/.test(b.paket) }));
+      (h.remedial.length ? '<p style="margin:8px 0 2px"><b>Latihan remedial:</b></p><ul>' + h.remedial.map(x => '<li>' + esc(x.L.judul) + ' — ' + (x.terbaik >= 80 ? '✔ tuntas (' + angka(x.terbaik) + ')' : x.terbaik != null ? 'sudah dicoba, nilai ' + angka(x.terbaik) : x.dibuka ? 'belum dikerjakan' : 'akan dibuka guru') + '</li>').join('') + '</ul>' : '') + '</section>').join('');
+    const titik = r.milik.map(b => ({ waktu: waktuMs(b.waktu), nilai: b.nilai, label: namaPaket(b.paket), latihan: /^(lt|jb)-/.test(b.paket) }));
     const isi = '<div class="kop"><div><small>KELAS INTENSIF TKA · RAPOR LATIHAN</small><h1>Rapor Latihan TKA</h1>Laporan perkembangan belajar untuk orang tua/wali</div><div style="text-align:right">' + tglID(Date.now()) + '</div></div>' +
       '<table class="id"><tr><td>Nama siswa</td><td>' + esc(nama) + '</td><td>Kelas</td><td>' + esc(KELAS.kelas) + '</td></tr><tr><td>Sekolah</td><td>' + esc(KELAS.sekolah) + '</td><td>Guru</td><td>' + esc(KELAS.guru) + '</td></tr></table>' +
       '<h2>Ringkasan</h2><div class="kotak">' + r.hasil.map(h => '<div><small>' + h.mapel + ' (terakhir)</small><b>' + (h.kosong ? '–' : angka(h.akhir.nilai)) + '</b>' + (h.kosong ? '<small>belum mengerjakan</small>' : lencanaPred(h.akhir.nilai) +
         (h.jumlah > 1 ? '<br><small>' + (h.akhir.nilai >= h.awal.nilai ? '▲ naik ' : '▼ turun ') + angka(Math.abs(Math.round((h.akhir.nilai - h.awal.nilai) * 10) / 10)) + ' poin dari tryout pertama</small>' : '')) + '</div>').join('') +
-      '<div><small>Latihan per indikator</small><b>' + r.latihan.length + '</b><small>kali dikerjakan</small></div></div>' +
+      '<div><small>Jalur Belajar</small><b>' + jmlJalur(r.jalur) + '</b><small>latihan selesai · ' + r.jalur.reduce((a, x) => a + x.tuntas, 0) + ' indikator dikuasai</small></div>' +
+      (r.latihan.length ? '<div><small>Latihan per indikator (lama)</small><b>' + r.latihan.length + '</b><small>kali dikerjakan</small></div>' : '') + '</div>' +
       (titik.length > 1 ? '<h2>Grafik perkembangan</h2>' + TKA.grafikNilai(titik) : '') +
-      '<h2>Capaian per mata pelajaran</h2>' + isiMapel +
+      bagianJalur(r.jalur) +
+      '<h2>Tryout paket</h2>' + isiMapel +
       '<h2>Saran untuk orang tua</h2><ul>' + saranOrtu(r).map(x => '<li>' + x + '</li>').join('') + '</ul>' +
       (catatan ? '<h2>Catatan guru</h2><div class="catatan">' + esc(catatan).replace(/\n/g, '<br>') + '</div>' : '') +
       '<p style="font-size:12px;color:#64748b;margin-top:12px">Predikat: Sangat baik (85–100), Baik (70–84), Cukup (55–69), Perlu bimbingan (di bawah 55).</p>' +
@@ -1002,10 +1020,11 @@ async function raporSiswa(nama) {
 function kirimRaporWA(r, catatan) {
   const baris = r.hasil.map(h => h.kosong ? '• ' + h.mapel + ': belum mengerjakan' : '• ' + h.mapel + ': nilai terakhir *' + angka(h.akhir.nilai) + '* (' + predikat(h.akhir.nilai)[0] + ')' +
     (h.jumlah > 1 ? ', ' + (h.akhir.nilai >= h.awal.nilai ? 'naik ' : 'turun ') + angka(Math.abs(Math.round((h.akhir.nilai - h.awal.nilai) * 10) / 10)) + ' poin' : ''));
-  const latihan = r.hasil.filter(h => !h.kosong).flatMap(h => h.remedial.filter(x => !(x.terbaik >= 80)).map(x => '• ' + x.L.judul + ' 👉 ' + tautanLatihan(x.L.id)));
+  const latihan = r.hasil.filter(h => !h.kosong).flatMap(h => h.remedial.filter(x => !(x.terbaik >= 80) && x.dibuka).map(x => '• ' + x.L.judul + ' 👉 ' + tautanLatihan(x.L.id)));
   const pesan = 'Assalamu’alaikum/Salam sejahtera, Bapak/Ibu orang tua/wali *' + r.nama + '* 🙏\n\nBerikut ringkasan latihan TKA ananda di ' + KELAS.kelas + ':\n' + baris.join('\n') +
-    '\n• Latihan per indikator: ' + r.latihan.length + ' kali dikerjakan' +
-    (latihan.length ? '\n\n*Latihan yang disarankan* (5 soal, 15 menit):\n' + latihan.join('\n') : '\n\n🎉 Semua latihan remedial sudah tuntas.') +
+    '\n• Jalur Belajar: ' + jmlJalur(r.jalur || []) + ' latihan selesai, ' + (r.jalur || []).reduce((a, x) => a + x.tuntas, 0) + ' indikator dikuasai' +
+    ((r.jalur || []).some(x => x.belum.length) ? '\n\n*Latihan yang sudah dibuka guru dan belum dikerjakan:*\n' + r.jalur.flatMap(x => x.belum.slice(0, 3).map(b => '• ' + x.mapel + ' ' + b.nama)).join('\n') + '\nBuka Peta Belajar 👉 ' + tautanKelas(KELAS) : '') +
+    (latihan.length ? '\n\n*Latihan yang disarankan* (5 soal, 15 menit):\n' + latihan.join('\n') : r.hasil.some(h => !h.kosong && h.remedial.length) && r.hasil.every(h => h.kosong || h.remedial.every(x => x.terbaik >= 80)) ? '\n\n🎉 Semua latihan remedial sudah tuntas.' : '') +
     (catatan ? '\n\n*Catatan guru:* ' + catatan : '') + '\n\nMohon dampingi ananda saat berlatih di rumah. Terima kasih.\n— ' + KELAS.guru;
   window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
 }
