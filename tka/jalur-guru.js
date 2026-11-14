@@ -337,7 +337,7 @@ const JG = (() => {
             return '<td class="hm-0"' + (rilis.has(id) ? ' title="Belum mengerjakan"' : '') + '></td>';
           }).join('');
           const r = nilai.length ? nilai.reduce((a, b) => a + b, 0) / nilai.length : null;
-          return '<tr><td class="hm-nama">' + esc(s) + ' <button type="button" class="btn-mini hm-rapor cetak-sembunyi" data-rapor-jg="' + esc(s) + '" title="Rapor untuk orang tua">📄</button></td>' + sel + '<td class="hm-rata">' + (r === null ? '–' : '<b class="' + warna(r) + '">' + angka(Math.round(r)) + '</b>') + '</td></tr>';
+          return '<tr><td class="hm-nama" title="' + esc(s) + '"><button type="button" class="btn-mini hm-rapor cetak-sembunyi" data-rapor-jg="' + esc(s) + '" title="Rapor untuk orang tua">📄</button> ' + esc(s) + '</td>' + sel + '<td class="hm-rata">' + (r === null ? '–' : '<b class="' + warna(r) + '">' + angka(Math.round(r)) + '</b>') + '</td></tr>';
         }).join('') +
         '</tbody><tfoot><tr><td class="hm-nama">Rata-rata kelas</td>' + kolom.map(id => '<td>' + (rata[id] === null ? '–' : '<b class="' + warna(rata[id]) + '">' + angka(Math.round(rata[id])) + '</b>') + '<small>' + jumlah[id] + ' siswa</small></td>').join('') + '<td></td></tr>' +
         '<tr><td class="hm-nama">Status</td>' + ind.map(g => { const st = statusInd.find(x => x.g === g); return '<td colspan="' + g.ids.length + '" class="hm-st">' + (st.r === null ? '–' : st.r >= 80 ? '✅' : st.r >= 60 ? '⚠️' : '🔴') + '</td>'; }).join('') + '<td></td></tr>' +
