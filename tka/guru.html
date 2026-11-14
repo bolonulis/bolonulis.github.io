@@ -219,6 +219,10 @@ b.naik{color:#1d7a5c}b.turun{color:#c0392b}
 dialog.dlg-jg{border:0;border-radius:18px;padding:20px;max-width:min(460px,94vw);box-shadow:0 30px 80px rgba(0,0,0,.3)}
 dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
 .ingat-angka{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}.ingat-angka div{border:1px solid var(--line);border-radius:12px;padding:10px 12px}.ingat-angka b{display:block;font-size:22px;color:var(--biru)}.ingat-angka small{color:var(--muted);font-size:12.5px}
+.jb-blok{margin-top:18px;border-top:1px dashed var(--line);padding-top:12px}.jb-blok h3{margin:0 0 4px;color:var(--biru)}
+.jb-kartu,.jb-semua{border:1px solid var(--line);border-radius:12px;margin:6px 0;background:#fff}.jb-kartu>summary,.jb-semua>summary{cursor:pointer;padding:9px 12px;list-style-position:inside}
+.jb-kartu>summary span{display:block;font-size:12.5px;color:var(--muted);margin-left:18px}.jb-semua>summary{font-weight:800;color:var(--aksen)}.jb-semua{padding:0 8px 4px}
+.jb-isi{border-top:1px solid var(--line);padding:8px 12px;font-size:14px}.jb-isi p{margin:3px 0}
 dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 .pbr-blok{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:14px}
 .pbr-blok small{color:#64748b}
@@ -437,6 +441,7 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
       <li>Di atas tabel ada ringkasan <b>🔴 indikator perlu pendalaman</b>, <b>⚠️ hampir dikuasai</b>, dan <b>✅ sudah dikuasai</b>, beserta siswa yang belum mengerjakan dan yang perlu perhatian khusus.</li>
       <li>Ketuk satu kotak untuk melihat rinciannya. Untuk V2/V3/tes akhir, tersedia tombol <b>🔁 Izinkan ulang</b>. Tanda ⚠️ berarti waktu habis dan jawaban tidak terkumpul.</li>
       <li>V1 menampilkan nilai terbaik. Angka kecil (mis. <sup>3×</sup>) menunjukkan jumlah percobaan. Arahkan kursor/ketuk untuk melihat nilai pertama → terbaik.</li>
+      <li><b>💡 Jebakan umum &amp; cara membahas</b> (di bawah tabel): untuk setiap indikator yang belum dikuasai kelas, ada daftar kesalahan yang sering terjadi, contohnya, dan cara membahasnya di kelas. Bahas sebelum siswa mengerjakan V2/V3.</li>
       <li><b>📈 Nilai Awal → Tes Akhir</b> di bagian bawah menunjukkan perkembangan setiap siswa.</li>
       <li>Tab <b>🏁 Hasil Tes</b> berisi rincian tes akhir dan ujian serentak per soal (capaian elemen, indikator terlemah, nilai siswa). Tab <b>🗂️ Riwayat Lama</b> berisi nilai sebelum pembaruan.</li>
     </ul>
@@ -510,8 +515,9 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 <script src="bank/jalur.js?v=4"></script>
 <script src="bank/nasional.js?v=1"></script>
 <script src="impor-tka.js?v=1"></script>
-<script src="bank/pembaruan.js?v=2"></script>
-<script src="jalur-guru.js?v=10"></script>
+<script src="bank/pembaruan.js?v=3"></script>
+<script src="bank/jebakan.js?v=1"></script>
+<script src="jalur-guru.js?v=11"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;
