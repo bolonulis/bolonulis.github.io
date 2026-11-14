@@ -74,6 +74,8 @@ dialog textarea{width:100%;min-height:150px;font:inherit;font-size:13.5px;paddin
       <section class="kartu"><h2>🔥 Latihan paling banyak diselesaikan</h2><p class="sub">Jalur Belajar, jumlah siswa yang menyelesaikan.</p><div id="populer"></div></section>
     </div>
     <section class="kartu"><h2>📞 Perlu ditindaklanjuti</h2><p class="sub">Guru yang sebaiknya dihubungi sekarang. Tombol WA membuka pesan siap kirim.</p><div class="tl" id="tl"></div></section>
+    <section class="kartu"><h2>🔎 Analisis soal</h2><p class="sub">Persentase benar setiap soal dari semua pengerjaan (minimal 15). Soal dengan persentase sangat rendah perlu diperiksa: kunci keliru, kalimat membingungkan, atau miskonsepsi siswa. Sebaran jawaban mulai tercatat sejak 14 November 2026.</p>
+      <button class="btn ghost" type="button" id="b-butir">🔎 Hitung analisis soal</button><div id="butir" style="margin-top:10px"></div></section>
     <section class="kartu"><h2>🏫 Semua kelas</h2><p class="sub">Diurutkan dari yang terakhir aktif. Siswa aktif = mengerjakan Jalur Belajar dalam 7 hari terakhir.</p>
       <input class="cari" id="cari" placeholder="Cari kode, guru, sekolah…" style="margin-bottom:10px">
       <div class="gulir"><table><thead><tr><th>Kelas</th><th>Dibuat</th><th>Siswa</th><th>Aktif 7 hr</th><th>Pengerjaan</th><th>Rilis</th><th>Status</th><th>Terakhir aktif</th><th></th></tr></thead><tbody id="t-kelas"></tbody></table></div>
@@ -205,6 +207,25 @@ $('f-masuk').onsubmit = async e => {
   const ok = await muat(false); $('b-masuk').disabled = false;
   if (ok) { (f.ingat.checked ? localStorage : sessionStorage).setItem('tka-admin', KUNCI); f.kunci.value = ''; $('m-salah').textContent = ''; }
 };
+
+function labelPaket(id) {
+  if (TKA.jalur && TKA.jalur.info(id)) return namaItem(id);
+  const m = /^(sd|lt)-(mat|bi)-(\d+)$/.exec(id); if (!m) return id;
+  return (m[1] === 'sd' ? 'Simulasi ' : 'Latihan lama ') + (m[2] === 'mat' ? 'Matematika' : 'Bahasa Indonesia') + (m[1] === 'sd' ? ' Paket ' : ' ind. ') + Number(m[3]);
+}
+async function hitungButir() {
+  $('b-butir').disabled = true; $('butir').innerHTML = '<p class="kosong">Menghitung… (dapat memakan waktu sekitar setengah menit)</p>';
+  const r = await TKA.api({ aksi: 'adminButir', kunci: KUNCI }); $('b-butir').disabled = false;
+  if (!r.ok) { $('butir').innerHTML = '<p class="salah">' + esc(r.pesan) + '</p>'; return; }
+  const baris = [];
+  Object.entries(r.paket).forEach(([id, p]) => p.soal.forEach((x, i) => { if (x && x.n >= 15) baris.push({ id, no: i + 1, n: x.n, p: x.s / x.n * 100, j: x.j }); }));
+  baris.sort((a, b) => a.p - b.p);
+  const warna = v => v < 30 ? '#fee2e2' : v < 50 ? '#fef3c7' : v > 95 ? '#e0f2fe' : '#fff';
+  const tampil = v => baris.filter(v).slice(0, 60).map(x => '<tr><td>' + esc(labelPaket(x.id)) + '</td><td>' + x.no + '</td><td>' + angka(x.n) + '</td><td style="background:' + warna(x.p) + ';font-weight:700">' + Math.round(x.p) + '%</td><td style="font-size:12px">' + esc(Object.entries(x.j || {}).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([a, n]) => a + ': ' + n).join(' · ')) + '</td></tr>').join('');
+  $('butir').innerHTML = '<p class="sub">' + angka(baris.length) + ' soal dianalisis. <b>Paling sulit</b> (60 terbawah):</p><div class="gulir" style="max-height:420px"><table><thead><tr><th>Paket / latihan</th><th>No.</th><th>Dikerjakan</th><th>Benar</th><th>Jawaban terbanyak</th></tr></thead><tbody>' + tampil(() => true) + '</tbody></table></div>' +
+    '<p class="sub" style="margin-top:12px"><b>Paling mudah</b> (di atas 95%):</p><div class="gulir" style="max-height:260px"><table><thead><tr><th>Paket / latihan</th><th>No.</th><th>Dikerjakan</th><th>Benar</th><th>Jawaban terbanyak</th></tr></thead><tbody>' + (tampil(x => x.p > 95) || '<tr><td colspan="5" class="kosong">Tidak ada.</td></tr>') + '</tbody></table></div>';
+}
+$('b-butir').onclick = hitungButir;
 $('b-muat').onclick = () => muat(true);
 $('b-keluar').onclick = () => keluar('');
 $('cari').oninput = gambarKelas;
