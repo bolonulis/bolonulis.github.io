@@ -167,6 +167,27 @@ const JG = (() => {
   }
 
 
+
+  /* ---------- rapor orang tua: kemajuan Jalur Belajar seorang siswa ---------- */
+  function raporJalur(nama) {
+    const d = ((petaKemajuan().get(kn(nama)) || {}).data) || {}, rilis = DATA.rilis || [], hasil = [];
+    for (const m of Object.keys(JALUR_TKA.mapel)) {
+      const baris = [];
+      JALUR_TKA.mapel[m].indikator.forEach(x => {
+        const sel = {}; let ada = false;
+        [1, 2, 3, 4].forEach(v => { const id = J.id(m, x.no, v), k = keadaan(id, d[id]); if (k.k === 'nilai') { sel[v] = Math.round(k.n); ada = true; } });
+        if (!ada) return;
+        const vs = Object.keys(sel).map(Number), puncak = Math.max(...vs);
+        baris.push({ no: x.no, judul: x.judul, sel, puncak, nilai: sel[puncak] });
+      });
+      const belum = rilis.filter(id => { const it = J.info(id); return it && it.m === m && it.jenis === 'jb' && keadaan(id, d[id]).k === 'belum'; })
+        .sort((a, b) => J.info(a).no - J.info(b).no || J.info(a).versi - J.info(b).versi);
+      const tes = JALUR_TKA.paket.filter(p => p.ada && p.m === m).map(p => ({ p, k: keadaan(p.id, d[p.id]) })).filter(x => x.k.k === 'nilai').map(x => ({ nama: 'Tes akhir Paket ' + J.info(x.p.id).paket, nilai: Math.round(x.k.n) }));
+      hasil.push({ m, mapel: JALUR_TKA.mapel[m].nama, baris, belum: belum.map(id => ({ id, nama: namaItem(id) })), tes,
+        tuntas: baris.filter(b => b.nilai >= 80).length, perlu: baris.filter(b => b.nilai < 60) });
+    }
+    return hasil;
+  }
   /* ---------- pembaruan soal: catatan cetak & pemberitahuan ---------- */
   const PBR = typeof PEMBARUAN_TKA === 'undefined' ? [] : PEMBARUAN_TKA;
   function simpanan(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } return v; }
@@ -282,7 +303,7 @@ const JG = (() => {
             return '<td class="hm-0"' + (rilis.has(id) ? ' title="Belum mengerjakan"' : '') + '></td>';
           }).join('');
           const r = nilai.length ? nilai.reduce((a, b) => a + b, 0) / nilai.length : null;
-          return '<tr><td class="hm-nama">' + esc(s) + '</td>' + sel + '<td class="hm-rata">' + (r === null ? '–' : '<b class="' + warna(r) + '">' + angka(Math.round(r)) + '</b>') + '</td></tr>';
+          return '<tr><td class="hm-nama">' + esc(s) + ' <button type="button" class="btn-mini hm-rapor cetak-sembunyi" data-rapor-jg="' + esc(s) + '" title="Rapor untuk orang tua">📄</button></td>' + sel + '<td class="hm-rata">' + (r === null ? '–' : '<b class="' + warna(r) + '">' + angka(Math.round(r)) + '</b>') + '</td></tr>';
         }).join('') +
         '</tbody><tfoot><tr><td class="hm-nama">Rata-rata kelas</td>' + kolom.map(id => '<td>' + (rata[id] === null ? '–' : '<b class="' + warna(rata[id]) + '">' + angka(Math.round(rata[id])) + '</b>') + '<small>' + jumlah[id] + ' siswa</small></td>').join('') + '<td></td></tr>' +
         '<tr><td class="hm-nama">Status</td>' + ind.map(g => { const st = statusInd.find(x => x.g === g); return '<td colspan="' + g.ids.length + '" class="hm-st">' + (st.r === null ? '–' : st.r >= 80 ? '✅' : st.r >= 60 ? '⚠️' : '🔴') + '</td>'; }).join('') + '<td></td></tr>' +
@@ -295,6 +316,7 @@ const JG = (() => {
     el.querySelector('.tab-mini').onclick = e => { const b = e.target.closest('button'); if (!b) return; MANALISIS = b.dataset.m; gambarAnalisis(); };
     const ke = el.querySelector('[data-ke]'); if (ke) ke.onclick = () => bukaTab('rilis', true);
     el.querySelectorAll('td[data-id]').forEach(td => td.onclick = () => detail(td.dataset.s, td.dataset.id));
+    el.querySelectorAll('[data-rapor-jg]').forEach(b => b.onclick = e => { e.stopPropagation(); if (typeof raporSiswa === 'function') raporSiswa(b.dataset.raporJg); });
     el.querySelectorAll('td[data-kls]').forEach(td => td.onclick = () => detail(td.dataset.s, td.dataset.kls));
   }
 
@@ -522,5 +544,5 @@ const JG = (() => {
     if (tb) tb.textContent = jml ? ' (' + jml + ')' : '';
   }
 
-  return { laporanImpor, laporanNasional, gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
+  return { raporJalur, laporanImpor, laporanNasional, gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
 })();
