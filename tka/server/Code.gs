@@ -27,7 +27,7 @@ var PENGATURAN = {
 var LEMBAR_AKSES = 'Akses';
 var LEMBAR_NILAI = 'Nilai';
 var KEPALA_AKSES = ['Kode', 'Nama', 'No. WA', 'Dibuat', 'Aktif', 'Perangkat', 'Dipakai', 'Terakhir dipakai', 'Catatan'];
-var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kode kelas', 'Skor per soal', 'Ujian serentak'];
+var KEPALA_NILAI = ['Waktu', 'Nama', 'Sekolah', 'Kelas', 'Paket', 'Nilai', 'Terjawab', 'Kode akses', 'Perangkat', 'Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kode kelas', 'Skor per soal', 'Ujian serentak', 'Jawaban'];
 var LEMBAR_KELAS = 'Kelas';
 var LEMBAR_UJIAN = 'Ujian';
 var KEPALA_UJIAN = ['ID ujian', 'Kode kelas', 'Paket', 'Mulai', 'Selesai', 'Durasi (menit)', 'Dibuat', 'Status'];
@@ -69,6 +69,7 @@ function doPost(e) {
     if (req.aksi === 'simpanRilis') return json_(simpanRilis_(req));
     if (req.aksi === 'admin') return json_(admin_(req));
     if (req.aksi === 'adminPremium') return json_(adminPremium_(req));
+    if (req.aksi === 'adminButir') return json_(adminButir_(req));
     if (req.aksi === 'izinUlang') return json_(izinUlang_(req));
     if (req.aksi === 'petaSiswa') return json_(petaSiswa_(req));
     if (req.aksi === 'mulaiItem') return json_(mulaiItem_(req));
@@ -332,8 +333,21 @@ function catatNilai_(req, h, kode) {
     lembar_(LEMBAR_NILAI, KEPALA_NILAI).appendRow([new Date(), potong(p.nama), potong(p.sekolah), potong(p.kelas), req.paket, h.nilai, h.terjawab + '/' + h.jumlah, kode, potong(req.perangkat),
       potong(p.provinsi), potong(p.kabupaten), potong(p.kecamatan), rapikanKode_(p.kodeKelas).slice(0, 12),
       Object.keys(h.skor).sort(function (a, b) { return a - b; }).map(function (n) { return Math.round(h.skor[n] * 100) / 100; }).join(','),
-      req.ujian ? String(req.ujian).slice(0, 12) : '']);
+      req.ujian ? String(req.ujian).slice(0, 12) : '', ringkasJawaban_(req.jawaban, h.skor)]);
   } catch (err) { /* pencatatan gagal tidak boleh menggagalkan penilaian */ }
+}
+
+/** Jawaban siswa per soal (urut nomor) untuk analisis butir: PG "B", PGK "AC", B/S "BSB" (B = kolom pertama), kosong "-". */
+function ringkasJawaban_(jawaban, skor) {
+  try {
+    var j = (jawaban && typeof jawaban === 'object') ? jawaban : {};
+    return Object.keys(skor).sort(function (a, b) { return a - b; }).map(function (no) {
+      var x = j[no];
+      if (x === undefined || x === null || x === '') return '-';
+      if (Array.isArray(x)) return x.map(function (v) { return v === true ? 'B' : v === false ? 'S' : v === null || v === undefined ? '_' : String(v).charAt(0); }).join('') || '-';
+      return String(x).charAt(0);
+    }).join(',').slice(0, 400);
+  } catch (e) { return ''; }
 }
 
 function lembar_(nama, kepala) {
@@ -1132,4 +1146,26 @@ function adminPremium_(req) {
   if (!h.ok) return h;
   CacheService.getScriptCache().remove('admin_data');
   return { ok: true, guru: h.guru, kelas: h.kelas, sekolah: h.sekolah, sampai: waktu_(h.sampai) };
+}
+
+/** Analisis butir soal untuk admin: per paket, per nomor soal → banyak pengerjaan, rata-rata skor, sebaran jawaban.
+ *  req.batas = { idPaket: waktuMs } : pengerjaan sebelum waktu itu diabaikan (soal sudah diganti). */
+function adminButir_(req) {
+  var tolak = cekAdmin_(req); if (tolak) return tolak;
+  var batas = (req.batas && typeof req.batas === 'object') ? req.batas : {}, hasil = {};
+  var uji = function (v) { return String(v || '').trim().toLowerCase().indexOf('uji sistem') === 0; };
+  lembar_(LEMBAR_NILAI, KEPALA_NILAI).getDataRange().getValues().slice(1).forEach(function (b) {
+    var paket = String(b[4] || ''), t = waktu_(b[0]); if (!paket || uji(b[1])) return;
+    if (batas[paket] && t < batas[paket]) return;
+    var sk = String(b[13] || ''); if (!sk) return;
+    var jw = String(b[15] || '').split(','), p = hasil[paket] || (hasil[paket] = { n: 0, soal: [] });
+    p.n++;
+    sk.split(',').forEach(function (v, i) {
+      var x = p.soal[i] || (p.soal[i] = { n: 0, s: 0, j: {} }), nilai = Number(v);
+      if (isNaN(nilai)) return;
+      x.n++; x.s += nilai;
+      if (jw[i] && jw.length > 1) x.j[jw[i]] = (x.j[jw[i]] || 0) + 1;
+    });
+  });
+  return { ok: true, waktu: Date.now(), paket: hasil };
 }
