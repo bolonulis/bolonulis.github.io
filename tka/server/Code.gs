@@ -67,6 +67,8 @@ function doPost(e) {
     if (req.aksi === 'bankGuru') return json_(bankGuru_(req));
     if (req.aksi === 'pembahasanGuru') return json_(pembahasanGuru_(req));
     if (req.aksi === 'simpanRilis') return json_(simpanRilis_(req));
+    if (req.aksi === 'admin') return json_(admin_(req));
+    if (req.aksi === 'adminPremium') return json_(adminPremium_(req));
     if (req.aksi === 'izinUlang') return json_(izinUlang_(req));
     if (req.aksi === 'petaSiswa') return json_(petaSiswa_(req));
     if (req.aksi === 'mulaiItem') return json_(mulaiItem_(req));
@@ -1050,4 +1052,84 @@ function pesanKode_(nama, kode) {
     'Cara memakai:\n1. Buka https://bolonulis.github.io/tka/\n2. Masukkan kode di kotak "Kode akses Pembahasan"\n' +
     '3. Kerjakan soal; setelah selesai, kunci jawaban, pembahasan, dan analisis per elemen langsung tampil dan bisa diunduh.\n\n' +
     'Kode berlaku tanpa batas waktu untuk semua paket, dan dapat dipakai di ' + PENGATURAN.MAKS_PERANGKAT + ' perangkat.';
+}
+
+/* ============================ DASBOR ADMIN (pemilik aplikasi) ============================ */
+/* Kunci admin (ADMIN_TKA_KUNCI) disimpan di Kunci.gs yang terenkripsi, tidak pernah di repositori dalam bentuk terbaca.
+ * Percobaan kunci yang salah dibatasi: 20 kali per 15 menit. */
+function cekAdmin_(req) {
+  var c = CacheService.getScriptCache(), gagal = Number(c.get('admin_gagal') || 0);
+  if (gagal >= 20) return { ok: false, pesan: 'Terlalu banyak percobaan. Coba lagi 15 menit lagi.' };
+  if (typeof ADMIN_TKA_KUNCI === 'undefined' || !ADMIN_TKA_KUNCI || String(req.kunci || '') !== ADMIN_TKA_KUNCI) {
+    c.put('admin_gagal', String(gagal + 1), 900); Utilities.sleep(700);
+    return { ok: false, pesan: 'Kunci admin salah.' };
+  }
+  return null;
+}
+function admin_(req) {
+  var tolak = cekAdmin_(req); if (tolak) return tolak;
+  var c = CacheService.getScriptCache();
+  if (!req.segar) { var s = c.get('admin_data'); if (s) return JSON.parse(s); }
+  var now = Date.now(), H = 864e5;
+  var rapi = function (v) { return String(v || '').trim().toLowerCase().replace(/\s+/g, ' '); };
+  var uji = function (v) { return rapi(v).indexOf('uji sistem') === 0; };
+  // kelas
+  var kelas = {}, daftar = [];
+  lembar_(LEMBAR_KELAS, KEPALA_KELAS).getDataRange().getValues().slice(1).forEach(function (b) {
+    var kode = rapikanKode_(b[0]); if (!kode || uji(b[2]) || uji(b[3])) return;
+    var k = { kode: kode, guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]), wa: String(b[5]).replace(/^'/, ''), dibuat: waktu_(b[6]),
+      terdaftar: rapikanSiswa_(b[7]).length, sampai: waktu_(b[8]), coba: cobaDipakai_(b[9]), masaCoba: String(b[10] || '').indexOf('Coba') === 0,
+      siswa: 0, aktif7: 0, aktif30: 0, kerja: 0, kerja7: 0, terakhir: 0, rilis: 0 };
+    kelas[kode] = k; daftar.push(k);
+  });
+  // kemajuan Jalur Belajar
+  var populer = {}, siswaAktif7 = 0, siswaAktif30 = 0;
+  lembar_(LEMBAR_KEMAJUAN, KEPALA_KEMAJUAN).getDataRange().getValues().slice(1).forEach(function (b) {
+    var k = kelas[rapikanKode_(b[1])]; if (!k) return;
+    var t = waktu_(b[4]); k.siswa++;
+    if (t > now - 7 * H) { k.aktif7++; siswaAktif7++; }
+    if (t > now - 30 * H) { k.aktif30++; siswaAktif30++; }
+    if (t > k.terakhir) k.terakhir = t;
+    var d = {}; try { d = JSON.parse(String(b[3] || '{}')) || {}; } catch (e) { d = {}; }
+    Object.keys(d).forEach(function (id) { if (d[id] && d[id].j) populer[id] = (populer[id] || 0) + 1; });
+  });
+  // rilis
+  lembar_(LEMBAR_RILIS, KEPALA_RILIS).getDataRange().getValues().slice(1).forEach(function (b) {
+    var k = kelas[rapikanKode_(b[0])]; if (k) k.rilis = String(b[1] || '').split(',').filter(String).length;
+  });
+  // nilai (pengerjaan) per minggu, 8 minggu terakhir
+  var minggu = []; for (var i = 7; i >= 0; i--) minggu.push({ mulai: now - (i + 1) * 7 * H, kelas: 0, umum: 0, kelasBaru: 0 });
+  var kerja7 = 0, kerja30 = 0, umum7 = 0;
+  lembar_(LEMBAR_NILAI, KEPALA_NILAI).getDataRange().getValues().slice(1).forEach(function (b) {
+    if (uji(b[1])) return;
+    var t = waktu_(b[0]), kode = rapikanKode_(b[12]), k = kelas[kode];
+    if (t > now - 7 * H) { kerja7++; if (!k) umum7++; }
+    if (t > now - 30 * H) kerja30++;
+    if (k) { k.kerja++; if (t > now - 7 * H) k.kerja7++; if (t > k.terakhir) k.terakhir = t; }
+    for (var w = 0; w < minggu.length; w++) if (t > minggu[w].mulai && t <= minggu[w].mulai + 7 * H) { if (k) minggu[w].kelas++; else minggu[w].umum++; }
+  });
+  daftar.forEach(function (k) { for (var w = 0; w < minggu.length; w++) if (k.dibuat > minggu[w].mulai && k.dibuat <= minggu[w].mulai + 7 * H) minggu[w].kelasBaru++; });
+  var guru = {}, sekolah = {}, terdaftar = 0, bayar = 0, coba = 0;
+  daftar.forEach(function (k) {
+    guru[rapi(k.guru) + '|' + rapi(k.sekolah)] = 1; if (k.sekolah) sekolah[rapi(k.sekolah)] = 1; terdaftar += k.terdaftar;
+    k.premium = k.sampai > now; if (k.premium && k.masaCoba) coba++; else if (k.premium) bayar++;
+  });
+  var n = function (o) { return Object.keys(o).length; };
+  var hasil = { ok: true, waktu: now,
+    ringkas: { kelas: daftar.length, guru: n(guru), sekolah: n(sekolah), terdaftar: terdaftar,
+      kelasBaru7: daftar.filter(function (k) { return k.dibuat > now - 7 * H; }).length, kelasBaru30: daftar.filter(function (k) { return k.dibuat > now - 30 * H; }).length,
+      kelasAktif7: daftar.filter(function (k) { return k.terakhir > now - 7 * H; }).length, siswaAktif7: siswaAktif7, siswaAktif30: siswaAktif30,
+      kerja7: kerja7, kerja30: kerja30, umum7: umum7, bayar: bayar, coba: coba },
+    minggu: minggu,
+    kelas: daftar.sort(function (a, b) { return b.terakhir - a.terakhir || b.dibuat - a.dibuat; }).slice(0, 400),
+    populer: Object.keys(populer).map(function (id) { return { id: id, n: populer[id] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 20) };
+  try { c.put('admin_data', JSON.stringify(hasil), 300); } catch (e) { /* data terlalu besar untuk cache */ }
+  return hasil;
+}
+function adminPremium_(req) {
+  var tolak = cekAdmin_(req); if (tolak) return tolak;
+  var h = aktifkanPremium(req.kode);
+  if (!h.ok) return h;
+  CacheService.getScriptCache().remove('admin_data');
+  return { ok: true, guru: h.guru, kelas: h.kelas, sekolah: h.sekolah, sampai: waktu_(h.sampai) };
 }
