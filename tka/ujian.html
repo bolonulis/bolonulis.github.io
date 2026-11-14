@@ -259,7 +259,6 @@ body.jalur .navbawah{background:#fbfaff}
     <span class="lencana" id="aw-jenjang"></span>
     <h1 id="aw-judul"></h1>
     <div class="peringatan" id="aw-uj" hidden style="background:#eef6ff;border-color:#bcd7f5"></div>
-    <div class="peringatan" id="aw-harih" hidden style="background:#f0fdf4;border-color:#86efac"></div>
     <p id="aw-indikator" hidden style="margin:-4px 0 12px;color:var(--muted)"></p>
     <div class="peringatan" id="aw-kunci" hidden style="background:#fffbea;border-color:#f5d76e">⭐ <b>Latihan ini khusus Kelas Premium.</b> Kerjakan lewat <b>tautan kelas dari gurumu</b> (Kelas Premium) dan pilih namamu dari daftar, atau masukkan <a href="./#akses">kode akses Pembahasan</a> terlebih dahulu. Latihan bertanda <b>Gratis</b> dapat dikerjakan siapa saja.</div>
     <div class="fakta">
@@ -447,9 +446,6 @@ const ITEM = par.get('item') || '', IT = ITEM ? TKA.jalur.info(ITEM) : null;
 const KELASJ = (par.get('kelas') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 let JK = null, JNAMA = '';
 if (IT) { ID = ITEM; document.body.classList.add('jalur'); }
-/* Simulasi Hari H (hari-h.html): dua sesi berturut-turut, nilai ditampilkan setelah kedua sesi selesai. */
-const HARIH = par.get('harih') === '1' && !IT && !SERENTAK;
-const stHariH = () => TKA.simpan.get('tka-harih', null);
 
 function tampil(v) { ['v-memuat', 'v-awal', 'v-jawal', 'v-ujian', 'v-hasil'].forEach(x => { $(x).hidden = x !== v; }); window.scrollTo(0, 0); }
 function judulPaket() { return B.mapel + ' · ' + B.paket; }
@@ -530,8 +526,6 @@ function halamanAwal() {
   if (IT) return halamanJalur();
   $('aw-jenjang').textContent = 'TKA ' + B.jenjang;
   $('aw-judul').textContent = B.latihan ? 'Latihan TKA ' + B.jenjang + ' ' + B.mapel + ': ' + B.paket.replace(/^Latihan: /, '') : 'Simulasi TKA ' + B.jenjang + ' ' + judulPaket();
-  const hh = HARIH && stHariH();
-  if (hh && hh.urut) { const k = hh.urut.indexOf(ID) + 1; $('aw-harih').hidden = false; $('aw-harih').innerHTML = '🗓️ <b>Simulasi Hari H · Sesi ' + k + ' dari 2: ' + TKA.esc(B.mapel) + '.</b> Kerjakan seperti hari TKA. Nilai kedua sesi ditampilkan bersama setelah Sesi 2 selesai. <a href="hari-h.html">Kembali ke halaman Hari H</a>'; document.title = 'Hari H · Sesi ' + k + ' · ' + document.title; }
   if (B.latihan) { $('aw-indikator').hidden = false; $('aw-indikator').textContent = 'Indikator: ' + B.soal[0].indikator; $('aw-kunci').hidden = B.gratis || !!TKA.kode.get(); }
   $('aw-soal').textContent = B.soal.length;
   $('aw-durasi').textContent = (UJ ? UJ.ujian.durasi : B.durasi) + ' menit';
@@ -908,16 +902,6 @@ async function bukaHasil(r, lihatUlang) {
     if (r.ujian) TKA.simpan.set('tka-uj-' + r.ujian, { nama: r.peserta.nama, rid: r.id });
   }
   hasilKini = res.ok ? res : null;
-  if (HARIH && !lihatUlang) {
-    const st = stHariH();
-    if (st && st.urut && st.urut.includes(ID)) {
-      st.hasil = st.hasil || {}; st.hasil[ID] = r.id;
-      if (st.urut.every(p => st.hasil[p])) st.selesai = Date.now(); else st.jedaMulai = Date.now();
-      TKA.simpan.set('tka-harih', st);
-      $('v-memuat').innerHTML = '<div class="putar"></div>Jawaban tersimpan. Menuju halaman Simulasi Hari H…';
-      tampil('v-memuat'); location.replace('hari-h.html'); return;
-    }
-  }
   isiHasil(r, res);
 }
 
