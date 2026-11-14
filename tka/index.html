@@ -280,7 +280,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 </div>
 <script src="../bersama.js?v=2"></script>
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=15"></script>
+<script src="tka.js?v=16"></script>
 <script src="bank/daftar.js?v=6"></script>
 <script src="bank/latihan.js?v=3"></script>
 <script>
@@ -305,7 +305,7 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
     '<ul><li>' + p.soal + ' soal · ' + p.durasi + ' menit</li><li>Pilihan ganda, pilihan ganda kompleks, benar/salah</li><li>Mengikuti indikator TKA ' + p.jenjang + '</li></ul>' +
     (r ? '<p class="terakhir">Nilai terakhir: ' + TKA.angka(r.nilai) + '</p>' : '') +
     '<div class="aksi"><a class="btn" href="ujian.html?paket=' + p.id + '">Kerjakan ▶</a>' +
-    '<a class="btn pdf" href="pdf/' + p.id + '.pdf?v=2" download="Soal-Simulasi-TKA-' + p.jenjang + '-' + p.mapel.replace(/\s+/g, '-') + '-' + p.paket.replace(/\s+/g, '') + '.pdf" title="Unduh soal untuk dikerjakan di kertas">⬇️ Soal PDF</a></div></article>';
+    '<a class="btn pdf" href="pdf/' + p.id + '.pdf?v=3" download="Soal-Simulasi-TKA-' + p.jenjang + '-' + p.mapel.replace(/\s+/g, '-') + '-' + p.paket.replace(/\s+/g, '') + '.pdf" title="Unduh soal untuk dikerjakan di kertas">⬇️ Soal PDF</a></div></article>';
 }).join('') + '<div class="pk segera"><div style="font-size:30px">📚</div><b>⭐ Paket 3 eksklusif</b><span style="font-size:14px">Paket 3 Matematika dan Bahasa Indonesia tersedia khusus untuk <a href="guru.html">ujian serentak Kelas Intensif TKA</a>.<br>Gabung <a href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">grup WhatsApp</a> untuk kabar terbaru.</span></div>';
 
 /* ---------- latihan per indikator ---------- */

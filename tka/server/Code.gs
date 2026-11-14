@@ -381,7 +381,7 @@ function dataKelas_(kode) {
   lembar_(LEMBAR_KELAS, KEPALA_KELAS).getDataRange().getValues().slice(1).some(function (b) {
     if (rapikanKode_(b[0]) !== kode) return false;
     hasil = { kode: kode, pin: String(b[1]).replace(/^'/, ''), guru: String(b[2]), sekolah: String(b[3]), kelas: String(b[4]), siswa: rapikanSiswa_(b[7]),
-      premiumSampai: waktu_(b[8]), cobaDipakai: cobaDipakai_(b[9]), masaCoba: String(b[10] || '').indexOf('Coba') === 0 };
+      premiumSampai: waktu_(b[8]), cobaDipakai: cobaDipakai_(b[9]), masaCoba: String(b[10] || '').indexOf('Coba') === 0, dibuat: waktu_(b[6]) };
     return true;
   });
   if (hasil) c.put('kelas_' + kode, JSON.stringify(hasil), 300);
@@ -436,7 +436,7 @@ function dasbor_(req) {
     baris.push({ waktu: b[0] instanceof Date ? b[0].getTime() : String(b[0]), nama: String(b[1]), paket: String(b[4]), nilai: Number(b[5]) || 0,
       terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number), ujian: String(b[14] || '') });
   });
-  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k), ujian: daftarUjian_(k.kode),
+  return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, dibuat: k.dibuat || 0 }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k), ujian: daftarUjian_(k.kode),
     rilis: dataRilis_(k.kode), kemajuan: kemajuanKelas_(k.kode), jalurAktif: PENGATURAN.JALUR_AKTIF, sekarang: Date.now() };
 }
 

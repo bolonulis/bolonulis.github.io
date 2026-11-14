@@ -215,6 +215,14 @@ table.hm{border-collapse:separate;border-spacing:0;font-size:13px;width:auto;min
 b.naik{color:#1d7a5c}b.turun{color:#c0392b}
 dialog.dlg-jg{border:0;border-radius:18px;padding:20px;max-width:min(460px,94vw);box-shadow:0 30px 80px rgba(0,0,0,.3)}
 dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
+dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
+.pbr-blok{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:14px}
+.pbr-blok small{color:#64748b}
+.pbr-blok ul{margin:6px 0;padding-left:20px}
+.pbr-cetak{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 10px;margin-top:6px;font-size:13.5px}
+.pbr-cetak ul{margin:4px 0}
+.ct-baru{display:inline-block;font-size:12px;line-height:1;padding:2px 3px;border-radius:6px;background:#fff7ed;border:1px solid #fdba74;vertical-align:middle}
+.ct-baru.pasti{background:#fee2e2;border-color:#f87171}
 .info-riwayat{background:#f6f4fd;border:1px dashed #d8d1ff;border-radius:12px;padding:10px 12px;font-size:14px;margin:0 0 12px}
 @media print{.tab-dasbor{display:none!important}}
 @media print{.bar,.bagikan,.pilih-paket button:not(.aktif),.cetak-sembunyi{display:none!important}body{background:#fff}.kartu{box-shadow:none;break-inside:avoid}}
@@ -483,13 +491,14 @@ dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
 </div>
 
 <script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=15"></script>
+<script src="tka.js?v=16"></script>
 <script src="bank/daftar.js?v=6"></script>
 <script src="bank/latihan.js?v=3"></script>
 <script src="bank/jalur.js?v=4"></script>
 <script src="bank/nasional.js?v=1"></script>
 <script src="impor-tka.js?v=1"></script>
-<script src="jalur-guru.js?v=6"></script>
+<script src="bank/pembaruan.js?v=1"></script>
+<script src="jalur-guru.js?v=7"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;

@@ -166,6 +166,73 @@ const JG = (() => {
     d.showModal();
   }
 
+
+  /* ---------- pembaruan soal: catatan cetak & pemberitahuan ---------- */
+  const PBR = typeof PEMBARUAN_TKA === 'undefined' ? [] : PEMBARUAN_TKA;
+  function simpanan(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } return v; }
+  function logCetak() { return simpanan('tka-cetak-' + KELAS.kode) || {}; }
+  function catatCetak(ids, kunci) { const l = logCetak(), t = Date.now(); ids.forEach(id => { l[id] = l[id] || {}; l[id][kunci ? 'k' : 's'] = t; }); simpanan('tka-cetak-' + KELAS.kode, l); }
+  /** Waktu dasbor ini mulai mencatat cetakan. Pembaruan sebelum waktu ini: riwayat cetak guru tidak diketahui. */
+  function mulaiCatat() { let m = simpanan('tka-cetak-mulai'); if (!m) m = simpanan('tka-cetak-mulai', Date.now()); return m || Date.now(); }
+  function kelasLama(u) { const d = DATA && DATA.kelas && DATA.kelas.dibuat; return !d || d < u.waktu; }
+  function kenaPbr(u, id, kunci) { return (u.soal || []).includes(id) || (kunci && (u.kunci || []).includes(id)); }
+  /** Apakah cetakan dokumen ini perlu diulang? null, atau { u, pasti } untuk pembaruan terbaru yang mengenainya. */
+  function perluUlang(id, kunci) {
+    const l = logCetak()[id], t = l && (kunci ? l.k : l.s);
+    for (const u of PBR) {
+      if (!kenaPbr(u, id, kunci) || !kelasLama(u)) continue;
+      if (t) return t < u.waktu ? { u, pasti: true } : null;
+      return mulaiCatat() >= u.waktu && Date.now() - u.waktu < 60 * 864e5 ? { u, pasti: false } : null;
+    }
+    return null;
+  }
+  function tandaUlang(ids, kunci) {
+    const st = ids.map(id => perluUlang(id, kunci)).filter(Boolean);
+    if (!st.length) return '';
+    const pasti = st.some(x => x.pasti);
+    return ' <span class="ct-baru' + (pasti ? ' pasti' : '') + '" title="Diperbarui ' + st[0].u.tgl + (pasti ? '. Anda pernah mencetak versi lama: cetak ulang.' : '. Bila pernah mencetak sebelum tanggal ini, cetak ulang.') + '">🔄</span>';
+  }
+  /** Daftar dokumen yang pernah dicetak sebelum pembaruan u. */
+  function cetakanLama(u) {
+    const l = logCetak(), hasil = [];
+    Object.keys(l).forEach(id => { if (!J.info(id) && !/^kls-/.test(id)) return;
+      if (l[id].s && l[id].s < u.waktu && kenaPbr(u, id, false)) hasil.push('📄 ' + judulCetak(id));
+      if (l[id].k && l[id].k < u.waktu && kenaPbr(u, id, true)) hasil.push('🔑 ' + judulCetak(id)); });
+    return hasil;
+  }
+  let PBR_DICEK = false;
+  function cekPembaruan(semuaRiwayat) {
+    if (!PBR.length || !KELAS) return;
+    const kunciLihat = 'tka-pbr-lihat-' + KELAS.kode, lihat = simpanan(kunciLihat) || [];
+    const tampil = [];
+    PBR.forEach(u => {
+      if (!semuaRiwayat && (lihat.includes(u.kode) || !kelasLama(u))) return;
+      const lama = cetakanLama(u), target = !u.semua;
+      if (!semuaRiwayat && target && !lama.length && mulaiCatat() < u.waktu) { lihat.push(u.kode); return; }   // tidak pernah mencetak dokumen yang berubah
+      tampil.push({ u, lama });
+    });
+    simpanan(kunciLihat, lihat);
+    if (!tampil.length) return;
+    let d = $('dlg-pbr');
+    if (!d) { d = document.createElement('dialog'); d.id = 'dlg-pbr'; d.className = 'dlg-jg dlg-pbr'; document.body.appendChild(d); }
+    const adaCetak = tampil.some(x => !x.u.semua);
+    d.innerHTML = '<h3 style="margin:0 0 4px">🔔 ' + (semuaRiwayat ? 'Catatan pembaruan soal' : 'Ada pembaruan soal') + '</h3>' +
+      '<p class="sub" style="margin:0 0 10px">Siswa yang mengerjakan di HP otomatis mendapat versi terbaru. Nilai yang sudah masuk tetap tersimpan.</p>' +
+      tampil.map(({ u, lama }) => '<div class="pbr-blok"><b>' + u.judul + '</b> <small>' + u.tgl + '</small><ul>' + u.poin.map(x => '<li>' + x + '</li>').join('') + '</ul>' +
+        (u.semua ? '' : lama.length
+          ? '<div class="pbr-cetak"><b>🖨️ Dokumen yang pernah Anda cetak dan sudah berubah:</b><ul>' + lama.slice(0, 8).map(x => '<li>' + esc(x) + '</li>').join('') + (lama.length > 8 ? '<li>dan ' + (lama.length - 8) + ' dokumen lainnya</li>' : '') + '</ul>Cetak ulang dokumen tersebut. Di tab Cetak Soal, dokumen ini ditandai 🔄.</div>'
+          : '<div class="pbr-cetak"><b>🖨️ Pernah mencetak atau menyimpan PDF soal sebelum ' + u.tgl + '?</b> Cetak ulang <b>lembar soal dan kuncinya bersamaan</b> di tab Cetak Soal (ditandai 🔄). Jangan memasangkan lembar soal lama dengan kunci baru, karena urutan pernyataan dapat berbeda.</div>') + '</div>').join('') +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">' + (adaCetak ? '<button class="btn" type="button" data-pbr-cetak>🖨️ Buka Cetak Soal</button>' : '') +
+      (tampil.some(x => x.u.semua) ? (premiumAktif() ? '<button class="btn ghost" type="button" data-pbr-rilis>📋 Buka Atur Rilis</button>' : '<button class="btn emas" type="button" data-pbr-premium>⭐ Lihat Kelas Premium</button>') : '') + '<button class="btn ghost" type="button" data-pbr-tutup>Mengerti</button></div>';
+    const tandai = () => { const l2 = simpanan(kunciLihat) || []; tampil.forEach(x => { if (!l2.includes(x.u.kode)) l2.push(x.u.kode); }); simpanan(kunciLihat, l2); };
+    d.onclose = tandai;
+    d.querySelector('[data-pbr-tutup]').onclick = () => d.close();
+    const bc = d.querySelector('[data-pbr-cetak]'); if (bc) bc.onclick = () => { d.close(); bukaTab('cetak', true); };
+    const br = d.querySelector('[data-pbr-rilis]'); if (br) br.onclick = () => { d.close(); bukaTab('rilis', true); };
+    const bp = d.querySelector('[data-pbr-premium]'); if (bp) bp.onclick = () => { d.close(); ajakPremium(); };
+    d.showModal();
+  }
+
   /* ---------- analisis ---------- */
   function gambarAnalisis() {
     const el = $('k-analisis'); if (!el) return;
@@ -404,6 +471,7 @@ const JG = (() => {
     w.document.open();
     w.document.write(kepala + '<body>' + alat + bagian.join('<div style="break-before:page;page-break-before:always"></div>') + '<script>window.onload=()=>setTimeout(()=>print(),500)<\/script></body></html>');
     w.document.close();
+    catatCetak(ids, kunci); gambarCetak();
   }
   function ajakPremium() {
     dialogInfo('⭐ Kunci & pembahasan khusus Kelas Premium',
@@ -419,11 +487,11 @@ const JG = (() => {
     const el = $('k-cetak'); if (!el) return;
     const d = JALUR_TKA.mapel[MCETAK], premium = premiumAktif();
     const grup = []; d.indikator.forEach(x => { let g = grup.find(g => g.el === x.elemen); if (!g) grup.push(g = { el: x.elemen, isi: [] }); g.isi.push(x); });
-    const tombol = (ids, kunci, label) => '<button type="button" class="btn-mini' + (kunci ? (premium ? ' kunci' : ' kunci-tutup') : '') + '" data-cetak="' + ids.join(',') + '"' + (kunci ? ' data-kunci="1" title="' + (premium ? 'Kunci & pembahasan untuk guru' : 'Khusus Kelas Premium') + '"' : '') + '>' + (kunci && !premium ? label.replace('🔑', '🔒') + ' ⭐' : label) + '</button>';
+    const tombol = (ids, kunci, label) => '<button type="button" class="btn-mini' + (kunci ? (premium ? ' kunci' : ' kunci-tutup') : '') + '" data-cetak="' + ids.join(',') + '"' + (kunci ? ' data-kunci="1" title="' + (premium ? 'Kunci & pembahasan untuk guru' : 'Khusus Kelas Premium') + '"' : '') + '>' + (kunci && !premium ? label.replace('🔑', '🔒') + ' ⭐' : label) + (kunci && !premium ? '' : tandaUlang(ids, kunci)) + '</button>';
     const versi = premium ? [1, 2, 3, 4] : [1, 2, 3];
     el.innerHTML = '<div class="kepala-kelas"><div><h2 style="margin:0">🖨️ Cetak Soal (PDF)</h2><p class="sub" style="margin:2px 0 0">Untuk pembelajaran di kelas bila tidak semua siswa memiliki HP. Soal dicetak lengkap dengan <b>lembar jawaban</b>.</p></div></div>' +
       '<div class="panduan-kecil"><b>Cara memakai:</b><ol><li>Ketuk <b>📄 Soal</b> untuk lembar soal siswa (gratis), atau <b>🔑 Kunci</b> untuk kunci &amp; pembahasan sebagai pegangan guru (Kelas Premium).</li><li>Jendela cetak terbuka otomatis. Pilih printer untuk mencetak, atau pilih <b>Simpan sebagai PDF</b> untuk menyimpan berkas.</li><li>Ingin satu berkas untuk satu elemen? Ketuk tombol di baris kelompok (misalnya <b>📄 Semua V1</b>).</li></ol>' +
-      '<p style="margin:6px 0 0"><b>Perlu diingat:</b> nilai dari lembar kertas tidak masuk dasbor secara otomatis. Soal yang sudah dikerjakan siswa di kertas sebaiknya <b>tidak dirilis lagi di HP</b> untuk siswa yang sama, agar nilai di dasbor tetap murni. Latihan V1 dicetak beserta 💡 petunjuknya.</p></div>' +
+      '<p style="margin:6px 0 0"><b>Perlu diingat:</b> nilai dari lembar kertas tidak masuk dasbor secara otomatis. Soal yang sudah dikerjakan siswa di kertas sebaiknya <b>tidak dirilis lagi di HP</b> untuk siswa yang sama, agar nilai di dasbor tetap murni. Latihan V1 dicetak beserta 💡 petunjuknya.</p>' + (PBR.length ? '<p style="margin:6px 0 0"><span class="ct-baru">🔄</span> = soal atau kunci <b>diperbarui</b> setelah Anda mencetaknya. Cetak ulang lembar soal dan kuncinya bersamaan. <button type="button" class="btn ghost kecil" data-pbr-riwayat>📰 Catatan pembaruan</button></p>' : '') + '</div>' +
       '<div class="tab-mini">' + Object.keys(JALUR_TKA.mapel).map(m => '<button type="button" data-m="' + m + '" class="' + (m === MCETAK ? 'aktif' : '') + '">' + esc(JALUR_TKA.mapel[m].nama) + '</button>').join('') + '</div>' +
       '<div style="overflow-x:auto"><table class="rl-tabel ct-tabel"><thead><tr><th>Indikator</th>' + versi.map(v => '<th class="rl-v v' + v + '">' + V[v].ikon + ' ' + V[v].kode + '<small>' + V[v].nama + '</small></th>').join('') + '</tr></thead><tbody>' +
       grup.map(g => {
@@ -434,10 +502,11 @@ const JG = (() => {
       '<h3 style="margin:18px 0 6px">🏁 Paket soal 30 butir</h3><div class="rl-paket">' +
       JALUR_TKA.paket.filter(p => p.ada).map(p => '<div><b>' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Edisi kelas (soal hanya di Kelas Intensif) · 30 soal · 75 menit</small>' + tombol([p.id], false, '📄 Soal + lembar jawaban') + tombol([p.id], true, '🔑 Kunci') + '</div>').join('') +
       (typeof PAKET_EKSKLUSIF === 'undefined' ? [] : PAKET_EKSKLUSIF).map(p => '<div><b>⭐ ' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Eksklusif ujian serentak · Kelas Premium</small>' + (premium ? tombol([p.id], false, '📄 Soal + lembar jawaban') + tombol([p.id], true, '🔑 Kunci') : '<span class="rl-segera">⭐ Kelas Premium</span>') + '</div>').join('') +
-      PAKET_TKA.map(p => '<div><b>' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Paket umum (juga terbuka di halaman Simulasi TKA)</small><a class="btn-mini" href="pdf/' + p.id + '.pdf?v=2" target="_blank" rel="noopener">📄 Unduh PDF</a></div>').join('') + '</div>' +
+      PAKET_TKA.map(p => '<div><b>' + esc(p.mapel + ' · ' + p.paket) + '</b><small>Paket umum (juga terbuka di halaman Simulasi TKA)</small><a class="btn-mini" href="pdf/' + p.id + '.pdf?v=3" target="_blank" rel="noopener">📄 Unduh PDF</a></div>').join('') + '</div>' +
       (premium ? '<p class="catatan" style="margin:10px 0 0">⭐ Kelas Premium aktif: semua kunci &amp; pembahasan dapat dicetak.</p>' : '<div class="ajak-premium"><b>🔒 Kunci &amp; pembahasan khusus Kelas Premium.</b> Lembar soal tetap gratis. Ingin mencetak kunci untuk membahas soal di kelas? <button type="button" class="btn emas kecil" id="ct-premium">🎁 Coba gratis 14 hari / ⭐ Aktifkan Premium</button></div>');
     el.querySelector('.tab-mini').onclick = e => { const b = e.target.closest('button'); if (!b) return; MCETAK = b.dataset.m; gambarCetak(); };
     el.querySelectorAll('[data-cetak]').forEach(b => b.onclick = () => cetak(b.dataset.cetak.split(','), !!b.dataset.kunci));
+    const rw = el.querySelector('[data-pbr-riwayat]'); if (rw) rw.onclick = () => cekPembaruan(true);
     const ap = $('ct-premium'); if (ap) ap.onclick = ajakPremium;
   }
 
@@ -446,6 +515,7 @@ const JG = (() => {
     if (DATA && !DATA._diterima) DATA._diterima = Date.now();
     CENTANG = new Set(DATA.rilis || []);
     pasangTab(); gambarBaru(); gambarRilis(); gambarAnalisis(); gambarCetak();
+    if (!PBR_DICEK) { PBR_DICEK = true; mulaiCatat(); setTimeout(() => cekPembaruan(false), 600); }
     document.querySelectorAll('#tab-dasbor button').forEach(b => b.classList.toggle('aktif', b.dataset.tab === TAB));
     document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== TAB; });
     const jml = (DATA.rilis || []).length, tb = document.querySelector('#tab-dasbor [data-tab="rilis"] small');
