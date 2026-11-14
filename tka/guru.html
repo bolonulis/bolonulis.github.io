@@ -215,6 +215,7 @@ table.hm{border-collapse:separate;border-spacing:0;font-size:13px;width:auto;min
 b.naik{color:#1d7a5c}b.turun{color:#c0392b}
 dialog.dlg-jg{border:0;border-radius:18px;padding:20px;max-width:min(460px,94vw);box-shadow:0 30px 80px rgba(0,0,0,.3)}
 dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
+.ingat-angka{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}.ingat-angka div{border:1px solid var(--line);border-radius:12px;padding:10px 12px}.ingat-angka b{display:block;font-size:22px;color:var(--biru)}.ingat-angka small{color:var(--muted);font-size:12.5px}
 dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 .pbr-blok{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:14px}
 .pbr-blok small{color:#64748b}
@@ -365,6 +366,7 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 
   <div data-panel="ringkas">
   <div class="kartu k-baru cetak-sembunyi" id="k-baru" hidden></div>
+  <div class="kartu cetak-sembunyi" id="k-ingat" hidden></div>
   <div class="kartu cetak-sembunyi" id="k-langkah"></div>
   <div class="kartu k-premium cetak-sembunyi" id="k-premium" hidden></div>
 
@@ -497,8 +499,8 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 <script src="bank/jalur.js?v=4"></script>
 <script src="bank/nasional.js?v=1"></script>
 <script src="impor-tka.js?v=1"></script>
-<script src="bank/pembaruan.js?v=1"></script>
-<script src="jalur-guru.js?v=8"></script>
+<script src="bank/pembaruan.js?v=2"></script>
+<script src="jalur-guru.js?v=9"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;

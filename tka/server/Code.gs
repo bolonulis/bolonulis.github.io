@@ -34,7 +34,7 @@ var KEPALA_UJIAN = ['ID ujian', 'Kode kelas', 'Paket', 'Mulai', 'Selesai', 'Dura
 var LEMBAR_PESERTA = 'Peserta Ujian';
 var KEPALA_PESERTA = ['ID ujian', 'Nama', 'Mulai mengerjakan', 'Selesai', 'Nilai'];
 var LEMBAR_RILIS = 'Rilis';
-var KEPALA_RILIS = ['Kode kelas', 'Dibuka', 'Diperbarui'];
+var KEPALA_RILIS = ['Kode kelas', 'Dibuka', 'Diperbarui', 'Waktu buka'];
 var LEMBAR_KEMAJUAN = 'Kemajuan';
 var KEPALA_KEMAJUAN = ['Kunci', 'Kode kelas', 'Nama', 'Data', 'Diperbarui'];
 var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa', 'Premium sampai', 'Coba gratis dipakai', 'Catatan premium', 'Kode akses'];
@@ -453,7 +453,7 @@ function dasbor_(req) {
       terjawab: String(b[6]), skor: String(b[13] || '').split(',').filter(String).map(Number), ujian: String(b[14] || '') });
   });
   return { ok: true, kelas: { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, dibuat: k.dibuat || 0 }, siswa: k.siswa || [], baris: baris, premium: infoPremium_(k), ujian: daftarUjian_(k.kode),
-    rilis: dataRilis_(k.kode), kemajuan: kemajuanKelas_(k.kode), jalurAktif: PENGATURAN.JALUR_AKTIF, sekarang: Date.now() };
+    rilis: dataRilis_(k.kode), rilisWaktu: rilisWaktu_(k.kode), kemajuan: kemajuanKelas_(k.kode), jalurAktif: PENGATURAN.JALUR_AKTIF, sekarang: Date.now() };
 }
 
 /* ============================ KELAS PREMIUM ============================ */
@@ -805,13 +805,35 @@ function simpanRilis_(req) {
   var kunci = LockService.getScriptLock();
   kunci.waitLock(15000);
   try {
-    var sh = lembar_(LEMBAR_RILIS, KEPALA_RILIS), data = sh.getDataRange().getValues(), baris = 0;
-    for (var r = 1; r < data.length; r++) if (rapikanKode_(data[r][0]) === k.kode) { baris = r + 1; break; }
-    if (baris) sh.getRange(baris, 2, 1, 2).setValues([[dibuka.join(','), new Date()]]);
-    else sh.appendRow([k.kode, dibuka.join(','), new Date()]);
-    CacheService.getScriptCache().put('rilis_' + k.kode, dibuka.join(','), 300);
+    var sh = lembar_(LEMBAR_RILIS, KEPALA_RILIS), data = sh.getDataRange().getValues(), baris = 0, lama = {};
+    var sebelum = {}, waktuLalu = 0;
+    for (var r = 1; r < data.length; r++) if (rapikanKode_(data[r][0]) === k.kode) {
+      baris = r + 1; try { lama = JSON.parse(String(data[r][3] || '{}')) || {}; } catch (e) { lama = {}; }
+      String(data[r][1] || '').split(',').forEach(function (x) { if (x) sebelum[x.trim()] = 1; }); waktuLalu = waktu_(data[r][2]);
+      break;
+    }
+    var waktu = {}, now = Date.now();
+    dibuka.forEach(function (id) { waktu[id] = Number(lama[id]) || (sebelum[id] ? (waktuLalu || now - 8 * 864e5) : now); });   // waktu pertama kali dibuka (tetap bila sudah dibuka sebelumnya)
+    if (baris) sh.getRange(baris, 2, 1, 3).setValues([[dibuka.join(','), new Date(), JSON.stringify(waktu)]]);
+    else sh.appendRow([k.kode, dibuka.join(','), new Date(), JSON.stringify(waktu)]);
+    var c = CacheService.getScriptCache();
+    c.put('rilis_' + k.kode, dibuka.join(','), 300); c.put('rilisw_' + k.kode, JSON.stringify(waktu), 300);
   } finally { kunci.releaseLock(); }
-  return { ok: true, rilis: dibuka };
+  return { ok: true, rilis: dibuka, rilisWaktu: waktu };
+}
+
+/** Waktu pertama kali setiap latihan dibuka guru: { id: waktuMs }. */
+function rilisWaktu_(kode) {
+  var c = CacheService.getScriptCache(), s = c.get('rilisw_' + kode);
+  if (s !== null) { try { return JSON.parse(s || '{}'); } catch (e) { return {}; } }
+  var w = {};
+  lembar_(LEMBAR_RILIS, KEPALA_RILIS).getDataRange().getValues().slice(1).some(function (b) {
+    if (rapikanKode_(b[0]) !== kode) return false;
+    try { w = JSON.parse(String(b[3] || '{}')) || {}; } catch (e) { w = {}; }
+    return true;
+  });
+  c.put('rilisw_' + kode, JSON.stringify(w), 300);
+  return w;
 }
 
 /** Baris kemajuan seorang siswa: { sh, baris, data }. */
@@ -860,15 +882,15 @@ function petaSiswa_(req) {
   var k = dataKelas_(req.kode);
   if (!k) return { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali tautan dari gurumu.' };
   var info = { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [], premium: premiumAktif_(k) };
-  if (!req.nama) return { ok: true, kelas: info, rilis: dataRilis_(k.kode), sekarang: Date.now() };
+  if (!req.nama) return { ok: true, kelas: info, rilis: dataRilis_(k.kode), rilisWaktu: rilisWaktu_(k.kode), sekarang: Date.now() };
   if (!namaTerdaftar_(k, req.nama)) return { ok: false, pesan: 'Namamu tidak ada di daftar kelas. Pilih namamu dari daftar.' };
   var p = cariKemajuan_(k.kode, req.nama), now = Date.now(), milik = {};
   Object.keys(p.data).forEach(function (id) {
     var it = infoItem_(id), d = p.data[id]; if (!it) return;
     var st = statusItem_(it, d, now);
-    milik[id] = { s: d.s, j: d.j || 0, p: d.p, t: d.t, b: d.b, iz: d.iz || 0, boleh: st.boleh, lanjut: !!st.lanjut, habis: !!st.habis };
+    milik[id] = { s: d.s, j: d.j || 0, p: d.p, t: d.t, b: d.b, w: d.w || 0, iz: d.iz || 0, boleh: st.boleh, lanjut: !!st.lanjut, habis: !!st.habis };
   });
-  return { ok: true, kelas: info, rilis: dataRilis_(k.kode), milik: milik, sekarang: now };
+  return { ok: true, kelas: info, rilis: dataRilis_(k.kode), rilisWaktu: rilisWaktu_(k.kode), milik: milik, sekarang: now };
 }
 
 /** Siswa menekan "Mulai" pada soal Jalur Belajar: diperiksa, dicatat, lalu soal dikirim. */
