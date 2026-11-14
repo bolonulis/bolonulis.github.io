@@ -47,7 +47,7 @@ const TKA = (() => {
     if (!/^[a-z0-9-]+$/.test(id)) return Promise.reject(new Error('Paket tidak dikenal'));
     return new Promise((ok, gagal) => {
       const s = document.createElement('script');
-      s.src = 'bank/' + id + '.js?v=10';
+      s.src = 'bank/' + id + '.js?v=11';
       s.onload = () => bank[id] ? ok(bank[id]) : gagal(new Error('Paket tidak dikenal'));
       s.onerror = () => gagal(new Error('Paket tidak dapat dimuat'));
       document.head.appendChild(s);
