@@ -288,6 +288,23 @@ const JG = (() => {
     d.showModal();
   }
 
+  /* ---------- jebakan umum (miskonsepsi) dan cara membahas ---------- */
+  const JB = typeof JEBAKAN_TKA === 'undefined' ? null : JEBAKAN_TKA;
+  function bagianJebakan(m, kelasInd) {
+    if (!JB || !JB.data[m]) return '';
+    const semua = JALUR_TKA.mapel[m].indikator.map(x => ({ x, d: JB.data[m][x.no], r: kelasInd[x.no] })).filter(o => o.d && o.d.kartu && o.d.kartu.length);
+    const lemah = semua.filter(o => o.r !== undefined && o.r < 80).sort((a, b) => a.r - b.r);
+    const pilih = lemah.length ? lemah : semua.filter(o => o.d.p !== null).sort((a, b) => a.d.p - b.d.p).slice(0, 5);
+    const ket = o => [o.r !== undefined ? 'rata-rata kelas ' + angka(Math.round(o.r)) : '', o.d.p !== null ? 'semua pengguna ' + o.d.p + '% benar' : '', nas(m, o.x.no) !== undefined ? 'nasional TKA ' + pctNas(nas(m, o.x.no)) : ''].filter(Boolean).join(' · ');
+    const kartu = o => '<details class="jb-kartu"><summary><b>' + o.x.no + '. ' + esc(o.x.judul) + '</b><span>' + ket(o) + '</span></summary>' +
+      o.d.kartu.map(k => '<div class="jb-isi"><p>⚠️ <b>Jebakan:</b> ' + esc(k.j) + '</p><p>✏️ <b>Contoh kesalahan:</b> ' + esc(k.c) + '</p><p>💬 <b>Cara membahas:</b> ' + esc(k.b) + '</p></div>').join('') + '</details>';
+    return '<div class="jb-blok"><h3>💡 Jebakan umum &amp; cara membahas</h3><p class="sub" style="margin:0 0 6px">' +
+      (lemah.length ? 'Indikator yang belum dikuasai kelas Anda (rata-rata di bawah 80), dimulai dari yang terendah.' : 'Belum ada indikator kelas yang perlu pendalaman. Berikut 5 indikator yang paling sulit bagi seluruh pengguna aplikasi ini.') +
+      ' Ketuk judul untuk membuka. Bahas jebakan ini sebelum siswa mengerjakan V2/V3.</p>' + pilih.map(kartu).join('') +
+      '<details class="jb-semua"><summary>Lihat semua ' + semua.length + ' indikator ' + esc(JALUR_TKA.mapel[m].nama) + '</summary>' + semua.map(kartu).join('') + '</details>' +
+      '<p class="catatan" style="margin:6px 0 0">"Semua pengguna" = rata-rata jawaban benar seluruh siswa pengguna aplikasi pada indikator itu (data ' + esc(JB.per) + '). Contoh kesalahan disusun dari pola jawaban siswa dan tidak sama dengan soal latihan.</p></div>';
+  }
+
   /* ---------- analisis ---------- */
   function gambarAnalisis() {
     const el = $('k-analisis'); if (!el) return;
@@ -301,7 +318,7 @@ const JG = (() => {
     const ind = []; kolom.forEach(id => { const it = J.info(id); let g = ind.find(g => g.no === it.no); if (!g) ind.push(g = { no: it.no, ids: [] }); g.ids.push(id); });
     const kepala = '<div class="kepala-kelas"><div><h2 style="margin:0">📊 Analisis Jalur Belajar</h2><p class="sub" style="margin:2px 0 0">Nilai setiap siswa per indikator dan versi. V2, V3, dan tes akhir memakai <b>nilai murni</b> (sekali kesempatan). V1 menampilkan nilai terbaik.</p></div></div>' +
       '<div class="tab-mini">' + Object.keys(JALUR_TKA.mapel).map(x => '<button type="button" data-m="' + x + '" class="' + (x === m ? 'aktif' : '') + '">' + esc(JALUR_TKA.mapel[x].nama) + '</button>').join('') + '</div>';
-    let isi = '';
+    let isi = ''; const kelasInd = {};
     if (!kolom.length) {
       isi = '<div class="kosong"><b>Belum ada latihan ' + esc(JALUR_TKA.mapel[m].nama) + ' yang dibuka</b>Rilis latihan di tab 📋 Atur Rilis. Setelah siswa mengerjakan, analisisnya muncul di sini.<br><br><button class="btn" type="button" data-ke="rilis">📋 Buka Atur Rilis</button></div>';
     } else {
@@ -312,6 +329,7 @@ const JG = (() => {
         jumlah[id] = n.length; rata[id] = n.length ? n.reduce((a, b) => a + b, 0) / n.length : null;
       });
       const statusInd = ind.map(g => { const ada = g.ids.filter(id => rata[id] !== null); if (!ada.length) return { g, r: null }; const id = ada[ada.length - 1]; return { g, r: rata[id], id }; });
+      statusInd.forEach(x => { if (x.r !== null) kelasInd[x.g.no] = x.r; });
       const merah = statusInd.filter(x => x.r !== null && x.r < 60), kuning = statusInd.filter(x => x.r !== null && x.r >= 60 && x.r < 80), hijau = statusInd.filter(x => x.r !== null && x.r >= 80);
       const belumSama = siswa.filter(s => { const x = km.get(kn(s)); return !x || !kolom.some(id => x.data[id] && x.data[id].j); });
       const perhatian = siswa.map(s => { const x = km.get(kn(s)); if (!x) return null; const n = kolom.map(id => keadaan(id, x.data[id])).filter(k => k.k === 'nilai').map(k => k.n); return n.length ? { s, r: n.reduce((a, b) => a + b, 0) / n.length } : null; }).filter(x => x && x.r < 60);
@@ -345,7 +363,7 @@ const JG = (() => {
         (NAS ? '<p class="catatan" style="margin:6px 0 0"><b>Nasional TKA</b> = persentase jawaban benar rata-rata nasional pada TKA SD, sebagai acuan tingkat kesulitan indikator. Nilai latihan kelas dan angka nasional berasal dari soal yang berbeda, jadi bandingkan polanya, bukan angkanya persis. 🔥 = 6 indikator tersulit secara nasional.</p>' : '') +
         '<div class="hm-detail" id="hm-detail" hidden></div>';
     }
-    el.innerHTML = kepala + isi + gambarImpor() + gambarPerkembangan();
+    el.innerHTML = kepala + isi + bagianJebakan(m, kelasInd) + gambarImpor() + gambarPerkembangan();
     pasangImpor(el);
     el.querySelector('.tab-mini').onclick = e => { const b = e.target.closest('button'); if (!b) return; MANALISIS = b.dataset.m; gambarAnalisis(); };
     const ke = el.querySelector('[data-ke]'); if (ke) ke.onclick = () => bukaTab('rilis', true);
