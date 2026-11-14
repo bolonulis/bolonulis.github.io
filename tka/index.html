@@ -353,15 +353,19 @@ $('kode-lepas').onclick = () => { if (confirm('Lepas kode akses dari perangkat i
 pasangFormWa('form-kode', d => 'Halo Admin, saya ingin mendapatkan kode akses Pembahasan Simulasi TKA (dukungan Rp50.000).\n\n' +
   'Nama siswa: ' + d.nama + '\nKelas: ' + d.kelas + '\nSekolah: ' + d.sekolah + (d.kab ? '\nKabupaten/Kota: ' + d.kab : '') + '\n\nMohon info cara pembayarannya. Terima kasih.');
 
-/* ---------- kisi-kisi dari bank soal ---------- */
-Promise.all(PAKET_TKA.map(p => TKA.muatBank(p.id).catch(() => null))).then(semua => {
+/* ---------- kisi-kisi dari bank soal (dimuat saat bagiannya hampir terlihat, agar halaman awal ringan) ---------- */
+function muatKisi() { Promise.all(PAKET_TKA.map(p => TKA.muatBank(p.id).catch(() => null))).then(semua => {
   $('kisi-isi').innerHTML = semua.filter(Boolean).map(b => {
     const el = {};
     b.soal.forEach(q => { el[q.elemen] = (el[q.elemen] || 0) + 1; });
     return '<div class="kk"><h3>' + TKA.esc(b.mapel) + ' · ' + b.soal.length + ' soal</h3><table>' +
       Object.entries(el).map(([n, j]) => '<tr><td>' + TKA.esc(n) + '</td><td>' + j + ' soal</td></tr>').join('') + '</table></div>';
   }).join('');
-});
+}); }
+if ('IntersectionObserver' in window) {
+  const pantau = new IntersectionObserver(e => { if (e.some(x => x.isIntersecting)) { pantau.disconnect(); muatKisi(); } }, { rootMargin: '400px' });
+  pantau.observe($('kisi-isi'));
+} else muatKisi();
 </script>
 </body>
 </html>
