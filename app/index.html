@@ -974,6 +974,23 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls = { get:k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}, del:k=>{try{localStorage.removeItem(k)}catch(e){}} };
 const KUNCI_SESI = 'rapor-sesi';
+/* Draf ketikan yang belum tersimpan (nilai, ketidakhadiran & catatan), disimpan di perangkat ini setiap kali guru mengetik.
+   Bila sesi habis, server sibuk, koneksi putus, atau halaman tertutup sebelum Simpan, ketikan bisa dipulihkan saat layar
+   yang sama dibuka lagi. Draf dihapus begitu berhasil disimpan atau guru memilih meninggalkannya; kedaluwarsa 7 hari. */
+const DRAF = {
+  kunci: (jenis, k) => 'draf|' + jenis + '|' + k,
+  simpan(jenis, k, isi){ try { localStorage.setItem(DRAF.kunci(jenis, k), JSON.stringify({ waktu: Date.now(), isi })); } catch (e) { /* penyimpanan perangkat penuh/diblokir */ } },
+  ambil(jenis, k){
+    try {
+      const d = JSON.parse(localStorage.getItem(DRAF.kunci(jenis, k)) || 'null');
+      if (d && Date.now() - d.waktu < 7 * 864e5) return d;
+      DRAF.hapus(jenis, k);
+    } catch (e) { /* abaikan */ }
+    return null;
+  },
+  hapus(jenis, k){ try { localStorage.removeItem(DRAF.kunci(jenis, k)); } catch (e) { /* abaikan */ } }
+};
+const jamDraf = t => { const d = new Date(t); return d.toLocaleDateString('id-ID', { day:'numeric', month:'long' }) + ' pukul ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }); };
 const KUNCI_KODE = 'rapor-kode';
 let INFO = { kodeAkses: false, daftarDibuka: true };
 const VIEWS = ['gerbang','masuk','daftar','lupa','reset','verifikasi','beranda','data','siswa','tp','nilai','kok','prog','wk','cetak','lulus'];
@@ -1006,19 +1023,39 @@ const KOLOM = [
 const labelRombel = r => r.nama === String(r.kelas) ? 'Kelas ' + r.kelas : r.nama;
 const tglTampil = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '') ? v.split('-').reverse().join('/') : (v || '');
 
+/* Aksi yang menyimpan/mengubah data: bila gagal, pesannya selalu diawali "BELUM TERSIMPAN" agar guru tidak mengira sudah tersimpan. */
+const AKSI_UBAH = /^(simpan|hapus|kunci|bukaKunci|taBaru|program(Mulai|Ulang|Simpan|Hapus))/;
+/* Ada ketikan yang belum disimpan di layar nilai atau wali kelas (draf-nya sudah diamankan di perangkat). */
+const adaKetikanBelumSimpan = () => NL_UBAH || WK_UBAH.hadir;
+
 async function api(body){
   if (!API_URL) return { ok:false, pesan:'Sistem belum tersambung ke Apps Script.' };
+  let res;
   try {
-    const r = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ sesi: ls.get(KUNCI_SESI), kodeAkses: ls.get(KUNCI_KODE), ...body }) });
-    const res = await r.json();
-    if (res.sesiHabis) { ls.del(KUNCI_SESI); tampil('masuk'); pesan('#m-msg', res.pesan, false); }
-    if (res.pemeliharaan) tampilUmum({ pemeliharaan: true, pesanPemeliharaan: res.pesan });
-    if (res.langgananHabis) { $('#u-lgn-teks').textContent = res.pesan; $('#u-lgn').classList.remove('hidden'); }
-    if (res.kodeSalah && body.aksi !== 'cekKode') { ls.del(KUNCI_KODE); tampil('gerbang'); pesan('#g-msg', res.pesan, false); }
-    return res;
+    // Batas tunggu 150 detik: tombol tidak "Memproses…" selamanya bila server macet.
+    const henti = new AbortController(), batas = setTimeout(() => henti.abort(), 150000);
+    let teks;
+    try {
+      const r = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, signal: henti.signal,
+        body: JSON.stringify({ sesi: ls.get(KUNCI_SESI), kodeAkses: ls.get(KUNCI_KODE), ...body }) });
+      teks = await r.text();
+    } finally { clearTimeout(batas); }
+    try { res = JSON.parse(teks); }
+    catch (e) { res = { ok:false, sibuk:true, pesan:'Server sedang sangat sibuk melayani banyak sekolah. Tunggu 1–2 menit lalu coba lagi.' }; }
   } catch (e) {
-    return { ok:false, pesan:'Tidak bisa terhubung ke server. Periksa koneksi internet lalu coba lagi.' };
+    res = { ok:false, putus:true, pesan: e.name === 'AbortError'
+      ? 'Server terlalu lama menjawab. Tunggu sebentar lalu tekan tombolnya sekali lagi (aman diulang, data tidak menjadi ganda).'
+      : 'Tidak bisa terhubung ke server. Periksa koneksi internet lalu coba lagi.' };
   }
+  if (!res.ok && AKSI_UBAH.test(body.aksi || '') && !res.sesiHabis) res.pesan = '⚠️ BELUM TERSIMPAN. ' + (res.pesan || '');
+  if (res.sesiHabis) {
+    ls.del(KUNCI_SESI); tampil('masuk');
+    pesan('#m-msg', res.pesan + (adaKetikanBelumSimpan() ? ' Ketikan yang belum tersimpan sudah diamankan di perangkat ini: setelah masuk, buka layar yang sama untuk memulihkannya.' : ''), false);
+  }
+  if (res.pemeliharaan) tampilUmum({ pemeliharaan: true, pesanPemeliharaan: res.pesan });
+  if (res.langgananHabis) { $('#u-lgn-teks').textContent = res.pesan; $('#u-lgn').classList.remove('hidden'); }
+  if (res.kodeSalah && body.aksi !== 'cekKode') { ls.del(KUNCI_KODE); tampil('gerbang'); pesan('#g-msg', res.pesan, false); }
+  return res;
 }
 
 const PROVINSI = ['Aceh','Sumatera Utara','Sumatera Barat','Riau','Kepulauan Riau','Jambi','Bengkulu','Sumatera Selatan',
@@ -1704,7 +1741,30 @@ function angkaSah(v){
   const b = t.replace(',', '.');
   return /^\d+(\.\d+)?$/.test(b) && Number(b) <= 100;
 }
-function tinggalkanNilai(){ return !NL_UBAH || confirm('Nilai yang diubah belum disimpan. Tinggalkan?'); }
+const kunciNilai = () => NL ? [NL.tahunAjaran, NL.rombel.id, NL.semester, NL.mapel.kode, NL.varian || ''].join('|') : '';
+const simpanDrafNilai = () => { if (NL && NL_UBAH) DRAF.simpan('nilai', kunciNilai(), NL_ISI); };
+function tinggalkanNilai(){
+  if (!NL_UBAH) return true;
+  if (!confirm('Nilai yang diubah belum disimpan. Tinggalkan?')) return false;
+  DRAF.hapus('nilai', kunciNilai());
+  return true;
+}
+/* Ketikan yang belum tersimpan dari kunjungan sebelumnya (sesi habis, server sibuk, halaman tertutup) ditawarkan untuk dipulihkan. */
+function pulihkanDrafNilai(){
+  const d = DRAF.ambil('nilai', kunciNilai());
+  if (!d) return;
+  let beda = 0;
+  NL.siswa.forEach(s => Object.entries((d.isi || {})[s.id] || {}).forEach(([k, v]) => { if (String(v) !== String(NL_ISI[s.id][k] ?? '')) beda++; }));
+  if (!beda) { DRAF.hapus('nilai', kunciNilai()); return; }
+  if (!confirm('Ada ' + beda + ' isian nilai ' + NL.mapel.nama + ' yang Anda ketik pada ' + jamDraf(d.waktu) + ' tetapi BELUM TERSIMPAN.\n\nPulihkan ketikan itu? (OK = pulihkan, Batal = buang)')) {
+    DRAF.hapus('nilai', kunciNilai()); return;
+  }
+  NL.siswa.forEach(s => Object.entries((d.isi || {})[s.id] || {}).forEach(([k, v]) => {
+    if (String(v) !== String(NL_ISI[s.id][k] ?? '')) { NL_ISI[s.id][k] = String(v); NL_BASI[s.id] = true; }
+  }));
+  NL_UBAH = true;
+  pesan('#nl-msg', beda + ' isian dipulihkan dari perangkat ini. Periksa lalu klik Simpan nilai.', true);
+}
 
 async function bukaNilai(){
   tampil('nilai');
@@ -1753,6 +1813,7 @@ async function muatNilai(opsi){
   }
   $('#nl-tp-ol').innerHTML = res.tp.map(t => '<li><b>' + esc(t.kode) + '</b> — ' + esc(t.tp) + (t.materi ? ' <span class="sub">(' + esc(t.materi) + ')</span>' : '') + '</li>').join('');
   $('#nl-editor').classList.remove('hidden');
+  pulihkanDrafNilai();
   renderNilai();
 }
 
@@ -1786,7 +1847,7 @@ $('#nl-body').addEventListener('input', e => {
   const s = NL.siswa[Number(t.dataset.s)];
   NL_ISI[s.id][t.dataset.k] = t.value;
   t.classList.toggle('salah', !angkaSah(t.value));
-  NL_UBAH = true;
+  NL_UBAH = true; simpanDrafNilai();
   if (!NL_BASI[s.id]) { NL_BASI[s.id] = true; t.closest('tr').classList.add('basi'); }
   statusNilai();
 });
@@ -1814,7 +1875,7 @@ $('#nl-body').addEventListener('paste', e => {
     r.forEach((v, ci) => { const k = kolom[c0 + ci]; if (k) { NL_ISI[s.id][k] = v.trim(); n++; } });
     NL_BASI[s.id] = true;
   });
-  NL_UBAH = true; renderNilai();
+  NL_UBAH = true; simpanDrafNilai(); renderNilai();
   const lebih = s0 + baris.length - NL.siswa.length;
   pesan('#nl-msg', n + ' angka ditempel.' + (lebih > 0 ? ' ' + lebih + ' baris terakhir diabaikan karena melebihi jumlah siswa.' : '') + ' Periksa lalu klik Simpan nilai.', lebih <= 0);
 });
@@ -1826,6 +1887,7 @@ $('#nl-simpan').addEventListener('click', e => sibuk(e.target, async () => {
   if (res.sesiHabis) return;
   pesan('#nl-msg', res.pesan, res.ok, res.salah);
   if (!res.ok) return;
+  DRAF.hapus('nilai', kunciNilai());
   NL.hasil = res.hasil; NL_UBAH = false; NL_BASI = {};
   NL_ISI = {};
   res.siswa.forEach(s => { NL_ISI[s.id] = {}; Object.entries(res.nilai[s.id] || {}).forEach(([k, v]) => { NL_ISI[s.id][k] = String(v).replace('.', ','); }); });
@@ -2199,8 +2261,24 @@ $('#t-wk').addEventListener('click', () => bukaWali());
 function tinggalkanWali(){
   const apa = [WK_UBAH.eks && 'ekstrakurikuler', WK_UBAH.hadir && 'ketidakhadiran/catatan', WK_UBAH.naik && 'kenaikan'].filter(Boolean);
   if (apa.length && !confirm('Perubahan ' + apa.join(', ') + ' belum disimpan. Tinggalkan?')) return false;
+  if (WK_UBAH.hadir) DRAF.hapus('hadir', kunciHadir());
   WK_UBAH.eks = WK_UBAH.hadir = WK_UBAH.naik = false;
   return true;
+}
+const kunciHadir = () => WK ? [WK.tahunAjaran, WK.rombel.id, WK.semester].join('|') : '';
+const simpanDrafHadir = () => { if (WK && WK_UBAH.hadir) DRAF.simpan('hadir', kunciHadir(), WK_HADIR); };
+function pulihkanDrafHadir(){
+  const d = DRAF.ambil('hadir', kunciHadir());
+  if (!d) return;
+  let beda = 0;
+  WK.siswa.forEach(s => Object.entries((d.isi || {})[s.id] || {}).forEach(([k, v]) => { if (k in WK_HADIR[s.id] && String(v) !== String(WK_HADIR[s.id][k] ?? '')) beda++; }));
+  if (!beda) { DRAF.hapus('hadir', kunciHadir()); return; }
+  if (!confirm('Ada ' + beda + ' isian ketidakhadiran/catatan wali kelas yang Anda ketik pada ' + jamDraf(d.waktu) + ' tetapi BELUM TERSIMPAN.\n\nPulihkan ketikan itu? (OK = pulihkan, Batal = buang)')) {
+    DRAF.hapus('hadir', kunciHadir()); return;
+  }
+  WK.siswa.forEach(s => Object.entries((d.isi || {})[s.id] || {}).forEach(([k, v]) => { if (k in WK_HADIR[s.id]) WK_HADIR[s.id][k] = String(v); }));
+  WK_UBAH.hadir = true;
+  pesan('#wk-hadir-msg', beda + ' isian dipulihkan dari perangkat ini. Periksa lalu klik Simpan.', true);
 }
 
 async function bukaWali(){
@@ -2246,6 +2324,7 @@ async function muatWali(){
   $('#wk-isi').classList.remove('hidden');
   WK_DAFTAR = res.ekskulSekolah.slice(); renderDaftarEkskul();
   $('#wk-daftar-box').open = !res.ekskulSekolah.length;
+  pulihkanDrafHadir();
   renderWali();
 }
 
@@ -2375,7 +2454,7 @@ $('#wk-hadir-body').addEventListener('input', e => {
   if (!t.dataset.k) return;
   WK_HADIR[WK.siswa[Number(t.dataset.s)].id][t.dataset.k] = t.value;
   if (t.dataset.c !== undefined) t.classList.toggle('salah', !hariSah(t.value));
-  WK_UBAH.hadir = true; statusHadir();
+  WK_UBAH.hadir = true; simpanDrafHadir(); statusHadir();
 });
 $('#wk-hadir-body').addEventListener('keydown', e => {
   const t = e.target;
@@ -2393,12 +2472,12 @@ $('#wk-hadir-body').addEventListener('paste', e => {
   const baris = teks.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(r => r.split('\t'));
   const s0 = Number(t.dataset.s), c0 = Number(t.dataset.c);
   baris.forEach((r, bi) => { const s = WK.siswa[s0 + bi]; if (s) r.forEach((v, ci) => { const h = WK_HARI[c0 + ci]; if (h) WK_HADIR[s.id][h.k] = v.trim(); }); });
-  WK_UBAH.hadir = true; renderHadir();
+  WK_UBAH.hadir = true; simpanDrafHadir(); renderHadir();
   pesan('#wk-hadir-msg', 'Angka ditempel. Periksa lalu klik Simpan.', true);
 });
 $('#wk-nol').addEventListener('click', () => {
   WK.siswa.forEach(s => WK_HARI.forEach(h => { if (String(WK_HADIR[s.id][h.k]).trim() === '') { WK_HADIR[s.id][h.k] = '0'; WK_UBAH.hadir = true; } }));
-  renderHadir();
+  simpanDrafHadir(); renderHadir();
 });
 $('#wk-hadir-simpan').addEventListener('click', e => sibuk(e.target, async () => {
   const salah = document.querySelectorAll('#wk-hadir-body input.salah').length;
@@ -2407,6 +2486,7 @@ $('#wk-hadir-simpan').addEventListener('click', e => sibuk(e.target, async () =>
   if (res.sesiHabis) return;
   pesan('#wk-hadir-msg', res.pesan, res.ok, res.salah);
   if (!res.ok) return;
+  DRAF.hapus('hadir', kunciHadir());
   pakaiWali(res, ['hadir']); renderHadir();
 }));
 
