@@ -75,8 +75,11 @@ jobs:
           openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in tka/server/Kunci.gs.enc -out proyek/Kunci.js -pass file:"$RUNNER_TEMP/sandi"
           rm -f "$RUNNER_TEMP/privat.pem" "$RUNNER_TEMP/sandi"
           cp tka/server/Code.gs proyek/Code.js
-          # Penanda versi: loket cadangan hanya dipakai peramban bila versinya sama persis dengan loket utama.
-          printf "var VERSI_PASANG = '%s';\n" "${GITHUB_SHA::12}" > proyek/Versi.js
+          # Penanda versi = sidik isi kode + kunci. Loket cadangan hanya dipakai peramban bila versinya sama persis
+          # dengan loket utama; pemasangan ulang tanpa perubahan isi tidak membuat loket cadangan tertinggal.
+          VERSI=$(cat tka/server/Code.gs proyek/Kunci.js | sha256sum | cut -c1-12)
+          printf "var VERSI_PASANG = '%s';\n" "$VERSI" > proyek/Versi.js
+          echo "Versi isi: $VERSI"
           grep -q "var KUNCI_TKA" proyek/Kunci.js || { echo "::error::Kunci.js tidak valid"; exit 1; }
 
       - name: Unggah kode ke Apps Script
