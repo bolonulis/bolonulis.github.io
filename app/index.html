@@ -1028,9 +1028,31 @@ const AKSI_UBAH = /^(simpan|hapus|kunci|bukaKunci|taBaru|program(Mulai|Ulang|Sim
 /* Ada ketikan yang belum disimpan di layar nilai atau wali kelas (draf-nya sudah diamankan di perangkat). */
 const adaKetikanBelumSimpan = () => NL_UBAH || WK_UBAH.hadir;
 
+/* Pantauan kapasitas: kejadian "server sibuk" (bukan JSON / tidak dijawab 150 dtk) dan "lambat" (> 15 dtk) dicatat
+   di perangkat, lalu dilaporkan ke server paling sering 10 menit sekali begitu server bisa dihubungi lagi.
+   Server menjumlahkannya per hari dan mengirim email peringatan ke Admin bila melewati batas. */
+const PANTAU = {
+  catat(jenis, aksi){
+    try {
+      const a = JSON.parse(localStorage.getItem('pantau-antre') || '[]');
+      a.push({ jenis, aksi: String(aksi || '').slice(0, 30), jam: new Date().getHours() });
+      localStorage.setItem('pantau-antre', JSON.stringify(a.slice(-50)));
+    } catch (e) { /* abaikan */ }
+  },
+  kirim(){
+    try {
+      const a = JSON.parse(localStorage.getItem('pantau-antre') || '[]');
+      if (!a.length || Date.now() - Number(localStorage.getItem('pantau-kirim') || 0) < 10 * 60000) return;
+      localStorage.setItem('pantau-kirim', String(Date.now()));
+      api({ aksi:'laporSibuk', kejadian: a }).then(r => { if (r.ok) localStorage.setItem('pantau-antre', '[]'); });
+    } catch (e) { /* abaikan */ }
+  }
+};
+
 async function api(body){
   if (!API_URL) return { ok:false, pesan:'Sistem belum tersambung ke Apps Script.' };
   let res;
+  const mulai = Date.now();
   try {
     // Batas tunggu 150 detik: tombol tidak "Memproses…" selamanya bila server macet.
     const henti = new AbortController(), batas = setTimeout(() => henti.abort(), 150000);
@@ -1043,9 +1065,14 @@ async function api(body){
     try { res = JSON.parse(teks); }
     catch (e) { res = { ok:false, sibuk:true, pesan:'Server sedang sangat sibuk melayani banyak sekolah. Tunggu 1–2 menit lalu coba lagi.' }; }
   } catch (e) {
-    res = { ok:false, putus:true, pesan: e.name === 'AbortError'
+    res = { ok:false, putus:true, batasWaktu: e.name === 'AbortError', pesan: e.name === 'AbortError'
       ? 'Server terlalu lama menjawab. Tunggu sebentar lalu tekan tombolnya sekali lagi (aman diulang, data tidak menjadi ganda).'
       : 'Tidak bisa terhubung ke server. Periksa koneksi internet lalu coba lagi.' };
+  }
+  if (body.aksi !== 'laporSibuk') {
+    if (res.sibuk || res.batasWaktu) PANTAU.catat('sibuk', body.aksi);
+    else if (!res.putus && Date.now() - mulai > 15000) PANTAU.catat('lambat', body.aksi);
+    if (!res.sibuk && !res.putus) PANTAU.kirim();
   }
   if (!res.ok && AKSI_UBAH.test(body.aksi || '') && !res.sesiHabis) res.pesan = '⚠️ BELUM TERSIMPAN. ' + (res.pesan || '');
   if (res.sesiHabis) {
