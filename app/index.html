@@ -176,6 +176,22 @@ table.kok tr.basi td.ket{opacity:.45}
 .pg-alur{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:6px;font-size:12px}.pg-alur span{background:#f1ecfb;border:1px solid #d9ccf3;border-radius:8px;padding:3px 7px}.pg-alur i{color:#4b2a8c;font-style:normal;font-weight:800}
 #v-prog .pg-form .pg-cek{display:flex;gap:6px;align-items:center;font-weight:400}.pg-konteks{margin-top:6px}
 @media (max-width:560px){.pg-pilihan,.pg-jenis{grid-template-columns:1fr}}
+/* Tanda menunggu (cangkir kopi) saat membuka menu/halaman */
+.tunggu{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(255,250,240,.72);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s}
+.tunggu.on{opacity:1;pointer-events:auto}
+.tunggu .kartu{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 40px rgba(18,49,79,.16);padding:20px 22px 18px;max-width:340px;width:100%;text-align:center}
+.tunggu svg{width:92px;height:92px;display:block;margin:0 auto 6px}
+.tunggu .uap{animation:uap 2.4s ease-in-out infinite;opacity:0}
+.tunggu .uap.u2{animation-delay:.8s}.tunggu .uap.u3{animation-delay:1.6s}
+@keyframes uap{0%{opacity:0;transform:translateY(6px)}35%{opacity:.75}100%{opacity:0;transform:translateY(-10px)}}
+.tunggu .isi{animation:isi 3s ease-in-out infinite}
+@keyframes isi{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+.tunggu .teks{font-weight:800;color:var(--blue);font-size:15.5px;line-height:1.4}
+.tunggu .sub{color:var(--muted);font-size:13px;line-height:1.5;margin-top:6px;min-height:1.5em}
+.tunggu .titik::after{content:'';animation:titik 1.4s steps(4) infinite}
+@keyframes titik{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+.tunggu .tutup{margin-top:10px;background:none;border:0;color:var(--muted);text-decoration:underline;font:inherit;font-size:12.5px;cursor:pointer}
+@media (prefers-reduced-motion: reduce){.tunggu .uap{animation:none;opacity:.6}.tunggu .isi,.tunggu .titik::after{animation:none}.tunggu{transition:none}}
 .acuan{margin-top:14px}.acuan h4{margin:14px 0 6px;font-size:14px;color:var(--blue)}
 .acuan table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.45}.acuan th,.acuan td{border:1px solid #e3d8c0;padding:7px 9px;vertical-align:top;text-align:left}
 .acuan th{background:#f7f1e3;width:110px}.acuan .sumber{font-size:12px;color:var(--muted)}
@@ -1118,7 +1134,68 @@ async function kirimKeLoket(url, body){
   }
 }
 
+/* Tanda menunggu: cangkir kopi + kalimat sesuai menu, saat membuka menu/halaman yang butuh data dari server.
+   Muncul hanya bila proses lebih dari 0,4 detik (tanpa kedipan bila server cepat). Tidak dipakai saat menyimpan
+   (tombol sudah menampilkan "Memproses…") dan untuk permintaan latar belakang. */
+const PESAN_MUAT = {
+  sesi: 'Membuka aplikasi', masuk: 'Masuk ke akun sekolah', dataSekolah: 'Membuka data sekolah',
+  siswaRombel: 'Memuat daftar siswa', mapelSekolah: 'Memuat daftar mata pelajaran', nilaiRombel: 'Menyiapkan daftar nilai',
+  tpKelas: 'Memuat Tujuan Pembelajaran', tpBawaan: 'Mengambil TP bawaan', tpEkspor: 'Menyiapkan TP',
+  kokRombel: 'Menyiapkan penilaian kokurikuler', waliRombel: 'Mengambil data wali kelas', rekapRombel: 'Menyusun rapor, sebentar ya',
+  lulusData: 'Menyiapkan data kelulusan', taBaruPratinjau: 'Memeriksa data tahun ajaran baru', unduhExcel: 'Menyiapkan salinan Excel',
+  programInfo: 'Membuka Program Kokurikuler', programBuka: 'Membuka program'
+};
+const SELINGAN = ['Sambil menunggu, minum dulu ☕', 'Terima kasih sudah sabar, Bapak/Ibu Guru 🙏', 'Data sekolah Anda aman.', ''];
+const TUNGGU = {
+  jalan: 0, waktu: [],
+  pasang(){
+    if ($('#tunggu')) return;
+    document.body.insertAdjacentHTML('beforeend', '<div class="tunggu" id="tunggu" role="status" aria-live="polite"><div class="kartu">' +
+      '<svg viewBox="0 0 96 96" aria-hidden="true">' +
+        '<path class="uap" d="M38 30c-4-5 4-8 0-14" fill="none" stroke="#b9a68a" stroke-width="3" stroke-linecap="round"/>' +
+        '<path class="uap u2" d="M48 30c-4-5 4-8 0-14" fill="none" stroke="#b9a68a" stroke-width="3" stroke-linecap="round"/>' +
+        '<path class="uap u3" d="M58 30c-4-5 4-8 0-14" fill="none" stroke="#b9a68a" stroke-width="3" stroke-linecap="round"/>' +
+        '<ellipse cx="48" cy="80" rx="30" ry="5" fill="#eadfc7"/>' +
+        '<path d="M24 38h46v18c0 13-10 23-23 23S24 69 24 56z" fill="#12314f"/>' +
+        '<path d="M70 44h4a8 8 0 0 1 0 16h-5" fill="none" stroke="#12314f" stroke-width="5"/>' +
+        '<ellipse class="isi" cx="47" cy="40" rx="21" ry="4" fill="#7a4a2a"/>' +
+        '<path d="M30 52c3 3 7 3 10 0" fill="none" stroke="#ffd21f" stroke-width="2.5" stroke-linecap="round"/>' +
+      '</svg><div class="teks"><span id="tunggu-teks">Memuat</span><span class="titik"></span></div>' +
+      '<div class="sub" id="tunggu-sub"></div><button type="button" class="tutup hidden" id="tunggu-tutup">Sembunyikan tanda ini</button></div></div>');
+    $('#tunggu-tutup').addEventListener('click', () => TUNGGU.sembunyi());
+  },
+  mulai(aksi){
+    if (!PESAN_MUAT[aksi]) return false;
+    TUNGGU.pasang();
+    TUNGGU.jalan++;
+    if (TUNGGU.jalan > 1) return true;
+    const t = (ms, fn) => TUNGGU.waktu.push(setTimeout(fn, ms));
+    t(400, () => {
+      $('#tunggu-teks').textContent = PESAN_MUAT[aksi];
+      $('#tunggu-sub').textContent = '';
+      $('#tunggu-tutup').classList.add('hidden');
+      $('#tunggu').classList.add('on');
+    });
+    t(3000, () => { $('#tunggu-sub').textContent = SELINGAN[Math.floor(Math.random() * SELINGAN.length)]; });
+    t(8000, () => { $('#tunggu-sub').textContent = 'Server sedang ramai melayani banyak sekolah. Mohon tunggu, data Anda aman.'; });
+    t(30000, () => {
+      $('#tunggu-teks').textContent = 'Masih memproses';
+      $('#tunggu-sub').textContent = 'Jangan tutup halaman ini. Bila lebih dari 2 menit, coba lagi nanti.';
+      $('#tunggu-tutup').classList.remove('hidden');
+    });
+    return true;
+  },
+  selesai(){ TUNGGU.jalan = Math.max(0, TUNGGU.jalan - 1); if (!TUNGGU.jalan) TUNGGU.sembunyi(); },
+  sembunyi(){ TUNGGU.waktu.forEach(clearTimeout); TUNGGU.waktu = []; const el = $('#tunggu'); if (el) el.classList.remove('on'); }
+};
+
 async function api(body){
+  const tampilTunggu = TUNGGU.mulai(body && body.aksi);
+  try { return await apiInti(body); }
+  finally { if (tampilTunggu) TUNGGU.selesai(); }
+}
+
+async function apiInti(body){
   if (!API_URL) return { ok:false, pesan:'Sistem belum tersambung ke Apps Script.' };
   const mulai = Date.now(), urut = await LOKET.urutan(body.aksi);
   let res = await kirimKeLoket(LOKET.url(urut[0]), body);
