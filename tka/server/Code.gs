@@ -35,6 +35,8 @@ var LEMBAR_PESERTA = 'Peserta Ujian';
 var KEPALA_PESERTA = ['ID ujian', 'Nama', 'Mulai mengerjakan', 'Selesai', 'Nilai'];
 var LEMBAR_RILIS = 'Rilis';
 var KEPALA_RILIS = ['Kode kelas', 'Dibuka', 'Diperbarui', 'Waktu buka'];
+var LEMBAR_KAPASITAS = 'Kapasitas';
+var KEPALA_KAPASITAS = ['Waktu', 'Jenis', 'Aksi', 'Jam', 'Jumlah', 'Loket', 'Perangkat'];
 var LEMBAR_KEMAJUAN = 'Kemajuan';
 var KEPALA_KEMAJUAN = ['Kunci', 'Kode kelas', 'Nama', 'Data', 'Diperbarui'];
 var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa', 'Premium sampai', 'Coba gratis dipakai', 'Catatan premium', 'Kode akses'];
@@ -43,6 +45,7 @@ var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', '
 
 function doGet(e) {
   if (e && e.parameter && e.parameter.aksi === 'statistik') return json_(statistik_());
+  if (e && e.parameter && e.parameter.aksi === 'loket') return json_(loket_());
   return json_({ ok: true, layanan: 'Simulasi TKA', paket: Object.keys(KUNCI_TKA) });
 }
 
@@ -51,6 +54,8 @@ function doPost(e) {
   try { req = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, pesan: 'Permintaan tidak valid.' }); }
   try {
     if (req.aksi === 'nilai') return json_(nilai_(req));
+    if (req.aksi === 'loket') return json_(loket_());
+    if (req.aksi === 'laporSibuk') return json_(laporSibuk_(req));
     if (req.aksi === 'cekKode') return json_(cekKode_(req));
     if (req.aksi === 'statistik') return json_(statistik_());
     if (req.aksi === 'buatKelas') return json_(buatKelas_(req));
@@ -1135,12 +1140,13 @@ function admin_(req) {
   });
   // nilai (pengerjaan) per minggu, 8 minggu terakhir
   var minggu = []; for (var i = 7; i >= 0; i--) minggu.push({ mulai: now - (i + 1) * 7 * H, kelas: 0, umum: 0, kelasBaru: 0 });
-  var kerja7 = 0, kerja30 = 0, umum7 = 0;
+  var kerja7 = 0, kerja30 = 0, umum7 = 0; var kerjaHarian = {};
   lembar_(LEMBAR_NILAI, KEPALA_NILAI).getDataRange().getValues().slice(1).forEach(function (b) {
     if (uji(b[1])) return;
     var t = waktu_(b[0]), kode = rapikanKode_(b[12]), k = kelas[kode];
     if (t > now - 7 * H) { kerja7++; if (!k) umum7++; }
     if (t > now - 30 * H) kerja30++;
+    if (t > now - 15 * H) { var hk = Utilities.formatDate(new Date(t), 'Asia/Jakarta', 'yyyy-MM-dd'); kerjaHarian[hk] = (kerjaHarian[hk] || 0) + 1; }
     if (k) { k.kerja++; if (t > now - 7 * H) k.kerja7++; if (t > k.terakhir) k.terakhir = t; }
     for (var w = 0; w < minggu.length; w++) if (t > minggu[w].mulai && t <= minggu[w].mulai + 7 * H) { if (k) minggu[w].kelas++; else minggu[w].umum++; }
   });
@@ -1158,10 +1164,56 @@ function admin_(req) {
       kerja7: kerja7, kerja30: kerja30, umum7: umum7, bayar: bayar, coba: coba },
     minggu: minggu,
     kelas: daftar.sort(function (a, b) { return b.terakhir - a.terakhir || b.dibuat - a.dibuat; }).slice(0, 400),
-    populer: Object.keys(populer).map(function (id) { return { id: id, n: populer[id] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 20) };
+    populer: Object.keys(populer).map(function (id) { return { id: id, n: populer[id] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 20),
+    kapasitas: kapasitas_(kerjaHarian) };
   try { c.put('admin_data', JSON.stringify(hasil), 300); } catch (e) { /* data terlalu besar untuk cache */ }
   return hasil;
 }
+/* ============================ LOKET & KAPASITAS ============================
+ * Loket cadangan = proyek Apps Script yang SAMA, dipasang (Terapkan → Aplikasi web, "Jalankan sebagai: Saya") oleh
+ * akun Google lain yang diberi akses Editor ke spreadsheet ini. Data, LockService, dan CacheService dipakai bersama;
+ * batas proses serentak dihitung per akun. VERSI_PASANG ditulis otomatis oleh GitHub Actions (berkas Versi.gs);
+ * peramban hanya memakai loket cadangan yang versinya sama persis dengan loket utama. */
+function versiServer_() { return typeof VERSI_PASANG !== 'undefined' ? String(VERSI_PASANG) : 'lokal'; }
+function loket_() { return { ok: true, layanan: 'Simulasi TKA', versi: versiServer_() }; }
+
+/** Laporan kejadian penuh/sibuk/lambat/putus dari perangkat (dikirim paling sering 10 menit sekali). */
+function laporSibuk_(req) {
+  var a = Array.isArray(req.kejadian) ? req.kejadian.slice(-60) : [];
+  if (!a.length) return { ok: true, n: 0 };
+  var pr = String(req.perangkat || '').replace(/[^a-z0-9]/gi, '').slice(0, 24) || 'anon';
+  var c = CacheService.getScriptCache();
+  if (c.get('ps_' + pr)) return { ok: true, n: 0, nanti: true };   // batasi 1 laporan per 8 menit per perangkat
+  c.put('ps_' + pr, '1', 480);
+  var JENIS = { penuh: 1, sibuk: 1, lambat: 1, putus: 1 }, kelompok = {};
+  a.forEach(function (k) {
+    if (!k || !JENIS[k.jenis]) return;
+    var aksi = String(k.aksi || '').replace(/[^a-zA-Z]/g, '').slice(0, 24), jam = Math.max(0, Math.min(23, Math.floor(Number(k.jam) || 0)));
+    var lk = Math.max(1, Math.min(9, Math.floor(Number(k.loket) || 1))), kunci = k.jenis + '|' + aksi + '|' + jam + '|' + lk;
+    kelompok[kunci] = (kelompok[kunci] || 0) + 1;
+  });
+  var kini = new Date(), baris = Object.keys(kelompok).map(function (k) { var p = k.split('|'); return [kini, p[0], p[1], Number(p[2]), kelompok[k], Number(p[3]), pr]; });
+  if (baris.length) { var sh = lembar_(LEMBAR_KAPASITAS, KEPALA_KAPASITAS); sh.getRange(sh.getLastRow() + 1, 1, baris.length, KEPALA_KAPASITAS.length).setValues(baris); }
+  return { ok: true, n: baris.length };
+}
+
+/** Ringkasan kapasitas 14 hari untuk Dasbor Admin: kejadian per hari, per loket, per jam, dibandingkan banyak pengerjaan. */
+function kapasitas_(kerjaHarian) {
+  var now = Date.now(), H = 864e5, hari = {}, jam = {}, loket = {}, perangkat = {};
+  var tglKey = function (t) { return Utilities.formatDate(new Date(t), 'Asia/Jakarta', 'yyyy-MM-dd'); };
+  for (var i = 13; i >= 0; i--) { var kk = tglKey(now - i * H); hari[kk] = { tgl: kk, penuh: 0, sibuk: 0, lambat: 0, putus: 0, kerja: kerjaHarian[kk] || 0, perangkat: 0 }; }
+  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(LEMBAR_KAPASITAS);
+  if (sh && sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, KEPALA_KAPASITAS.length).getValues().forEach(function (b) {
+    var t = waktu_(b[0]); if (t < now - 14 * H) return;
+    var h = hari[tglKey(t)]; if (!h) return;
+    var jenis = String(b[1]), n = Number(b[4]) || 0; if (h[jenis] === undefined) return;
+    h[jenis] += n;
+    var pk = h.tgl + '|' + b[6]; if (!perangkat[pk]) { perangkat[pk] = 1; h.perangkat++; }
+    if (jenis === 'penuh' || jenis === 'sibuk') { jam[b[3]] = (jam[b[3]] || 0) + n; loket[b[5]] = (loket[b[5]] || 0) + n; }
+  });
+  return { hari: Object.keys(hari).map(function (k) { return hari[k]; }), jam: jam, loket: loket, versi: versiServer_() };
+}
+
 function adminPremium_(req) {
   var tolak = cekAdmin_(req); if (tolak) return tolak;
   var h = aktifkanPremium(req.kode);

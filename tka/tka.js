@@ -24,18 +24,96 @@ const TKA = (() => {
 
   function siapServer() { return typeof TKA_API === 'string' && /^https:\/\//.test(TKA_API); }
 
-  /** Kirim permintaan ke server. Bila server sedang penuh (banyak siswa mengirim bersamaan, batas Apps Script
-   *  30 proses sekaligus) atau koneksi putus, dicoba ulang otomatis dengan jeda yang makin panjang. */
+  /* ---------- Loket server & pantauan kapasitas ----------
+   Loket utama = TKA_API. Loket cadangan (TKA_LOKET_CADANGAN di konfigurasi.js) adalah proyek Apps Script yang SAMA
+   yang dipasang oleh akun Google lain, sehingga data, kunci antrean, dan memori sementara dipakai bersama, sedangkan
+   batas "30 proses sekaligus" dihitung per akun. Dengan 3 akun, kapasitas serentak menjadi sekitar tiga kali lipat.
+   - Loket cadangan hanya dipakai bila versinya SAMA PERSIS dengan loket utama (diperiksa paling sering 30 menit sekali).
+   - Tiap perangkat memakai satu loket pilihan acak (pembagian rata) selama loket itu sehat.
+   - Bila loket menjawab "bukan JSON" (ditolak Google sebelum kode berjalan, artinya penuh), permintaan yang sama
+     langsung dialihkan ke loket lain. Aman diulang, karena permintaan yang ditolak itu belum dijalankan.
+   - Kejadian penuh/sibuk/lambat/putus dicatat di perangkat, lalu dilaporkan ke server paling sering 10 menit sekali. */
+  const CADANGAN = (typeof TKA_LOKET_CADANGAN !== 'undefined' && Array.isArray(TKA_LOKET_CADANGAN)) ? TKA_LOKET_CADANGAN.filter(u => /^https:\/\//.test(u)) : [];
+  const LOKET = () => [TKA_API].concat(CADANGAN);
+  const kirimMentah = async (url, isi, batasMs) => {
+    const henti = new AbortController(), batas = setTimeout(() => henti.abort(), batasMs);
+    try {
+      const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, signal: henti.signal, body: JSON.stringify(isi) });
+      const teks = await r.text();
+      try { return { j: JSON.parse(teks) }; } catch (e) { return { penuh: true }; }   // halaman galat Google: kode belum berjalan
+    } catch (e) { return { putus: true, lama: e.name === 'AbortError' }; }
+    finally { clearTimeout(batas); }
+  };
+  const loket = {
+    data: () => simpan.get('tka-loket', {}) || {},
+    simpanData: d => simpan.set('tka-loket', d),
+    jalan: null,
+    /** Periksa versi semua loket (latar belakang, paling sering 30 menit sekali). */
+    periksa() {
+      if (!CADANGAN.length || loket.jalan) return loket.jalan;
+      const d = loket.data();
+      if (d.cek && Date.now() - d.cek < 30 * 60000 && d.daftar === LOKET().join('|')) return null;
+      loket.jalan = (async () => {
+        const tanya = u => kirimMentah(u, { aksi: 'loket' }, 20000).then(h => h.j && h.j.ok ? h.j : null);
+        const hasil = await Promise.all(LOKET().map(tanya));
+        const utama = hasil[0];
+        if (utama && utama.versi) {
+          const sehat = CADANGAN.filter((u, i) => hasil[i + 1] && hasil[i + 1].versi === utama.versi);
+          const lama = loket.data();
+          loket.simpanData({ cek: Date.now(), daftar: LOKET().join('|'), sehat, penuh: lama.penuh || {},
+            pilih: [TKA_API].concat(sehat).includes(lama.pilih) ? lama.pilih : null });
+        }
+        loket.jalan = null;
+      })().catch(() => { loket.jalan = null; });
+      return loket.jalan;
+    },
+    sehat() { const d = loket.data(); return [TKA_API].concat((d.sehat || []).filter(u => CADANGAN.includes(u))); },
+    /** Urutan loket untuk satu permintaan: pilihan perangkat dulu (bila tidak sedang penuh), lalu yang lain. */
+    urutan() {
+      const daftar = loket.sehat(); if (daftar.length < 2) return daftar;
+      const d = loket.data(), kini = Date.now(), penuh = d.penuh || {};
+      let pilih = daftar.includes(d.pilih) ? d.pilih : null;
+      if (!pilih) { pilih = daftar[Math.floor(Math.random() * daftar.length)]; d.pilih = pilih; loket.simpanData(d); }
+      const lain = daftar.filter(u => u !== pilih), aman = u => !(penuh[u] > kini);
+      return [pilih].concat(lain).sort((a, b) => aman(b) - aman(a));
+    },
+    tandaiPenuh(u) { const d = loket.data(); d.penuh = d.penuh || {}; d.penuh[u] = Date.now() + 2 * 60000; loket.simpanData(d); }
+  };
+  const PANTAU = {
+    catat(jenis, aksi, url) {
+      const a = simpan.get('tka-pantau', []) || [];
+      a.push({ jenis, aksi: String(aksi || '').slice(0, 24), jam: new Date().getHours(), loket: Math.max(0, LOKET().indexOf(url)) + 1 });
+      simpan.set('tka-pantau', a.slice(-60));
+    },
+    kirim() {
+      const a = simpan.get('tka-pantau', []) || [];
+      if (!a.length || Date.now() - (simpan.get('tka-pantau-kirim', 0) || 0) < 10 * 60000) return;
+      simpan.set('tka-pantau-kirim', Date.now());
+      kirimMentah(TKA_API, { aksi: 'laporSibuk', kejadian: a, perangkat: idPerangkat() }, 20000)
+        .then(h => { if (h.j && h.j.ok) { const kini = simpan.get('tka-pantau', []) || []; simpan.set('tka-pantau', kini.slice(a.length)); } });
+    }
+  };
+
+  /** Kirim permintaan ke server. Loket penuh → langsung pindah loket; server sibuk atau koneksi putus →
+   *  dicoba ulang otomatis dengan jeda yang makin panjang dan sedikit acak. */
   async function api(req) {
     if (!siapServer()) return { ok: false, pesan: 'Server penilaian belum dipasang oleh Admin.' };
+    loket.periksa();
+    const isi = { ...req, perangkat: idPerangkat() };
     const jeda = [0, 2500, 6000, 12000];
     for (let i = 0; i < jeda.length; i++) {
       if (jeda[i]) await new Promise(t => setTimeout(t, jeda[i] + Math.random() * 1500));
-      try {
-        const r = await fetch(TKA_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...req, perangkat: idPerangkat() }) });
-        const h = await r.json();
-        if (h && (h.ok || !/sibuk/i.test(h.pesan || ''))) return h;   // berhasil, atau ditolak dengan alasan jelas (mis. kode salah)
-      } catch (e) { /* server penuh/koneksi putus: coba lagi */ }
+      const urut = loket.urutan();
+      for (let k = 0; k < urut.length; k++) {
+        const url = urut[k], mulai = Date.now();
+        const h = await kirimMentah(url, isi, 120000);
+        if (h.penuh) { PANTAU.catat('penuh', req.aksi, url); loket.tandaiPenuh(url); continue; }   // aman: belum dijalankan
+        if (h.putus) { PANTAU.catat(h.lama ? 'lambat' : 'putus', req.aksi, url); break; }   // mungkin sudah dijalankan: jangan pindah loket
+        if (Date.now() - mulai > 15000) PANTAU.catat('lambat', req.aksi, url);
+        const j = h.j;
+        if (j && (j.ok || !/sibuk/i.test(j.pesan || ''))) { PANTAU.kirim(); return j; }   // berhasil, atau ditolak dengan alasan jelas
+        PANTAU.catat('sibuk', req.aksi, url); break;
+      }
     }
     return { ok: false, putus: true, pesan: 'Server sedang ramai atau koneksi terputus. Tunggu sebentar, lalu ketuk tombol di bawah untuk mencoba lagi.' };
   }
