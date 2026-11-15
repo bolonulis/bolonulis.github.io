@@ -73,6 +73,8 @@ dialog textarea{width:100%;min-height:150px;font:inherit;font-size:13.5px;paddin
       <section class="kartu"><h2>📈 Pengerjaan per minggu</h2><p class="sub">Semua latihan dan tes yang dikumpulkan, 8 minggu terakhir.</p><div class="grafik" id="grafik"></div></section>
       <section class="kartu"><h2>🔥 Latihan paling banyak diselesaikan</h2><p class="sub">Jalur Belajar, jumlah siswa yang menyelesaikan.</p><div id="populer"></div></section>
     </div>
+    <section class="kartu" id="k-kapasitas"><h2>🛰️ Kapasitas server</h2><p class="sub">Kejadian server penuh, sibuk, lambat, atau koneksi putus yang dialami siswa dan guru, 14 hari terakhir. Dilaporkan otomatis oleh perangkat mereka.</p>
+      <div id="kap-ringkas"></div><div id="kap-loket" style="margin:10px 0"></div><div class="gulir" id="kap-tabel"></div></section>
     <section class="kartu"><h2>📞 Perlu ditindaklanjuti</h2><p class="sub">Guru yang sebaiknya dihubungi sekarang. Tombol WA membuka pesan siap kirim.</p><div class="tl" id="tl"></div></section>
     <section class="kartu"><h2>🔎 Analisis soal</h2><p class="sub">Persentase benar setiap soal dari semua pengerjaan (minimal 15). Soal dengan persentase sangat rendah perlu diperiksa: kunci keliru, kalimat membingungkan, atau miskonsepsi siswa. Sebaran jawaban mulai tercatat sejak 14 November 2026.</p>
       <button class="btn ghost" type="button" id="b-butir">🔎 Hitung analisis soal</button><div id="butir" style="margin-top:10px"></div></section>
@@ -85,8 +87,8 @@ dialog textarea{width:100%;min-height:150px;font:inherit;font-size:13.5px;paddin
 
 <dialog id="dlg"><h3 id="dlg-judul" style="margin:0 0 8px"></h3><div id="dlg-isi"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px" id="dlg-tombol"></div></dialog>
 
-<script src="konfigurasi.js?v=2"></script>
-<script src="tka.js?v=16"></script>
+<script src="konfigurasi.js?v=3"></script>
+<script src="tka.js?v=17"></script>
 <script src="bank/jalur.js?v=4"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -162,8 +164,40 @@ function gambar() {
   const tl = tindakLanjut(d.kelas);
   $('tl').innerHTML = tl.length ? tl.map(x => '<div class="tl-item ' + x.w + '"><div class="isi"><span class="jenis">' + esc(x.jenis) + '</span><br><b>' + esc(x.k.guru) + '</b> · ' + esc(x.k.kelas) + ' · ' + esc(x.k.sekolah) +
     '<small>Kode ' + esc(x.k.kode) + ' · ' + x.k.aktif7 + ' siswa aktif minggu ini · ' + x.k.terdaftar + ' terdaftar · terakhir aktif ' + lalu(x.k.terakhir) + '</small></div><div class="aksi">' + tombolAksi(x.k, x.pesan) + '</div></div>').join('') : '<p class="kosong">🎉 Tidak ada yang perlu ditindaklanjuti saat ini.</p>';
+  gambarKapasitas(d.kapasitas);
   gambarKelas();
   document.querySelectorAll('[data-premium]').forEach(b => b.onclick = () => aktifkan(b.dataset.premium));
+}
+/* Kapasitas: penilaian otomatis + status setiap loket (diperiksa langsung dari halaman ini). */
+function gambarKapasitas(k) {
+  const el = $('kap-ringkas'); if (!k) { el.innerHTML = '<p class="sub">Data kapasitas belum tersedia (server belum diperbarui).</p>'; return; }
+  const hr = k.hari, jumlah = (a, f) => a.reduce((s, x) => s + f(x), 0);
+  const tujuh = hr.slice(-7), padat = x => x.penuh + x.sibuk;
+  const p7 = jumlah(tujuh, padat), kerja7 = jumlah(tujuh, x => x.kerja), lambat7 = jumlah(tujuh, x => x.lambat), terburuk = Math.max(0, ...hr.map(padat));
+  const cad = (typeof TKA_LOKET_CADANGAN !== 'undefined' ? TKA_LOKET_CADANGAN : []).length;
+  const rasio = kerja7 ? p7 / kerja7 : 0;
+  let w = 'hijau', judul = '✅ Aman', isi = 'Tidak ada kejadian server penuh atau sibuk dalam 7 hari terakhir. Belum perlu loket cadangan.';
+  if (p7 && rasio < 0.01 && terburuk < 20) { w = 'biru'; judul = '🟦 Sesekali ramai'; isi = p7 + ' kejadian penuh/sibuk dari ' + angka(kerja7) + ' pengerjaan (' + (rasio * 100).toFixed(2).replace('.', ',') + '%). Sudah ditangani otomatis dengan kirim ulang; siswa tidak kehilangan jawaban.'; }
+  else if (p7) { w = 'merah'; judul = cad ? '🟥 Ramai, loket cadangan sedang bekerja' : '🟥 Saatnya memasang loket cadangan';
+    isi = p7 + ' kejadian penuh/sibuk dalam 7 hari (puncak ' + terburuk + ' dalam sehari) dari ' + angka(kerja7) + ' pengerjaan. ' + (cad ? 'Periksa bahwa semua loket di bawah berstatus siap.' : 'Ikuti panduan "Loket cadangan" di tka/server/PANDUAN.md untuk menambah akun Google lain.'); }
+  const jamRamai = Object.entries(k.jam || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([j, n]) => 'pukul ' + String(j).padStart(2, '0') + '.00 (' + n + ')').join(', ');
+  el.innerHTML = '<div class="tl-item ' + w + '"><div class="isi"><span class="jenis">' + judul + '</span><br>' + esc(isi) +
+    '<small>Lambat (&gt;15 detik) 7 hari: ' + lambat7 + (jamRamai ? ' · Jam paling ramai: ' + jamRamai : '') + '</small></div></div>';
+  $('kap-tabel').innerHTML = '<table><thead><tr><th>Tanggal</th><th>Pengerjaan</th><th>Penuh</th><th>Sibuk</th><th>Lambat</th><th>Putus</th><th>Perangkat terdampak</th></tr></thead><tbody>' +
+    hr.slice().reverse().map(x => '<tr' + (padat(x) ? ' style="background:#fff4f2"' : '') + '><td>' + new Date(x.tgl + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' }) + '</td><td>' + angka(x.kerja) + '</td><td>' + (x.penuh || '–') + '</td><td>' + (x.sibuk || '–') + '</td><td>' + (x.lambat || '–') + '</td><td>' + (x.putus || '–') + '</td><td>' + (x.perangkat || '–') + '</td></tr>').join('') + '</tbody></table>' +
+    '<p class="sub" style="margin-top:6px"><b>Penuh</b>: ditolak Google karena batas 30 proses sekaligus per akun (otomatis dialihkan ke loket lain bila ada). <b>Sibuk</b>: antrean data terlalu panjang. <b>Lambat</b>: dijawab lebih dari 15 detik. <b>Putus</b>: koneksi siswa terputus.</p>';
+  periksaLoket(k);
+}
+async function periksaLoket(k) {
+  const daftar = [TKA_API].concat(typeof TKA_LOKET_CADANGAN !== 'undefined' ? TKA_LOKET_CADANGAN : []);
+  $('kap-loket').innerHTML = '<p class="sub">Memeriksa loket…</p>';
+  const tanya = async u => { const t0 = Date.now(); try { const r = await fetch(u + '?aksi=loket'); const j = JSON.parse(await r.text()); return { ok: !!j.ok, versi: j.versi || '', ms: Date.now() - t0 }; } catch (e) { return { ok: false, ms: Date.now() - t0 }; } };
+  const hasil = await Promise.all(daftar.map(tanya)), utama = hasil[0];
+  $('kap-loket').innerHTML = '<table><thead><tr><th>Loket</th><th>Status</th><th>Versi</th><th>Waktu jawab</th></tr></thead><tbody>' + hasil.map((h, i) => {
+    const siap = h.ok && (i === 0 || h.versi === utama.versi);
+    const status = !h.ok ? '🔴 Tidak menjawab' : siap ? '🟢 Siap' + (i ? ' (dipakai siswa)' : '') : '🟡 Tertinggal versi: belum dipakai siswa. Buka akun pemiliknya → Apps Script → Terapkan → Kelola deployment → Edit → Versi baru.';
+    return '<tr><td><b>' + (i ? 'Cadangan ' + i : 'Utama') + '</b></td><td>' + esc(status) + '</td><td><code>' + esc(h.versi || '–') + '</code></td><td>' + (h.ms / 1000).toFixed(1).replace('.', ',') + ' dtk</td></tr>';
+  }).join('') + '</tbody></table>' + (daftar.length < 2 ? '<p class="sub" style="margin-top:6px">Belum ada loket cadangan. Kapasitas saat ini: 1 akun (sekitar 30 proses sekaligus).</p>' : '<p class="sub" style="margin-top:6px">Kapasitas saat ini: ' + hasil.filter((h, i) => h.ok && (i === 0 || h.versi === utama.versi)).length + ' akun siap (sekitar ' + 30 * hasil.filter((h, i) => h.ok && (i === 0 || h.versi === utama.versi)).length + ' proses sekaligus).</p>');
 }
 function gambarKelas() {
   const q = $('cari').value.trim().toLowerCase();

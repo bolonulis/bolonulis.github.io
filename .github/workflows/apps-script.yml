@@ -75,6 +75,8 @@ jobs:
           openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in tka/server/Kunci.gs.enc -out proyek/Kunci.js -pass file:"$RUNNER_TEMP/sandi"
           rm -f "$RUNNER_TEMP/privat.pem" "$RUNNER_TEMP/sandi"
           cp tka/server/Code.gs proyek/Code.js
+          # Penanda versi: loket cadangan hanya dipakai peramban bila versinya sama persis dengan loket utama.
+          printf "var VERSI_PASANG = '%s';\n" "${GITHUB_SHA::12}" > proyek/Versi.js
           grep -q "var KUNCI_TKA" proyek/Kunci.js || { echo "::error::Kunci.js tidak valid"; exit 1; }
 
       - name: Unggah kode ke Apps Script
@@ -84,13 +86,41 @@ jobs:
       - name: Perbarui deployment aplikasi web (URL tetap)
         working-directory: proyek
         run: |
-          DEPLOY_ID=$(grep -o "macros/s/[^/]*" ../tka/konfigurasi.js | cut -d/ -f3)
+          DEPLOY_ID=$(grep "const TKA_API" ../tka/konfigurasi.js | grep -o "macros/s/[^/]*" | cut -d/ -f3)
           [ -n "$DEPLOY_ID" ] || { echo "::error::URL server tidak ditemukan di tka/konfigurasi.js"; exit 1; }
-          clasp deploy --deploymentId "$DEPLOY_ID" --description "Otomatis dari GitHub ${GITHUB_SHA::7}"
+          clasp deploy --deploymentId "$DEPLOY_ID" --description "Otomatis dari GitHub ${GITHUB_SHA::7}" | tee "$RUNNER_TEMP/deploy.txt"
+          VERSI=$(grep -o "@[0-9]*" "$RUNNER_TEMP/deploy.txt" | tail -1 | tr -d @)
+          echo "VERSI_SKRIP=$VERSI" >> "$GITHUB_ENV"
+
+      # Loket cadangan (opsional): deployment milik akun Google lain dari proyek yang sama. Bila kredensial akun itu
+      # disimpan sebagai secret CLASPRC_JSON_LOKET2 / CLASPRC_JSON_LOKET3, deployment-nya ikut diperbarui ke versi yang sama.
+      # Bila tidak ada, loket itu tertinggal versi dan otomatis tidak dipakai peramban sampai diperbarui (aman).
+      - name: Perbarui loket cadangan (bila kredensial tersedia)
+        if: env.VERSI_SKRIP != ''
+        continue-on-error: true
+        working-directory: proyek
+        env:
+          LOKET2: ${{ secrets.CLASPRC_JSON_LOKET2 }}
+          LOKET3: ${{ secrets.CLASPRC_JSON_LOKET3 }}
+        run: |
+          IDS=$(sed -n '/TKA_LOKET_CADANGAN/,/\]/p' ../tka/konfigurasi.js | grep -o "macros/s/[^/]*" | cut -d/ -f3)
+          n=2
+          for ID in $IDS; do
+            CRED=$( [ "$n" = 2 ] && printf '%s' "$LOKET2" || printf '%s' "$LOKET3" )
+            if [ -n "$CRED" ]; then
+              umask 077; printf '%s' "$CRED" > ~/.clasprc.json
+              clasp deploy --deploymentId "$ID" --versionNumber "$VERSI_SKRIP" --description "Loket $n otomatis ${GITHUB_SHA::7}" \
+                && echo "Loket $n diperbarui ke versi $VERSI_SKRIP" || echo "::warning::Loket $n gagal diperbarui"
+            else
+              echo "::notice::Loket $n belum punya kredensial otomatis; perbarui manual dari akun pemiliknya (Kelola deployment → Edit → Versi baru)."
+            fi
+            n=$((n+1))
+          done
+          rm -f ~/.clasprc.json
 
       - name: Uji server
         run: |
-          URL=$(grep -o "https://script.google.com/macros/s/[^']*" tka/konfigurasi.js)
+          URL=$(grep "const TKA_API" tka/konfigurasi.js | grep -o "https://script.google.com/macros/s/[^']*")
           for i in 1 2 3; do
             HASIL=$(curl -sSL "$URL?aksi=statistik" || true)
             echo "Statistik: $HASIL"
@@ -98,6 +128,19 @@ jobs:
             sleep 10
           done
           echo "::error::Server tidak menjawab dengan benar setelah dipasang"; exit 1
+
+      - name: Periksa versi loket cadangan
+        if: always()
+        run: |
+          UTAMA=$(curl -sSL "$(grep "const TKA_API" tka/konfigurasi.js | grep -o "https://script.google.com/macros/s/[^']*")?aksi=loket" || true)
+          echo "Loket 1 (utama): $UTAMA"
+          n=2
+          for URL in $(sed -n '/TKA_LOKET_CADANGAN/,/\]/p' tka/konfigurasi.js | grep -o "https://script.google.com/macros/s/[^']*"); do
+            H=$(curl -sSL "$URL?aksi=loket" || true); echo "Loket $n: $H"
+            [ "$(echo "$H" | grep -o '"versi":"[^"]*"')" = "$(echo "$UTAMA" | grep -o '"versi":"[^"]*"')" ] \
+              || echo "::warning::Loket $n belum sama versinya dengan loket utama, jadi belum dipakai siswa."
+            n=$((n+1))
+          done
 
       - name: Bersihkan kredensial
         if: always()

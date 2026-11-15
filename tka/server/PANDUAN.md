@@ -90,3 +90,39 @@ Guru menjadwalkan ujian dari dasbor. Lembar **Ujian** menyimpan jadwal (kolom St
 lembar **Peserta Ujian** mencatat siswa yang mulai dan mengumpulkan beserta nilainya (satu kali per nama).
 Kolom **Ujian serentak** di lembar Nilai menandai pengerjaan yang berasal dari ujian serentak.
 
+
+## Loket cadangan (menambah kapasitas dengan akun Google lain)
+
+Satu akun Google melayani sekitar **30 proses sekaligus**. Loket cadangan adalah **proyek Apps Script yang sama**
+(bukan salinan) yang dipasang oleh akun Google Anda yang lain. Data, antrean, dan memori sementara tetap satu,
+sedangkan batas 30 proses dihitung per akun. Dengan 3 akun, kapasitasnya sekitar 90 proses sekaligus.
+
+Lihat dulu kartu **🛰️ Kapasitas server** di Dasbor Admin (`/tka/admin.html`). Bila statusnya **🟥 Saatnya memasang
+loket cadangan**, lakukan langkah berikut untuk setiap akun tambahan:
+
+1. Dari akun **utama**, buka spreadsheet server → **Bagikan** → tambahkan email akun tambahan sebagai **Editor**.
+2. Masuk dengan **akun tambahan**, buka spreadsheet itu → **Ekstensi → Apps Script**.
+   Jangan mengubah kode apa pun.
+3. **Terapkan → Deployment baru → Jenis: Aplikasi web**
+   - Deskripsi: `Loket 2` (atau `Loket 3`)
+   - Jalankan sebagai: **Saya (email akun tambahan)**
+   - Yang memiliki akses: **Siapa saja**
+4. Klik **Terapkan**, beri izin, lalu salin URL yang berakhiran `/exec`.
+5. Kirim URL itu ke pengembang, atau tempel sendiri ke `tka/konfigurasi.js`, satu URL per baris:
+   ```js
+   const TKA_LOKET_CADANGAN = [
+     'https://script.google.com/macros/s/URL-LOKET-2/exec',
+     'https://script.google.com/macros/s/URL-LOKET-3/exec',
+   ];
+   ```
+6. Buka kartu Kapasitas di Dasbor Admin. Setiap loket harus berstatus **🟢 Siap**.
+
+**Setelah server diperbarui** (soal atau kode baru), loket cadangan **tertinggal versi** dan otomatis **tidak dipakai**
+siswa. Ini aman: siswa tetap dilayani loket utama. Ada dua cara memperbaruinya:
+- **Manual**: masuk dengan akun tambahan → Apps Script → **Terapkan → Kelola deployment → ✏️ → Versi: Baru → Terapkan**.
+- **Otomatis**: simpan kredensial `clasp` akun tambahan sebagai secret GitHub `CLASPRC_JSON_LOKET2` / `CLASPRC_JSON_LOKET3`
+  (isi `~/.clasprc.json` setelah `clasp login` dengan akun itu). Setiap pemasangan otomatis lalu ikut memperbarui loket.
+
+Cara kerja di peramban: setiap perangkat memakai satu loket pilihan acak (beban terbagi rata). Bila sebuah loket
+penuh (ditolak Google sebelum kode berjalan), permintaan yang sama langsung dialihkan ke loket lain. Pengalihan ini
+aman dan tidak membuat nilai ganda.
