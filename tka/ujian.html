@@ -780,7 +780,16 @@ function jalankanWaktu() {
 }
 
 const NAMA_TIPE = { pg: 'Pilihan ganda', pgk: 'Pilihan ganda kompleks', bs: 'Benar/Salah' };
+/** Semua gambar di set ini diunduh diam-diam saat soal pertama tampil, agar soal berikutnya langsung muncul walau sinyal lemah. */
+const sudahPramuat = new Set();
+function pramuatGambar(b) {
+  if (!b || sudahPramuat.has(b.id)) return; sudahPramuat.add(b.id);
+  const url = new Set(); (JSON.stringify([b.stimulus, b.soal]).match(/src=\\?"[^"\\]+\.(?:webp|jpe?g|png|svg)/g) || []).forEach(s => url.add(s.replace(/^src=\\?"/, '')));
+  const muat = () => url.forEach(u => { const g = new Image(); g.decoding = 'async'; g.src = u; });
+  (window.requestIdleCallback || (f => setTimeout(f, 300)))(muat);
+}
 function tampilSoal() {
+  pramuatGambar(B);
   const q = B.soal[indeksSoal(posisi)], j = S.jawaban[q.no];
   $('u-no').textContent = nomorTampil(posisi);
   $('u-jenis').textContent = q.tipe === 'bs' ? (q.kolom.join('/')) : NAMA_TIPE[q.tipe];
@@ -903,6 +912,26 @@ async function bukaHasil(r, lihatUlang) {
   }
   hasilKini = res.ok ? res : null;
   isiHasil(r, res);
+  if (!res.ok && res.putus) jadwalKirimUlang(r); else hentikanKirimUlang();
+}
+
+/** Server ramai (misalnya tryout serentak): jawaban sudah aman di perangkat, lalu dikirim ulang otomatis
+ *  dengan jeda yang makin panjang dan sedikit acak agar tidak semua perangkat mengirim pada detik yang sama. */
+let kirimUlang = { t: null, ke: 0, detak: null };
+function hentikanKirimUlang() { clearTimeout(kirimUlang.t); clearInterval(kirimUlang.detak); kirimUlang = { t: null, ke: 0, detak: null }; }
+function jadwalKirimUlang(r) {
+  clearTimeout(kirimUlang.t); clearInterval(kirimUlang.detak);
+  if (kirimUlang.ke >= 12) return;
+  const jeda = Math.min(20 + kirimUlang.ke * 15, 90) + Math.floor(Math.random() * 15);
+  kirimUlang.ke++;
+  let sisa = jeda; const teks = $('h-tertunda-teks');
+  const tulis = () => { teks.textContent = 'Server sedang ramai karena banyak siswa mengirim bersamaan. Jawabanmu aman. Nilai akan dikirim otomatis dalam ' + sisa + ' detik.'; };
+  tulis(); kirimUlang.detak = setInterval(() => { sisa = Math.max(0, sisa - 1); tulis(); }, 1000);
+  kirimUlang.t = setTimeout(() => {
+    clearInterval(kirimUlang.detak);
+    if (riwayatKini !== r || document.hidden) { if (riwayatKini === r) document.addEventListener('visibilitychange', function sekali() { if (!document.hidden) { document.removeEventListener('visibilitychange', sekali); bukaHasil(r, false); } }); return; }
+    bukaHasil(r, false);
+  }, jeda * 1000);
 }
 
 function isiHasil(r, res) {
@@ -1009,7 +1038,7 @@ function isiHasilJalur(r, res) {
   }
 }
 
-$('h-ulang-kirim').onclick = () => bukaHasil(riwayatKini, false);
+$('h-ulang-kirim').onclick = () => { clearTimeout(kirimUlang.t); clearInterval(kirimUlang.detak); bukaHasil(riwayatKini, false); };
 
 function siapkanKunci(r, res) {
   const ps = r.peserta || {};
