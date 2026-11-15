@@ -3333,7 +3333,17 @@ document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click
 async function mulai(){
   if (!API_URL) $('#cfg-notice').classList.remove('hidden');
   const infoSiap = muatInfo();
-  setInterval(muatInfo, 5 * 60 * 1000); // pengumuman/pemeliharaan baru ikut tampil tanpa memuat ulang halaman
+  // Pengumuman/pemeliharaan baru ikut tampil tanpa memuat ulang halaman: diperiksa paling sering 30 menit sekali,
+  // dan hanya saat tab sedang dilihat (tab di latar belakang tidak membebani server). Saat menyimpan, status
+  // pemeliharaan tetap langsung terlihat karena server menolak simpanan dengan pesan pemeliharaan.
+  let infoTerakhir = Date.now();
+  const segarkanInfo = () => {
+    if (document.hidden || Date.now() - infoTerakhir < 30 * 60 * 1000) return;
+    infoTerakhir = Date.now();
+    muatInfo();
+  };
+  setInterval(segarkanInfo, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', segarkanInfo);
   const q = new URLSearchParams(location.search);
   if (q.get('verifikasi') || q.get('reset')) history.replaceState(null, '', location.pathname); // token tidak tertinggal di riwayat
 
