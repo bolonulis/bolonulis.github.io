@@ -488,6 +488,19 @@ table.leger td.j{text-align:center;font-weight:800}
         <button class="btn" type="button" id="nl-simpan" style="width:auto">Simpan nilai</button>
         <label class="show bebas" style="margin:0"><input type="checkbox" id="nl-deskripsi" checked> Tampilkan deskripsi rapor</label>
         <span class="sub" id="nl-status"></span>
+        <button class="btn small btn-3d" type="button" id="nl-erapor-buka" style="width:auto;margin-left:auto" title="Salin nilai dan T/R untuk ditempel ke format impor nilai yang diunduh dari e-Rapor">Salin nilai ke format e-Rapor</button>
+      </div>
+      <div class="tp-salin hidden" id="nl-erapor">
+        <b id="nl-erapor-judul">Salin nilai ke format impor e-Rapor</b>
+        <ol>
+          <li>Di <b>e-Rapor</b>, unduh format impor nilai untuk <b>rombel dan mapel yang sama</b> (berkas <i>f_nilai_….xlsx</i>).</li>
+          <li>Pilih berkas itu di sini. Berkas dibaca di perangkat ini saja, <b>tidak dikirim ke server</b>. Aplikasi mencocokkan siswa lewat NISN dan TP lewat teksnya, mengikuti urutan di berkas.</li>
+          <li>Periksa daftar di bawah, klik <b>📋 Salin</b>, lalu buka berkas itu di Excel, klik sel yang ditunjukkan, tekan <b>Ctrl+V</b>, simpan, dan impor ke e-Rapor.</li>
+        </ol>
+        <div class="panduan" style="margin:0 0 10px"><b>T</b> = TP yang paling dikuasai (nilai TP tertinggi), <b>R</b> = TP yang perlu peningkatan (nilai TP terendah), sama dengan deskripsi rapor di aplikasi ini. Siswa yang nilainya belum lengkap dikosongkan.</div>
+        <input type="file" id="nl-erapor-berkas" accept=".xlsx">
+        <div class="msg" id="nl-erapor-msg"></div>
+        <div id="nl-erapor-hasil"></div>
       </div>
       <div class="msg" id="nl-msg"></div>
       <div class="tbl"><table class="siswa nilai"><thead><tr id="nl-head"></tr></thead><tbody id="nl-body"></tbody></table></div>
@@ -2058,6 +2071,127 @@ $('#nl-simpan').addEventListener('click', e => sibuk(e.target, async () => {
   renderNilai();
 }));
 $('#nl-deskripsi').addEventListener('change', e => $('table.nilai').classList.toggle('tanpa-deskripsi', !e.target.checked));
+/* ---------- Salin nilai ke format impor nilai e-Rapor ----------
+   Format e-Rapor (f_nilai_….xlsx): baris judul kolom (NISN di kolom E), baris teks TP, baris kode TP ("TP.…"),
+   lalu satu baris per siswa: kolom NILAI (1–100) dan satu kolom per TP berisi "T" (paling dikuasai) atau "R"
+   (perlu peningkatan). Aturan validasi e-Rapor: nilai < 100 wajib minimal satu R; nilai 100 tidak boleh ada R.
+   Urutan siswa dan TP diambil dari berkas itu sendiri; berkas hanya dibaca di perangkat (tidak dikirim ke server). */
+let NL_ERAPOR = null;
+const normTeks = t => String(t ?? '').toLowerCase().replace(/\s+/g, ' ').replace(/[.\s]+$/, '').trim();
+const normNisn = t => String(t ?? '').replace(/\D/g, '').replace(/^0+/, '');
+const hurufKolomX = n => { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+const angkaIsi = v => { const t = String(v ?? '').trim().replace(',', '.'); return t === '' || isNaN(Number(t)) ? null : Number(t); };
+
+/** T dan R untuk satu siswa, dihitung dengan cara yang sama seperti deskripsi rapor (TP tertinggi/terendah pertama). */
+function tandaTR(nilaiRapor, tpApp, isian){
+  const ada = tpApp.map(t => ({ kode: t.kode, v: angkaIsi(isian[t.kode]) })).filter(x => x.v !== null);
+  if (!ada.length) return { tanda: {}, catatan: 'belum ada nilai TP' };
+  let tinggi = ada[0], rendah = ada[0];
+  ada.forEach(x => { if (x.v > tinggi.v) tinggi = x; if (x.v < rendah.v) rendah = x; });
+  const tanda = { [tinggi.kode]: 'T' };
+  let catatan = '';
+  if (nilaiRapor < 100) {
+    if (rendah.v < tinggi.v) tanda[rendah.kode] = 'R';
+    else if (ada.length > 1) { tanda[ada[ada.length - 1].kode] = 'R'; catatan = 'nilai semua TP sama: R diberikan pada TP terakhir'; }
+    else { tanda[tinggi.kode] = 'R'; catatan = 'hanya satu TP bernilai: ditandai R (aturan e-Rapor)'; }
+  }
+  return { tanda, catatan };
+}
+
+async function bacaFormatNilai(berkas){
+  await muatPustaka('ExcelJS');
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(await berkas.arrayBuffer());
+  const ws = wb.worksheets[0];
+  const sel = (r, c) => { const v = ws.getCell(r, c).value; if (v == null) return ''; if (typeof v === 'object') return String(v.result ?? v.text ?? (v.richText ? v.richText.map(x => x.text).join('') : '')); return String(v); };
+  let barisJudul = 0;
+  for (let r = 1; r <= 15 && !barisJudul; r++) for (let c = 1; c <= 10; c++) if (normTeks(sel(r, c)) === 'nisn') { barisJudul = r; break; }
+  if (!barisJudul) throw new Error('Kolom NISN tidak ditemukan. Pastikan berkas ini format impor NILAI dari e-Rapor (f_nilai_….xlsx).');
+  let kolNisn = 0, kolNama = 0;
+  for (let c = 1; c <= 15; c++) { const t = normTeks(sel(barisJudul, c)); if (t === 'nisn') kolNisn = c; if (t.startsWith('nama')) kolNama = kolNama || c; }
+  let barisKode = 0, kolTp = 0;
+  for (let r = barisJudul + 1; r <= barisJudul + 6 && !barisKode; r++) for (let c = 1; c <= 30; c++) if (/^tp/i.test(sel(r, c).trim())) { barisKode = r; kolTp = c; break; }
+  if (!barisKode) throw new Error('Baris kode TP tidak ditemukan di berkas ini.');
+  const tp = [];
+  for (let c = kolTp; c <= kolTp + 60 && /^tp/i.test(sel(barisKode, c).trim()); c++) tp.push({ kol: c, kode: sel(barisKode, c).trim(), teks: sel(barisKode - 1, c) });
+  const siswa = [];
+  for (let r = barisKode + 1; r <= barisKode + 200; r++) {
+    if (!/^\d+$/.test(sel(r, 1).trim())) break;
+    siswa.push({ baris: r, nisn: sel(r, kolNisn).trim(), nama: sel(r, kolNama).trim() });
+  }
+  if (!siswa.length) throw new Error('Tidak ada baris siswa di berkas ini.');
+  return { judul: sel(1, 1).replace(/\s+/g, ' ').trim(), tp, siswa, kolNilai: kolTp - 1, barisAwal: siswa[0].baris };
+}
+
+$('#nl-erapor-buka').addEventListener('click', () => {
+  $('#nl-erapor').classList.toggle('hidden');
+  $('#nl-erapor-judul').textContent = 'Salin nilai ' + NL.mapel.nama + (NL.varian ? ' (' + NL.varian + ')' : '') + ' ' + labelRombel(NL.rombel) + ' ke format impor e-Rapor';
+});
+$('#nl-erapor-berkas').addEventListener('change', async e => {
+  const berkas = e.target.files[0];
+  $('#nl-erapor-hasil').innerHTML = ''; $('#nl-erapor-msg').textContent = ''; NL_ERAPOR = null;
+  if (!berkas) return;
+  if (NL_UBAH) { e.target.value = ''; return pesan('#nl-erapor-msg', 'Ada nilai yang belum disimpan. Klik Simpan nilai dulu, lalu pilih berkasnya lagi.', false); }
+  let f;
+  try { f = await bacaFormatNilai(berkas); } catch (err) { return pesan('#nl-erapor-msg', err.message, false); }
+  const daftar = await api({ aksi:'siswaRombel', rombel: NL.rombel.id });
+  if (!daftar.ok) return pesan('#nl-erapor-msg', daftar.pesan, false);
+  const perNisn = {}, perNama = {};
+  daftar.siswa.forEach(s => { if (normNisn(s.nisn)) perNisn[normNisn(s.nisn)] = s.id; perNama[normTeks(s.nama)] = s.id; });
+  const diLayar = {}; NL.siswa.forEach(s => { diLayar[s.id] = s; });
+  // TP berkas ↔ TP aplikasi (lewat teks; bila tidak ada yang cocok dan jumlahnya sama: lewat urutan)
+  const tpApp = NL.tp, peta = {};
+  f.tp.forEach(t => {
+    const n = normTeks(t.teks);
+    const a = tpApp.find(x => normTeks(x.tp) === n) || tpApp.find(x => n && (normTeks(x.tp).startsWith(n) || n.startsWith(normTeks(x.tp))));
+    if (a) peta[t.kode] = a.kode;
+  });
+  const peringatan = [];
+  if (!Object.keys(peta).length && f.tp.length === tpApp.length) {
+    f.tp.forEach((t, i) => { peta[t.kode] = tpApp[i].kode; });
+    peringatan.push('Teks TP di berkas berbeda dengan TP di aplikasi; TP dicocokkan menurut urutan. Periksa kembali.');
+  }
+  const tpTakCocok = f.tp.filter(t => !peta[t.kode]);
+  if (tpTakCocok.length) peringatan.push(tpTakCocok.length + ' TP di berkas tidak cocok dengan TP aplikasi (' + tpTakCocok.map(t => t.kode).join(', ') + ') dan dikosongkan. Samakan dengan Salin TP ke template e-Rapor.');
+  const judul = normTeks(f.judul);
+  if (!judul.includes(normTeks(NL.mapel.nama)) || !new RegExp('kelas\\s+' + NL.rombel.kelas + '\\b').test(judul))
+    peringatan.push('Judul berkas: "' + f.judul + '". Pastikan berkas ini untuk ' + NL.mapel.nama + ' kelas ' + NL.rombel.kelas + '.');
+  const dipakai = {};
+  const baris = f.siswa.map(fs => {
+    const id = (normNisn(fs.nisn) && perNisn[normNisn(fs.nisn)]) || perNama[normTeks(fs.nama)];
+    const s = id && diLayar[id];
+    const kosong = { fs, sel: Array(f.tp.length + 1).fill('') };
+    if (!s) return { ...kosong, ket: id ? 'tidak mengikuti mapel/varian ini di aplikasi' : 'tidak ditemukan di rombel ini (cek NISN)', buruk: true };
+    dipakai[id] = true;
+    const h = NL.hasil[s.id] || {};
+    if (!h.lengkap || !(h.nilai >= 1 && h.nilai <= 100)) return { ...kosong, s, ket: 'nilai belum lengkap', buruk: true };
+    const tr = tandaTR(h.nilai, tpApp, NL_ISI[s.id] || {});
+    const sel = [String(Math.round(h.nilai))].concat(f.tp.map(t => (peta[t.kode] && tr.tanda[peta[t.kode]]) || ''));
+    const adaR = sel.includes('R'), adaT = sel.includes('T');
+    let ket = tr.catatan;
+    if (h.nilai < 100 && !adaR) ket = 'TP terendah tidak ada di berkas, isi R manual';
+    else if (!adaT && h.nilai === 100) ket = 'TP tertinggi tidak ada di berkas, isi T manual';
+    return { fs, s, sel, ket, buruk: /manual/.test(ket) };
+  });
+  const tertinggal = NL.siswa.filter(s => !dipakai[s.id]);
+  if (tertinggal.length) peringatan.push(tertinggal.length + ' siswa di aplikasi tidak ada di berkas: ' + tertinggal.map(s => s.nama).join(', ') + '.');
+  NL_ERAPOR = { tsv: baris.map(b => b.sel.join('\t')).join('\n'), sel: hurufKolomX(f.kolNilai) + f.barisAwal };
+  const siap = baris.filter(b => !b.buruk).length;
+  $('#nl-erapor-hasil').innerHTML =
+    (peringatan.length ? '<div class="msg err" style="display:block">' + peringatan.map(esc).join('<br>') + '</div>' : '') +
+    '<div class="toolbar" style="margin:10px 0"><button class="btn small btn-3d" type="button" id="nl-erapor-salin" style="width:auto">📋 Salin ' + baris.length + ' baris</button>' +
+    '<span class="sub">' + siap + ' dari ' + baris.length + ' siswa siap. Tempel di sel <b>' + NL_ERAPOR.sel + '</b>.</span></div>' +
+    '<div class="tbl"><table class="siswa"><thead><tr><th>No</th><th>Nama (berkas e-Rapor)</th><th>NISN</th><th>Nilai</th>' +
+    f.tp.map(t => '<th title="' + esc(t.teks) + '">' + esc(t.kode) + '</th>').join('') + '<th>Keterangan</th></tr></thead><tbody>' +
+    baris.map((b, i) => '<tr' + (b.buruk ? ' style="background:#fff4f2"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(b.fs.nama) + '</td><td>' + esc(b.fs.nisn) + '</td>' +
+      b.sel.map(v => '<td style="text-align:center"><b>' + esc(v) + '</b></td>').join('') + '<td class="sub">' + esc(b.ket || '✓') + '</td></tr>').join('') +
+    '</tbody></table></div>';
+  $('#nl-erapor-salin').addEventListener('click', async () => {
+    const ok = await salinKePapan(NL_ERAPOR.tsv);
+    pesan('#nl-erapor-msg', ok ? 'Tersalin. Buka berkas e-Rapor itu di Excel, klik sel ' + NL_ERAPOR.sel + ', tekan Ctrl+V, simpan, lalu impor ke e-Rapor.' : 'Gagal menyalin otomatis. Coba lagi dengan browser Chrome.', ok);
+  });
+});
+
 $('#nl-mapel').addEventListener('click', e => {
   const b = e.target.closest('[data-mapel]');
   if (!b || b.dataset.mapel === NL.mapel.kode || !tinggalkanNilai()) return;
