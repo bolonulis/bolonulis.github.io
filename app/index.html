@@ -262,6 +262,7 @@ table.wk td.w{font-size:12px;color:#9a6c00;min-width:200px;line-height:1.4}
 table.nilai td.akhir{text-align:center;font-weight:800;min-width:70px}
 .back{display:inline-block;margin-bottom:6px;font-size:14px}
 footer{text-align:center;color:var(--muted);font-size:13px;line-height:1.7;padding:28px 16px 8px}
+@media (max-width:560px){body.di-dalam footer{padding-top:14px;line-height:1.6}}
 .cek-ok{color:var(--ok);font-weight:800}.cek-x{color:var(--bad);font-weight:800}
 table.cek td.rinci{font-size:12.5px;line-height:1.5;color:#7a5600;min-width:360px}table.cek td.rinci ul{margin:0;padding-left:16px}
 table.leger th.m,table.leger td.m{text-align:center;min-width:52px}table.leger td.m.sem{color:var(--muted);font-style:italic}
@@ -1024,7 +1025,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <datalist id="dl-seni"></datalist>
   </section>
 
-  <footer>Daftar Nilai Digital · <a href="panduan.html" target="_blank" rel="noopener" style="color:inherit">Panduan guru</a> · <span class="buka-kopi hidden"><button type="button" class="link">☕ Traktir kopi</button> · </span><button type="button" class="link buka-profil">Kontak Admin</button> · <a href="../syarat.html" target="_blank" rel="noopener" style="color:inherit">Syarat</a> · <a href="../privasi.html" target="_blank" rel="noopener" style="color:inherit">Privasi</a> · <a href="../rapor/" style="color:inherit">Tentang aplikasi</a> · <a href="../" style="color:inherit">Karya lain</a></footer>
+  <footer>Daftar Nilai Digital · <a href="panduan.html" target="_blank" rel="noopener" style="color:inherit">Panduan guru</a> · <button type="button" class="link buka-profil">Kontak Admin</button> · <span class="buka-kopi kaki-kopi"><button type="button" class="link">☕ Dukung pengembang</button></span> · <a href="../syarat.html" target="_blank" rel="noopener" style="color:inherit">Syarat</a> · <a href="../privasi.html" target="_blank" rel="noopener" style="color:inherit">Privasi</a> · <a href="../rapor/" style="color:inherit">Tentang aplikasi</a> · <a href="../" style="color:inherit">Karya lain</a></footer>
 
   <dialog id="profil" class="profil" aria-labelledby="pf-nama">
     <div class="kepala"><small>KONTAK</small><h3 id="pf-nama">Admin Daftar Nilai Digital</h3><p>Bantuan penggunaan, masukan, dan kode aktivasi</p></div>
@@ -1049,14 +1050,15 @@ table.leger td.j{text-align:center;font-weight:800}
   </dialog>
 
   <dialog id="kopi" class="profil kopi" aria-labelledby="kopi-judul">
-    <div class="kepala"><small>DUKUNG PENGEMBANG</small><h3 id="kopi-judul">☕ Traktir kopi seikhlasnya</h3><p>Daftar Nilai Digital gratis untuk semua SD, dan akan tetap gratis.</p></div>
+    <div class="kepala"><small>DUKUNG PENGEMBANG</small><h3 id="kopi-judul">☕ Secangkir kopi untuk pengembang</h3><p>Daftar Nilai Digital gratis untuk semua SD, dan akan tetap gratis.</p></div>
     <div class="isi">
-      Jika aplikasi ini meringankan pekerjaan Bapak/Ibu, boleh traktir kopi pengembang <b>seikhlasnya</b>, untuk biaya pemeliharaan dan pengembangan fitur baru.
+      Jika aplikasi ini meringankan pekerjaan, Bapak/Ibu dapat mendukung pengembang <b>seikhlasnya</b>, untuk biaya pemeliharaan dan pengembangan fitur baru.
       Tidak berkenan pun tidak apa-apa: aplikasi tetap bisa dipakai sepenuhnya.
-      <div class="nomor"><span id="kopi-info"></span><button type="button" class="btn ghost small" id="kopi-salin">Salin nomor</button></div>
+      <div class="nomor hidden" id="kopi-nomor"><span id="kopi-info"></span><button type="button" class="btn ghost small" id="kopi-salin">Salin nomor</button></div>
+      <p id="kopi-wa" style="margin:12px 0">Bila berkenan, silakan hubungi <b>Admin</b> lewat WhatsApp <b>0811-9693-9694</b>.</p>
       <small>Mohon dari dana pribadi, <b>bukan dana BOS/sekolah</b>. Terima kasih atas dukungannya. 🙏</small>
     </div>
-    <div class="tombol"><button type="button" class="btn ghost" id="kopi-tutup">Tutup</button></div>
+    <div class="tombol"><a class="btn wa" id="kopi-wa-btn" href="https://wa.me/6281196939694?text=Halo%20Admin%2C%20Daftar%20Nilai%20Digital%20sangat%20membantu.%20Saya%20ingin%20mendukung%20pengembangnya." target="_blank" rel="noopener">Hubungi Admin</a><button type="button" class="btn ghost" id="kopi-tutup">Tutup</button></div>
   </dialog>
 
   <div class="ajak-kopi hidden" id="ajak-kopi" role="status"><b>Rapor sudah dicetak 🎉</b>Semoga membantu. Jika berkenan, traktir kopi pengembang seikhlasnya. Aplikasi tetap gratis.
@@ -1364,7 +1366,7 @@ async function muatInfo(){
   tampilUmum(res);
   // Ajakan dukungan sukarela: tampil hanya bila pengelola mengisi "Info Dukungan".
   tulisKopi(res.dukungan || '');
-  document.querySelectorAll('.buka-kopi').forEach(b => b.classList.toggle('hidden', !res.dukungan));
+  document.querySelectorAll('.buka-kopi:not(.kaki-kopi)').forEach(b => b.classList.toggle('hidden', !res.dukungan));
   // Info masa promo Program Kokurikuler (diatur pengelola di Pengaturan Pusat)
   $('#t-prog-promo').textContent = res.promoKok ? '🎁 ' + res.promoKok : '';
   $('#t-prog-promo').classList.toggle('hidden', !res.promoKok);
@@ -3812,6 +3814,10 @@ $('#f-testi').addEventListener('submit', e => { e.preventDefault(); kirim(e.targ
 $('#kopi').addEventListener('click', e => { if (e.target === $('#kopi')) $('#kopi').close(); });
 /* "DANA / OVO / GoPay: 0812-0000-0000 (a.n. Nama)" → dompet, nomor, dan atas nama di baris sendiri-sendiri. */
 function tulisKopi(t){
+  /* Tanpa "Info Dukungan": dukungan lewat WhatsApp Admin. */
+  $('#kopi-nomor').classList.toggle('hidden', !t);
+  $('#kopi-wa').classList.toggle('hidden', !!t);
+  $('#kopi-wa-btn').classList.toggle('hidden', !!t);
   const m = t.match(/^(.*?):\s*([\d\-\s]{9,}?)\s*(?:\((.*)\))?\s*$/);
   if (!m) { $('#kopi-info').textContent = t; return; }
   $('#kopi-info').innerHTML = '<small class="dompet">' + esc(m[1].trim()) + '</small><b class="no">' + esc(m[2].trim()) + '</b>' +
