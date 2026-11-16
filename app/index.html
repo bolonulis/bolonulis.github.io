@@ -672,6 +672,18 @@ table.leger td.j{text-align:center;font-weight:800}
             <span class="sub" id="wk-eks-status"></span>
           </div>
           <div class="msg" id="wk-eks-msg"></div>
+          <div class="toolbar" id="wk-eks-erapor" style="flex-wrap:wrap"></div>
+          <div class="tp-salin hidden" id="wk-erapor">
+            <b id="wk-erapor-judul">Nilai ekstrakurikuler tersalin</b>
+            <div class="msg" id="wk-erapor-msg"></div>
+            <ol>
+              <li>Di <b>e-Rapor</b>, unduh format impor nilai ekstrakurikuler untuk <b>ekskul dan kelas ini</b> (berkas <i>f_nilai_ekskulguru_….xlsx</i>), lalu buka di Excel.</li>
+              <li>Klik sel <b>L4</b> (kolom NILAI, siswa nomor 1), lalu tekan <b>Ctrl+V</b>. Nilai dan deskripsi terisi sekaligus.</li>
+              <li>Simpan berkasnya, lalu impor ke e-Rapor.</li>
+            </ol>
+            <div class="panduan" style="margin:0 0 10px">Kode nilai e-Rapor: <b>4</b> = Sangat Baik, <b>3</b> = Baik, <b>2</b> = Cukup, <b>1</b> = Kurang. Urutan siswa mengikuti <b>abjad nama</b>, sama seperti format e-Rapor. Cocokkan nama siswa pertama dan terakhir di Excel dengan daftar di bawah.</div>
+            <div id="wk-erapor-daftar"></div>
+          </div>
           <div class="tbl"><table class="siswa wk"><thead><tr><th>No. Absen</th><th style="min-width:200px">Nama</th><th>Ekstrakurikuler · predikat · keterangan</th></tr></thead><tbody id="wk-eks-body"></tbody></table></div>
         </div>
       </div>
@@ -2701,7 +2713,42 @@ function renderEkskul(){
 function statusEkskul(){
   const ada = WK.siswa.filter(s => (WK_EKS[s.id] || []).some(e => e.kegiatan)).length;
   $('#wk-eks-status').innerHTML = 'Terisi ' + teksJumlah(ada, WK.siswa.length) + (WK_UBAH.eks ? ' · <b>belum disimpan</b>' : '');
+  tombolEkskulErapor();
 }
+/* Salin nilai ekstrakurikuler untuk format impor e-Rapor (f_nilai_ekskulguru): satu berkas per ekskul per kelas,
+   kolom L = kode nilai (4 Sangat Baik, 3 Baik, 2 Cukup, 1 Kurang) dan M = deskripsi, urut abjad nama, tempel di L4.
+   Tombol per ekskul muncul bila semua peserta ekskul itu sudah berpredikat dan tersimpan. */
+const KODE_EKSKUL_ERAPOR = { 'Sangat Baik': '4', 'Baik': '3', 'Cukup': '2', 'Kurang': '1' };
+function pesertaEkskul(keg){
+  const hasil = [];
+  WK.siswa.forEach(s => (WK_EKS[s.id] || []).forEach(e => { if (e.kegiatan === keg) hasil.push({ s, e }); }));
+  return hasil;
+}
+function tombolEkskulErapor(){
+  const el = $('#wk-eks-erapor');
+  const keg = WK.ekskulSekolah.filter(k => pesertaEkskul(k).length);
+  if (!keg.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<span class="sub">Salin untuk e-Rapor:</span>' + keg.map(k => {
+    const p = pesertaEkskul(k), kurang = p.filter(x => !KODE_EKSKUL_ERAPOR[x.e.predikat]).length;
+    const siap = !WK_UBAH.eks && !kurang;
+    return siap ? '<button class="btn small btn-3d" type="button" style="width:auto" data-salin-eks="' + esc(k) + '">📋 ' + esc(k) + ' (' + p.length + ' siswa)</button>'
+      : '<span class="sub" style="border:1px dashed var(--line);border-radius:10px;padding:5px 9px">' + esc(k) + ': ' + (WK_UBAH.eks ? 'simpan dulu' : kurang + ' siswa belum berpredikat') + '</span>';
+  }).join('');
+}
+$('#wk-eks-erapor').addEventListener('click', async e => {
+  const k = e.target.dataset.salinEks;
+  if (!k) return;
+  const baris = pesertaEkskul(k).sort((a, b) => a.s.nama.localeCompare(b.s.nama, 'id', { sensitivity: 'base' }))
+    .map(x => ({ s: x.s, kode: KODE_EKSKUL_ERAPOR[x.e.predikat], pred: x.e.predikat,
+      desk: String((x.e.keterangan || '').trim() || ketOtomatis(x.e)).replace(/[\t\r\n]+/g, ' ') }));
+  const ok = await salinKePapan(baris.map(b => b.kode + '\t' + b.desk).join('\n'));
+  $('#wk-erapor').classList.remove('hidden');
+  $('#wk-erapor-judul').textContent = 'Nilai ekstrakurikuler ' + k + ' ' + labelRombel(WK.rombel) + ' untuk e-Rapor';
+  pesan('#wk-erapor-msg', ok ? '✅ Tersalin ' + baris.length + ' siswa. Tempel di sel L4 format impor ekstrakurikuler ' + k + '.' : 'Gagal menyalin otomatis. Coba lagi dengan browser Chrome.', ok);
+  $('#wk-erapor-daftar').innerHTML = '<div class="tbl"><table class="siswa"><thead><tr><th>No</th><th>Nama</th><th>Nilai</th><th>Predikat</th><th>Deskripsi</th></tr></thead><tbody>' +
+    baris.map((b, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(b.s.nama) + '</td><td style="text-align:center"><b>' + b.kode + '</b></td><td>' + esc(b.pred) + '</td><td class="sub">' + esc(b.desk) + '</td></tr>').join('') +
+    '</tbody></table></div>';
+});
 $('#wk-eks-body').addEventListener('click', e => {
   const t = e.target, s = t.dataset.s !== undefined ? WK.siswa[Number(t.dataset.s)] : null;
   if (!s) return;
