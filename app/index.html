@@ -488,19 +488,25 @@ table.leger td.j{text-align:center;font-weight:800}
         <button class="btn" type="button" id="nl-simpan" style="width:auto">Simpan nilai</button>
         <label class="show bebas" style="margin:0"><input type="checkbox" id="nl-deskripsi" checked> Tampilkan deskripsi rapor</label>
         <span class="sub" id="nl-status"></span>
-        <button class="btn small btn-3d" type="button" id="nl-erapor-buka" style="width:auto;margin-left:auto" title="Salin nilai dan T/R untuk ditempel ke format impor nilai yang diunduh dari e-Rapor">Salin nilai ke format e-Rapor</button>
+        <button class="btn small btn-3d hidden" type="button" id="nl-erapor-buka" style="width:auto;margin-left:auto" title="Salin nilai dan T/R untuk ditempel ke format impor nilai e-Rapor">📋 Salin nilai untuk e-Rapor</button>
+        <span class="sub" id="nl-erapor-tunggu" style="margin-left:auto"></span>
       </div>
       <div class="tp-salin hidden" id="nl-erapor">
-        <b id="nl-erapor-judul">Salin nilai ke format impor e-Rapor</b>
-        <ol>
-          <li>Di <b>e-Rapor</b>, unduh format impor nilai untuk <b>rombel dan mapel yang sama</b> (berkas <i>f_nilai_….xlsx</i>).</li>
-          <li>Pilih berkas itu di sini. Berkas dibaca di perangkat ini saja, <b>tidak dikirim ke server</b>. Aplikasi mencocokkan siswa lewat NISN dan TP lewat teksnya, mengikuti urutan di berkas.</li>
-          <li>Periksa daftar di bawah, klik <b>📋 Salin</b>, lalu buka berkas itu di Excel, klik sel yang ditunjukkan, tekan <b>Ctrl+V</b>, simpan, dan impor ke e-Rapor.</li>
-        </ol>
-        <div class="panduan" style="margin:0 0 10px"><b>T</b> = TP yang paling dikuasai (nilai TP tertinggi), <b>R</b> = TP yang perlu peningkatan (nilai TP terendah), sama dengan deskripsi rapor di aplikasi ini. Siswa yang nilainya belum lengkap dikosongkan.</div>
-        <input type="file" id="nl-erapor-berkas" accept=".xlsx">
+        <b id="nl-erapor-judul">Nilai tersalin</b>
         <div class="msg" id="nl-erapor-msg"></div>
-        <div id="nl-erapor-hasil"></div>
+        <ol>
+          <li>Di <b>e-Rapor</b>, unduh format impor nilai rombel dan mapel ini (berkas <i>f_nilai_….xlsx</i>), lalu buka di Excel.</li>
+          <li>Klik sel <b>G7</b> (kolom NILAI, siswa nomor 1), lalu tekan <b>Ctrl+V</b>. Nilai dan T/R terisi sekaligus.</li>
+          <li>Pastikan kolom VALIDASI semua "Valid", simpan berkasnya, lalu impor ke e-Rapor.</li>
+        </ol>
+        <div class="panduan" style="margin:0 0 10px">Urutan siswa mengikuti <b>abjad nama</b>, sama seperti format e-Rapor. Cocokkan nama siswa pertama dan terakhir di Excel dengan daftar di bawah.
+          <b>T</b> = TP paling dikuasai (nilai TP tertinggi), <b>R</b> = TP perlu peningkatan (nilai TP terendah), sama dengan deskripsi rapor di aplikasi.</div>
+        <div id="nl-erapor-daftar"></div>
+        <details style="margin-top:10px"><summary><b>Ragu urutannya sama?</b> Periksa dengan berkas e-Rapor (lebih aman)</summary>
+          <p class="hint">Pilih berkas format impor dari e-Rapor. Berkas dibaca di perangkat ini saja, <b>tidak dikirim ke server</b>. Siswa dicocokkan lewat NISN dan TP lewat teksnya, mengikuti urutan di berkas.</p>
+          <input type="file" id="nl-erapor-berkas" accept=".xlsx">
+          <div id="nl-erapor-hasil"></div>
+        </details>
       </div>
       <div class="msg" id="nl-msg"></div>
       <div class="tbl"><table class="siswa nilai"><thead><tr id="nl-head"></tr></thead><tbody id="nl-body"></tbody></table></div>
@@ -2016,6 +2022,22 @@ function renderNilai(){
 function statusNilai(){
   const lengkap = NL.siswa.filter(s => (NL.hasil[s.id] || {}).lengkap).length;
   $('#nl-status').innerHTML = 'Lengkap ' + teksJumlah(lengkap, NL.siswa.length) + (NL_UBAH ? ' · <b>belum disimpan</b>' : '');
+  const siap = siapErapor();
+  $('#nl-erapor-buka').classList.toggle('hidden', !siap.ok);
+  $('#nl-erapor-tunggu').textContent = siap.ok ? '' : siap.alasan;
+  if (!siap.ok) $('#nl-erapor').classList.add('hidden');
+}
+/* Tombol "Salin nilai untuk e-Rapor" muncul bila semua TP dan Tes (sumatif akhir) semua siswa terisi dan tersimpan.
+   Praktik boleh kosong. */
+function siapErapor(){
+  if (!NL || !NL.siswa.length || !NL.tp.length) return { ok:false, alasan:'' };
+  const kurang = NL.siswa.filter(s => {
+    const isi = NL_ISI[s.id] || {};
+    return NL.tp.some(t => angkaIsi(isi[t.kode]) === null) || angkaIsi(isi.TES) === null;
+  }).length;
+  if (kurang) return { ok:false, alasan: 'Tombol salin ke e-Rapor muncul setelah semua TP dan Tes terisi (' + kurang + ' siswa belum).' };
+  if (NL_UBAH) return { ok:false, alasan: 'Simpan nilai dulu, lalu tombol salin ke e-Rapor muncul.' };
+  return { ok:true };
 }
 
 $('#nl-body').addEventListener('input', e => {
@@ -2123,13 +2145,27 @@ async function bacaFormatNilai(berkas){
   return { judul: sel(1, 1).replace(/\s+/g, ' ').trim(), tp, siswa, kolNilai: kolTp - 1, barisAwal: siswa[0].baris };
 }
 
-$('#nl-erapor-buka').addEventListener('click', () => {
-  $('#nl-erapor').classList.toggle('hidden');
-  $('#nl-erapor-judul').textContent = 'Salin nilai ' + NL.mapel.nama + (NL.varian ? ' (' + NL.varian + ')' : '') + ' ' + labelRombel(NL.rombel) + ' ke format impor e-Rapor';
+const urutAbjad = daftar => daftar.slice().sort((a, b) => a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' }));
+$('#nl-erapor-buka').addEventListener('click', async () => {
+  const siap = siapErapor();
+  if (!siap.ok) return pesan('#nl-msg', siap.alasan, false);
+  const baris = urutAbjad(NL.siswa).map(s => {
+    const h = NL.hasil[s.id] || {}, tr = tandaTR(h.nilai, NL.tp, NL_ISI[s.id] || {});
+    return { s, sel: [String(Math.round(h.nilai))].concat(NL.tp.map(t => tr.tanda[t.kode] || '')), ket: tr.catatan };
+  });
+  const ok = await salinKePapan(baris.map(b => b.sel.join('\t')).join('\n'));
+  $('#nl-erapor').classList.remove('hidden');
+  $('#nl-erapor-judul').textContent = 'Nilai ' + NL.mapel.nama + (NL.varian ? ' (' + NL.varian + ')' : '') + ' ' + labelRombel(NL.rombel) + ' untuk e-Rapor';
+  pesan('#nl-erapor-msg', ok ? '✅ Tersalin ' + baris.length + ' siswa. Tempel di sel G7 format impor nilai e-Rapor.' : 'Gagal menyalin otomatis. Coba lagi dengan browser Chrome.', ok);
+  $('#nl-erapor-daftar').innerHTML = '<div class="tbl"><table class="siswa"><thead><tr><th>No</th><th>Nama</th><th>Nilai</th>' +
+    NL.tp.map((t, i) => '<th title="' + esc(t.tp) + '">TP ' + (i + 1) + '</th>').join('') + '<th>Keterangan</th></tr></thead><tbody>' +
+    baris.map((b, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(b.s.nama) + '</td>' + b.sel.map(v => '<td style="text-align:center"><b>' + esc(v) + '</b></td>').join('') +
+      '<td class="sub">' + esc(b.ket || '') + '</td></tr>').join('') + '</tbody></table></div>';
+  $('#nl-erapor-hasil').innerHTML = ''; $('#nl-erapor-berkas').value = '';
 });
 $('#nl-erapor-berkas').addEventListener('change', async e => {
   const berkas = e.target.files[0];
-  $('#nl-erapor-hasil').innerHTML = ''; $('#nl-erapor-msg').textContent = ''; NL_ERAPOR = null;
+  $('#nl-erapor-hasil').innerHTML = ''; NL_ERAPOR = null;
   if (!berkas) return;
   if (NL_UBAH) { e.target.value = ''; return pesan('#nl-erapor-msg', 'Ada nilai yang belum disimpan. Klik Simpan nilai dulu, lalu pilih berkasnya lagi.', false); }
   let f;
