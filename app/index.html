@@ -209,6 +209,21 @@ body.di-dalam header .ke-beranda{order:2;float:none;margin:0 0 0 auto}
 #v-beranda .akun .aksi{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 #v-beranda .akun .aksi .btn{text-decoration:none}#v-beranda .akun .pemisah{flex:1}
 @media (max-width:900px){#v-beranda .menu{grid-template-columns:repeat(2,1fr)}}
+/* Warna pastel berbeda untuk tiap kartu menu (mudah diingat): latar lembut, garis tepi, dan judul senada yang lebih tua */
+#v-beranda .tile{--latar:#fff;--tepi:var(--line);--judul:var(--blue);background:var(--latar);border-color:var(--tepi)}
+#v-beranda .tile b{color:var(--judul)}#v-beranda .tile>span{color:#4b5563}
+#v-beranda button.tile:hover{border-color:var(--judul);box-shadow:0 8px 20px rgba(18,49,79,.10);transform:translateY(-1px)}
+#v-beranda button.tile{transition:transform .12s,box-shadow .12s}
+#v-beranda #t-data{--latar:#e8f1fd;--tepi:#b9d4f5;--judul:#1d4f91}
+#v-beranda #t-tp{--latar:#fff6d6;--tepi:#efd98a;--judul:#7a5600}
+#v-beranda #t-nilai{--latar:#e6f6ec;--tepi:#b2dcc0;--judul:#1b6b3a}
+#v-beranda #t-kok{--latar:#e2f5f2;--tepi:#a6dbd3;--judul:#0f6b62}
+#v-beranda #t-wk{--latar:#fdeee2;--tepi:#f1c9a8;--judul:#8a4a12}
+#v-beranda #t-cetak{--latar:#fde9ee;--tepi:#f0bcc8;--judul:#9b2335}
+#v-beranda #t-lulus{--latar:#e4f3fb;--tepi:#a8d6ec;--judul:#145b7a}
+#v-beranda #t-prog{--latar:#f1eafe;--tepi:#cdb8f2;--judul:#4b2a8c;background:var(--latar)}
+@media (prefers-reduced-motion: reduce){#v-beranda button.tile{transition:none}#v-beranda button.tile:hover{transform:none}}
+
 /* HP yang layarnya pendek: deskripsi kartu disembunyikan (nama lengkap tetap ada di judul kartu), ikon sebaris dengan nama */
 @media (max-width:560px) and (max-height:800px){
   #v-beranda .tile span{display:none}#v-beranda .tile .ikon{display:inline-block;font-size:18px;margin:0 6px 0 0;vertical-align:-2px}
