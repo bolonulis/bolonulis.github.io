@@ -192,6 +192,38 @@ table.kok tr.basi td.ket{opacity:.45}
 @keyframes titik{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
 .tunggu .tutup{margin-top:10px;background:none;border:0;color:var(--muted);text-decoration:underline;font:inherit;font-size:12.5px;cursor:pointer}
 @media (prefers-reduced-motion: reduce){.tunggu .uap{animation:none;opacity:.6}.tunggu .isi,.tunggu .titik::after{animation:none}.tunggu{transition:none}}
+/* Beranda satu layar: kepala ramping setelah masuk, 8 kartu ringkas, satu baris alat */
+body.di-dalam header{padding:12px 20px;border-radius:18px;display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap}
+body.di-dalam header h1{font-size:1.35rem;margin:0}body.di-dalam header p:not(.resmi){display:none}
+body.di-dalam header .resmi{order:3;flex-basis:100%;margin:0!important;font-size:11.5px!important}
+body.di-dalam header .ke-beranda{order:2;float:none;margin:0 0 0 auto}
+#v-beranda .bar{margin:12px 0 10px}#v-beranda .bar h2{font-size:20px}
+#v-beranda .menu{grid-template-columns:repeat(4,1fr);gap:10px}
+#v-beranda .tile{padding:12px 14px;position:relative}
+#v-beranda .tile .ikon{display:block;font-style:normal;font-size:22px;line-height:1;margin-bottom:6px}
+#v-beranda .tile b{font-size:15px;margin-bottom:2px}#v-beranda .tile span{font-size:12.5px;line-height:1.4}
+#v-beranda .tile .tag.baru{margin-top:6px}
+#v-beranda .t-prog{grid-column:auto}#v-beranda .t-prog b{font-size:15px}
+#v-beranda .t-prog-promo{margin:6px 0 0;padding:5px 8px;font-size:11.5px}
+#v-beranda .akun{margin-top:10px;padding:10px 12px}
+#v-beranda .akun .aksi{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#v-beranda .akun .aksi .btn{text-decoration:none}#v-beranda .akun .pemisah{flex:1}
+@media (max-width:900px){#v-beranda .menu{grid-template-columns:repeat(2,1fr)}}
+/* HP yang layarnya pendek: deskripsi kartu disembunyikan (nama lengkap tetap ada di judul kartu), ikon sebaris dengan nama */
+@media (max-width:560px) and (max-height:800px){
+  #v-beranda .tile span{display:none}#v-beranda .tile .ikon{display:inline-block;font-size:18px;margin:0 6px 0 0;vertical-align:-2px}
+  #v-beranda .tile b{display:inline}#v-beranda .tile{padding:10px;min-height:0}#v-beranda .t-prog .t-prog-baru{display:none}
+}
+@media (max-width:560px){
+  body.di-dalam header{padding:10px 14px}body.di-dalam header h1{font-size:1.15rem}
+  body.di-dalam header .resmi{font-size:10px!important;line-height:1.35}
+  #v-beranda .bar{margin:10px 0 8px;flex-wrap:nowrap;align-items:flex-start}#v-beranda .bar>div{min-width:0}#v-beranda .bar h2{font-size:17px}
+  #v-beranda .bar .sub{overflow-wrap:anywhere}#v-beranda #b-keluar{padding:7px 11px;width:auto;flex:none}
+  #v-beranda .menu{gap:7px}#v-beranda .tile{padding:8px 10px}#v-beranda .tile .ikon{font-size:19px;margin-bottom:3px}
+  #v-beranda .akun{margin-top:8px;padding:8px 10px}
+  #v-beranda .tile b{font-size:14px}#v-beranda .tile span{font-size:11.5px}
+  #v-beranda .akun .aksi .btn{font-size:12px;padding:6px 9px}#v-beranda .akun .pemisah{display:none}
+}
 .acuan{margin-top:14px}.acuan h4{margin:14px 0 6px;font-size:14px;color:var(--blue)}
 .acuan table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.45}.acuan th,.acuan td{border:1px solid #e3d8c0;padding:7px 9px;vertical-align:top;text-align:left}
 .acuan th{background:#f7f1e3;width:110px}.acuan .sumber{font-size:12px;color:var(--muted)}
@@ -293,7 +325,7 @@ table.leger td.j{text-align:center;font-weight:800}
     <a class="ke-beranda" href="../" target="_blank" rel="noopener" title="Buka halaman utama di tab baru (aplikasi tetap terbuka)">🏠 Karya untuk Guru SD ↗</a>
     <h1>Daftar Nilai Digital</h1>
     <p><b>Olah nilai & cetak rapor SD Kurikulum Merdeka</b> kelas 1–6. Satu akun untuk satu sekolah, dipakai bersama semua guru.</p>
-    <p style="font-size:12.5px;opacity:.85;margin-top:4px">Daftar Nilai Digital adalah alat bantu guru buatan Karya untuk Guru SD, bukan aplikasi resmi Kementerian dan bukan pengganti e-Rapor.</p>
+    <p class="resmi" style="font-size:12.5px;opacity:.85;margin-top:4px">Daftar Nilai Digital adalah alat bantu guru buatan Karya untuk Guru SD, bukan aplikasi resmi Kementerian dan bukan pengganti e-Rapor.</p>
   </header>
 
   <div id="u-rawat" class="umum rawat hidden" role="alert"><b>🔧 Pemeliharaan</b><span id="u-rawat-teks"></span></div>
@@ -432,25 +464,28 @@ table.leger td.j{text-align:center;font-weight:800}
     <div class="tp-baru b-tpbaru hidden" id="b-tpbaru" role="status"><span>🔔 <b>Ada pembaruan TP bawaan dari pengembang.</b> TP sekolah Anda tidak berubah sebelum Anda memilih. Klik untuk melihat:</span>
       <div class="b-tpbaru-daftar" id="b-tpbaru-daftar"></div></div>
     <div class="menu">
-      <button class="tile" type="button" id="t-data"><b>Data Sekolah &amp; Siswa</b><span>Profil sekolah, rombel kelas 1–6, wali kelas, dan daftar siswa.</span><div class="tag on">Buka →</div></button>
-      <button class="tile" type="button" id="t-tp"><b>Tujuan Pembelajaran</b><span>Daftar TP per kelas, mapel, dan semester. Bisa disalin ke template impor TP e-Rapor.</span><div class="tag on">Buka →</div><div class="tag baru hidden" id="t-tp-baru"></div></button>
-      <button class="tile" type="button" id="t-nilai"><b>Input Nilai</b><span>Sumatif lingkup materi dan sumatif akhir semester per rombel dan mapel, lengkap dengan nilai rapor dan deskripsinya.</span><div class="tag on">Buka →</div></button>
-      <button class="tile" type="button" id="t-kok"><b>Kokurikuler</b><span>Subdimensi profil lulusan per kelas, capaian Mahir/Cakap/Berkembang, dan deskripsi otomatis.</span><div class="tag on">Buka →</div></button>
-      <button class="tile" type="button" id="t-wk"><b>Wali Kelas</b><span>Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus.</span><div class="tag on">Buka →</div></button>
-      <button class="tile" type="button" id="t-lulus"><b>Transkrip &amp; SKL</b><span>Kelas 6: nilai rata-rata kelas 5–6 dan praktik, nomor ijazah, cetak transkrip nilai dan Surat Keterangan Lulus.</span><div class="tag on">Buka →</div></button>
-      <button class="tile" type="button" id="t-cetak"><b>Cek &amp; Cetak Rapor</b><span>Pemeriksaan kelengkapan, leger nilai, dan cetak rapor (bisa disimpan sebagai PDF).</span><div class="tag on">Buka →</div></button>
-      <div class="tile t-bantu"><b>Bantuan</b><span>Panduan, narahubung, testimoni, dan grup WhatsApp untuk kabar terbaru.</span>
-        <div class="t-bantu-tombol"><a class="btn ghost small" href="panduan.html" target="_blank" rel="noopener">📘 Panduan</a><button type="button" class="btn ghost small buka-profil">👤 Narahubung</button><button type="button" class="btn ghost small" id="buka-testi">⭐ Beri testimoni</button><a class="btn ghost small" href="https://whatsapp.com/channel/0029VbEAwBWBKfi7fUl1z731" target="_blank" rel="noopener">📢 Saluran WhatsApp</a><a class="btn ghost small" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">👥 Grup WhatsApp</a><button type="button" class="btn ghost small buka-kopi hidden">☕ Traktir kopi</button></div></div>
-      <button class="tile t-prog" type="button" id="t-prog"><div class="t-prog-isi"><b>✨ Program Kokurikuler <span class="t-prog-baru">BARU</span></b><span>Susun program kokurikuler satu kelas satu semester secara bertahap bersama Gemini: rancangan kegiatan, alur dan pertemuan, lembar observasi, asesmen sumatif, sampai dokumen Word dan Google Docs serta isian e-Rapor.</span></div>
-        <div class="t-prog-promo hidden" id="t-prog-promo"></div><div class="tag on">Buka →</div></button>
+      <button class="tile" type="button" id="t-data" title="Profil sekolah, rombel kelas 1–6, wali kelas, dan daftar siswa."><i class="ikon" aria-hidden="true">🏫</i><b>Data Sekolah &amp; Siswa</b><span>Profil, rombel, wali kelas, daftar siswa</span></button>
+      <button class="tile" type="button" id="t-tp" title="Daftar TP per kelas, mapel, dan semester. Bisa disalin ke template impor TP e-Rapor."><i class="ikon" aria-hidden="true">🎯</i><b>Tujuan Pembelajaran</b><span>TP per kelas &amp; mapel, salin ke e-Rapor</span><div class="tag baru hidden" id="t-tp-baru"></div></button>
+      <button class="tile" type="button" id="t-nilai" title="Sumatif lingkup materi dan sumatif akhir semester per rombel dan mapel, lengkap dengan nilai rapor dan deskripsinya."><i class="ikon" aria-hidden="true">✏️</i><b>Input Nilai</b><span>Sumatif, nilai rapor &amp; deskripsi</span></button>
+      <button class="tile" type="button" id="t-kok" title="Subdimensi profil lulusan per kelas, capaian Mahir/Cakap/Berkembang, dan deskripsi otomatis."><i class="ikon" aria-hidden="true">🌱</i><b>Kokurikuler</b><span>Capaian profil lulusan per siswa</span></button>
+      <button class="tile" type="button" id="t-wk" title="Ekstrakurikuler, ketidakhadiran, catatan wali kelas, dan keputusan naik kelas/lulus."><i class="ikon" aria-hidden="true">🧑‍🏫</i><b>Wali Kelas</b><span>Ekskul, kehadiran, catatan, kenaikan</span></button>
+      <button class="tile" type="button" id="t-cetak" title="Pemeriksaan kelengkapan, leger nilai, dan cetak rapor (bisa disimpan sebagai PDF)."><i class="ikon" aria-hidden="true">🖨️</i><b>Cek &amp; Cetak Rapor</b><span>Kelengkapan, leger, cetak/PDF</span></button>
+      <button class="tile" type="button" id="t-lulus" title="Kelas 6: nilai rata-rata kelas 5–6 dan praktik, nomor ijazah, cetak transkrip nilai dan Surat Keterangan Lulus."><i class="ikon" aria-hidden="true">🎓</i><b>Transkrip &amp; SKL</b><span>Khusus kelas 6</span></button>
+      <button class="tile t-prog" type="button" id="t-prog" title="Susun program kokurikuler satu kelas satu semester secara bertahap bersama Gemini, sampai dokumen Word dan Google Docs serta isian e-Rapor."><i class="ikon" aria-hidden="true">✨</i><b>Program Kokurikuler <span class="t-prog-baru">BARU</span></b><span>Susun program bersama Gemini</span>
+        <div class="t-prog-promo hidden" id="t-prog-promo"></div></button>
     </div>
 
     <div class="card akun">
-      <h3>Akun &amp; data sekolah</h3>
       <div class="aksi">
-        <button class="btn ghost small" type="button" id="b-unduh" title="Unduh seluruh isi spreadsheet sekolah sebagai berkas Excel">Unduh salinan Excel</button>
-        <button class="btn ghost small" type="button" id="b-ganti" aria-expanded="false" aria-controls="ganti-wrap">Ganti kata sandi</button>
-        <a class="btn ghost small" href="panduan.html" target="_blank" rel="noopener" style="text-decoration:none">Panduan guru</a>
+        <a class="btn ghost small" href="panduan.html" target="_blank" rel="noopener">📘 Panduan</a>
+        <button type="button" class="btn ghost small buka-profil">👤 Narahubung</button>
+        <button type="button" class="btn ghost small" id="buka-testi">⭐ Testimoni</button>
+        <a class="btn ghost small" href="https://whatsapp.com/channel/0029VbEAwBWBKfi7fUl1z731" target="_blank" rel="noopener">📢 Saluran WA</a>
+        <a class="btn ghost small" href="https://chat.whatsapp.com/E7LzX574A1v0rzYnTnzjQQ" target="_blank" rel="noopener">👥 Grup WA</a>
+        <button type="button" class="btn ghost small buka-kopi hidden">☕ Traktir kopi</button>
+        <span class="pemisah" aria-hidden="true"></span>
+        <button class="btn ghost small" type="button" id="b-unduh" title="Unduh seluruh isi spreadsheet sekolah sebagai berkas Excel">⬇️ Unduh Excel</button>
+        <button class="btn ghost small" type="button" id="b-ganti" aria-expanded="false" aria-controls="ganti-wrap">🔑 Ganti kata sandi</button>
       </div>
       <div class="msg" id="u-msg"></div>
       <div id="ganti-wrap" class="hidden" style="margin-top:16px">
@@ -1348,6 +1383,7 @@ function tampil(v){
     $('#d-ok').classList.add('hidden'); $('#f-daftar').classList.remove('hidden'); $('#v-daftar .satu-akun').classList.remove('hidden');
   }
   const akun = ['masuk','daftar','lupa'].includes(v);
+  document.body.classList.toggle('di-dalam', !akun && v !== 'gerbang');
   $('#tab-akun').classList.toggle('hidden', !akun);
   $('#tab-masuk').classList.toggle('on', v === 'masuk' || v === 'lupa');
   $('#tab-daftar').classList.toggle('on', v === 'daftar');
