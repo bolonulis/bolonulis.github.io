@@ -41,7 +41,7 @@ dialog.profil{border:0;border-radius:22px;padding:0;max-width:440px;width:calc(1
 @media print{.ajak-kopi{display:none!important}}
 .btn.wa{background:#1fa855}.btn.wa:hover{background:#178a45}
 .bantuan{max-width:460px;margin:12px auto 0;text-align:center;font-size:13.5px;color:var(--muted);line-height:1.7}.bantuan a,.bantuan button.link{color:var(--blue);font-weight:700;text-decoration:underline;white-space:nowrap;font-size:inherit}
-footer button.link{color:inherit;text-decoration:underline;font-size:inherit}
+footer button.link{color:inherit;text-decoration:underline;font-size:inherit;font-weight:inherit;font-family:inherit}
 .tab-akun{max-width:460px;margin:22px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:8px}.tab-akun a{display:block;text-align:center;padding:13px 10px;border-radius:14px;border:2px solid var(--blue);color:var(--blue);background:#fff;font-weight:800;font-size:15px;text-decoration:none}.tab-akun a:hover{background:#eef3f8}.tab-akun a.on{background:var(--blue);color:#fff}
 .tab-akun+.form{margin-top:12px}
 .stat{max-width:460px;margin:16px auto 0;padding:18px 20px}.stat h3{margin:0 0 4px;font-size:15px;color:var(--blue)}.stat .angka{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.stat .angka div{background:#fff8e1;border-radius:12px;padding:10px 6px;text-align:center}.stat .angka b{display:block;font-size:24px;color:var(--red)}.stat .angka span{font-size:12px;color:var(--muted)}
@@ -204,7 +204,9 @@ body.di-dalam header .ke-beranda{order:2;float:none;margin:0 0 0 auto}
 #v-beranda .tile b{font-size:15px;margin-bottom:2px}#v-beranda .tile span{font-size:12.5px;line-height:1.4}
 #v-beranda .tile .tag.baru{margin-top:6px}
 #v-beranda .t-prog{grid-column:auto}#v-beranda .t-prog b{font-size:15px}
-#v-beranda .t-prog-promo{margin:6px 0 0;padding:5px 8px;font-size:11.5px}
+#v-beranda .t-prog-promo{margin:5px 0 0;padding:3px 8px;font-size:11.5px;line-height:1.35;border-radius:9px}
+/* Saat promo tampil, promo menggantikan keterangan kartu agar baris kartu tidak memanjang */
+#v-beranda .t-prog.ada-promo>span{display:none}
 #v-beranda .akun{margin-top:10px;padding:10px 12px}
 #v-beranda .akun .aksi{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 #v-beranda .akun .aksi .btn{text-decoration:none}#v-beranda .akun .pemisah{flex:1}
@@ -224,10 +226,20 @@ body.di-dalam header .ke-beranda{order:2;float:none;margin:0 0 0 auto}
 #v-beranda #t-prog{--latar:#f1eafe;--tepi:#cdb8f2;--judul:#4b2a8c;background:var(--latar)}
 @media (prefers-reduced-motion: reduce){#v-beranda button.tile{transition:none}#v-beranda button.tile:hover{transform:none}}
 
+/* Laptop yang layarnya pendek (bilah bookmark, taskbar, atau zoom browser): ikon sebaris dengan nama, jarak dirapatkan */
+@media (min-width:561px) and (max-height:700px){
+  body.di-dalam .wrap{padding-top:12px;padding-bottom:8px}body.di-dalam header{padding:9px 18px}body.di-dalam header h1{font-size:1.2rem}
+  #v-beranda .bar{margin:8px 0 8px}#v-beranda .bar h2{font-size:18px}
+  #v-beranda .tile{padding:9px 12px}#v-beranda .tile .ikon{display:inline-block;font-size:18px;margin:0 6px 0 0;vertical-align:-2px}
+  #v-beranda .tile b{display:inline}#v-beranda .tile>span{margin-top:3px}
+  #v-beranda .akun{margin-top:8px;padding:8px 10px}#v-beranda .akun .aksi .btn{padding:6px 10px}
+}
 /* HP yang layarnya pendek: deskripsi kartu disembunyikan (nama lengkap tetap ada di judul kartu), ikon sebaris dengan nama */
 @media (max-width:560px) and (max-height:800px){
   #v-beranda .tile span{display:none}#v-beranda .tile .ikon{display:inline-block;font-size:18px;margin:0 6px 0 0;vertical-align:-2px}
   #v-beranda .tile b{display:inline}#v-beranda .tile{padding:10px;min-height:0}#v-beranda .t-prog .t-prog-baru{display:none}
+  #v-beranda .t-prog-promo{font-size:10.5px;padding:2px 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #v-beranda .t-prog-promo.hidden{display:none}
 }
 @media (max-width:560px){
   body.di-dalam header{padding:10px 14px}body.di-dalam header h1{font-size:1.15rem}
@@ -261,8 +273,10 @@ table.wk td.w{font-size:12px;color:#9a6c00;min-width:200px;line-height:1.4}
 .logo-isi img{max-width:84px;max-height:84px}
 table.nilai td.akhir{text-align:center;font-weight:800;min-width:70px}
 .back{display:inline-block;margin-bottom:6px;font-size:14px}
-footer{text-align:center;color:var(--muted);font-size:13px;line-height:1.7;padding:28px 16px 8px}
-@media (max-width:560px){body.di-dalam footer{padding-top:14px;line-height:1.6}}
+footer{text-align:center;color:#3f4d5e;font-size:14px;font-weight:600;line-height:1.7;padding:28px 16px 8px}
+footer .kaki-kopi button.link{color:#8a5a00;font-weight:800}
+body.di-dalam footer{padding-top:12px}
+@media (max-width:560px){body.di-dalam footer{padding-top:8px;line-height:1.55;font-size:13px}}
 .cek-ok{color:var(--ok);font-weight:800}.cek-x{color:var(--bad);font-weight:800}
 table.cek td.rinci{font-size:12.5px;line-height:1.5;color:#7a5600;min-width:360px}table.cek td.rinci ul{margin:0;padding-left:16px}
 table.leger th.m,table.leger td.m{text-align:center;min-width:52px}table.leger td.m.sem{color:var(--muted);font-style:italic}
@@ -1370,6 +1384,7 @@ async function muatInfo(){
   // Info masa promo Program Kokurikuler (diatur pengelola di Pengaturan Pusat)
   $('#t-prog-promo').textContent = res.promoKok ? '🎁 ' + res.promoKok : '';
   $('#t-prog-promo').classList.toggle('hidden', !res.promoKok);
+  $('#t-prog').classList.toggle('ada-promo', !!res.promoKok);
   // Pendaftaran ditutup: tab Daftar dan statistik disembunyikan.
   $('#tab-daftar').classList.toggle('hidden', !res.daftarDibuka);
   $('#tab-akun').style.gridTemplateColumns = res.daftarDibuka ? '' : '1fr';
