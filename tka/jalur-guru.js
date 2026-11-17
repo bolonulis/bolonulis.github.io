@@ -542,9 +542,7 @@ const JG = (() => {
       }
     } catch (e) { w.document.open(); w.document.write('<p style="font-family:sans-serif;padding:30px;text-align:center">⚠️ ' + esc(e.message || 'Dokumen gagal dibuat.') + '</p>'); w.document.close(); return; }
     const alat = '<div class="jangan-cetak" style="position:sticky;top:0;background:#fffbeb;border-bottom:1px solid #f5d58a;padding:8px 12px;font:14px sans-serif;z-index:9"><button onclick="print()" style="font:inherit;font-weight:700;padding:6px 14px">🖨️ Cetak / Simpan PDF</button> Pilih <b>"Simpan sebagai PDF"</b> pada jendela cetak untuk menyimpan berkas.</div><style>@media print{.jangan-cetak{display:none}}</style>';
-    w.document.open();
-    w.document.write(kepala + '<body>' + alat + bagian.join('<div style="break-before:page;page-break-before:always"></div>') + '</body></html>');
-    w.document.close();
+    tampilDokumen(w, kepala + '<body>' + alat + bagian.join('<div style="break-before:page;page-break-before:always"></div>') + '</body></html>');
     catatCetak(ids, kunci); gambarCetak();
   }
   function ajakPremium() {

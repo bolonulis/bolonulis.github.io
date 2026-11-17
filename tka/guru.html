@@ -517,7 +517,7 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 <script src="impor-tka.js?v=1"></script>
 <script src="bank/pembaruan.js?v=4"></script>
 <script src="bank/jebakan.js?v=1"></script>
-<script src="jalur-guru.js?v=12"></script>
+<script src="jalur-guru.js?v=13"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;
@@ -932,7 +932,14 @@ function bukaDokumen(judul, isi) {
     '<footer>Dibuat dengan Kelas Intensif TKA · bolonulis.github.io/tka · ' + new Date().toLocaleDateString('id-ID', { dateStyle: 'long' }) + '<br>Hasil latihan ini adalah simulasi dan bukan nilai resmi TKA.</footer></body></html>';
   const w = window.open('', '_blank');
   if (!w) { alert('Izinkan jendela pop-up untuk membuka dokumen.'); return; }
-  w.document.open(); w.document.write(html); w.document.close();
+  tampilDokumen(w, html);
+}
+/** Menampilkan dokumen cetak di tab w sebagai halaman berkas (blob), bukan tab kosong yang ditulisi:
+ *  Chrome di sebagian laptop menolak mencetak tab kosong yang diisi dari halaman lain. <base> menjaga alamat gambar. */
+function tampilDokumen(w, html) {
+  const dasar = '<base href="' + new URL('./', location.href).href + '">';
+  html = /<head>/i.test(html) ? html.replace(/<head>/i, '<head>' + dasar) : dasar + html;
+  w.location.replace(URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' })));
 }
 function cekPremiumUntuk(fitur) {
   if (premiumAktif()) return true;
