@@ -66,6 +66,12 @@ otomatis dipasang ke Apps Script dan deployment aplikasi web diperbarui (URL tet
 Isinya tidak dapat dibaca tanpa kunci privat yang hanya tersimpan di secret `KUNCI_PRIVATE_KEY`.
 Untuk memperbarui kunci jawaban: `bash tka/server/enkripsi-kunci.sh path/ke/Kunci.gs`, lalu commit kedua berkas `.enc`.
 
+Saat memasang, workflow memisahkan isi `Kunci.gs` (`pisah-kunci.js`): data besar (`KUNCI_TKA`, `BANK_EKSKLUSIF`,
+`BANK_KELAS`) menjadi berkas `kunci.html`, `bank-eksklusif.html`, `bank-kelas.html` di proyek Apps Script, dan `Kunci`
+tinggal bagian kecil. Data itu dibaca server hanya saat dibutuhkan, sehingga setiap permintaan ±1 detik lebih cepat.
+Jangan menempel Kunci.gs utuh secara manual di editor; biarkan workflow yang memasang. Bila uji setelah pemasangan
+gagal, workflow mengembalikan loket utama ke versi sebelumnya secara otomatis.
+
 Pengaturan sekali saja:
 1. Aktifkan Google Apps Script API: https://script.google.com/home/usersettings → **Aktif**.
 2. Buat kredensial clasp di Google Cloud Shell (https://shell.cloud.google.com, akun Google pemilik spreadsheet):

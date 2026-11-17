@@ -41,12 +41,26 @@ var LEMBAR_KEMAJUAN = 'Kemajuan';
 var KEPALA_KEMAJUAN = ['Kunci', 'Kode kelas', 'Nama', 'Data', 'Diperbarui'];
 var KEPALA_KELAS = ['Kode kelas', 'PIN guru', 'Nama guru', 'Sekolah', 'Kelas', 'No. WA', 'Dibuat', 'Daftar siswa', 'Premium sampai', 'Coba gratis dipakai', 'Catatan premium', 'Kode akses'];
 
+/* ============================ DATA BESAR ============================ */
+/* Kunci jawaban (kunci.html) dan bank soal server (bank-eksklusif.html, bank-kelas.html) disimpan sebagai JSON di
+ * berkas HTML proyek, bukan di kode. Kode Apps Script dimuat ulang di setiap permintaan; data sebesar 2,5 MB di kode
+ * menambah ±1 detik per permintaan. Berkas HTML baru dibaca saat benar-benar dibutuhkan (±50 ms) dan diingat selama
+ * satu permintaan. Berkas ini tidak pernah disajikan doGet. Pemisahan dikerjakan workflow (tka/server/pisah-kunci.js). */
+var DATA_BESAR_ = {};
+function dataBesar_(nama) {
+  if (!DATA_BESAR_.hasOwnProperty(nama)) DATA_BESAR_[nama] = JSON.parse(HtmlService.createHtmlOutputFromFile(nama).getContent());
+  return DATA_BESAR_[nama];
+}
+function kunciTka_() {
+  return typeof KUNCI_TKA !== 'undefined' ? KUNCI_TKA : dataBesar_('kunci');  // KUNCI_TKA: Kunci.gs lama (semua data di kode)
+}
+
 /* ============================ WEB APP ============================ */
 
 function doGet(e) {
   if (e && e.parameter && e.parameter.aksi === 'statistik') return json_(statistik_());
   if (e && e.parameter && e.parameter.aksi === 'loket') return json_(loket_());
-  return json_({ ok: true, layanan: 'Simulasi TKA', paket: Object.keys(KUNCI_TKA) });
+  return json_({ ok: true, layanan: 'Simulasi TKA', paket: Object.keys(kunciTka_()) });
 }
 
 function doPost(e) {
@@ -134,7 +148,7 @@ function hitung_(bank, jawaban) {
 }
 
 function nilai_(req) {
-  var bank = KUNCI_TKA[req.paket];
+  var bank = kunciTka_()[req.paket];
   if (!bank) return { ok: false, pesan: 'Paket soal tidak dikenal.' };
   var jawaban = (req.jawaban && typeof req.jawaban === 'object') ? req.jawaban : {};
   if (infoItem_(req.paket) && !req.ujian) return nilaiItem_(req, bank, jawaban);
@@ -559,7 +573,7 @@ function pembahasanGuru_(req) {
   if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
   // Kunci & pembahasan di dasbor guru (termasuk cetak kunci latihan Jalur Belajar) khusus Kelas Premium.
   if (!premiumAktif_(k)) return { ok: false, pesan: 'Kunci & pembahasan untuk guru tersedia di Kelas Premium.' };
-  var bank = KUNCI_TKA[req.paket];
+  var bank = kunciTka_()[req.paket];
   if (!bank) return { ok: false, pesan: 'Paket soal tidak dikenal.' };
   var rinci = {};
   Object.keys(bank).forEach(function (no) { rinci[no] = { kunci: bank[no].k, bahas: bank[no].b }; });
@@ -633,7 +647,7 @@ function buatUjian_(req) {
   var k = dataKelas_(req.kode);
   if (!k || String(req.pin || '').trim() !== k.pin) return { ok: false, pesan: 'Kode kelas atau PIN guru salah.' };
   if (!premiumAktif_(k)) return { ok: false, pesan: 'Ujian serentak tersedia untuk Kelas Premium.' };
-  if (!KUNCI_TKA[req.paket] || /^(lt|jb)-/.test(String(req.paket))) return { ok: false, pesan: 'Pilih paket tryout.' };
+  if (!kunciTka_()[req.paket] || /^(lt|jb)-/.test(String(req.paket))) return { ok: false, pesan: 'Pilih paket tryout.' };
   var mulai = Number(req.mulai), durasi = Math.round(Number(req.durasi));
   if (!mulai || mulai < Date.now() - 5 * 60000) return { ok: false, pesan: 'Waktu mulai sudah lewat. Pilih waktu yang akan datang.' };
   if (mulai > Date.now() + 120 * 86400000) return { ok: false, pesan: 'Jadwal paling lambat 120 hari dari sekarang.' };
@@ -711,9 +725,15 @@ function mulaiUjian_(req) {
 
 /** Paket eksklusif (soal hanya di server). */
 function bankEksklusif_(paket) {
-  if (typeof BANK_EKSKLUSIF !== 'undefined' && BANK_EKSKLUSIF[paket]) return BANK_EKSKLUSIF[paket];
-  if (typeof BANK_KELAS !== 'undefined' && BANK_KELAS[paket]) return BANK_KELAS[paket];
-  return null;
+  if (typeof BANK_EKSKLUSIF !== 'undefined' || typeof BANK_KELAS !== 'undefined') {  // Kunci.gs lama (semua data di kode)
+    if (typeof BANK_EKSKLUSIF !== 'undefined' && BANK_EKSKLUSIF[paket]) return BANK_EKSKLUSIF[paket];
+    if (typeof BANK_KELAS !== 'undefined' && BANK_KELAS[paket]) return BANK_KELAS[paket];
+    return null;
+  }
+  var berkas = typeof PAKET_BANK !== 'undefined' ? PAKET_BANK[paket] : null;  // daftar kecil: paket → berkas data
+  if (!berkas) return null;
+  var bank = dataBesar_(berkas);
+  return (bank && bank[paket]) || null;
 }
 
 /** Soal paket eksklusif untuk dasbor guru Kelas Premium (analisis dan dokumen kunci). */
@@ -779,7 +799,7 @@ function infoItem_(id) {
   if (m) return { id: id, jenis: 'kls', mapel: m[1], paket: Number(m[2]), sekali: true, premium: false, durasi: 75 };
   return null;
 }
-function itemAda_(id) { return !!(infoItem_(id) && KUNCI_TKA[id] && bankEksklusif_(id)); }
+function itemAda_(id) { return !!(infoItem_(id) && kunciTka_()[id] && bankEksklusif_(id)); }
 function rapiNama_(n) { return String(n || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
 
 /** Daftar soal yang dibuka guru untuk kelas ini. */
