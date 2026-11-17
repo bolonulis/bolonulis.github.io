@@ -15,6 +15,7 @@ on:
       - 'tka/server/Code.gs'
       - 'tka/server/Kunci.gs.enc'
       - 'tka/server/Kunci.gs.key.enc'
+      - 'tka/server/pisah-kunci.js'
       - 'tka/konfigurasi.js'
       - '.github/workflows/apps-script.yml'
   workflow_dispatch:
@@ -81,6 +82,8 @@ jobs:
           printf "var VERSI_PASANG = '%s';\n" "$VERSI" > proyek/Versi.js
           echo "Versi isi: $VERSI"
           grep -q "var KUNCI_TKA" proyek/Kunci.js || { echo "::error::Kunci.js tidak valid"; exit 1; }
+          # Data besar (kunci jawaban, bank soal) dipindah ke kunci.html dan bank-*.html agar tidak dimuat di setiap permintaan.
+          node tka/server/pisah-kunci.js proyek
 
       - name: Unggah kode ke Apps Script
         working-directory: proyek
@@ -91,6 +94,11 @@ jobs:
         run: |
           DEPLOY_ID=$(grep "const TKA_API" ../tka/konfigurasi.js | grep -o "macros/s/[^/]*" | cut -d/ -f3)
           [ -n "$DEPLOY_ID" ] || { echo "::error::URL server tidak ditemukan di tka/konfigurasi.js"; exit 1; }
+          # Catat versi yang sedang jalan sebagai titik kembali bila uji setelah pemasangan gagal.
+          LAMA=$(clasp deployments | grep "$DEPLOY_ID" | grep -o "@[0-9]*" | tail -1 | tr -d @ || true)
+          echo "Versi sebelum dipasang: ${LAMA:-tidak diketahui}"
+          echo "VERSI_LAMA=$LAMA" >> "$GITHUB_ENV"
+          echo "DEPLOY_ID=$DEPLOY_ID" >> "$GITHUB_ENV"
           clasp deploy --deploymentId "$DEPLOY_ID" --description "Otomatis dari GitHub ${GITHUB_SHA::7}" | tee "$RUNNER_TEMP/deploy.txt"
           VERSI=$(grep -o "@[0-9]*" "$RUNNER_TEMP/deploy.txt" | tail -1 | tr -d @)
           echo "VERSI_SKRIP=$VERSI" >> "$GITHUB_ENV"
@@ -127,10 +135,27 @@ jobs:
           for i in 1 2 3; do
             HASIL=$(curl -sSL "$URL?aksi=statistik" || true)
             echo "Statistik: $HASIL"
-            echo "$HASIL" | grep -q '"ok":true' && exit 0
+            if echo "$HASIL" | grep -q '"ok":true'; then
+              # Daftar paket dibaca dari kunci.html: memastikan data kunci terbaca di server.
+              PAKET=$(curl -sSL "$URL" || true)
+              echo "Daftar paket: $(echo "$PAKET" | grep -o '"sd-[a-z]*-[0-9]*"' | head -3 | tr '\n' ' ')…"
+              echo "$PAKET" | grep -q '"paket":\["' && exit 0
+              echo "Daftar paket belum terbaca: $(echo "$PAKET" | cut -c1-300)"
+            fi
             sleep 10
           done
           echo "::error::Server tidak menjawab dengan benar setelah dipasang"; exit 1
+
+      - name: Kembalikan versi lama bila uji gagal
+        if: failure() && env.VERSI_LAMA != '' && env.VERSI_SKRIP != ''
+        working-directory: proyek
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          umask 077
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+          clasp deploy --deploymentId "$DEPLOY_ID" --versionNumber "$VERSI_LAMA" --description "Dikembalikan otomatis (uji gagal) ${GITHUB_SHA::7}"
+          echo "::error::Uji gagal; loket utama dikembalikan ke versi $VERSI_LAMA."
 
       - name: Periksa versi loket cadangan
         if: always()
@@ -147,4 +172,4 @@ jobs:
 
       - name: Bersihkan kredensial
         if: always()
-        run: rm -f ~/.clasprc.json proyek/Kunci.js
+        run: rm -f ~/.clasprc.json proyek/Kunci.js proyek/*.html
