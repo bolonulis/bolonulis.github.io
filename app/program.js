@@ -499,8 +499,22 @@ function renderLama(){
     'alokasi <b>6 JP per minggu (kelas 1–2)</b> atau <b>7 JP per minggu (kelas 3–6)</b>. Aplikasi kini juga menuntun penentuan dimensi, keadaan sekolah, alur sesuai Panduan Kokurikuler, ' +
     'dan asesmen yang lebih lengkap.<br><br>Silakan <b>susun ulang dengan pola baru</b>. Ini <b>tidak memotong kuota</b> sekolah.</div>' +
     (p.kelas ? '<p class="hint">Program lama: kelas ' + p.kelas + ', semester ' + p.semester + ', ' + p.jp + ' JP.</p>' : '') +
-    '<div class="toolbar"><button class="btn small" type="button" id="pg-ulang">↻ Susun ulang dengan pola baru</button></div>';
+    '<div class="toolbar"><button class="btn small" type="button" id="pg-ulang">↻ Susun ulang dengan pola baru</button></div>' +
+    lamaSiapPakai();
   $('#pg-ulang').addEventListener('click', () => { PR.ulang = true; LIHAT = 0; render(); });
+  if ($('#pg-pakai')) $('#pg-pakai').addEventListener('click', e => sibuk(e.target, pakaiDiRapor));
+}
+/*
+ * Program pola lama yang Tahap 1-nya sudah berisi kegiatan tetap bisa dipakai untuk menu Kokurikuler tanpa disusun ulang:
+ * datanya (tema, nama, tujuan, subdimensi) berbentuk sama, dan server (pakaiProgramKok) memeriksa kelengkapannya.
+ */
+function lamaSiapPakai(){
+  const k1 = ((PR.data.tahap1 || {}).kegiatan || []).filter(k => k && (k.tema || k.nama));
+  if (!k1.length || !(PR.data.persiapan || {}).kelas) return '';
+  return '<h4 style="margin:18px 0 6px">Kegiatan dari program lama ini</h4><p class="hint">Tidak perlu menyusun ulang bila hanya ingin memakai tema, nama kegiatan, tujuan akhir, dan subdimensinya untuk menu Kokurikuler dan e-Rapor.</p>' +
+    '<div class="tbl"><table class="pg-tabel"><thead><tr><th>Tema</th><th>Nama kegiatan</th><th>Tujuan akhir kegiatan</th><th>Subdimensi</th></tr></thead><tbody>' +
+    k1.map(k => '<tr><td>' + esc(k.tema || '') + '</td><td>' + esc(k.nama || '') + '</td><td>' + (esc(k.tujuan || '') || '<span class="sub">belum diisi</span>') + '</td><td>' +
+      esc((Array.isArray(k.subdimensi) ? k.subdimensi : []).join('; ')) + '</td></tr>').join('') + '</tbody></table></div>' + kotakPakai();
 }
 function tampilSibuk(t){ const el = $('#pg-sibuk'); if (el) el.textContent = '⏳ ' + t; }
 /** Menjalankan satu tahap Gemini: tombol dikunci, hasil langsung disimpan agar tidak hilang. */
@@ -951,7 +965,11 @@ async function pakaiDiRapor(){
       if (!confirm(cek.pesan + '\n\nLepas subdimensi tersebut dan lanjutkan?')) return batal();
       opsi.rapikanSub = true; continue;
     }
-    if (!cek.ok) return pesan('#pg-pakai-msg', cek.pesan, false, cek.salah);
+    if (!cek.ok) {
+      // pola lama: Tahap 1 tidak bisa disunting tanpa disusun ulang, jadi beri jalan lain
+      const saran = polaLama() && /Tahap 1/.test(cek.pesan) ? ' Program pola lama ini belum lengkap: susun ulang dengan pola baru, atau isi kegiatannya langsung di menu Kokurikuler.' : '';
+      return pesan('#pg-pakai-msg', cek.pesan + saran, false, cek.salah && cek.salah.length > 1 ? cek.salah.concat(saran.trim()) : null);
+    }
     const r = cek.rencana;
     if (opsi.mode === 'tambah' && r.diperbarui.length &&
       !confirm('Kegiatan ' + r.diperbarui.map(n => '"' + n + '"').join(', ') + ' sudah ada di kelas ' + r.kelas + ' semester ' + r.semester +
