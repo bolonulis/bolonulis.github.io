@@ -753,8 +753,10 @@ function renderT1(){
         '<label>A. Subdimensi kegiatan ini</label><div class="pg-sub">' + p.subdimensi.map(s => '<label><input type="checkbox" data-daftar="' + jl + '.subdimensi" data-nilai="' + esc(s) + '"' + (k.subdimensi.includes(s) ? ' checked' : '') + '>' + esc(s) + '</label>').join('') + '</div>' +
         isian('Tujuan akhir kegiatan (untuk e-Rapor)', jl + '.tujuan', { area: true, baris: 2 }) +
         '<button class="btn ghost small" type="button" data-pola="' + i + '">Susun ulang tujuan dengan pola baku</button></div>'; }).join('') +
-      '<div class="toolbar"><b id="pg-jp-cek"></b></div><div class="toolbar">' + tombol + '<button class="btn small" type="button" id="pg-lanjut1">Simpan &amp; lanjut ke Tahap 2 →</button></div>';
+      '<div class="toolbar"><b id="pg-jp-cek"></b></div><div class="toolbar">' + tombol + '<button class="btn small" type="button" id="pg-lanjut1">Simpan &amp; lanjut ke Tahap 2 →</button></div>' +
+      (PR.data.tahap >= 1 ? kotakPakai() : '');
     cekJp();
+    if (PR.data.tahap >= 1) $('#pg-pakai').addEventListener('click', e => sibuk(e.target, pakaiDiRapor));
     $('#pg-lanjut1').addEventListener('click', e => sibuk(e.target, async () => {
       const salah = [];
       PR.data.tahap1.kegiatan.forEach((k, i) => {
@@ -893,9 +895,7 @@ function renderDokumen(){
     '<h4>Isian untuk e-Rapor</h4><table class="pg-tabel"><thead><tr><th>Tema</th><th>Nama kegiatan</th><th>Tujuan akhir kegiatan</th><th>Dimensi (subdimensi)</th><th></th></tr></thead><tbody>' +
     k1.map((k, i) => '<tr><td>' + esc(k.tema) + '</td><td>' + esc(k.nama) + '</td><td>' + esc(k.tujuan) + '</td><td>' + esc(k.subdimensi.map(s => dimensiDari(s) + ' (' + s + ')').join('; ')) + '</td>' +
       '<td><button class="btn ghost small" type="button" data-salin="' + i + '">📋 Salin</button></td></tr>').join('') + '</tbody></table>' +
-    '<div class="panduan" style="margin-top:12px">Agar tema, kegiatan, tujuan akhir, dan subdimensi ini langsung terpakai di menu <b>Kokurikuler</b> (untuk semua rombel kelas ' + p.kelas + ', semester ' + p.semester + '), klik tombol berikut.' +
-    (PR.ta !== PG.tahunAjaran ? ' <b>Catatan:</b> program ini untuk tahun ajaran ' + esc(PR.ta) + ', sedangkan tahun ajaran aktif ' + esc(PG.tahunAjaran) + '.' : '') +
-    '<div class="toolbar" style="margin-bottom:0"><button class="btn small" type="button" id="pg-pakai">↪ Pakai di menu Kokurikuler</button></div></div><div class="msg" id="pg-pakai-msg"></div>';
+    kotakPakai();
   $('#pg-word').addEventListener('click', e => sibuk(e.target, async () => {
     try {
       const dok = await dokumenProgram(), blob = await docx.Packer.toBlob(dok);
@@ -921,25 +921,45 @@ function renderDokumen(){
   }));
   $('#pg-pakai').addEventListener('click', e => sibuk(e.target, pakaiDiRapor));
 }
+/** Kotak tombol "Pakai untuk Kegiatan Kokurikuler kelas ini" (Tahap 1 tersimpan dan halaman Dokumen). */
+function kotakPakai(){
+  const p = PR.data.persiapan;
+  return '<div class="panduan" style="margin-top:12px">Agar tema, nama kegiatan, tujuan akhir, dan subdimensi program ini langsung terpakai di menu <b>Kokurikuler</b> ' +
+    '(untuk semua rombel kelas ' + p.kelas + ', semester ' + p.semester + '), klik tombol berikut. Kegiatan yang sudah diisi guru tidak ditimpa tanpa ditanya dulu.' +
+    (PR.ta !== PG.tahunAjaran ? ' <b>Catatan:</b> program ini untuk tahun ajaran ' + esc(PR.ta) + ', sedangkan tahun ajaran aktif ' + esc(PG.tahunAjaran) + '.' : '') +
+    '<div class="toolbar" style="margin-bottom:0"><button class="btn small" type="button" id="pg-pakai">↪ Pakai untuk Kegiatan Kokurikuler kelas ini</button></div></div><div class="msg" id="pg-pakai-msg"></div>';
+}
 const namaBerkas = () => ('Program Kokurikuler Kelas ' + PR.data.persiapan.kelas + ' Smt ' + PR.data.persiapan.semester + ' - ' + PG.sekolah.nama).replace(/[\\/:*?"<>|]/g, '-');
 
-/** Mengisi menu Kokurikuler kelas ini: subdimensi (digabung dengan yang sudah ada) dan kegiatan untuk e-Rapor. */
+/**
+ * Mengisi menu Kokurikuler kelas ini dari Tahap 1 (aksi server pakaiProgramKok, satu kali simpan):
+ * kegiatan ditambahkan di belakang kegiatan lama dan subdimensinya digabung. Rencananya dihitung server dulu (cek),
+ * lalu guru ditanya bila ada kegiatan lama yang diperbarui, kegiatan melebihi batas, atau subdimensi perlu dilepas.
+ */
 async function pakaiDiRapor(){
-  const p = PR.data.persiapan;
-  if (!DATA) { const d = await api({ aksi: 'dataSekolah' }); if (!d.ok) return pesan('#pg-pakai-msg', d.pesan, false); DATA = d; }
-  const rombel = DATA.rombel.find(r => r.kelas === p.kelas);
-  if (!rombel) return pesan('#pg-pakai-msg', 'Belum ada rombel kelas ' + p.kelas + ' di tahun ajaran aktif. Buat dulu di Data Sekolah & Siswa.', false);
-  const kini = await api({ aksi: 'kokRombel', rombel: rombel.id, semester: p.semester });
-  if (!kini.ok) return pesan('#pg-pakai-msg', kini.pesan, false);
-  const k1 = PR.data.tahap1.kegiatan;
-  if (kini.kegiatan.length && !confirm('Kelas ' + p.kelas + ' semester ' + p.semester + ' sudah punya ' + kini.kegiatan.length + ' kegiatan kokurikuler. Ganti dengan kegiatan dari program ini?')) return;
-  const sub = [...new Set(kini.dimensi.map(d => d.subdimensi).concat(...k1.map(k => k.subdimensi)))];
-  const r1 = await api({ aksi: 'simpanDimensiKok', rombel: rombel.id, semester: p.semester, dimensi: sub });
-  if (!r1.ok) return pesan('#pg-pakai-msg', r1.pesan, false, r1.salah);
-  const r2 = await api({ aksi: 'simpanKegiatanKok', rombel: rombel.id, semester: p.semester,
-    kegiatan: k1.map(k => ({ tema: k.tema, nama: k.nama, tujuan: k.tujuan, subdimensi: k.subdimensi })) });
-  if (!r2.ok) return pesan('#pg-pakai-msg', r2.pesan, false, r2.salah);
-  pesan('#pg-pakai-msg', 'Menu Kokurikuler kelas ' + p.kelas + ' semester ' + p.semester + ' sudah terisi: ' + sub.length + ' subdimensi dan ' + k1.length + ' kegiatan. Capaian murid diisi di menu Kokurikuler.', true);
+  if (PG_UBAH) return pesan('#pg-pakai-msg', 'Ada perubahan yang belum disimpan. Simpan dulu, lalu klik tombol ini lagi.', false);
+  const opsi = { mode: 'tambah', rapikanSub: false }, batal = () => pesan('#pg-pakai-msg', 'Dibatalkan. Tidak ada yang diubah di menu Kokurikuler.', false);
+  for (let ulang = 0; ulang < 3; ulang++) {
+    const cek = await api(Object.assign({ aksi: 'pakaiProgramKok', id: PR.id, cek: true }, opsi));
+    if (cek.sesiHabis) return;
+    if (!cek.ok && cek.penuh === 'kegiatan' && opsi.mode === 'tambah') {
+      if (!confirm(cek.pesan + '\n\nKegiatan yang sudah ada: ' + cek.kegiatanLama.join('; ') + '.\n\nGanti SEMUA kegiatan itu dengan ' + cek.jumlahProgram +
+        ' kegiatan dari program ini?\n(Pilih Batal bila ingin menghapus sebagian kegiatan lama dulu di menu Kokurikuler.)')) return batal();
+      opsi.mode = 'ganti'; continue;
+    }
+    if (!cek.ok && cek.penuh === 'subdimensi' && cek.bisaDirapikan && !opsi.rapikanSub) {
+      if (!confirm(cek.pesan + '\n\nLepas subdimensi tersebut dan lanjutkan?')) return batal();
+      opsi.rapikanSub = true; continue;
+    }
+    if (!cek.ok) return pesan('#pg-pakai-msg', cek.pesan, false, cek.salah);
+    const r = cek.rencana;
+    if (opsi.mode === 'tambah' && r.diperbarui.length &&
+      !confirm('Kegiatan ' + r.diperbarui.map(n => '"' + n + '"').join(', ') + ' sudah ada di kelas ' + r.kelas + ' semester ' + r.semester +
+        '. Isinya akan diperbarui dari program ini. Lanjutkan?')) return batal();
+    const res = await api(Object.assign({ aksi: 'pakaiProgramKok', id: PR.id }, opsi));
+    if (res.sesiHabis) return;
+    return pesan('#pg-pakai-msg', res.pesan, res.ok, res.salah);
+  }
 }
 
 /* ---------- dokumen Word (pustaka docx): A4, margin 3 cm, Arial 11, spasi 1,5 ---------- */

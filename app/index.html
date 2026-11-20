@@ -1190,14 +1190,15 @@ const PANTAU = {
      (diperiksa sekali per 30 menit lewat aksi "loket"); loket yang tertinggal versi dilewati.
    - Bila sebuah loket menjawab "penuh" (bukan JSON: ditolak Google sebelum kode berjalan), permintaan yang sama
      diulang sekali di loket lain. Aman, karena permintaan yang ditolak itu belum dijalankan sama sekali.
-   - Aksi yang mengirim email atau membuat berkas Drive selalu lewat loket utama. */
+   - Aksi yang mengirim email, membuat berkas Drive, atau hanya ada di kode server terbaru (pakaiProgramKok) selalu
+     lewat loket utama, sehingga loket cadangan yang belum diperbarui tidak perlu dilewati semuanya. */
 const LOKET_CADANGAN = [
   'https://script.google.com/macros/s/AKfycbwfFgqnFO-aX2lSb1u4kSmMP0Khxj02Jb00Y9j3omFyfPUNnYFE_WsIODGyP_EGa5fy/exec',  // Loket 2
   'https://script.google.com/macros/s/AKfycbzmZBM9VP3LDypIOGU-wwROGFYEFgfGaQCKwYxAJqPvmPMx-AkAx5pgi1D_m2rW6Aux/exec',  // Loket 3
   'https://script.google.com/macros/s/AKfycbyxrDv-EMmF_7eSTpjBA0vi32uGUfSCN-SPubN0ZBaE3g5WEE-j49aSqCGRNmbGxyYN/exec'   // Loket 4
 ];
 const VERSI_KODE_MIN = 1;
-const AKSI_LOKET_UTAMA = /^(daftar|verifikasi|lupaSandi|resetSandi|kirimUlangAktivasi|aktivasiUlangToken|gantiEmailDaftar|programDocs|taBaruJalankan|laporSibuk|loket)$/;
+const AKSI_LOKET_UTAMA = /^(daftar|verifikasi|lupaSandi|resetSandi|kirimUlangAktivasi|aktivasiUlangToken|gantiEmailDaftar|programDocs|pakaiProgramKok|taBaruJalankan|laporSibuk|loket)$/;
 const LOKET = {
   pilihan(){
     const simpan = ls.get('loket-pilih');
