@@ -141,6 +141,10 @@ table.kok tr.basi td.ket{opacity:.45}
 .keg textarea{min-height:76px;line-height:1.45;resize:vertical}
 .keg .fokus{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}.keg .fokus label{font-weight:400;margin:0;display:flex;gap:5px;align-items:center}
 .keg .alat{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}.keg .hitung{font-size:12px;color:var(--muted);margin-left:auto}
+.keg .hitung.lewat{color:#b42318;font-weight:700}.keg .hitung-kecil{display:block;text-align:right;font-size:11.5px;color:var(--muted);margin-top:2px}.keg .hitung-kecil.lewat{color:#b42318;font-weight:700}
+.er-salin{border:0;background:none;cursor:pointer;font-size:13px;padding:0 2px;vertical-align:baseline}.er-salin:hover{transform:scale(1.15)}
+#kk-er-isi h4{margin:16px 0 6px;color:var(--blue)}#kk-er-isi .pg-tabel{margin-bottom:6px}#kk-er-isi .er-tema{list-style:none;padding:0;margin:0}#kk-er-isi .er-tema li{padding:3px 0}
+.keg input.lewat,.keg textarea.lewat{border-color:#b42318;background:#fff5f4}.keg .awas{font-size:12.5px;color:#9a5b00;margin-top:6px}
 @media (max-width:560px){.keg .dua{grid-template-columns:1fr}}
 .t-prog{grid-column:1/-1;border-color:#cdb8f2;background:linear-gradient(135deg,#fff,#f3ecff)}.t-prog b{color:#4b2a8c;font-size:17px}
 .tile .t-prog-baru{display:inline-block;width:auto;margin:0 0 0 6px;line-height:1.4;font-size:11px;font-weight:800;letter-spacing:.06em;color:#fff;background:#6d44c4;border-radius:999px;padding:2px 8px;vertical-align:2px}
@@ -640,6 +644,23 @@ table.leger td.j{text-align:center;font-weight:800}
         </details>
       </div>
     </div>
+    <details class="card" id="kk-er-box" style="margin-top:14px">
+      <summary><b>📋 Rekap untuk e-Rapor per fase</b> <span class="sub">— Daftar Tema, Kegiatan Kokurikuler, dan Kelompok Kokurikuler</span></summary>
+      <div class="panduan" style="margin-top:10px">Rekap ini mengikuti menu <b>Data Kokurikuler</b> di e-Rapor: <b>Daftar Tema</b>, lalu <b>Kegiatan Kokurikuler</b> (pilih tema dan fase, isi Nomor Urut,
+        Nama Kegiatan, Tujuan Akhir, lalu Profil Lulusan), lalu <b>Kelompok Kokurikuler</b>. Klik 📋 di sebelah isian untuk menyalin, lalu tempel (Ctrl+V) di kotak yang sama di e-Rapor.
+        Kegiatan yang sama di dua kelas satu fase cukup diisi sekali.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label for="kk-er-fase">Fase</label><select id="kk-er-fase"><option value="A">Fase A (Kelas I–II)</option><option value="B">Fase B (Kelas III–IV)</option><option value="C">Fase C (Kelas V–VI)</option></select></div>
+        <div><label for="kk-er-sem">Semester</label><select id="kk-er-sem"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
+      </div>
+      <div class="toolbar">
+        <button class="btn small" type="button" id="kk-er-tampil">Tampilkan rekap</button>
+        <button class="btn ghost small hidden" type="button" id="kk-er-salin">📋 Salin seluruh tabel kegiatan</button>
+        <button class="btn ghost small hidden" type="button" id="kk-er-excel">⬇️ Unduh Excel</button>
+      </div>
+      <div class="msg" id="kk-er-msg"></div>
+      <div id="kk-er-isi"></div>
+    </details>
   </section>
 
   <!-- WALI KELAS -->
@@ -2440,6 +2461,132 @@ $('#kk-dim-simpan').addEventListener('click', e => sibuk(e.target, async () => {
   pesan('#kk-dim-msg', res.pesan, true);
 }));
 
+/* ---------- rekap e-Rapor per fase (Daftar Tema, Kegiatan Kokurikuler, Kelompok Kokurikuler) ---------- */
+const FASE_KELAS_ER = { A: [1, 2], B: [3, 4], C: [5, 6] };
+const ROMAWI_ER = ['', 'I', 'II', 'III', 'IV', 'V', 'VI'];
+let KK_ER = null, KK_ER_REF = [];
+/**
+ * Menyusun rekap satu fase dari kegiatan tiap kelas. kelasData = [{ kelas, kegiatan: [{tema,nama,tujuan,subdimensi}], rombel: [{nama,wali}] }].
+ * Kegiatan bertema dan bernama sama di dua kelas digabung (cukup diisi sekali di e-Rapor). Nomor urut dihitung per tema,
+ * karena di e-Rapor kegiatan diisi per tema per fase. Profil lulusan: "Dimensi – Subdimensi".
+ */
+function rekapErapor(kelasData, dimensiDari){
+  const tema = [], kegiatan = [], kunci = {}, kelompok = [];
+  kelasData.forEach(k => {
+    (k.kegiatan || []).forEach(g => {
+      const t = String(g.tema || '').trim(), n = String(g.nama || '').trim();
+      if (!t || !n) return;
+      if (!tema.some(x => x.toLowerCase() === t.toLowerCase())) tema.push(t);
+      const id = t.toLowerCase() + '|' + n.toLowerCase();
+      let r = kunci[id];
+      if (!r) { r = kunci[id] = { tema: tema.find(x => x.toLowerCase() === t.toLowerCase()), nama: n, tujuan: String(g.tujuan || '').trim(), subdimensi: [], kelas: [] }; kegiatan.push(r); }
+      (g.subdimensi || []).forEach(sd => { if (!r.subdimensi.includes(sd)) r.subdimensi.push(sd); });
+      if (!r.kelas.includes(k.kelas)) r.kelas.push(k.kelas);
+      if (!r.tujuan) r.tujuan = String(g.tujuan || '').trim();
+    });
+    (k.rombel || []).forEach(rb => kelompok.push({ kelas: k.kelas, rombel: rb.nama, wali: rb.wali || '',
+      kegiatan: (k.kegiatan || []).map(g => String(g.nama || '').trim()).filter(Boolean) }));
+  });
+  const urut = {};
+  kegiatan.sort((a, b) => tema.indexOf(a.tema) - tema.indexOf(b.tema));
+  kegiatan.forEach(r => {
+    urut[r.tema] = (urut[r.tema] || 0) + 1; r.no = urut[r.tema];
+    r.profil = r.subdimensi.map(sd => (dimensiDari(sd) || '') + ' – ' + sd);
+  });
+  return { tema, kegiatan, kelompok };
+}
+const sel1 = t => String(t == null ? '' : t).replace(/[\t\r\n]+/g, ' ').trim();
+/** Tabel kegiatan dipisah tab (urutan kolom seperti e-Rapor) untuk ditempel di Excel atau Google Sheets. */
+function tsvKegiatanEr(r, fase){
+  return [['Fase', 'Tema', 'Nomor Urut', 'Nama Kegiatan Kokurikuler', 'Tujuan Akhir Kegiatan', 'Profil Lulusan', 'Kelas']].concat(r.kegiatan.map(g =>
+    [fase, g.tema, g.no, g.nama, g.tujuan, g.profil.join('; '), g.kelas.map(k => ROMAWI_ER[k]).join(', ')]))
+    .map(b => b.map(sel1).join('\t')).join('\n');
+}
+function dimensiDariKk(sd){
+  const ref = (KK && KK.referensi) || KK_ER_REF;
+  const d = ref.find(x => x.sub.includes(sd));
+  return d ? d.dimensi : '';
+}
+const tombolSalinEr = (teks, label) => '<button class="er-salin" type="button" data-er-salin="' + esc(teks) + '" title="Salin ' + esc(label) + '">📋</button>';
+function renderEr(){
+  const r = KK_ER.rekap, f = KK_ER.fase, sem = KK_ER.semester, ada = r.kegiatan.length > 0;
+  $('#kk-er-salin').classList.toggle('hidden', !ada); $('#kk-er-excel').classList.toggle('hidden', !ada);
+  if (!ada) { $('#kk-er-isi').innerHTML = ''; return pesan('#kk-er-msg', 'Belum ada kegiatan kokurikuler tersimpan untuk Fase ' + f + ' semester ' + sem + '. Isi dulu di bagian Kegiatan kokurikuler tiap kelas.', false); }
+  const lebih = r.kegiatan.filter(g => g.subdimensi.length > MAKS_SUB_KEG);
+  const kosong = KK_ER.kelasKosong.length ? ' Kelas ' + KK_ER.kelasKosong.map(k => ROMAWI_ER[k]).join(', ') + ' belum punya kegiatan.' : '';
+  pesan('#kk-er-msg', 'Fase ' + f + ', semester ' + sem + ': ' + r.tema.length + ' tema, ' + r.kegiatan.length + ' kegiatan, ' + r.kelompok.length + ' rombel.' + kosong, !kosong);
+  $('#kk-er-isi').innerHTML =
+    '<h4>1. Daftar Tema</h4><p class="hint">Di e-Rapor: Data Kokurikuler → Daftar Tema. Satu baris satu tema (berlaku untuk semua fase; lewati yang sudah ada).</p><ul class="er-tema">' +
+      r.tema.map((t, i) => '<li>' + (i + 1) + '. ' + esc(t) + ' ' + tombolSalinEr(t, 'tema') + '</li>').join('') + '</ul>' +
+    '<h4>2. Kegiatan Kokurikuler</h4><p class="hint">Di e-Rapor: Data Kokurikuler → Kegiatan Kokurikuler → pilih tema dan <b>Fase ' + f + '</b> → Tambah Kegiatan. ' +
+      'Setelah disimpan, pilih Profil Lulusan sesuai kolom terakhir.</p>' +
+    r.tema.map(t => '<p style="margin:10px 0 4px"><b>Tema: ' + esc(t) + '</b> · Fase ' + f + '</p><div class="tbl"><table class="pg-tabel"><thead><tr><th>Nomor Urut</th><th>Nama Kegiatan Kokurikuler</th><th>Tujuan Akhir Kegiatan</th><th>Profil Lulusan</th><th>Kelas</th></tr></thead><tbody>' +
+      r.kegiatan.filter(g => g.tema === t).map(g => '<tr><td>' + g.no + '</td><td>' + esc(g.nama) + ' ' + tombolSalinEr(g.nama, 'nama kegiatan') + '</td><td>' + esc(g.tujuan) + ' ' + tombolSalinEr(g.tujuan, 'tujuan akhir') +
+        '</td><td>' + g.profil.map(esc).join('<br>') + (g.subdimensi.length > MAKS_SUB_KEG ? '<br><span class="sub" style="color:#9a5b00">⚠️ e-Rapor maks. ' + MAKS_SUB_KEG + ' subdimensi</span>' : '') +
+        '</td><td>' + g.kelas.map(k => ROMAWI_ER[k]).join(', ') + '</td></tr>').join('') + '</tbody></table></div>').join('') +
+    (lebih.length ? '<p class="hint" style="color:#9a5b00">⚠️ ' + lebih.length + ' kegiatan memakai lebih dari ' + MAKS_SUB_KEG + ' subdimensi. Di e-Rapor pilih ' + MAKS_SUB_KEG + ' yang paling utama.</p>' : '') +
+    '<h4>3. Kelompok Kokurikuler</h4><p class="hint">Di e-Rapor: Data Kokurikuler → Kelompok Kokurikuler. Satu rombel satu kelompok; guru pendamping biasanya wali kelasnya.</p>' +
+    '<div class="tbl"><table class="pg-tabel"><thead><tr><th>Kelas</th><th>Rombel</th><th>Wali kelas (pendamping)</th><th>Kegiatan</th></tr></thead><tbody>' +
+      r.kelompok.map(k => '<tr><td>' + ROMAWI_ER[k.kelas] + '</td><td>' + esc(k.rombel) + '</td><td>' + (esc(k.wali) || '<span class="sub">belum diisi</span>') + '</td><td>' + esc(k.kegiatan.join('; ') || '–') + '</td></tr>').join('') +
+    '</tbody></table></div>';
+}
+$('#kk-er-box').addEventListener('toggle', () => {
+  if (!$('#kk-er-box').open || KK_ER) return;
+  if (KK) { $('#kk-er-fase').value = ({ 1:'A', 2:'A', 3:'B', 4:'B', 5:'C', 6:'C' })[KK.rombel.kelas]; $('#kk-er-sem').value = String(KK.semester); }
+});
+$('#kk-er-tampil').addEventListener('click', e => sibuk(e.target, async () => {
+  if (!DATA) return pesan('#kk-er-msg', 'Muat ulang halaman.', false);
+  const fase = $('#kk-er-fase').value, semester = Number($('#kk-er-sem').value), kelasData = [], kelasKosong = [];
+  for (const kelas of FASE_KELAS_ER[fase]) {
+    const rombel = DATA.rombel.filter(r => r.kelas === kelas);
+    if (!rombel.length) continue;
+    // kegiatan berlaku untuk semua rombel satu kelas: cukup baca lewat satu rombel
+    const res = await api({ aksi:'kokRombel', rombel: rombel[0].id, semester });
+    if (res.sesiHabis) return;
+    if (!res.ok) return pesan('#kk-er-msg', res.pesan, false);
+    KK_ER_REF = res.referensi || KK_ER_REF;
+    if (!(res.kegiatan || []).length) kelasKosong.push(kelas);
+    kelasData.push({ kelas, kegiatan: res.kegiatan || [], rombel: rombel.map(r => ({ nama: labelRombel(r), wali: r.wali })) });
+  }
+  if (!kelasData.length) return pesan('#kk-er-msg', 'Belum ada rombel di Fase ' + fase + '.', false);
+  KK_ER = { fase, semester, kelasKosong, rekap: rekapErapor(kelasData, dimensiDariKk) };
+  renderEr();
+}));
+$('#kk-er-isi').addEventListener('click', async e => {
+  const b = e.target.closest('[data-er-salin]');
+  if (!b) return;
+  const ok = await salinKePapan(b.dataset.erSalin);
+  if (ok) { b.textContent = '✓'; setTimeout(() => { b.textContent = '📋'; }, 1500); }
+  pesan('#kk-er-msg', ok ? 'Tersalin: "' + b.dataset.erSalin.slice(0, 60) + (b.dataset.erSalin.length > 60 ? '…' : '') + '". Tempel (Ctrl+V) di kotak yang sama di e-Rapor.' : 'Gagal menyalin otomatis. Coba lagi dengan browser Chrome.', ok);
+});
+$('#kk-er-salin').addEventListener('click', async () => {
+  const ok = await salinKePapan(tsvKegiatanEr(KK_ER.rekap, KK_ER.fase));
+  pesan('#kk-er-msg', ok ? 'Seluruh tabel kegiatan Fase ' + KK_ER.fase + ' tersalin (dengan judul kolom). Tempel di Excel atau Google Sheets sebagai pegangan saat mengisi e-Rapor.' : 'Gagal menyalin otomatis.', ok);
+});
+$('#kk-er-excel').addEventListener('click', e => sibuk(e.target, async () => {
+  try {
+    await muatPustaka('ExcelJS');
+    const r = KK_ER.rekap, f = KK_ER.fase, wb = new ExcelJS.Workbook();
+    const lembar = (nama, kolom, baris) => {
+      const ws = wb.addWorksheet(nama);
+      ws.columns = kolom.map(([header, width]) => ({ header, width }));
+      baris.forEach(b => ws.addRow(b));
+      ws.getRow(1).font = { bold: true };
+      ws.eachRow(row => row.eachCell(c => { c.alignment = { wrapText: true, vertical: 'top' }; }));
+    };
+    lembar('Daftar Tema', [['No', 6], ['Tema Kegiatan Kokurikuler', 50]], r.tema.map((t, i) => [i + 1, t]));
+    lembar('Kegiatan Fase ' + f, [['Tema', 28], ['Nomor Urut', 10], ['Nama Kegiatan Kokurikuler', 34], ['Tujuan Akhir Kegiatan', 60], ['Profil Lulusan', 40], ['Kelas', 8]],
+      r.kegiatan.map(g => [g.tema, g.no, g.nama, g.tujuan, g.profil.join('\n'), g.kelas.map(k => ROMAWI_ER[k]).join(', ')]));
+    lembar('Kelompok Fase ' + f, [['Kelas', 8], ['Rombel', 16], ['Wali Kelas (Pendamping)', 32], ['Kegiatan', 50]],
+      r.kelompok.map(k => [ROMAWI_ER[k.kelas], k.rombel, k.wali, k.kegiatan.join('; ')]));
+    const buf = await wb.xlsx.writeBuffer(), url = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    const a = document.createElement('a'); a.href = url;
+    a.download = 'Kokurikuler e-Rapor Fase ' + f + ' Semester ' + KK_ER.semester + ' ' + String(DATA.tahunAjaran || '').replace('/', '-') + '.xlsx';
+    document.body.appendChild(a); a.click(); a.remove();
+    pesan('#kk-er-msg', 'Berkas Excel diunduh: Daftar Tema, Kegiatan, dan Kelompok Fase ' + f + '.', true);
+  } catch (err) { pesan('#kk-er-msg', err.message, false); }
+}));
+
 /* ---------- kegiatan kokurikuler (Tema, Nama Kegiatan, Tujuan Akhir untuk e-Rapor) ---------- */
 function renderKegKok(){
   $('#kk-keg-judul').textContent = 'Kegiatan kokurikuler — Kelas ' + KK.rombel.kelas + ', Semester ' + KK.semester;
@@ -2455,17 +2602,37 @@ function renderKegKok(){
   const maks = KK.panjangKegiatan || { tema:100, nama:150, tujuan:500 };
   $('#kk-keg').innerHTML = KK_KEG.map((g, i) => '<div class="keg" data-i="' + i + '">' +
     '<div class="kepala"><b>Kegiatan ' + (i + 1) + '</b>' + (KK_KEG.length > 1 ? '<button class="btn danger small" type="button" data-hapus-keg="' + i + '">Hapus</button>' : '') + '</div>' +
-    '<div class="dua"><div><label>Tema</label><input type="text" data-f="tema" list="dl-tema-kok" maxlength="' + maks.tema + '" placeholder="Pilih atau ketik tema" value="' + esc(g.tema) + '"></div>' +
-    '<div><label>Nama Kegiatan Kokurikuler</label><input type="text" data-f="nama" list="dl-nama-kok-' + i + '" maxlength="' + maks.nama + '" placeholder="mis. Kelasku Bersih, Tubuhku Sehat" value="' + esc(g.nama) + '">' +
+    '<div class="dua"><div><label>Tema</label><input type="text" data-f="tema" list="dl-tema-kok" placeholder="Pilih atau ketik tema" value="' + esc(g.tema) + '"' + kelasLewat(g.tema, maks.tema) + '>' +
+    '<span class="hitung-kecil' + (panjangLewat(g.tema, maks.tema) ? ' lewat' : '') + '" data-hitung-f="tema">' + teksHitung(g.tema, maks.tema) + '</span></div>' +
+    '<div><label>Nama Kegiatan Kokurikuler</label><input type="text" data-f="nama" list="dl-nama-kok-' + i + '" placeholder="mis. Kelasku Bersih, Tubuhku Sehat" value="' + esc(g.nama) + '"' + kelasLewat(g.nama, maks.nama) + '>' +
+    '<span class="hitung-kecil' + (panjangLewat(g.nama, maks.nama) ? ' lewat' : '') + '" data-hitung-f="nama">' + teksHitung(g.nama, maks.nama) + '</span>' +
     '<datalist id="dl-nama-kok-' + i + '">' + opsiNamaKeg(g.tema) + '</datalist></div></div>' +
     '<label>Subdimensi yang menjadi fokus kegiatan ini</label><div class="fokus">' + KK.dimensi.map(d =>
       '<label><input type="checkbox" data-sub="' + esc(d.subdimensi) + '"' + (g.subdimensi.includes(d.subdimensi) ? ' checked' : '') + '>' + esc(d.subdimensi) + '</label>').join('') + '</div>' +
+    '<div class="awas" data-awas-sub>' + awasSubKeg(g) + '</div>' +
     '<label>Hasil atau aksi nyata <span class="sub">(opsional, untuk kalimat tujuan)</span></label><input type="text" data-f="hasil" maxlength="120" placeholder="mis. poster ajakan hidup bersih, jadwal piket kelas" value="' + esc(g.hasil || '') + '">' +
-    '<label>Tujuan Akhir Kegiatan</label><textarea data-f="tujuan" maxlength="' + maks.tujuan + '" placeholder="Klik Susun tujuan otomatis, atau tulis sendiri">' + esc(g.tujuan) + '</textarea>' +
+    '<label>Tujuan Akhir Kegiatan</label><textarea data-f="tujuan" placeholder="Klik Susun tujuan otomatis, atau tulis sendiri"' + kelasLewat(g.tujuan, maks.tujuan, 'tujuan') + '>' + esc(g.tujuan) + '</textarea>' +
     '<div class="alat"><button class="btn small" type="button" data-susun="' + i + '">✨ Susun tujuan otomatis</button>' +
     '<button class="btn ghost small" type="button" data-salin-keg="' + i + '">📋 Salin untuk e-Rapor</button>' +
-    '<span class="hitung" data-hitung="' + i + '">' + g.tujuan.length + '/' + maks.tujuan + ' karakter</span></div></div>').join('');
+    '<span class="hitung' + (panjangLewat(g.tujuan, maks.tujuan, 'tujuan') ? ' lewat' : '') + '" data-hitung-f="tujuan">' + teksHitung(g.tujuan, maks.tujuan, 'tujuan') + '</span></div></div>').join('');
   $('#kk-keg-tambah').classList.toggle('hidden', KK_KEG.length >= (KK.maksKegiatan || 4));
+}
+/* Hitungan karakter isian kegiatan (batas sama dengan server: PANJANG_KEGIATAN). Spasi di tepi tidak dihitung, seperti saat disimpan. */
+const panjangIsi = (t, f) => (f === 'tujuan' ? String(t || '').replace(/\s+/g, ' ') : String(t || '')).trim().length;
+const panjangLewat = (t, maks, f) => panjangIsi(t, f) > maks;
+const teksHitung = (t, maks, f) => { const n = panjangIsi(t, f); return n + '/' + maks + ' karakter' + (n > maks ? ' — kelebihan ' + (n - maks) : ''); };
+const kelasLewat = (t, maks, f) => panjangLewat(t, maks, f) ? ' class="lewat"' : '';
+/* e-Rapor membatasi profil lulusan satu kegiatan paling banyak 3 subdimensi: hanya peringatan, tidak menolak simpan. */
+const MAKS_SUB_KEG = 3;
+const awasSubKeg = g => g.subdimensi.length > MAKS_SUB_KEG ? '⚠️ ' + g.subdimensi.length + ' subdimensi dicentang. Di e-Rapor, Profil Lulusan satu kegiatan paling banyak ' + MAKS_SUB_KEG + '; pilih yang paling utama.' : '';
+/** Memeriksa panjang isian sebelum disimpan; hasilnya daftar kalimat salah (kosong bila aman). */
+function cekPanjangKeg(daftar){
+  const maks = KK.panjangKegiatan || { tema:100, nama:150, tujuan:500 }, nama = { tema:'tema', nama:'nama kegiatan', tujuan:'tujuan akhir' }, salah = [];
+  daftar.forEach((g, i) => ['tema', 'nama', 'tujuan'].forEach(f => {
+    const n = panjangIsi(g[f], f);
+    if (n > maks[f]) salah.push('Kegiatan ' + (i + 1) + ': ' + nama[f] + ' ' + n + ' karakter, lebih ' + (n - maks[f]) + ' dari batas ' + maks[f] + '. Persingkat dulu.');
+  }));
+  return salah;
 }
 function kegBaru(){ return { tema:'', nama:'', tujuan:'', hasil:'', pola:0, subdimensi: KK.dimensi.map(d => d.subdimensi) }; }
 function opsiNamaKeg(tema){
@@ -2499,7 +2666,11 @@ $('#kk-keg').addEventListener('input', e => {
   const i = Number(kartu.dataset.i), g = KK_KEG[i];
   g[f] = e.target.value; KK_UBAH.kegiatan = true;
   if (f === 'tema') $('#dl-nama-kok-' + i).innerHTML = opsiNamaKeg(g.tema);
-  if (f === 'tujuan') kartu.querySelector('[data-hitung]').textContent = g.tujuan.length + '/' + ((KK.panjangKegiatan || {}).tujuan || 500) + ' karakter';
+  const maks = (KK.panjangKegiatan || { tema:100, nama:150, tujuan:500 })[f], hitung = kartu.querySelector('[data-hitung-f="' + f + '"]');
+  if (maks && hitung) {
+    const lewat = panjangLewat(g[f], maks, f);
+    hitung.textContent = teksHitung(g[f], maks, f); hitung.classList.toggle('lewat', lewat); e.target.classList.toggle('lewat', lewat);
+  }
 });
 $('#kk-keg').addEventListener('change', e => {
   const sub = e.target.dataset.sub, kartu = e.target.closest('.keg');
@@ -2507,6 +2678,7 @@ $('#kk-keg').addEventListener('change', e => {
   const g = KK_KEG[Number(kartu.dataset.i)];
   g.subdimensi = e.target.checked ? g.subdimensi.concat(sub) : g.subdimensi.filter(x => x !== sub);
   KK_UBAH.kegiatan = true;
+  kartu.querySelector('[data-awas-sub]').textContent = awasSubKeg(g);
 });
 $('#kk-keg').addEventListener('click', async e => {
   const b = e.target.closest('button');
@@ -2536,6 +2708,8 @@ $('#kk-keg').addEventListener('click', async e => {
 });
 $('#kk-keg-tambah').addEventListener('click', () => { KK_KEG.push(kegBaru()); KK_UBAH.kegiatan = true; renderKegKok(); });
 $('#kk-keg-simpan').addEventListener('click', e => sibuk(e.target, async () => {
+  const lewat = cekPanjangKeg(KK_KEG);
+  if (lewat.length) return pesan('#kk-keg-msg', lewat[0], false, lewat);
   const res = await api({ aksi:'simpanKegiatanKok', rombel: KK.rombel.id, semester: KK.semester,
     kegiatan: KK_KEG.map(g => ({ tema: g.tema, nama: g.nama, tujuan: g.tujuan, subdimensi: g.subdimensi })) });
   if (res.sesiHabis) return;
