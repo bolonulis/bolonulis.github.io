@@ -1084,6 +1084,12 @@ table.leger td.j{text-align:center;font-weight:800}
     </form>
   </dialog>
 
+  <dialog id="umum-pop" class="profil kopi" aria-labelledby="umum-pop-judul">
+    <div class="kepala"><small>PENGUMUMAN</small><h3 id="umum-pop-judul">📢 Info untuk Bapak/Ibu</h3></div>
+    <div class="isi" id="umum-pop-teks" style="white-space:pre-line"></div>
+    <div class="tombol" style="padding-top:12px"><button type="button" class="btn" id="umum-pop-tutup">Mengerti</button></div>
+  </dialog>
+
   <dialog id="kopi" class="profil kopi" aria-labelledby="kopi-judul">
     <div class="kepala"><small>DUKUNG PENGEMBANG</small><h3 id="kopi-judul">☕ Secangkir kopi untuk pengembang</h3><p>Daftar Nilai Digital gratis untuk semua SD, dan akan tetap gratis.</p></div>
     <div class="isi">
@@ -1394,12 +1400,25 @@ function tampilUmum(i){
     $('#u-info').classList.toggle('hidden', !i.pengumuman);
   }
 }
+/*
+ * Popup pengumuman: teks yang sama dengan papan 📢 Pengumuman (Pengaturan Pusat), tampil SEKALI per perangkat setelah masuk.
+ * Yang sudah dibaca dicatat per isi teks, jadi pengumuman baru tampil lagi; kosongkan Pengumuman di Pusat untuk menghentikan.
+ */
+function popupPengumuman(){
+  const t = String((INFO && INFO.pengumuman) || '').trim();
+  if (!t || TAMPIL !== 'beranda' || ls.get('pengumuman-dibaca') === t || document.querySelector('dialog[open]')) return;
+  $('#umum-pop-teks').textContent = t;
+  $('#umum-pop').showModal();
+}
+$('#umum-pop').addEventListener('close', () => ls.set('pengumuman-dibaca', $('#umum-pop-teks').textContent));
+$('#umum-pop-tutup').addEventListener('click', () => $('#umum-pop').close());
 async function muatInfo(){
   if (!API_URL) return;
   const res = await api({ aksi:'info' });
   if (!res.ok) return;
   INFO = res;
   tampilUmum(res);
+  popupPengumuman();
   // Ajakan dukungan sukarela: tampil hanya bila pengelola mengisi "Info Dukungan".
   tulisKopi(res.dukungan || '');
   document.querySelectorAll('.buka-kopi:not(.kaki-kopi)').forEach(b => b.classList.toggle('hidden', !res.dukungan));
@@ -1432,6 +1451,7 @@ let TAMPIL = '';
 function tampil(v){
   TAMPIL = v;
   if (v === 'beranda' && typeof renderPembaruanTp === 'function') renderPembaruanTp();
+  if (v === 'beranda') setTimeout(popupPengumuman, 0);
   VIEWS.forEach(x => $('#v-' + x).classList.toggle('hidden', x !== v));
   if (v !== 'daftar' && !$('#d-ok').classList.contains('hidden')) { // selesai daftar: formulir siap dipakai lagi
     $('#d-ok').classList.add('hidden'); $('#f-daftar').classList.remove('hidden'); $('#v-daftar .satu-akun').classList.remove('hidden');
