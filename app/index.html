@@ -903,6 +903,7 @@ table.leger td.j{text-align:center;font-weight:800}
         <div class="toolbar">
           <button class="btn" type="button" id="ct-cetak-btn" style="width:auto">Cetak / Simpan PDF</button>
           <button class="btn ghost small" type="button" id="ct-sampul-btn">Cetak sampul &amp; identitas</button>
+          <button class="btn ghost small" type="button" id="ct-sampul-word" title="Unduh sampul &amp; identitas siswa terpilih sebagai berkas Word yang bisa diedit sekolah">Unduh sampul (Word)</button>
           <button class="btn ghost small" type="button" id="ct-semua">Pilih semua</button>
           <button class="btn ghost small" type="button" id="ct-lengkap">Hanya yang lengkap</button>
           <span class="sub" id="ct-jumlah"></span>
@@ -3683,6 +3684,90 @@ function halamanSampul(s){
     '<br>Kepala Sekolah<div class="nm">' + esc(S.kepala || '') + '</div>' + (S.nipKepala ? 'NIP. ' + esc(S.nipKepala) : '') + '</div></div></div>';
   return depan + sekolah + ident;
 }
+/* Sampul rapor versi Word (.docx): isi sama dengan halamanSampul, dibuat di perangkat dengan pustaka docx,
+   supaya sekolah bisa menyunting sendiri (kop, logo, tata letak). Satu siswa = 3 halaman A4. */
+async function wordSampul(siswa){
+  await muatPustaka('docx');
+  const D = docx, S = CT.sekolah, mm = v => Math.round(v * 56.7), pt = v => v * 2;
+  const logo = new Uint8Array(await (await fetch('logo-tutwuri.png')).arrayBuffer());
+  const t = (teks, o = {}) => new D.TextRun({ text: String(teks ?? ''), font: 'Arial', size: pt(o.size || 11), bold: !!o.bold, characterSpacing: o.spasi || 0, break: o.br || 0 });
+  const par = (isi, o = {}) => new D.Paragraph({ alignment: o.align || D.AlignmentType.LEFT, spacing: { before: o.before || 0, after: o.after || 0, line: o.line || 240, lineRule: D.LineRuleType.AUTO },
+    children: Array.isArray(isi) ? isi : [isi], pageBreakBefore: !!o.halamanBaru, keepNext: !!o.keepNext });
+  const tengah = D.AlignmentType.CENTER;
+  const tanpaGaris = { top: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, bottom: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    left: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, right: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    insideHorizontal: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' }, insideVertical: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' } };
+  const garis = { style: D.BorderStyle.SINGLE, size: 8, color: '000000' };
+  const kotak = isi => new D.Table({ alignment: tengah, width: { size: mm(110), type: D.WidthType.DXA }, columnWidths: [mm(110)],
+    rows: [new D.TableRow({ children: [new D.TableCell({ width: { size: mm(110), type: D.WidthType.DXA }, borders: { top: garis, bottom: garis, left: garis, right: garis },
+      margins: { top: mm(1.5), bottom: mm(1.5), left: mm(3), right: mm(3) }, children: [par(t(isi, { size: 13, bold: true }), { align: tengah })] })] })] });
+  const sel = (isi, w, o = {}) => new D.TableCell({ width: { size: w, type: D.WidthType.DXA }, borders: o.borders, verticalAlign: o.vAlign,
+    margins: { top: mm(o.pad ?? 1), bottom: mm(o.pad ?? 1), left: mm(1.2), right: mm(1.2) }, children: Array.isArray(isi) ? isi : [isi] });
+  const tabel = (baris, lebar, o = {}) => new D.Table({ alignment: o.align, width: { size: lebar.reduce((a, b) => a + b, 0), type: D.WidthType.DXA }, columnWidths: lebar,
+    borders: tanpaGaris, rows: baris.map(b => new D.TableRow({ height: o.tinggi ? { value: o.tinggi, rule: D.HeightRule.EXACT } : undefined,
+      children: b.map((isi, i) => sel(isi, lebar[i], { pad: o.pad })) })) });
+  const isi = v => (v === undefined || v === null || v === '') ? '' : String(v);
+  const anak = [];
+  siswa.forEach((s, ke) => {
+    const I = s.identitas || {}, nisn = (s.nisn || '-') + ' / ' + (s.nis || '-');
+    // halaman 1: sampul depan
+    anak.push(
+      par([t('R A P O R', { size: 20, bold: true, spasi: 20 }), t('PESERTA DIDIK', { size: 20, bold: true, spasi: 20, br: 1 }),
+        t('SEKOLAH DASAR', { size: 20, bold: true, spasi: 20, br: 1 }), t('(SD)', { size: 20, bold: true, spasi: 20, br: 1 })],
+        { align: tengah, before: mm(18), line: 360, halamanBaru: ke > 0 }),
+      par(new D.ImageRun({ type: 'png', data: logo, transformation: { width: 208, height: Math.round(208 * 341 / 350) } }), { align: tengah, before: mm(16), after: mm(14) }),
+      par(t('Nama Peserta Didik'), { align: tengah, after: 80 }), kotak(s.nama),
+      par(t('NISN / NIS'), { align: tengah, before: 280, after: 80 }), kotak(nisn),
+      par([t('KEMENTERIAN PENDIDIKAN DASAR DAN MENENGAH', { size: 12, bold: true }), t('REPUBLIK INDONESIA', { size: 12, bold: true, br: 1 })],
+        { align: tengah, before: mm(62), line: 360 }));
+    // halaman 2: identitas sekolah
+    anak.push(par([t('RAPOR', { size: 16, bold: true, spasi: 20 }), t('PESERTA DIDIK', { size: 16, bold: true, spasi: 20, br: 1 }),
+        t('SEKOLAH DASAR (SD)', { size: 16, bold: true, spasi: 20, br: 1 })], { align: tengah, before: mm(18), after: mm(22), line: 360, halamanBaru: true }),
+      tabel([['Nama Sekolah', S.nama], ['NPSN', S.npsn], ['Alamat Sekolah', S.jalan], ['Kode Pos', S.kodePos], ['Desa / Kelurahan', S.desa], ['Kecamatan', S.kecamatan],
+        ['Kabupaten / Kota', S.kabupaten], ['Provinsi', S.provinsi], ['Website', S.website], ['E-mail', S.email]]
+        .map(([k, v]) => [par(t(k)), par(t(':')), par(t(isi(v)))]), [mm(60), mm(5), mm(85)], { align: tengah, pad: 2 }));
+    // halaman 3: identitas peserta didik
+    const ttl = [I.tempatLahir, I.tanggalLahirPanjang].filter(Boolean).join(', ');
+    const b = (n, k, v) => [par(t(n || '')), par(t(k)), par(t(':')), par(t(isi(v)))];
+    const baris = [
+      b(1, 'Nama Peserta Didik', s.nama), b(2, 'NISN / NIS', nisn), b(3, 'Tempat, Tanggal Lahir', ttl), b(4, 'Jenis Kelamin', I.jkPanjang), b(5, 'Agama', I.agama),
+      b(6, 'Pendidikan Sebelumnya', I.pendidikanSebelumnya), b(7, 'Alamat Peserta Didik', I.alamat),
+      b(8, 'Nama Orang Tua', ''), b('', '    a. Ayah', I.ayah), b('', '    b. Ibu', I.ibu),
+      b(9, 'Pekerjaan Orang Tua', ''), b('', '    a. Ayah', I.pekerjaanAyah), b('', '    b. Ibu', I.pekerjaanIbu),
+      b(10, 'Alamat Orang Tua', I.alamatOrtu),
+      b(11, 'Wali Peserta Didik', ''), b('', '    a. Nama', I.wali), b('', '    b. Pekerjaan', I.pekerjaanWali), b('', '    c. Alamat', I.alamatWali)];
+    const foto = new D.TableCell({ width: { size: mm(30), type: D.WidthType.DXA }, borders: { top: garis, bottom: garis, left: garis, right: garis }, verticalAlign: D.VerticalAlign.CENTER,
+      children: [par([t('Pas foto', { size: 8.5 }), t('3 × 4', { size: 8.5, br: 1 })], { align: tengah })] });
+    const ttd = new D.TableCell({ width: { size: mm(80), type: D.WidthType.DXA }, borders: tanpaGaris, margins: { left: mm(12) }, children: [
+      par(t(isi(S.tempat) + (S.tanggal ? ', ' + S.tanggal : ''))), par(t('Kepala Sekolah')),
+      new D.Paragraph({ spacing: { before: mm(20) }, children: [new D.TextRun({ text: isi(S.kepala) || '..............................', font: 'Arial', size: pt(11), bold: true, underline: {} })] }),
+      par(t(S.nipKepala ? 'NIP. ' + S.nipKepala : 'NIP. ')) ] });
+    anak.push(par(t('IDENTITAS PESERTA DIDIK', { size: 13, bold: true }), { align: tengah, after: mm(6), halamanBaru: true }),
+      tabel(baris, [mm(10), mm(60), mm(4), mm(96)], { pad: 1.2 }),
+      par(t(''), { before: mm(8) }),
+      new D.Table({ alignment: D.AlignmentType.RIGHT, width: { size: mm(110), type: D.WidthType.DXA }, columnWidths: [mm(30), mm(80)], borders: tanpaGaris,
+        rows: [new D.TableRow({ height: { value: mm(40), rule: D.HeightRule.ATLEAST }, children: [foto, ttd] })] }));
+  });
+  const dok = new D.Document({ creator: 'Daftar Nilai Digital', title: 'Sampul Rapor', styles: { default: { document: { run: { font: 'Arial', size: 22 } } } },
+    sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: mm(20), bottom: mm(15), left: mm(20), right: mm(20) } } }, children: anak }] });
+  return D.Packer.toBlob(dok);
+}
+$('#ct-sampul-word').addEventListener('click', e => sibuk(e.target, async () => {
+  const ids = new Set([...document.querySelectorAll('#ct-pilih input:checked')].map(x => x.value));
+  const siswa = CT.siswa.filter(s => ids.has(s.id));
+  if (!siswa.length) return pesan('#ct-msg', 'Pilih minimal satu siswa.', false);
+  try {
+    pesan('#ct-msg', 'Menyiapkan berkas Word…', true);
+    const blob = await wordSampul(siswa);
+    const nama = 'Sampul Rapor ' + CT.rombel.label + ' ' + CT.tahunAjaran.replace('/', '-') + '.docx';
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    pesan('#ct-msg', nama + ' terunduh (' + siswa.length + ' siswa, ' + siswa.length * 3 + ' halaman). Buka di Word atau Google Docs untuk menyunting.', true);
+  } catch (err) {
+    pesan('#ct-msg', 'Berkas Word gagal dibuat: ' + err.message, false);
+  }
+}));
 $('#ct-sampul-btn').addEventListener('click', async () => {
   const ids = new Set([...document.querySelectorAll('#ct-pilih input:checked')].map(x => x.value));
   const siswa = CT.siswa.filter(s => ids.has(s.id));
