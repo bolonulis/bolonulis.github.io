@@ -302,6 +302,27 @@ const TKA = (() => {
     return html.replace(/src="bank\//g, 'src="' + akar).replace(/ loading="lazy"/g, '');
   }
 
+  /** Gambar berkas soal ditanam ke dalam dokumen (data URI) agar ikut tercetak, tersimpan sebagai PDF, dan terbawa
+   *  di berkas unduhan meski dibuka tanpa internet. Juga memasang penjaga: tombol cetak baru aktif setelah semua gambar siap. */
+  const petaGambar = {};
+  function keDataUri(blob) { return new Promise((ok, gagal) => { const f = new FileReader(); f.onload = () => ok(f.result); f.onerror = gagal; f.readAsDataURL(blob); }); }
+  async function tanamGambar(html) {
+    const akar = new URL('bank/', location.href).href;
+    html = gambarLengkap(html);
+    const alamat = [...new Set([...html.matchAll(/src="([^"]+)"/g)].map(m => m[1]).filter(u => u.startsWith(akar)))];
+    await Promise.all(alamat.map(async u => {
+      if (petaGambar[u]) return;
+      for (let i = 0; i < 3 && !petaGambar[u]; i++) {
+        try { const r = await fetch(u); if (r.ok) petaGambar[u] = await keDataUri(await r.blob()); } catch (e) { /* coba lagi */ }
+      }
+    }));
+    html = html.replace(/src="([^"]+)"/g, (m, u) => petaGambar[u] ? 'src="' + petaGambar[u] + '"' : m);
+    const jaga = '<script>(function(){var im=[].slice.call(document.images),b=[].slice.call(document.querySelectorAll(\'button[onclick="print()"]\')),asli=b.map(function(x){return x.textContent});' +
+      'function cek(){var sisa=im.filter(function(i){return !i.complete}).length;b.forEach(function(x,k){x.disabled=sisa>0;x.textContent=sisa?"⏳ Memuat gambar… ("+sisa+")":asli[k]});return sisa}' +
+      'im.forEach(function(i){i.addEventListener("load",cek);i.addEventListener("error",cek)});cek();window.siapCetak=function(){return cek()===0}})();<\/script>';
+    return /<\/body>/i.test(html) ? html.replace(/<\/body>/i, jaga + '</body>') : html + jaga;
+  }
+
   /** opsi (Kelas Intensif): { judul, kop, petunjuk: tampilkan petunjuk V1, tanpaAjak: tanpa ajakan ke situs } */
   function dokumenSoal(b, rinci, ket, opsi = {}) {
     const judul = (rinci ? 'Kunci & Pembahasan · ' : '') + (opsi.judul || ('Simulasi TKA ' + b.jenjang + ' ' + b.mapel + ' · ' + b.paket));
@@ -417,7 +438,7 @@ const TKA = (() => {
 
   return {
     jalur,
-    statistik, kalimatStatistik, kalimatKelas, dokumenSoal,
+    statistik, kalimatStatistik, kalimatKelas, dokumenSoal, tanamGambar,
     bank, simpan, esc, pecahan, api, siapServer, muatBank, kode, peserta, riwayat, idPerangkat, HURUF,
     ringkasJawaban, htmlTinjau, statusSkor, htmlAnalisis, dokumenPembahasan, angka, grafikNilai,
     daftarkan: b => { bank[b.id] = b; }
