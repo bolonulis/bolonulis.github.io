@@ -887,8 +887,30 @@ function kemajuanKelas_(kode) {
   lembar_(LEMBAR_KEMAJUAN, KEPALA_KEMAJUAN).getDataRange().getValues().slice(1).forEach(function (b) {
     if (rapikanKode_(b[1]) !== kode) return;
     var d = {}; try { d = JSON.parse(String(b[3] || '{}')) || {}; } catch (err) { d = {}; }
+    delete d._h;   // catatan hari berlatih hanya untuk Peta Belajar siswa
     hasil.push({ nama: String(b[2]), data: d });
   });
+  return hasil;
+}
+
+/* Runtunan harian & Misi Kelas. Hari dihitung dalam WIB. data._h = nomor hari (sejak 1-1-1970) saat siswa
+ * menyelesaikan latihan, maksimal 40 hari terakhir. Misi Kelas = latihan yang diselesaikan seluruh kelas sejak Senin. */
+function hariWib_(t) { return Math.floor((t + 7 * 36e5) / 864e5); }
+function catatHari_(data, now) {
+  var h = Array.isArray(data._h) ? data._h : [], x = hariWib_(now);
+  if (h[h.length - 1] !== x) h.push(x);
+  data._h = h.slice(-40);
+}
+function awalPekanWib_(now) { var x = hariWib_(now); return (x - (x + 3) % 7) * 864e5 - 7 * 36e5; }   // Senin 00.00 WIB
+function misiKelas_(k) {
+  var c = CacheService.getScriptCache(), ada = c.get('misi_' + k.kode);
+  if (ada) return JSON.parse(ada);
+  var mulai = awalPekanWib_(Date.now()), selesai = 0;
+  kemajuanKelas_(k.kode).forEach(function (x) {
+    Object.keys(x.data).forEach(function (id) { var d = x.data[id]; if (d && d.j && d.w >= mulai && infoItem_(id)) selesai++; });
+  });
+  var hasil = { selesai: selesai, target: Math.max(10, (k.siswa || []).length * 2), mulai: mulai };
+  c.put('misi_' + k.kode, JSON.stringify(hasil), 300);
   return hasil;
 }
 
@@ -907,7 +929,7 @@ function petaSiswa_(req) {
   var k = dataKelas_(req.kode);
   if (!k) return { ok: false, pesan: 'Kode kelas tidak ditemukan. Periksa kembali tautan dari gurumu.' };
   var info = { kode: k.kode, guru: k.guru, sekolah: k.sekolah, kelas: k.kelas, siswa: k.siswa || [], premium: premiumAktif_(k) };
-  if (!req.nama) return { ok: true, kelas: info, rilis: dataRilis_(k.kode), rilisWaktu: rilisWaktu_(k.kode), sekarang: Date.now() };
+  if (!req.nama) return { ok: true, kelas: info, rilis: dataRilis_(k.kode), rilisWaktu: rilisWaktu_(k.kode), misi: misiKelas_(k), sekarang: Date.now() };
   if (!namaTerdaftar_(k, req.nama)) return { ok: false, pesan: 'Namamu tidak ada di daftar kelas. Pilih namamu dari daftar.' };
   var p = cariKemajuan_(k.kode, req.nama), now = Date.now(), milik = {};
   Object.keys(p.data).forEach(function (id) {
@@ -915,7 +937,7 @@ function petaSiswa_(req) {
     var st = statusItem_(it, d, now);
     milik[id] = { s: d.s, j: d.j || 0, p: d.p, t: d.t, b: d.b, w: d.w || 0, iz: d.iz || 0, boleh: st.boleh, lanjut: !!st.lanjut, habis: !!st.habis };
   });
-  return { ok: true, kelas: info, rilis: dataRilis_(k.kode), rilisWaktu: rilisWaktu_(k.kode), milik: milik, sekarang: now };
+  return { ok: true, kelas: info, rilis: dataRilis_(k.kode), rilisWaktu: rilisWaktu_(k.kode), milik: milik, hari: Array.isArray(p.data._h) ? p.data._h : [], misi: misiKelas_(k), sekarang: now };
 }
 
 /** Siswa menekan "Mulai" pada soal Jalur Belajar: diperiksa, dicatat, lalu soal dikirim. */
@@ -972,6 +994,7 @@ function nilaiItem_(req, bank, jawaban) {
     d.b = Math.max(Number(d.b) || 0, h.nilai);
     d.s = 'selesai'; d.w = now;
     p.data[it.id] = d;
+    catatHari_(p.data, now);
     simpanKemajuan_(p, k.kode, ps.nama);
   } finally { kunci.releaseLock(); }
   catatNilai_(req, h, '');

@@ -92,6 +92,14 @@ const JG = (() => {
     el.querySelector('[data-ke-panduan]').onclick = () => { const d = $('panduan-guru'); d.open = true; const s = $('pg-jalur'); (s || d).scrollIntoView({ behavior: 'smooth' }); };
   }
 
+  /* ---------- Misi Kelas (sama dengan hitungan server: latihan selesai sejak Senin 00.00 WIB) ---------- */
+  const targetMisi = () => Math.max(10, ((DATA && DATA.siswa) || []).length * 2);
+  function misiKelas() {
+    const x = Math.floor((Date.now() + 7 * 36e5) / 864e5), mulai = (x - (x + 3) % 7) * 864e5 - 7 * 36e5;
+    let n = 0; ((DATA && DATA.kemajuan) || []).forEach(s => Object.keys(s.data).forEach(id => { const d = s.data[id]; if (d && d.j && d.w >= mulai && J.info(id)) n++; }));
+    return { selesai: n, target: targetMisi() };
+  }
+
   /* ---------- pengingat siswa (kartu Ringkasan) ---------- */
   function selesai(x, id) { return !!(x && x.data[id] && x.data[id].j > 0); }
   function gambarIngat() {
@@ -103,9 +111,10 @@ const JG = (() => {
     const belum = siswa.filter(s => { const x = km.get(kn(s)); return fokus.some(id => !selesai(x, id)); });
     const terakhir = s => { const x = km.get(kn(s)); return x ? Math.max(0, ...Object.values(x.data).map(d => d.w || d.m || 0)) : 0; };
     const diam = siswa.filter(s => terakhir(s) < now - MINGGU);
-    const daftar = fokus.slice().sort((a, b) => (rw[b] || 0) - (rw[a] || 0));
+    const daftar = fokus.slice().sort((a, b) => (rw[b] || 0) - (rw[a] || 0)), misi = misiKelas();
     el.innerHTML = '<div class="kepala-kelas"><div><h2 style="margin:0">📣 Pengingat siswa</h2><p class="sub" style="margin:2px 0 0">' +
-      (baru.length ? '<b>' + baru.length + ' latihan dibuka minggu ini.</b> ' : 'Belum ada latihan baru minggu ini. ') + 'Siswa melihat tanda 🆕 dan target 3 latihan per minggu di Peta Belajar.</p></div></div>' +
+      (baru.length ? '<b>' + baru.length + ' latihan dibuka minggu ini.</b> ' : 'Belum ada latihan baru minggu ini. ') + 'Siswa melihat tanda 🆕, target 3 latihan per minggu, runtunan harian 🔥, dan Misi Kelas di Peta Belajar.</p>' +
+      '<p class="sub" style="margin:4px 0 0">🤝 <b>Misi Kelas minggu ini: ' + misi.selesai + ' dari ' + misi.target + ' latihan</b>' + (misi.selesai >= misi.target ? ' (tercapai 🎉)' : '') + '. Target otomatis 2 latihan per siswa, tanpa peringkat siswa.</p></div></div>' +
       '<div class="ingat-angka"><div><b>' + (siswa.length - belum.length) + '/' + siswa.length + '</b><small>siswa menyelesaikan ' + (baru.length ? 'semua latihan baru' : 'semua latihan yang dibuka') + '</small></div>' +
       '<div><b>' + belum.length + '</b><small>siswa belum selesai</small></div><div><b>' + diam.length + '</b><small>siswa tidak berlatih 7 hari terakhir</small></div></div>' +
       '<details style="margin:8px 0"><summary style="cursor:pointer;font-weight:700;font-size:14px">Lihat rincian</summary><ul style="margin:6px 0;padding-left:20px;font-size:14px">' +
@@ -121,7 +130,7 @@ const JG = (() => {
         daftar.slice(0, 8).map(id => '• ' + namaItem(id)).join('\n') + (daftar.length > 8 ? '\n• dan ' + (daftar.length - 8) + ' latihan lainnya' : '') +
         '\n\n✅ ' + (siswa.length - belum.length) + ' dari ' + siswa.length + ' siswa sudah menyelesaikan semuanya. ' + (belum.length ? 'Ayo yang belum, kerjakan sedikit demi sedikit!' : 'Hebat, semuanya sudah selesai! 🎉') +
         (pakaiNama && belum.length ? '\nBelum selesai: ' + belum.join(', ') : '') +
-        '\n🎯 Target minggu ini: 3 latihan.\n\n👉 ' + tautanKelas(KELAS) + '\n\n— ' + KELAS.guru;
+        '\n🎯 Target minggu ini: 3 latihan.\n🤝 Misi kelas minggu ini: ' + misi.selesai + ' dari ' + misi.target + ' latihan' + (misi.selesai >= misi.target ? ' (tercapai! 🎉)' : ', ayo kita capai bersama!') + '\n🔥 Jaga runtunan: 1 latihan setiap hari sekolah.\n\n👉 ' + tautanKelas(KELAS) + '\n\n— ' + KELAS.guru;
       window.open('https://wa.me/?text=' + encodeURIComponent(pesan), '_blank', 'noopener');
     };
   }
@@ -344,7 +353,8 @@ const JG = (() => {
     const aktif = new Set(b.map(x => kn(x.nama)).filter(n => !daftar.size || daftar.has(n)));
     const jb = b.filter(x => J.info(x.paket));
     const rw = (DATA && DATA.rilisWaktu) || {};
-    return { aktif, latihan: b.length, rata: jb.length ? jb.reduce((a, x) => a + (Number(x.nilai) || 0), 0) / jb.length : null,
+    const misi = new Set(jb.map(x => kn(x.nama) + '|' + x.paket)).size;
+    return { aktif, latihan: b.length, misi, rata: jb.length ? jb.reduce((a, x) => a + (Number(x.nilai) || 0), 0) / jb.length : null,
       baru: ((DATA && DATA.rilis) || []).filter(id => rw[id] >= mulai && rw[id] < akhir).length };
   }
   function laporanSenin() {
@@ -371,7 +381,8 @@ const JG = (() => {
       '👥 Siswa aktif: ' + p.aktif.size + ' dari ' + n + (n ? ' (' + Math.round(p.aktif.size / n * 100) + '%)' : '') + '\n' +
       '✍️ Latihan dikerjakan: ' + p.latihan + ' (' + selisih(p.latihan, L.lalu.latihan) + ')\n' +
       (p.rata !== null ? '📊 Rata-rata nilai latihan: ' + Math.round(p.rata) + '\n' : '') +
-      '🆕 Latihan baru dibuka: ' + p.baru + '\n';
+      '🆕 Latihan baru dibuka: ' + p.baru + '\n' +
+      '🤝 Misi Kelas: ' + p.misi + ' dari ' + targetMisi() + ' latihan' + (p.misi >= targetMisi() ? ' (tercapai 🎉)' : '') + '\n';
     if (premium) {
       if (L.rk.lemahInd.length) t += '\n📉 *Indikator terlemah*\n' + L.rk.lemahInd.slice(0, 3).map((o, i) => (i + 1) + '. ' + o.judul + ' (' + mp(o.m) + '): rata-rata ' + Math.round(o.r) + (o.lemah.length ? ', ' + o.lemah.length + ' siswa di bawah 60' : '')).join('\n') + '\n';
       if (L.rk.perlu.length) t += '\n🧡 *Perlu dibantu*: ' + L.rk.perlu.length + ' siswa (rata-rata di bawah 60)' + (pakaiNama ? ': ' + L.rk.perlu.map(x => x.s).join(', ') : '') + '\n';
@@ -390,7 +401,8 @@ const JG = (() => {
       '<div class="ingat-angka"><div><b>' + p.aktif.size + '/' + n + '</b><small>siswa aktif berlatih ' + naik(p.aktif.size, L.lalu.aktif.size) + '</small></div>' +
       '<div><b>' + p.latihan + '</b><small>latihan dikerjakan ' + naik(p.latihan, L.lalu.latihan) + '</small></div>' +
       '<div><b>' + (p.rata === null ? '–' : angka(Math.round(p.rata))) + '</b><small>rata-rata nilai latihan</small></div>' +
-      '<div><b>' + p.baru + '</b><small>latihan baru dibuka</small></div></div>';
+      '<div><b>' + p.baru + '</b><small>latihan baru dibuka</small></div>' +
+      '<div><b>' + p.misi + '/' + targetMisi() + '</b><small>Misi Kelas ' + (p.misi >= targetMisi() ? 'tercapai 🎉' : 'pekan itu') + '</small></div></div>';
     if (premium) {
       isi += '<div class="sn-premium">' +
         (L.rk.lemahInd.length ? '<p><b>📉 Indikator terlemah</b></p><ol>' + L.rk.lemahInd.slice(0, 3).map(o => '<li>' + esc(o.judul) + ' <small>(' + esc(mp(o.m)) + ' · rata-rata ' + angka(Math.round(o.r)) + (o.lemah.length ? ' · ' + o.lemah.length + ' siswa di bawah 60' : '') + ')</small></li>').join('') + '</ol>' : '<p><b>📉 Indikator terlemah:</b> belum ada nilai latihan.</p>') +

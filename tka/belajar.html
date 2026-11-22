@@ -87,6 +87,9 @@ a{color:var(--ungu)}
 .target .bintang{display:flex;gap:6px;margin:6px 0}
 .target .bintang span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:#eef1f6;color:#94a3b8;font-weight:900}
 .target .bintang span.ok{background:#fde68a;color:#92400e}
+.hari5{display:flex;gap:6px;margin:6px 0}.hari5 span{min-width:38px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:12.5px;font-weight:800;background:#eef1f6;color:#94a3b8}.hari5 span.ok{background:#ffedd5;color:#9a3412;font-size:16px}.hari5 span.kini{outline:2px dashed #fb923c;color:#9a3412}
+.lencana-baris{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.lencana-baris span{font-size:12px;font-weight:800;border-radius:99px;padding:3px 9px;background:#f1f5f9;color:#94a3b8;filter:grayscale(1)}.lencana-baris span.dapat{background:#fef3c7;color:#92400e;filter:none}
+.misi-pita{height:14px;background:#fff;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:6px 0}.misi-pita i{display:block;height:100%;background:linear-gradient(90deg,#fde68a,#fb923c);border-radius:99px;transition:width .6s}
 .target .api{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:6px 10px;font-weight:800;color:#9a3412;font-size:13.5px}
 .tg:hover{border-color:currentColor}
 /* peta indikator */
@@ -158,7 +161,9 @@ a{color:var(--ungu)}
     </div>
 
     <a class="baru-pesan" id="baru-pesan" href="#k-tugas" hidden></a>
+    <div class="kartu target" id="k-runtun" hidden></div>
     <div class="kartu target" id="k-target" hidden></div>
+    <div class="kartu target" id="k-misi" hidden></div>
 
     <div class="kartu info-baru" id="info-baru" hidden>
       <button class="tutup" type="button" id="info-tutup" aria-label="Tutup">✕</button>
@@ -333,6 +338,46 @@ function gambarTarget(dibuka) {
     (runtun >= 2 ? '<div class="api">🔥 ' + runtun + ' minggu berturut-turut</div>' : '');
   el.hidden = false;
 }
+/* ---------- runtunan harian 🔥 (Senin–Jumat), lencana, dan Misi Kelas ----------
+   Hari dihitung dalam WIB, sama dengan server. Sabtu dan Minggu tidak memutus runtunan.
+   Kartu hanya tampil bila server sudah mengirim data hari/misi (server lama: kartu disembunyikan). */
+const hariWib = t => Math.floor((t + 7 * 36e5) / HARI);
+const hariKerja = x => (x + 3) % 7 < 5;
+function runtunHari(hari, kini) {
+  const ada = new Set(hari); let n = 0, d = ada.has(kini) ? kini : kini - 1;   // hari ini belum berlatih: belum memutus
+  for (let i = 0; i < 400; i++, d--) { if (ada.has(d)) n++; else if (hariKerja(d)) break; }
+  return n;
+}
+function runtunTerbaik(hari) {
+  if (!hari.length) return 0;
+  const ada = new Set(hari), a = Math.min(...hari), b = Math.max(...hari); let n = 0, best = 0;
+  for (let d = a; d <= b; d++) { if (ada.has(d)) best = Math.max(best, ++n); else if (hariKerja(d)) n = 0; }
+  return best;
+}
+const LENCANA = [['🔥', '3 hari', o => o.runtun >= 3], ['🔥', '5 hari', o => o.runtun >= 5], ['🌟', '10 hari', o => o.runtun >= 10],
+  ['📘', '5 latihan', o => o.total >= 5], ['📗', '15 latihan', o => o.total >= 15], ['🏆', '30 latihan', o => o.total >= 30]];
+function gambarRuntun(dibuka) {
+  const el = $('k-runtun'), hari = PETA.hari;
+  if (!Array.isArray(hari) || (!hari.length && !dibuka.length)) { el.hidden = true; return; }
+  const kini = hariWib(sekarang()), runtun = runtunHari(hari, kini), sudah = hari.includes(kini), senin = kini - (kini + 3) % 7;
+  const o = { runtun: Math.max(runtunTerbaik(hari), runtun), total: Object.values(PETA.milik || {}).filter(m => m.j > 0).length };
+  el.innerHTML = '<div class="ikon">' + (runtun ? '🔥' : '🌱') + '</div><div class="isi"><h2>' + (runtun ? runtun + ' hari berlatih berturut-turut' : 'Ayo mulai runtunan belajarmu') + '</h2>' +
+    '<div class="hari5">' + ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'].map((n, i) => { const d = senin + i, ok = hari.includes(d); return '<span class="' + (ok ? 'ok' : d === kini ? 'kini' : '') + '" title="' + n + '">' + (ok ? '🔥' : n) + '</span>'; }).join('') + '</div>' +
+    '<p class="sub" style="margin:0">' + (sudah ? '✅ Hari ini kamu sudah berlatih. Hebat!' : !hariKerja(kini) ? 'Hari ini libur. Runtunanmu aman, tetapi kalau mau berlatih juga boleh 😊' : 'Target hari ini: <b>1 latihan</b> (±5 soal) agar 🔥 tetap menyala.') + ' Sabtu dan Minggu tidak memutus runtunan.</p>' +
+    '<div class="lencana-baris" aria-label="Lencana">' + LENCANA.map(([e, n, f]) => '<span class="' + (f(o) ? 'dapat' : '') + '" title="' + (f(o) ? 'Lencana didapat: ' : 'Belum: ') + n + '">' + e + ' ' + n + '</span>').join('') + '</div></div>';
+  el.hidden = false;
+}
+function gambarMisi() {
+  const el = $('k-misi'), m = PETA.misi;
+  if (!m || !m.target) { el.hidden = true; return; }
+  const pct = Math.min(100, Math.round(m.selesai / m.target * 100)), ok = m.selesai >= m.target;
+  el.innerHTML = '<div class="ikon">' + (ok ? '🎉' : '🤝') + '</div><div class="isi"><h2>' + (ok ? 'Misi Kelas minggu ini tercapai!' : 'Misi Kelas minggu ini') + '</h2>' +
+    '<div class="misi-pita"><i style="width:' + Math.max(pct, 3) + '%"></i></div>' +
+    '<p class="sub" style="margin:0"><b>' + m.selesai + ' dari ' + m.target + ' latihan</b> sudah diselesaikan kelas ' + esc(KELAS.kelas) + ' bersama-sama. ' +
+    (ok ? 'Terima kasih semuanya, kalian kompak! 🙌' : 'Setiap latihan yang kamu selesaikan ikut mengisi misi kelas.') + '</p>' +
+    '<p class="catatan" style="margin:4px 0 0">Dihitung mulai Senin dan diperbarui setiap beberapa menit.</p></div>';
+  el.hidden = false;
+}
 function gambarPeta() {
   const dibuka = PETA.rilis.filter(id => ADA.has(id) && !(J.info(id).premium && !KELAS.premium));
   const selesai = dibuka.filter(id => { const m = (PETA.milik || {})[id]; return m && m.j > 0; });
@@ -350,7 +395,7 @@ function gambarPeta() {
   $('sapa-emo').textContent = emo; $('sapa-pesan').textContent = pesan;
   let infoTutup = false; try { infoTutup = !!localStorage.getItem('tka-jalur-info'); } catch (e) { infoTutup = false; }
   $('info-baru').hidden = infoTutup;
-  gambarTarget(dibuka);
+  gambarRuntun(dibuka); gambarTarget(dibuka); gambarMisi();
   const baru = dibuka.filter(itemBaru);
   $('baru-pesan').hidden = !baru.length;
   $('baru-pesan').innerHTML = baru.length ? '🆕 Gurumu membuka <b>' + baru.length + ' latihan baru</b> minggu ini. Ketuk untuk mulai ›' : '';
