@@ -62,6 +62,7 @@ const JG = (() => {
       if (typeof gambar === 'function' && DATA) gambar();
     }
     if (gulir) $('tab-dasbor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (t === 'analisis') setTimeout(tawarCoba, 700);
   }
   /** Paket yang tampil pada tab Tes akhir / Riwayat. */
   function paketTab(t) {
@@ -305,6 +306,131 @@ const JG = (() => {
       '<p class="catatan" style="margin:6px 0 0">"Semua pengguna" = rata-rata jawaban benar seluruh siswa pengguna aplikasi pada indikator itu (data ' + esc(JB.per) + '). Contoh kesalahan disusun dari pola jawaban siswa dan tidak sama dengan soal latihan.</p></div>';
   }
 
+  /* ---------- ringkasan kelas: indikator terlemah & siswa yang perlu dibantu ---------- */
+  /** Nilai siswa pada satu indikator: versi tertinggi yang sudah bernilai. */
+  function nilaiInd(x, m, no) {
+    for (let v = 4; v >= 1; v--) { const id = J.id(m, no, v), k = keadaan(id, x && x.data[id]); if (k.k === 'nilai') return k.n; }
+    return null;
+  }
+  function ringkasKelas() {
+    const km = petaKemajuan(), siswa = namaSiswa(), ind = [];
+    Object.keys(JALUR_TKA.mapel).forEach(m => JALUR_TKA.mapel[m].indikator.forEach(d => {
+      const n = siswa.map(s => ({ s, n: nilaiInd(km.get(kn(s)), m, d.no) })).filter(o => o.n !== null);
+      if (!n.length) return;
+      ind.push({ m, no: d.no, judul: d.judul, r: n.reduce((a, o) => a + o.n, 0) / n.length, jml: n.length, lemah: n.filter(o => o.n < 60).map(o => o.s) });
+    }));
+    const lemahInd = ind.filter(o => o.r < 80).sort((a, b) => a.r - b.r || b.lemah.length - a.lemah.length);
+    const perlu = siswa.map(s => {
+      const x = km.get(kn(s)); if (!x) return null;
+      const n = ind.map(o => nilaiInd(x, o.m, o.no)).filter(v => v !== null);
+      return n.length ? { s, r: n.reduce((a, b) => a + b, 0) / n.length } : null;
+    }).filter(o => o && o.r < 60).sort((a, b) => a.r - b.r);
+    return { ind, lemahInd, perlu, siswa };
+  }
+  /** Kalimat pratinjau, mis. "5 siswa perlu bantuan di Pecahan dari gambar". */
+  function kalimatPratinjau(rk) {
+    const o = rk.lemahInd.filter(x => x.lemah.length).sort((a, b) => b.lemah.length - a.lemah.length || a.r - b.r)[0];
+    return o ? '<b>' + o.lemah.length + ' siswa</b> perlu bantuan di <b>' + esc(o.judul) + '</b> (' + esc(JALUR_TKA.mapel[o.m].nama) + ')' : '';
+  }
+
+  /* ---------- Laporan Senin untuk guru ---------- */
+  const HARI = 864e5;
+  function awalMinggu(t) { const d = new Date(t); const h = (d.getDay() + 6) % 7; d.setHours(0, 0, 0, 0); return d.getTime() - h * HARI; }
+  const rentang = (a, b) => { const x = new Date(a), y = new Date(b); return (x.getMonth() === y.getMonth() ? x.getDate() : tglPendek(a)) + '–' + tglPendek(b, true); };
+  const tglPendek = (w, th) => new Date(w).toLocaleDateString('id-ID', th ? { day: 'numeric', month: 'long', year: 'numeric' } : { day: 'numeric', month: 'long' });
+  function dataPekan(mulai, akhir) {
+    const daftar = new Set(namaSiswa().map(kn));
+    const b = ((DATA && DATA.baris) || []).filter(x => { const w = Number(x.waktu) || Date.parse(x.waktu) || 0; return w >= mulai && w < akhir; });
+    const aktif = new Set(b.map(x => kn(x.nama)).filter(n => !daftar.size || daftar.has(n)));
+    const jb = b.filter(x => J.info(x.paket));
+    const rw = (DATA && DATA.rilisWaktu) || {};
+    return { aktif, latihan: b.length, rata: jb.length ? jb.reduce((a, x) => a + (Number(x.nilai) || 0), 0) / jb.length : null,
+      baru: ((DATA && DATA.rilis) || []).filter(id => rw[id] >= mulai && rw[id] < akhir).length };
+  }
+  function laporanSenin() {
+    const now = Date.now(), akhir = awalMinggu(now), mulai = akhir - 7 * HARI;
+    const p = dataPekan(mulai, akhir), lalu = dataPekan(mulai - 7 * HARI, mulai), rk = ringkasKelas();
+    const belum = rk.siswa.filter(s => !p.aktif.has(kn(s)));
+    const saran = [];
+    const t = rk.lemahInd[0];
+    if (t) {
+      const kartu = JB && JB.data[t.m] && JB.data[t.m][t.no] && JB.data[t.m][t.no].kartu;
+      saran.push('Bahas ulang "' + t.judul + '" di kelas' + (kartu && kartu[0] ? ': ' + kartu[0].b : '.'));
+      if (t.lemah.length) saran.push('Minta ' + t.lemah.length + ' siswa yang nilainya di bawah 60 mengulang V1 "' + t.judul + '" sampai minimal 80.');
+    }
+    if (belum.length) saran.push('Sapa ' + belum.length + ' siswa yang belum berlatih pekan lalu secara pribadi (bukan di grup), tanyakan kendalanya.');
+    if (!p.baru) saran.push('Pekan lalu belum ada latihan baru. Buka V1 untuk 2–4 indikator di tab 📋 Atur Rilis.');
+    const r2 = rk.lemahInd.find(x => x !== t && x.r >= 60);
+    if (r2) saran.push('"' + r2.judul + '" hampir dikuasai (rata-rata ' + Math.round(r2.r) + '). Lanjutkan ke V2/V3.');
+    return { mulai, akhir, p, lalu, rk, belum, saran: saran.slice(0, 4) };
+  }
+  const selisih = (a, b) => a === b ? 'sama dengan pekan sebelumnya' : (a > b ? '▲ ' + (a - b) : '▼ ' + (b - a)) + ' dari pekan sebelumnya';
+  function teksSenin(L, premium, pakaiNama) {
+    const n = L.rk.siswa.length, p = L.p, mp = m => JALUR_TKA.mapel[m].nama;
+    let t = '📰 *Laporan Senin · Kelas Intensif TKA*\n' + KELAS.kelas + ' · ' + KELAS.sekolah + '\nPekan ' + rentang(L.mulai, L.akhir - HARI) + '\n\n' +
+      '👥 Siswa aktif: ' + p.aktif.size + ' dari ' + n + (n ? ' (' + Math.round(p.aktif.size / n * 100) + '%)' : '') + '\n' +
+      '✍️ Latihan dikerjakan: ' + p.latihan + ' (' + selisih(p.latihan, L.lalu.latihan) + ')\n' +
+      (p.rata !== null ? '📊 Rata-rata nilai latihan: ' + Math.round(p.rata) + '\n' : '') +
+      '🆕 Latihan baru dibuka: ' + p.baru + '\n';
+    if (premium) {
+      if (L.rk.lemahInd.length) t += '\n📉 *Indikator terlemah*\n' + L.rk.lemahInd.slice(0, 3).map((o, i) => (i + 1) + '. ' + o.judul + ' (' + mp(o.m) + '): rata-rata ' + Math.round(o.r) + (o.lemah.length ? ', ' + o.lemah.length + ' siswa di bawah 60' : '')).join('\n') + '\n';
+      if (L.rk.perlu.length) t += '\n🧡 *Perlu dibantu*: ' + L.rk.perlu.length + ' siswa (rata-rata di bawah 60)' + (pakaiNama ? ': ' + L.rk.perlu.map(x => x.s).join(', ') : '') + '\n';
+      if (L.belum.length) t += '💤 Belum berlatih pekan lalu: ' + L.belum.length + ' siswa' + (pakaiNama ? ': ' + L.belum.join(', ') : '') + '\n';
+      if (L.saran.length) t += '\n💡 *Saran pekan ini*\n' + L.saran.map(s => '• ' + s).join('\n') + '\n';
+    }
+    return t + '\n— dari dasbor Kelas Intensif TKA';
+  }
+  function gambarSenin() {
+    const el = $('k-senin'); if (!el) return;
+    const L = laporanSenin(), n = L.rk.siswa.length;
+    if (!n) { el.hidden = true; return; }
+    const premium = premiumAktif(), p = L.p, mp = m => JALUR_TKA.mapel[m].nama, pr = (DATA.premium || {});
+    const naik = (a, b) => a === b ? '' : '<em class="' + (a > b ? 'sn-naik' : 'sn-turun') + '">' + (a > b ? '▲ ' + (a - b) : '▼ ' + (b - a)) + '</em>';
+    let isi = '<div class="kepala-kelas"><div><h2 style="margin:0">📰 Laporan Senin</h2><p class="sub" style="margin:2px 0 0">Pekan <b>' + rentang(L.mulai, L.akhir - HARI) + '</b>. Bagikan ke WA Anda sendiri, kepala sekolah, atau sesama guru.</p></div></div>' +
+      '<div class="ingat-angka"><div><b>' + p.aktif.size + '/' + n + '</b><small>siswa aktif berlatih ' + naik(p.aktif.size, L.lalu.aktif.size) + '</small></div>' +
+      '<div><b>' + p.latihan + '</b><small>latihan dikerjakan ' + naik(p.latihan, L.lalu.latihan) + '</small></div>' +
+      '<div><b>' + (p.rata === null ? '–' : angka(Math.round(p.rata))) + '</b><small>rata-rata nilai latihan</small></div>' +
+      '<div><b>' + p.baru + '</b><small>latihan baru dibuka</small></div></div>';
+    if (premium) {
+      isi += '<div class="sn-premium">' +
+        (L.rk.lemahInd.length ? '<p><b>📉 Indikator terlemah</b></p><ol>' + L.rk.lemahInd.slice(0, 3).map(o => '<li>' + esc(o.judul) + ' <small>(' + esc(mp(o.m)) + ' · rata-rata ' + angka(Math.round(o.r)) + (o.lemah.length ? ' · ' + o.lemah.length + ' siswa di bawah 60' : '') + ')</small></li>').join('') + '</ol>' : '<p><b>📉 Indikator terlemah:</b> belum ada nilai latihan.</p>') +
+        '<p><b>🧡 Perlu dibantu</b> (rata-rata di bawah 60): ' + (L.rk.perlu.length ? L.rk.perlu.map(x => esc(x.s) + ' (' + angka(Math.round(x.r)) + ')').join(', ') : 'tidak ada 👍') + '</p>' +
+        (L.belum.length ? '<p><b>💤 Belum berlatih pekan lalu:</b> ' + L.belum.map(esc).join(', ') + '</p>' : '') +
+        (L.saran.length ? '<p><b>💡 Saran pekan ini</b></p><ul>' + L.saran.map(s => '<li>' + esc(s) + '</li>').join('') + '</ul>' : '') + '</div>' +
+        '<label style="display:flex;gap:6px;align-items:center;font-size:13.5px;margin:4px 0 10px"><input type="checkbox" id="sn-nama"> Sertakan nama siswa di pesan WA <span style="color:var(--muted)">(hanya untuk Anda/kepala sekolah, bukan grup siswa)</span></label>';
+    } else {
+      const kal = kalimatPratinjau(L.rk);
+      isi += '<div class="kunci-pratinjau"><b>🔒 Laporan lengkap di Kelas Premium</b>' +
+        '<p>' + (kal ? kal + '. ' : L.rk.perlu.length ? L.rk.perlu.length + ' siswa perlu dibantu. ' : '') +
+        'Kelas Premium menambahkan nama siswa yang perlu dibantu, 3 indikator terlemah, dan saran tindak lanjut setiap Senin.</p>' +
+        '<button type="button" class="btn emas kecil" id="sn-premium">' + (pr.cobaDipakai ? '⭐ Lihat Kelas Premium' : '🎁 Coba gratis ' + (pr.hariCoba || 14) + ' hari') + '</button></div>';
+    }
+    isi += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn wa" type="button" id="sn-wa">💬 Bagikan laporan ke WA</button></div>';
+    el.innerHTML = isi; el.hidden = false;
+    $('sn-wa').onclick = () => { const c = $('sn-nama'); window.open('https://wa.me/?text=' + encodeURIComponent(teksSenin(L, premium, !!(c && c.checked))), '_blank', 'noopener'); };
+    const bp = $('sn-premium'); if (bp) bp.onclick = () => pr.cobaDipakai ? lihatPremium() : (typeof cobaPremiumKelas === 'function' && cobaPremiumKelas(bp));
+  }
+  function lihatPremium() { bukaTab('ringkas', false); setTimeout(() => $('k-premium').scrollIntoView({ behavior: 'smooth', block: 'center' }), 50); }
+
+  /* ---------- tawaran coba gratis: sekali, saat guru pertama kali membuka Analisis yang sudah berisi nilai ---------- */
+  function tawarCoba() {
+    if (!DATA || premiumAktif() || (DATA.premium || {}).cobaDipakai) return;
+    const kunci = 'tka-guru-tawar-' + KELAS.kode;
+    if (TKA.simpan.get(kunci)) return;
+    const rk = ringkasKelas(); if (!rk.ind.length) return;
+    TKA.simpan.set(kunci, Date.now());
+    const kal = kalimatPratinjau(rk), hari = (DATA.premium || {}).hariCoba || 14;
+    dialogInfo('📊 Analisis pertama kelas Anda sudah siap',
+      (kal ? kal + '.<br><br>' : '') +
+      'Dengan <b>Kelas Premium</b>, setiap Senin Anda mendapat laporan lengkap: <b>siapa yang perlu dibantu</b>, <b>indikator terlemah</b>, dan <b>saran tindak lanjut</b>, ditambah kunci &amp; pembahasan, rapor orang tua, dan laporan kepala sekolah.<br><br>' +
+      '🎁 Silakan <b>coba gratis ' + hari + ' hari</b> dengan sekali klik. Bila tidak dilanjutkan, kelas kembali ke Gratis dan semua data tetap aman. Bila ingin melanjutkan, dukungannya Rp50.000 per kelas per tahun ajaran.', []);
+    const d = $('dlg-jg'), b = document.createElement('button');
+    b.className = 'btn hijau'; b.type = 'button'; b.textContent = '🎁 Coba gratis ' + hari + ' hari';
+    b.onclick = async () => { if (typeof cobaPremiumKelas === 'function' && await cobaPremiumKelas(b)) d.close(); };
+    d.querySelector('div').prepend(b);
+    const t = d.querySelector('.btn.ghost'); if (t) t.textContent = 'Nanti saja';
+  }
+
   /* ---------- analisis ---------- */
   function gambarAnalisis() {
     const el = $('k-analisis'); if (!el) return;
@@ -363,7 +489,13 @@ const JG = (() => {
         (NAS ? '<p class="catatan" style="margin:6px 0 0"><b>Nasional TKA</b> = persentase jawaban benar rata-rata nasional pada TKA SD, sebagai acuan tingkat kesulitan indikator. Nilai latihan kelas dan angka nasional berasal dari soal yang berbeda, jadi bandingkan polanya, bukan angkanya persis. 🔥 = 6 indikator tersulit secara nasional.</p>' : '') +
         '<div class="hm-detail" id="hm-detail" hidden></div>';
     }
-    el.innerHTML = kepala + isi + bagianJebakan(m, kelasInd) + gambarImpor() + gambarPerkembangan();
+    let ajak = '';
+    if (kolom.length && !premiumAktif()) {
+      const kal = kalimatPratinjau(ringkasKelas()), pr = DATA.premium || {};
+      if (kal) ajak = '<div class="ajak-premium cetak-sembunyi"><span>💡 ' + kal + '. <b>Saran tindak lanjut</b> dan <b>Laporan Senin lengkap</b> tersedia di Kelas Premium.</span> <button type="button" class="btn emas kecil" id="an-premium">' + (pr.cobaDipakai ? '⭐ Lihat Kelas Premium' : '🎁 Coba gratis ' + (pr.hariCoba || 14) + ' hari') + '</button></div>';
+    }
+    el.innerHTML = kepala + ajak + isi + bagianJebakan(m, kelasInd) + gambarImpor() + gambarPerkembangan();
+    const anp = $('an-premium'); if (anp) anp.onclick = () => (DATA.premium || {}).cobaDipakai ? lihatPremium() : (typeof cobaPremiumKelas === 'function' && cobaPremiumKelas(anp));
     pasangImpor(el);
     el.querySelector('.tab-mini').onclick = e => { const b = e.target.closest('button'); if (!b) return; MANALISIS = b.dataset.m; gambarAnalisis(); };
     const ke = el.querySelector('[data-ke]'); if (ke) ke.onclick = () => bukaTab('rilis', true);
@@ -586,7 +718,8 @@ const JG = (() => {
   function gambarSemua() {
     if (DATA && !DATA._diterima) DATA._diterima = Date.now();
     CENTANG = new Set(DATA.rilis || []);
-    pasangTab(); gambarBaru(); gambarIngat(); gambarRilis(); gambarAnalisis(); gambarCetak();
+    pasangTab(); gambarBaru(); gambarIngat(); gambarSenin(); gambarRilis(); gambarAnalisis(); gambarCetak();
+    if (TAB === 'analisis') setTimeout(tawarCoba, 700);
     if (!PBR_DICEK) { PBR_DICEK = true; mulaiCatat(); setTimeout(() => cekPembaruan(false), 600); }
     document.querySelectorAll('#tab-dasbor button').forEach(b => b.classList.toggle('aktif', b.dataset.tab === TAB));
     document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== TAB; });
@@ -594,5 +727,8 @@ const JG = (() => {
     if (tb) tb.textContent = jml ? ' (' + jml + ')' : '';
   }
 
-  return { raporJalur, laporanImpor, laporanNasional, gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
+  /** Setelah status Premium berubah: gambar ulang bagian yang bergantung pada Premium tanpa mengubah centang rilis. */
+  function gambarUlang() { gambarSenin(); gambarAnalisis(); gambarCetak(); }
+
+  return { gambarUlang, raporJalur, laporanImpor, laporanNasional, gambarSemua, bukaTab, paketTab, paketKelas, namaItem, tab: () => TAB, paketPanel: t => { const p = document.querySelector('[data-panel="' + t + '"]'); if (p && $('d-paket').parentElement !== p) { p.appendChild($('d-paket')); p.appendChild($('d-isi')); } } };
 })();
