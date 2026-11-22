@@ -242,6 +242,7 @@ body.jalur .navbawah{background:#fbfaff}
 .semangat{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#f5f3ff,#ecfeff);border:1px solid #e0dbff;border-radius:18px;padding:14px;margin-top:14px}
 .semangat .emo{font-size:40px;line-height:1}
 .semangat b{display:block;font-size:16.5px}
+@media print{body.tanpa-cetak #h-premium{display:none!important}body.tanpa-cetak::after{content:"Pembahasan Kelas Intensif TKA hanya dapat dibaca di layar.";display:block;padding:20px;font:16px sans-serif}}
 </style>
 </head>
 <body>
@@ -414,7 +415,7 @@ body.jalur .navbawah{background:#fbfaff}
     <div class="kartu">
       <h2>📊 Analisis per elemen</h2>
       <div style="overflow-x:auto" id="h-analisis"></div>
-      <div class="aksi" style="margin-top:16px">
+      <div class="aksi" id="h-aksi-unduh" style="margin-top:16px">
         <button class="btn hijau" type="button" id="h-unduh">⬇️ Unduh pembahasan (HTML)</button>
         <button class="btn" type="button" id="h-cetak">🖨️ Cetak / simpan PDF</button>
       </div>
@@ -969,6 +970,7 @@ function isiHasil(r, res) {
   $('h-kunci').hidden = !ada || premium || lewatKelas;
   $('h-kelas-info').hidden = !ada || premium || !lewatKelas;
   $('h-premium').hidden = !premium;
+  $('h-aksi-unduh').hidden = false; document.body.classList.remove('tanpa-cetak');
   if (ada && !premium) siapkanKunci(r, res);
   if (premium) isiPremium(r, res);
 }
@@ -1034,7 +1036,9 @@ function isiHasilJalur(r, res) {
   if (premium) {
     isiPremium(r, { rinci: r.rinci });
     $('h-analisis').hidden = true; $('h-analisis').previousElementSibling.hidden = true;
-    $('h-akses-nama').textContent = 'Pembahasan ini juga tersimpan di HP ini. Buka lagi kapan saja dari Peta Belajar.';
+    // Kelas Intensif: pembahasan hanya dibaca di layar (tanpa unduh/cetak), agar soal dan kunci tidak beredar
+    $('h-aksi-unduh').hidden = true; document.body.classList.add('tanpa-cetak');
+    $('h-akses-nama').textContent = 'Pembahasan bisa kamu baca lagi kapan saja dari Peta Belajar di HP ini.';
   }
 }
 
@@ -1088,6 +1092,7 @@ function namaBerkas() {
   return 'Pembahasan-TKA-' + B.jenjang + '-' + B.mapel.replace(/\s+/g, '-') + '-' + B.paket.replace(/\s+/g, '') + '-' + n;
 }
 $('h-unduh').onclick = async () => {
+  if (document.body.classList.contains('tanpa-cetak')) return;
   const tb = $('h-unduh'), teks = tb.textContent; tb.disabled = true; tb.textContent = '⏳ Menyiapkan…';
   const html = await TKA.tanamGambar(TKA.dokumenPembahasan(B, riwayatKini, hasilKini));   // gambar ikut di berkas (bisa dibuka tanpa internet)
   tb.disabled = false; tb.textContent = teks;
@@ -1098,6 +1103,7 @@ $('h-unduh').onclick = async () => {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 };
 $('h-cetak').onclick = () => {
+  if (document.body.classList.contains('tanpa-cetak')) return;
   const html = TKA.dokumenPembahasan(B, riwayatKini, hasilKini).replace('</body>', '<script>window.onload=()=>setTimeout(()=>print(),300)<\/script></body>');
   const w = window.open('', '_blank');
   if (!w) { alert('Izinkan jendela pop-up untuk mencetak, atau gunakan tombol Unduh.'); return; }
