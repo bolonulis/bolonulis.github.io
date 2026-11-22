@@ -416,6 +416,8 @@ const JG = (() => {
   function tawarCoba() {
     if (!DATA || premiumAktif() || (DATA.premium || {}).cobaDipakai) return;
     const kunci = 'tka-guru-tawar-' + KELAS.kode;
+    const pbr = $('dlg-pbr'); if (pbr && pbr.open) { pbr.addEventListener('close', () => setTimeout(tawarCoba, 400), { once: true }); return; }   // jangan bertumpuk dengan jendela pembaruan
+    if (TAB !== 'analisis') return;
     if (TKA.simpan.get(kunci)) return;
     const rk = ringkasKelas(); if (!rk.ind.length) return;
     TKA.simpan.set(kunci, Date.now());
