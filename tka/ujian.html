@@ -429,7 +429,7 @@ body.jalur .navbawah{background:#fbfaff}
 </div>
 
 <script src="konfigurasi.js?v=4"></script>
-<script src="tka.js?v=17"></script>
+<script src="tka.js?v=18"></script>
 <script src="bank/latihan.js?v=3"></script>
 <script src="bank/jalur.js?v=4"></script>
 <script>
@@ -1087,8 +1087,10 @@ function namaBerkas() {
   const n = (riwayatKini.peserta && riwayatKini.peserta.nama || 'siswa').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
   return 'Pembahasan-TKA-' + B.jenjang + '-' + B.mapel.replace(/\s+/g, '-') + '-' + B.paket.replace(/\s+/g, '') + '-' + n;
 }
-$('h-unduh').onclick = () => {
-  const html = TKA.dokumenPembahasan(B, riwayatKini, hasilKini);
+$('h-unduh').onclick = async () => {
+  const tb = $('h-unduh'), teks = tb.textContent; tb.disabled = true; tb.textContent = '⏳ Menyiapkan…';
+  const html = await TKA.tanamGambar(TKA.dokumenPembahasan(B, riwayatKini, hasilKini));   // gambar ikut di berkas (bisa dibuka tanpa internet)
+  tb.disabled = false; tb.textContent = teks;
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
   a.download = namaBerkas() + '.html';
@@ -1099,7 +1101,8 @@ $('h-cetak').onclick = () => {
   const html = TKA.dokumenPembahasan(B, riwayatKini, hasilKini).replace('</body>', '<script>window.onload=()=>setTimeout(()=>print(),300)<\/script></body>');
   const w = window.open('', '_blank');
   if (!w) { alert('Izinkan jendela pop-up untuk mencetak, atau gunakan tombol Unduh.'); return; }
-  w.document.open(); w.document.write(html); w.document.close();
+  w.document.write('<p style="font-family:sans-serif;padding:30px;text-align:center">⏳ Menyiapkan dokumen… Mohon tunggu.</p>');
+  TKA.tanamGambar(html).then(h => { if (!w.closed) { w.document.open(); w.document.write(h); w.document.close(); } });
 };
 </script>
 </body>
