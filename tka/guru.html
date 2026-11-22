@@ -218,6 +218,9 @@ table.hm{border-collapse:separate;border-spacing:0;font-size:13px;width:auto;min
 b.naik{color:#1d7a5c}b.turun{color:#c0392b}
 dialog.dlg-jg{border:0;border-radius:18px;padding:20px;max-width:min(460px,94vw);box-shadow:0 30px 80px rgba(0,0,0,.3)}
 dialog.dlg-jg::backdrop{background:rgba(30,30,60,.45)}
+.sn-premium{background:#faf7ff;border:1px solid #e3def5;border-radius:12px;padding:8px 12px;margin-top:10px;font-size:14px}.sn-premium p{margin:6px 0}.sn-premium ol,.sn-premium ul{margin:4px 0;padding-left:20px}
+.kunci-pratinjau{background:linear-gradient(135deg,#fffbea,#fff);border:2px dashed #ffd21f;border-radius:14px;padding:10px 14px;margin-top:10px;font-size:14px}.kunci-pratinjau p{margin:4px 0 8px}
+.ingat-angka em{font-style:normal;white-space:nowrap;font-weight:800;margin-left:4px}.sn-naik{color:#15803d}.sn-turun{color:#b45309}
 .ingat-angka{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}.ingat-angka div{border:1px solid var(--line);border-radius:12px;padding:10px 12px}.ingat-angka b{display:block;font-size:22px;color:var(--biru)}.ingat-angka small{color:var(--muted);font-size:12.5px}
 .jb-blok{margin-top:18px;border-top:1px dashed var(--line);padding-top:12px}.jb-blok h3{margin:0 0 4px;color:var(--biru)}
 .jb-kartu,.jb-semua{border:1px solid var(--line);border-radius:12px;margin:6px 0;background:#fff}.jb-kartu>summary,.jb-semua>summary{cursor:pointer;padding:9px 12px;list-style-position:inside}
@@ -374,6 +377,7 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
   <div data-panel="ringkas">
   <div class="kartu k-baru cetak-sembunyi" id="k-baru" hidden></div>
   <div class="kartu cetak-sembunyi" id="k-ingat" hidden></div>
+  <div class="kartu cetak-sembunyi" id="k-senin" hidden></div>
   <div class="kartu cetak-sembunyi" id="k-langkah"></div>
   <div class="kartu k-premium cetak-sembunyi" id="k-premium" hidden></div>
 
@@ -434,6 +438,7 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
       <li>Kartu ini menunjukkan berapa siswa yang sudah dan belum menyelesaikan latihan baru, serta siswa yang tidak berlatih 7 hari terakhir (ketuk <b>Lihat rincian</b> untuk namanya).</li>
       <li>Ketuk <b>💬 Kirim pengingat ke grup WA kelas</b> untuk mengirim daftar latihan baru dan tautan Peta Belajar. Nama siswa tidak disebut kecuali Anda mencentang pilihannya; sebaiknya hubungi siswa yang belum mengerjakan secara pribadi.</li>
       <li>Kirim pengingat sekali atau dua kali seminggu, misalnya setiap Senin dan Kamis.</li>
+      <li><b>📰 Laporan Senin</b> (tab Ringkasan) merangkum pekan lalu: siswa aktif, latihan dikerjakan, rata-rata nilai, dan latihan baru. Kelas Premium menambahkan indikator terlemah, siswa yang perlu dibantu, dan saran. Ketuk <b>💬 Bagikan laporan ke WA</b> untuk mengirimnya ke WA Anda sendiri, kepala sekolah, atau sesama guru. Nama siswa hanya ikut bila Anda mencentangnya.</li>
     </ul>
     <h3>D. Membaca hasil (tab 📊 Analisis)</h3>
     <ul>
@@ -517,7 +522,7 @@ dialog.dlg-pbr{max-width:min(560px,94vw);max-height:88vh;overflow:auto}
 <script src="impor-tka.js?v=1"></script>
 <script src="bank/pembaruan.js?v=4"></script>
 <script src="bank/jebakan.js?v=1"></script>
-<script src="jalur-guru.js?v=13"></script>
+<script src="jalur-guru.js?v=14"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = TKA.esc, angka = TKA.angka;
@@ -607,6 +612,7 @@ function gambarPremium() {
   const p = (DATA && DATA.premium) || { aktif: false, cobaDipakai: false, hariCoba: 14 };
   const el = $('k-premium'), k = KELAS;
   const waAdmin = 'https://wa.me/6281196939694?text=' + encodeURIComponent('Halo Admin, saya ingin mengaktifkan *Kelas Premium* Kelas Intensif TKA (Rp50.000 per tahun ajaran).\n\nKode kelas: ' + k.kode + '\nKelas: ' + k.kelas + '\nSekolah: ' + k.sekolah + '\nGuru: ' + k.guru + '\n\nMohon info cara pembayarannya. Terima kasih.');
+  const waSekolah = 'https://wa.me/6281196939694?text=' + encodeURIComponent('Halo Admin, kami ingin mengaktifkan *Kelas Premium* Kelas Intensif TKA untuk beberapa kelas sekaligus.\n\nSekolah: ' + k.sekolah + '\nKode kelas: ' + k.kode + ' (dan kelas lain menyusul)\n\nMohon info caranya. Terima kasih.');
   const sisa = p.aktif ? Math.max(1, Math.ceil((p.sampai - Date.now()) / 864e5)) : 0;
   el.classList.toggle('aktif', p.aktif);
   el.innerHTML = p.aktif
@@ -615,6 +621,7 @@ function gambarPremium() {
     : '<div><h2>Kelas Gratis</h2><p>Buka <b>kunci &amp; pembahasan setiap soal</b> di dasbor Anda dengan <b>Kelas Premium</b> (Rp50.000 per tahun ajaran).</p></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (p.cobaDipakai ? '' : '<button class="btn hijau" id="p-coba" type="button">🎁 Coba Premium gratis ' + (p.hariCoba || 14) + ' hari</button>') +
       '<a class="btn emas" target="_blank" rel="noopener" href="' + waAdmin + '">⭐ Aktifkan Premium</a></div>' + (p.cobaDipakai ? '<p style="flex-basis:100%;font-size:12.5px">Masa coba gratis kelas ini sudah selesai.</p>' : '');
+  if (!p.aktif || p.masaCoba) el.innerHTML += '<p style="flex-basis:100%;font-size:13px;margin:0">🏫 Kepala sekolah dapat mengaktifkan <b>beberapa kelas sekaligus</b> dengan harga yang sama, Rp50.000 per kelas per tahun ajaran. <a target="_blank" rel="noopener" href="' + waSekolah + '">Tanya Admin lewat WA</a></p>';
   if (!p.aktif || p.masaCoba) el.innerHTML += '<div style="flex-basis:100%;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px dashed var(--line);padding-top:10px">' +
     '<span style="font-size:13.5px">🔑 Sudah punya <b>kode akses Pembahasan</b>? Pakai untuk Premium kelas ini:</span>' +
     '<input id="p-kode" placeholder="TKA-XXXX-XXXX" maxlength="20" autocomplete="off" style="font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;text-transform:uppercase;width:170px">' +
@@ -631,13 +638,17 @@ function gambarPremium() {
     DATA.premium = r.premium; gambar();
   };
   const b = $('p-coba');
-  if (b) b.onclick = async () => {
-    if (!confirm('Aktifkan coba gratis Kelas Premium selama ' + (p.hariCoba || 14) + ' hari? Coba gratis hanya bisa dipakai sekali untuk kelas ini.')) return;
-    b.disabled = true; b.textContent = 'Mengaktifkan…';
-    const r = await TKA.api({ aksi: 'cobaPremium', kode: KELAS.kode, pin: KELAS.pin });
-    if (!r.ok) { alert(r.pesan || 'Belum berhasil. Coba lagi.'); b.disabled = false; b.textContent = '🎁 Coba Premium gratis'; return; }
-    DATA.premium = r.premium; gambar();
-  };
+  if (b) b.onclick = () => cobaPremiumKelas(b);
+}
+/** Coba gratis Kelas Premium (sekali per kelas). Dipakai kartu Premium, Laporan Senin, dan tawaran di Analisis. */
+async function cobaPremiumKelas(b) {
+  const hari = ((DATA && DATA.premium) || {}).hariCoba || 14, teks = b ? b.textContent : '';
+  if (!confirm('Aktifkan coba gratis Kelas Premium selama ' + hari + ' hari? Coba gratis hanya bisa dipakai sekali untuk kelas ini.')) return false;
+  if (b) { b.disabled = true; b.textContent = 'Mengaktifkan…'; }
+  const r = await TKA.api({ aksi: 'cobaPremium', kode: KELAS.kode, pin: KELAS.pin });
+  if (!r.ok) { alert(r.pesan || 'Belum berhasil. Coba lagi.'); if (b) { b.disabled = false; b.textContent = teks; } return false; }
+  DATA.premium = r.premium; await gambar(); JG.gambarUlang();
+  return true;
 }
 const PEMBAHASAN = {};
 async function ambilPembahasan(paket) {
