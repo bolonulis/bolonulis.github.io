@@ -51,6 +51,7 @@ h2{font-size:clamp(1.4rem,3vw,1.9rem);color:var(--blue);margin:0 0 6px;letter-sp
 .lt .nm{flex:1;min-width:0}.lt .nm b{display:block;font-size:14.5px}.lt .nm small{display:block;color:#5b6b7f;font-size:12.5px;line-height:1.35}
 .lt .tg{font-size:11.5px;font-weight:800;border-radius:99px;padding:2px 9px;white-space:nowrap}
 .lt .tg.g{background:#e3f4e7;color:#1b7f3e}.lt .tg.p{background:#fff6cc;color:#7a5200}
+.lt .tg.mt{background:#fff7e6;color:#a15c00;cursor:pointer}
 .lt .ok{font-size:12px;color:#1b7f3e;font-weight:700;white-space:nowrap}
 .paket{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
 .pk{position:relative;background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 12px 28px rgba(18,49,79,.07);display:flex;flex-direction:column;border-top:6px solid var(--w)}
@@ -283,6 +284,7 @@ footer{margin:40px 0 30px;text-align:center;color:var(--muted);font-size:13.5px}
 <script src="tka.js?v=18"></script>
 <script src="bank/daftar.js?v=6"></script>
 <script src="bank/latihan.js?v=3"></script>
+<script src="bank/materi.js?v=1"></script>
 <script>
 const $ = id => document.getElementById(id);
 $('tahun').textContent = new Date().getFullYear();
@@ -311,12 +313,16 @@ $('daftar-paket').innerHTML = PAKET_TKA.map(p => {
 /* ---------- latihan per indikator ---------- */
 (() => {
   const grup = new Map();
+  const adaMateri = l => typeof MATERI_TKA !== 'undefined' && l.mapel === 'Matematika' && !!MATERI_TKA.mapel.mat.isi[(l.nomor || [])[0]];
   LATIHAN_TKA.forEach(l => { const k = l.mapel + ' · ' + l.elemen; if (!grup.has(k)) grup.set(k, []); grup.get(k).push(l); });
   $('daftar-latihan').innerHTML = [...grup].map(([g, isi]) => '<h3 class="lt-grup">' + TKA.esc(g) + '</h3><div class="lt-daftar">' + isi.map(l => {
     const r = RIWAYAT.find(x => x.paket === l.id && typeof x.nilai === 'number');
     return '<a class="lt" href="ujian.html?paket=' + l.id + '"><span class="nm"><b>' + TKA.esc(l.judul) + '</b><small>' + TKA.esc(l.indikator) + '</small></span>' +
-      (r ? '<span class="ok">✔ ' + TKA.angka(r.nilai) + '</span>' : '') + (l.gratis ? '' : '<span class="tg p">⭐ Premium</span>') + '</a>';
+      (r ? '<span class="ok">✔ ' + TKA.angka(r.nilai) + '</span>' : '') + (l.gratis ? '' : '<span class="tg p">⭐ Premium</span>') +
+      (adaMateri(l) ? '<span class="tg mt" data-materi="' + l.nomor[0] + '" role="link" title="Ringkasan materi dan contoh soal">📖 Materi</span>' : '') + '</a>';
   }).join('') + '</div>').join('');
+  // tombol 📖 Materi di dalam kartu latihan: buka halaman materi, bukan latihannya
+  $('daftar-latihan').addEventListener('click', e => { const m = e.target.closest('[data-materi]'); if (!m) return; e.preventDefault(); location.href = 'materi.html?no=' + m.dataset.materi; });
 })();
 
 /* ---------- riwayat ---------- */
