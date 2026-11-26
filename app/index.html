@@ -99,6 +99,7 @@ table.mapel .na{color:#c9bfa8}
 .mapel-pil button.on{background:var(--blue);border-color:var(--blue);color:#fff}.mapel-pil button .n{font-weight:800;margin-left:6px;opacity:.75}
 .t-bantu-tombol{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.t-bantu-tombol .btn{text-decoration:none;width:auto}
 .tp-salin{margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fffdf6}.tp-salin ol{margin:8px 0 12px;padding-left:20px;font-size:14px;line-height:1.6}.baris-salin{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.baris-salin em{color:var(--red);font-style:normal}.baris-salin .btn{width:auto;flex:none}
+.awas-email{background:#fff6d6;border:1.5px solid #f2c14e;border-radius:12px;padding:11px 13px;margin:0 0 10px;font-size:15px;line-height:1.5;color:#5c4400}.awas-email b{color:#3d2e00}
 .satu-akun{background:#eef5fb;border:1px solid #c9dcee;border-radius:14px;padding:12px 14px;margin:0 0 16px;font-size:14px;color:var(--blue)}.satu-akun ul{margin:6px 0 0;padding-left:20px;line-height:1.55;color:var(--ink)}.satu-akun li{margin:3px 0}
 .bantu-masuk{margin-top:10px;padding:12px 14px;border-radius:12px;background:#fff8e1;border:1px solid #f0d77a;font-size:13.5px;color:#5c4400}.bantu-masuk ul{margin:6px 0 10px;padding-left:18px;line-height:1.55}.bantu-masuk .btn{width:auto;text-decoration:none;display:inline-flex}
 .catatan-masuk{margin-top:14px;padding:10px 12px;border-radius:12px;background:#eef5fb;border:1px solid #c9dcee;font-size:13px;line-height:1.55;color:var(--ink)}
@@ -420,8 +421,11 @@ table.leger td.j{text-align:center;font-weight:800}
       <div class="field"><label for="d-prov">Provinsi</label><select id="d-prov" required><option value="">Pilih provinsi…</option></select></div>
       <div class="field"><label for="d-kab">Kabupaten/Kota</label><select id="d-kab" required disabled><option value="">Pilih provinsi dulu…</option></select></div>
       <div class="field"><label for="d-kec">Kecamatan</label><select id="d-kec" required disabled><option value="">Pilih kabupaten/kota dulu…</option></select></div>
+      <div class="awas-email" id="d-awas-email"><b>⚠️ Penting: pakai email yang bisa Bapak/Ibu buka sekarang.</b> Kami akan mengirim email verifikasi ke alamat ini. Tanpa membuka email itu, akun belum bisa dipakai. Bila lupa kata sandi email sekolah, pulihkan dulu kata sandinya atau gunakan email lain yang aktif.</div>
       <div class="field"><label for="d-email">Email sekolah</label><input id="d-email" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required>
         <div class="hint"><b>Gunakan email sekolah</b>, bukan email pribadi guru. Tautan aktivasi dan lupa kata sandi dikirim ke email ini. Satu email hanya untuk satu sekolah.</div></div>
+      <div class="field"><label for="d-email2">Ketik ulang email</label><input id="d-email2" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" required>
+        <div class="hint">Ketik sekali lagi, sama persis dengan email di atas, agar tidak salah ketik.</div></div>
       <div class="field"><label for="d-wa">Nomor WhatsApp yang bisa dihubungi</label><input id="d-wa" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="Contoh: 0812-3456-7890" required>
         <div class="hint">Nomor operator atau guru yang mengurus akun ini. Hanya dipakai pengelola aplikasi untuk menghubungi sekolah bila ada kendala akun atau aktivasi, tidak ditampilkan ke siapa pun.</div></div>
       <div class="field"><label for="d-sandi">Buat kata sandi aplikasi</label><input id="d-sandi" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required>
@@ -430,6 +434,8 @@ table.leger td.j{text-align:center;font-weight:800}
       <label class="show"><input type="checkbox" data-show="d-sandi,d-ulangi"> Tampilkan kata sandi</label>
       <div class="field"><label class="check"><input id="d-setuju" type="checkbox">
         <span>Saya, atas nama sekolah, menyetujui bahwa data sekolah, guru, dan siswa yang diisi disimpan di Google Drive pengelola aplikasi Daftar Nilai Digital dan hanya dipakai untuk pengolahan nilai serta rapor sekolah ini, sesuai <a href="../privasi.html" target="_blank" rel="noopener">Kebijakan Privasi</a> dan <a href="../syarat.html" target="_blank" rel="noopener">Syarat Layanan</a>. Akun dipakai bersama semua guru, sehingga sekolah bertanggung jawab atas siapa saja yang diberi kata sandi dan atas perubahan data yang dilakukan dengan akun ini.</span></label></div>
+      <div class="field"><label class="check"><input id="d-bisa-buka" type="checkbox">
+        <span><b>Saya sudah memastikan bisa membuka kotak masuk email ini.</b></span></label></div>
       <button class="btn" type="submit">Daftar</button>
       <div class="msg" id="d-msg"></div>
     </form>
@@ -441,6 +447,7 @@ table.leger td.j{text-align:center;font-weight:800}
         <li>Klik tombol <b>Aktifkan Akun Sekolah</b> di email itu. Spreadsheet rapor sekolah dibuat otomatis.</li>
         <li>Kembali ke sini, pilih <b>Masuk</b> dengan email tadi dan <b>kata sandi aplikasi yang baru Anda buat</b>. Catat kata sandinya sekarang, karena akan dibagikan ke semua guru.</li>
       </ol>
+      <p class="hint" style="font-size:14px">Belum menerima email dalam 10 menit? Periksa folder <b>Spam</b>/<b>Promosi</b>, atau hubungi Admin di WhatsApp <a href="https://wa.me/6281196939694" target="_blank" rel="noopener">0811-9693-9694</a>.</p>
       <div class="tombol-ok"><a class="btn" href="#masuk">Ke halaman Masuk</a><button class="btn ghost" type="button" id="d-ok-ulang">Email belum masuk? Kirim ulang</button></div>
       <div class="msg" id="d-ok-msg"></div>
     </div>
@@ -1610,7 +1617,12 @@ $('#f-masuk').addEventListener('submit', e => { e.preventDefault(); kirim(e.targ
   masukBeranda(res.sekolah);
 }); });
 
-$('#f-daftar').addEventListener('submit', e => { e.preventDefault(); kirim(e.target, async () => {
+$('#f-daftar').addEventListener('submit', e => { e.preventDefault();
+  // Pemeriksaan di halaman: email diketik dua kali sama, dan sekolah memastikan email itu bisa dibuka.
+  const email1 = $('#d-email').value.trim().toLowerCase(), email2 = $('#d-email2').value.trim().toLowerCase();
+  if (email1 !== email2) { $('#d-email2').focus(); return pesan('#d-msg', 'Email dan "Ketik ulang email" belum sama. Periksa kembali ejaannya.', false); }
+  if (!$('#d-bisa-buka').checked) { $('#d-bisa-buka').focus(); return pesan('#d-msg', 'Centang dulu kotak "Saya sudah memastikan bisa membuka kotak masuk email ini."', false); }
+  kirim(e.target, async () => {
   const res = await api({ aksi:'daftar', data: {
     npsn: $('#d-npsn').value, nama: $('#d-nama').value, email: $('#d-email').value,
     kabupaten: $('#d-kab').value, provinsi: $('#d-prov').value, kecamatan: $('#d-kec').value,
