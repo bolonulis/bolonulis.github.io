@@ -1209,7 +1209,7 @@ const LOKET_CADANGAN = [
   'https://script.google.com/macros/s/AKfycbxf4YMg6Ya_Q3J0684NwAl-MzzFLsvQtvLqju19xQrV5Ho9s8lUDUMXVSI7Tz1P7Keq/exec'   // Loket 5
 ].filter(Boolean);
 const VERSI_KODE_MIN = 1;
-const AKSI_LOKET_UTAMA = /^(daftar|verifikasi|lupaSandi|resetSandi|kirimUlangAktivasi|aktivasiUlangToken|gantiEmailDaftar|programDocs|pakaiProgramKok|taBaruJalankan|laporSibuk|loket)$/;
+const AKSI_LOKET_UTAMA = /^(daftar|verifikasi|lupaSandi|resetSandi|kirimUlangAktivasi|aktivasiUlangToken|gantiEmailDaftar|konfirmasiGantiEmail|programDocs|pakaiProgramKok|taBaruJalankan|laporSibuk|loket)$/;
 const LOKET = {
   pilihan(){
     const simpan = ls.get('loket-pilih');
@@ -4157,8 +4157,20 @@ async function mulai(){
   setInterval(segarkanInfo, 5 * 60 * 1000);
   document.addEventListener('visibilitychange', segarkanInfo);
   const q = new URLSearchParams(location.search);
-  if (q.get('verifikasi') || q.get('reset')) history.replaceState(null, '', location.pathname); // token tidak tertinggal di riwayat
+  if (q.get('verifikasi') || q.get('reset') || q.get('gantiemail')) history.replaceState(null, '', location.pathname); // token tidak tertinggal di riwayat
 
+  if (q.get('gantiemail')) {
+    // Konfirmasi email baru akun sekolah (diminta Admin): memakai layar aktivasi dengan judul sendiri.
+    tampil('verifikasi');
+    $('#v-verifikasi h2').textContent = 'Konfirmasi email baru';
+    $('#v-ket').textContent = 'Sedang mengonfirmasi email baru akun sekolah. Mohon tunggu…';
+    const res = await api({ aksi:'konfirmasiGantiEmail', token: q.get('gantiemail') });
+    $('#v-ket').classList.add('hidden');
+    pesan('#v-msg', res.pesan, res.ok);
+    if (res.ok && res.email) $('#m-email').value = res.email;
+    $('#v-lanjut').classList.remove('hidden');
+    return;
+  }
   if (q.get('verifikasi')) {
     tampil('verifikasi');
     const res = await api({ aksi:'verifikasi', token: q.get('verifikasi') });
