@@ -691,6 +691,38 @@ const JG = (() => {
     tampilDokumen(w, kepala + '<body>' + alat + bagian.join('<div style="break-before:page;page-break-before:always"></div>') + '</body></html>');
     catatCetak(ids, kunci); gambarCetak();
   }
+  /* ---------- Unduh Word (.docx) khusus guru ---------- */
+  function pilihWord(tb, ids) {
+    if (typeof WordSoal === 'undefined') { alert('Fitur Word belum termuat. Muat ulang halaman, lalu coba lagi.'); return; }
+    if (!premiumAktif()) { unduhWord(tb, ids, false); return; }
+    dialogInfo('📝 Unduh Word (.docx)', 'Berkas Word bisa disunting di Microsoft Word atau Google Docs, dan semua gambar soal ikut tersimpan di dalamnya.<br><br>Pilih isi berkas:', []);
+    const d = $('dlg-jg'), kotak = d.querySelector('div');
+    [['📄 Soal saja', false, 'btn'], ['🔑 Soal + kunci & pembahasan', true, 'btn emas']].reverse().forEach(([t, k, c]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = c; b.textContent = t;
+      b.onclick = () => { d.close(); unduhWord(tb, ids, k); }; kotak.prepend(b);
+    });
+  }
+  async function unduhWord(tb, ids, kunci) {
+    if (kunci && !premiumAktif()) { ajakPremium(); return; }
+    const teks = tb.textContent; tb.disabled = true; tb.textContent = '⏳ Menyiapkan…';
+    try {
+      const daftar = [];
+      for (const id of ids) {
+        const b = await bankUntuk(id);
+        let rinci = null;
+        if (kunci) { rinci = await ambilPembahasan(id); if (!rinci) throw new Error('Kunci & pembahasan ' + judulCetak(id) + ' tersedia untuk Kelas Premium.'); }
+        const it = J.info(id);
+        daftar.push({ bank: b, rinci, judul: it ? judulCetak(id) : 'Simulasi TKA ' + b.jenjang + ' ' + b.mapel + ' · ' + b.paket,
+          ket: KELAS.kelas + ' · ' + KELAS.sekolah + ' · Guru: ' + KELAS.guru,
+          opsi: { kop: 'KELAS INTENSIF TKA · ' + KELAS.kelas.toUpperCase() + ' · ' + KELAS.sekolah.toUpperCase(), petunjuk: it && it.versi === 1 } });
+      }
+      tb.textContent = '⏳ Menyusun Word…';
+      const blob = await WordSoal.buat(daftar);
+      WordSoal.simpan(blob, (kunci ? 'Kunci ' : 'Soal ') + (ids.length === 1 ? daftar[0].judul : ids.length + ' latihan ' + JALUR_TKA.mapel[MCETAK].nama) + ' - ' + KELAS.kelas);
+      catatCetak(ids, kunci);
+    } catch (e) { alert('Berkas Word gagal dibuat: ' + (e.message || e)); }
+    finally { tb.disabled = false; tb.textContent = teks; }
+  }
   function ajakPremium() {
     dialogInfo('⭐ Kunci & pembahasan khusus Kelas Premium',
       'Cetak <b>kunci jawaban dan pembahasan lengkap</b> setiap soal (latihan V1–V3, tes akhir, dan Paket 3) untuk membahas soal bersama siswa di kelas.<br><br>' +
@@ -705,10 +737,11 @@ const JG = (() => {
     const el = $('k-cetak'); if (!el) return;
     const d = JALUR_TKA.mapel[MCETAK], premium = premiumAktif();
     const grup = []; d.indikator.forEach(x => { let g = grup.find(g => g.el === x.elemen); if (!g) grup.push(g = { el: x.elemen, isi: [] }); g.isi.push(x); });
-    const tombol = (ids, kunci, label) => '<button type="button" class="btn-mini' + (kunci ? (premium ? ' kunci' : ' kunci-tutup') : '') + '" data-cetak="' + ids.join(',') + '"' + (kunci ? ' data-kunci="1" title="' + (premium ? 'Kunci & pembahasan untuk guru' : 'Khusus Kelas Premium') + '"' : '') + '>' + (kunci && !premium ? label.replace('🔑', '🔒') + ' ⭐' : label) + (kunci && !premium ? '' : tandaUlang(ids, kunci)) + '</button>';
+    const tombolCetak = (ids, kunci, label) => '<button type="button" class="btn-mini' + (kunci ? (premium ? ' kunci' : ' kunci-tutup') : '') + '" data-cetak="' + ids.join(',') + '"' + (kunci ? ' data-kunci="1" title="' + (premium ? 'Kunci & pembahasan untuk guru' : 'Khusus Kelas Premium') + '"' : '') + '>' + (kunci && !premium ? label.replace('🔑', '🔒') + ' ⭐' : label) + (kunci && !premium ? '' : tandaUlang(ids, kunci)) + '</button>';
+    const tombol = (ids, kunci, label) => tombolCetak(ids, kunci, label) + (kunci ? '' : '<button type="button" class="btn-mini word" data-word="' + ids.join(',') + '" title="Unduh Word (.docx) untuk disunting' + (premium ? '; bisa dengan kunci & pembahasan' : '') + '">📝 Word</button>');
     const versi = premium ? [1, 2, 3, 4] : [1, 2, 3];
     el.innerHTML = '<div class="kepala-kelas"><div><h2 style="margin:0">🖨️ Cetak Soal (PDF)</h2><p class="sub" style="margin:2px 0 0">Untuk pembelajaran di kelas bila tidak semua siswa memiliki HP. Soal dicetak lengkap dengan <b>lembar jawaban</b>.</p></div></div>' +
-      '<div class="panduan-kecil"><b>Cara memakai:</b><ol><li>Ketuk <b>📄 Soal</b> untuk lembar soal siswa (gratis), atau <b>🔑 Kunci</b> untuk kunci &amp; pembahasan sebagai pegangan guru (Kelas Premium).</li><li>Dokumen terbuka di tab baru. Ketuk <b>🖨️ Cetak / Simpan PDF</b> di bagian atas (atau tekan Ctrl + P), lalu pilih printer atau <b>Simpan sebagai PDF</b>.</li><li>Ingin satu berkas untuk satu elemen? Ketuk tombol di baris kelompok (misalnya <b>📄 Semua V1</b>).</li></ol>' +
+      '<div class="panduan-kecil"><b>Cara memakai:</b><ol><li>Ketuk <b>📝 Word</b> untuk mengunduh soal sebagai berkas Word (.docx) yang bisa disunting di Microsoft Word atau Google Docs. Gambar soal ikut tersimpan di dalam berkas.' + (premium ? ' Kelas Premium dapat memilih versi dengan kunci &amp; pembahasan.' : '') + '</li><li>Ketuk <b>📄 Soal</b> untuk lembar soal siswa (gratis), atau <b>🔑 Kunci</b> untuk kunci &amp; pembahasan sebagai pegangan guru (Kelas Premium).</li><li>Dokumen terbuka di tab baru. Ketuk <b>🖨️ Cetak / Simpan PDF</b> di bagian atas (atau tekan Ctrl + P), lalu pilih printer atau <b>Simpan sebagai PDF</b>.</li><li>Ingin satu berkas untuk satu elemen? Ketuk tombol di baris kelompok (misalnya <b>📄 Semua V1</b>).</li></ol>' +
       '<p style="margin:6px 0 0"><b>Perlu diingat:</b> nilai dari lembar kertas tidak masuk dasbor secara otomatis. Soal yang sudah dikerjakan siswa di kertas sebaiknya <b>tidak dirilis lagi di HP</b> untuk siswa yang sama, agar nilai di dasbor tetap murni. Latihan V1 dicetak beserta 💡 petunjuknya.</p>' + (PBR.length ? '<p style="margin:6px 0 0"><span class="ct-baru">🔄</span> = soal atau kunci <b>diperbarui</b> setelah Anda mencetaknya. Cetak ulang lembar soal dan kuncinya bersamaan. <button type="button" class="btn ghost kecil" data-pbr-riwayat>📰 Catatan pembaruan</button></p>' : '') + '</div>' +
       '<div class="tab-mini">' + Object.keys(JALUR_TKA.mapel).map(m => '<button type="button" data-m="' + m + '" class="' + (m === MCETAK ? 'aktif' : '') + '">' + esc(JALUR_TKA.mapel[m].nama) + '</button>').join('') + '</div>' +
       '<div style="overflow-x:auto"><table class="rl-tabel ct-tabel"><thead><tr><th>Indikator</th>' + versi.map(v => '<th class="rl-v v' + v + '">' + V[v].ikon + ' ' + V[v].kode + '<small>' + V[v].nama + '</small></th>').join('') + '</tr></thead><tbody>' +
@@ -724,6 +757,7 @@ const JG = (() => {
       (premium ? '<p class="catatan" style="margin:10px 0 0">⭐ Kelas Premium aktif: semua kunci &amp; pembahasan dapat dicetak.</p>' : '<div class="ajak-premium"><b>🔒 Kunci &amp; pembahasan khusus Kelas Premium.</b> Lembar soal tetap gratis. Ingin mencetak kunci untuk membahas soal di kelas? <button type="button" class="btn emas kecil" id="ct-premium">🎁 Coba gratis 14 hari / ⭐ Aktifkan Premium</button></div>');
     el.querySelector('.tab-mini').onclick = e => { const b = e.target.closest('button'); if (!b) return; MCETAK = b.dataset.m; gambarCetak(); };
     el.querySelectorAll('[data-cetak]').forEach(b => b.onclick = () => cetak(b.dataset.cetak.split(','), !!b.dataset.kunci));
+    el.querySelectorAll('[data-word]').forEach(b => b.onclick = () => pilihWord(b, b.dataset.word.split(',')));
     const rw = el.querySelector('[data-pbr-riwayat]'); if (rw) rw.onclick = () => cekPembaruan(true);
     const ap = $('ct-premium'); if (ap) ap.onclick = ajakPremium;
   }
