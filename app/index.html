@@ -1186,7 +1186,9 @@ const PANTAU = {
 
 /* Loket server: loket utama (API_URL) dan loket cadangan yang dijalankan akun Google lain dari proyek yang sama,
    sehingga sesi dan kunci simpan dipakai bersama dan permintaan boleh dilayani loket mana pun.
-   - Setiap perangkat memilih satu loket secara acak (pembagian rata) dan memakainya selama loket itu sehat.
+   - Setiap perangkat memilih satu loket CADANGAN secara acak (pembagian rata) dan memakainya selama loket itu sehat.
+     Loket utama dipakai paling akhir, hanya bila tidak ada cadangan yang layak: akun loket utama juga menjalankan
+     aplikasi lain (berbagi batas 30 eksekusi bersamaan), jadi bebannya dikurangi.
    - Loket cadangan baru dipakai setelah terbukti menjalankan kode versi VERSI_KODE_MIN atau lebih baru
      (diperiksa sekali per 30 menit lewat aksi "loket"); loket yang tertinggal versi dilewati.
    - Bila sebuah loket menjawab "penuh" (bukan JSON: ditolak Google sebelum kode berjalan), permintaan yang sama
@@ -1196,16 +1198,18 @@ const PANTAU = {
 const LOKET_CADANGAN = [
   'https://script.google.com/macros/s/AKfycbwfFgqnFO-aX2lSb1u4kSmMP0Khxj02Jb00Y9j3omFyfPUNnYFE_WsIODGyP_EGa5fy/exec',  // Loket 2
   'https://script.google.com/macros/s/AKfycbzmZBM9VP3LDypIOGU-wwROGFYEFgfGaQCKwYxAJqPvmPMx-AkAx5pgi1D_m2rW6Aux/exec',  // Loket 3
-  'https://script.google.com/macros/s/AKfycbyxrDv-EMmF_7eSTpjBA0vi32uGUfSCN-SPubN0ZBaE3g5WEE-j49aSqCGRNmbGxyYN/exec'   // Loket 4
-];
+  'https://script.google.com/macros/s/AKfycbyxrDv-EMmF_7eSTpjBA0vi32uGUfSCN-SPubN0ZBaE3g5WEE-j49aSqCGRNmbGxyYN/exec',  // Loket 4
+  'https://script.google.com/macros/s/AKfycbxf4YMg6Ya_Q3J0684NwAl-MzzFLsvQtvLqju19xQrV5Ho9s8lUDUMXVSI7Tz1P7Keq/exec'   // Loket 5
+].filter(Boolean);
 const VERSI_KODE_MIN = 1;
 const AKSI_LOKET_UTAMA = /^(daftar|verifikasi|lupaSandi|resetSandi|kirimUlangAktivasi|aktivasiUlangToken|gantiEmailDaftar|programDocs|pakaiProgramKok|taBaruJalankan|laporSibuk|loket)$/;
 const LOKET = {
   pilihan(){
     const simpan = ls.get('loket-pilih');
     let i = simpan === '' ? NaN : Number(simpan);   // belum pernah memilih: kosong, bukan 0
-    if (!(i >= 0 && i <= LOKET_CADANGAN.length)) { i = Math.floor(Math.random() * (LOKET_CADANGAN.length + 1)); ls.set('loket-pilih', String(i)); }
-    return i;   // 0 = utama, 1.. = cadangan
+    // Hanya loket cadangan yang dipilih. Pilihan lama "0" (utama) atau di luar jangkauan dipilih ulang.
+    if (!(i >= 1 && i <= LOKET_CADANGAN.length)) { i = 1 + Math.floor(Math.random() * LOKET_CADANGAN.length); ls.set('loket-pilih', String(i)); }
+    return i;   // 1.. = cadangan
   },
   url: i => (i === 0 ? API_URL : LOKET_CADANGAN[i - 1]),
   status(i){ try { return JSON.parse(sessionStorage.getItem('loket-' + i) || 'null'); } catch (e) { return null; } },
@@ -1227,12 +1231,14 @@ const LOKET = {
     LOKET.tandai(i, sehat);
     return sehat;
   },
-  /* Urutan loket untuk satu permintaan: loket pilihan perangkat dulu (bila siap), lalu yang lain. */
+  /* Urutan loket untuk satu permintaan: cadangan pilihan perangkat dulu (bila siap), lalu cadangan lain,
+     loket utama paling akhir. */
   async urutan(aksi){
     if (!LOKET_CADANGAN.length || AKSI_LOKET_UTAMA.test(aksi || '')) return [0];
-    const n = LOKET_CADANGAN.length + 1, mulai = LOKET.pilihan(), hasil = [];
-    for (let k = 0; k < n; k++) { const i = (mulai + k) % n; if (await LOKET.siap(i)) hasil.push(i); }
-    return hasil.length ? hasil : [0];
+    const n = LOKET_CADANGAN.length, mulai = LOKET.pilihan() - 1, hasil = [];
+    for (let k = 0; k < n; k++) { const i = 1 + (mulai + k) % n; if (await LOKET.siap(i)) hasil.push(i); }
+    hasil.push(0);
+    return hasil;
   }
 };
 
