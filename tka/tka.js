@@ -29,7 +29,10 @@ const TKA = (() => {
    yang dipasang oleh akun Google lain, sehingga data, kunci antrean, dan memori sementara dipakai bersama, sedangkan
    batas "30 proses sekaligus" dihitung per akun. Dengan 3 akun, kapasitas serentak menjadi sekitar tiga kali lipat.
    - Loket cadangan hanya dipakai bila versinya SAMA PERSIS dengan loket utama (diperiksa paling sering 30 menit sekali).
-   - Tiap perangkat memakai satu loket pilihan acak (pembagian rata) selama loket itu sehat.
+   - Loket utama berjalan di akun yang sama dengan aplikasi lain (Daftar Nilai Digital dll.), jadi siswa dan guru
+     memakai loket CADANGAN lebih dulu; loket utama hanya bila tidak ada cadangan yang sehat atau semuanya penuh/gangguan.
+   - Tiap perangkat memakai satu loket cadangan pilihan acak (pembagian rata) selama loket itu sehat.
+   - Loket yang putus/sibuk ditaruh di belakang selama 2 menit, sehingga percobaan ulang memakai loket lain.
    - Bila loket menjawab "bukan JSON" (ditolak Google sebelum kode berjalan, artinya penuh), permintaan yang sama
      langsung dialihkan ke loket lain. Aman diulang, karena permintaan yang ditolak itu belum dijalankan.
    - Kejadian penuh/sibuk/lambat/putus dicatat di perangkat, lalu dilaporkan ke server paling sering 10 menit sekali. */
@@ -61,21 +64,24 @@ const TKA = (() => {
           const sehat = CADANGAN.filter((u, i) => hasil[i + 1] && hasil[i + 1].versi === utama.versi);
           const lama = loket.data();
           loket.simpanData({ cek: Date.now(), daftar: LOKET().join('|'), sehat, penuh: lama.penuh || {},
-            pilih: [TKA_API].concat(sehat).includes(lama.pilih) ? lama.pilih : null });
+            pilih: sehat.includes(lama.pilih) ? lama.pilih : null });
         }
         loket.jalan = null;
       })().catch(() => { loket.jalan = null; });
       return loket.jalan;
     },
-    sehat() { const d = loket.data(); return [TKA_API].concat((d.sehat || []).filter(u => CADANGAN.includes(u))); },
-    /** Urutan loket untuk satu permintaan: pilihan perangkat dulu (bila tidak sedang penuh), lalu yang lain. */
+    /** Loket cadangan yang versinya sama dengan loket utama. */
+    cadangan() { const d = loket.data(); return (d.sehat || []).filter(u => CADANGAN.includes(u)); },
+    /** Urutan loket untuk satu permintaan. Loket CADANGAN didahulukan (loket utama berbagi batas 30 proses dengan
+     *  aplikasi lain di akun yang sama): cadangan pilihan perangkat dulu, lalu cadangan lain, dan loket utama paling
+     *  akhir. Loket yang baru saja penuh/gangguan ditaruh di belakang selama 2 menit. Tanpa cadangan sehat: loket utama. */
     urutan() {
-      const daftar = loket.sehat(); if (daftar.length < 2) return daftar;
+      const cad = loket.cadangan(); if (!cad.length) return [TKA_API];
       const d = loket.data(), kini = Date.now(), penuh = d.penuh || {};
-      let pilih = daftar.includes(d.pilih) ? d.pilih : null;
-      if (!pilih) { pilih = daftar[Math.floor(Math.random() * daftar.length)]; d.pilih = pilih; loket.simpanData(d); }
-      const lain = daftar.filter(u => u !== pilih), aman = u => !(penuh[u] > kini);
-      return [pilih].concat(lain).sort((a, b) => aman(b) - aman(a));
+      let pilih = cad.includes(d.pilih) ? d.pilih : null;
+      if (!pilih) { pilih = cad[Math.floor(Math.random() * cad.length)]; d.pilih = pilih; loket.simpanData(d); }
+      const aman = u => !(penuh[u] > kini);
+      return [pilih].concat(cad.filter(u => u !== pilih), TKA_API).sort((a, b) => aman(b) - aman(a));   // sort stabil: utama tetap terakhir di antara yang aman
     },
     tandaiPenuh(u) { const d = loket.data(); d.penuh = d.penuh || {}; d.penuh[u] = Date.now() + 2 * 60000; loket.simpanData(d); }
   };
@@ -108,11 +114,11 @@ const TKA = (() => {
         const url = urut[k], mulai = Date.now();
         const h = await kirimMentah(url, isi, 120000);
         if (h.penuh) { PANTAU.catat('penuh', req.aksi, url); loket.tandaiPenuh(url); continue; }   // aman: belum dijalankan
-        if (h.putus) { PANTAU.catat(h.lama ? 'lambat' : 'putus', req.aksi, url); break; }   // mungkin sudah dijalankan: jangan pindah loket
+        if (h.putus) { PANTAU.catat(h.lama ? 'lambat' : 'putus', req.aksi, url); if (CADANGAN.length) loket.tandaiPenuh(url); break; }   // mungkin sudah dijalankan: jangan pindah di percobaan ini; percobaan berikutnya memakai loket lain
         if (Date.now() - mulai > 15000) PANTAU.catat('lambat', req.aksi, url);
         const j = h.j;
         if (j && (j.ok || !/sibuk/i.test(j.pesan || ''))) { PANTAU.kirim(); return j; }   // berhasil, atau ditolak dengan alasan jelas
-        PANTAU.catat('sibuk', req.aksi, url); break;
+        PANTAU.catat('sibuk', req.aksi, url); if (CADANGAN.length) loket.tandaiPenuh(url); break;
       }
     }
     return { ok: false, putus: true, pesan: 'Server sedang ramai atau koneksi terputus. Tunggu sebentar, lalu ketuk tombol di bawah untuk mencoba lagi.' };
