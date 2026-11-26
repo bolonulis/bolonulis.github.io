@@ -308,7 +308,10 @@ const JG = (() => {
     const ket = o => [o.r !== undefined ? 'rata-rata kelas ' + angka(Math.round(o.r)) : '', o.d.p !== null ? 'semua pengguna ' + o.d.p + '% benar' : '', nas(m, o.x.no) !== undefined ? 'nasional TKA ' + pctNas(nas(m, o.x.no)) : ''].filter(Boolean).join(' · ');
     const kartu = o => '<details class="jb-kartu"><summary><b>' + o.x.no + '. ' + esc(o.x.judul) + '</b><span>' + ket(o) + '</span></summary>' +
       o.d.kartu.map(k => '<div class="jb-isi"><p>⚠️ <b>Jebakan:</b> ' + esc(k.j) + '</p><p>✏️ <b>Contoh kesalahan:</b> ' + esc(k.c) + '</p><p>💬 <b>Cara membahas:</b> ' + esc(k.b) + '</p></div>').join('') + '</details>';
-    return '<div class="jb-blok"><h3>💡 Jebakan umum &amp; cara membahas</h3><p class="sub" style="margin:0 0 6px">' +
+    const mt = typeof MATERI_TKA !== 'undefined' && MATERI_TKA.mapel[m] ? MATERI_TKA.mapel[m].urut : [];
+    return '<div class="jb-blok"><h3>💡 Jebakan umum &amp; cara membahas</h3>' +
+      (mt.length ? '<p class="sub" style="margin:0 0 6px">📖 <b>Materi per indikator</b> (ringkasan, contoh, trik, dan lembar latihan cetak) tersedia untuk ' + mt.length + ' indikator tersulit: ' + mt.map(no => '<a href="materi.html?no=' + no + '&kelas=' + encodeURIComponent(KELAS.kode) + '" target="_blank" rel="noopener">' + no + '</a>').join(', ') + '. Siswa membukanya dari Peta Belajar.</p>' : '') +
+      '<p class="sub" style="margin:0 0 6px">' +
       (lemah.length ? 'Indikator yang belum dikuasai kelas Anda (rata-rata di bawah 80), dimulai dari yang terendah.' : 'Belum ada indikator kelas yang perlu pendalaman. Berikut 5 indikator yang paling sulit bagi seluruh pengguna aplikasi ini.') +
       ' Ketuk judul untuk membuka. Bahas jebakan ini sebelum siswa mengerjakan V2/V3.</p>' + pilih.map(kartu).join('') +
       '<details class="jb-semua"><summary>Lihat semua ' + semua.length + ' indikator ' + esc(JALUR_TKA.mapel[m].nama) + '</summary>' + semua.map(kartu).join('') + '</details>' +

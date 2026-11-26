@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Materi per Indikator · Kelas Intensif TKA</title>
+<meta name="theme-color" content="#ede9fe">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+:root{--ink:#2e3150;--muted:#6b6f8c;--line:#e7e4f3;--latar:#f7f6fd;--ungu:#7c5cff;--ungu-l:#efeaff;--mint:#2f9e7a;--mint-l:#dcf6ec;--persik-l:#ffe8dc;--mentega-l:#fff4c7;--merah:#d0475d}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--latar);color:var(--ink);font-family:Nunito,Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}button{font:inherit;cursor:pointer}a{color:var(--ungu)}
+.bar{background:linear-gradient(120deg,#ede9fe,#e0f2fe 60%,#dcfce7);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.bar a.merk{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}.bar img{width:34px;height:34px}
+.bar span{display:flex;flex-direction:column;line-height:1.2}.bar small{font-size:11px;font-weight:800;letter-spacing:.07em;color:var(--ungu)}.bar b{font-size:16px}
+.bar .kanan{margin-left:auto;font-size:13px}
+.wadah{max-width:860px;margin:18px auto 70px;padding:0 16px}
+.kartu{background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;box-shadow:0 6px 18px rgba(124,92,255,.06)}
+.kartu h1{margin:0 0 4px;font-size:clamp(1.3rem,4vw,1.7rem)}.kartu h2{margin:0 0 10px;font-size:18px}
+.sub{margin:0;color:var(--muted);font-size:14.5px}
+.pilih{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px}
+.pilih a{flex:none;border:1px solid #e3def5;background:#fff;border-radius:14px;padding:7px 12px;font-weight:800;font-size:13px;color:#3b3f63;text-decoration:none}
+.pilih a.aktif{background:#ede9fe;border-color:#c4b5fd;color:#4b2fbf}
+.ringkas{margin:0;padding-left:20px}.ringkas li{margin:6px 0}
+.gbr{text-align:center;margin:12px 0}.mt-svg{max-width:100%;height:auto}
+.mt-tabel{border-collapse:collapse;margin:10px auto;font-size:14px}.mt-tabel caption{font-weight:800;margin-bottom:4px}
+.mt-tabel th,.mt-tabel td{border:1px solid #dfe5ec;padding:5px 12px;text-align:center}.mt-tabel th{background:#f1f5f9}
+.awas{background:var(--persik-l);border-radius:14px;padding:10px 14px;font-size:14.5px;margin-top:12px}
+.contoh{border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}
+.contoh b.lbl{display:inline-block;background:var(--mint-l);color:var(--mint);border-radius:99px;padding:1px 10px;font-size:12.5px;margin-bottom:4px}
+.contoh ol{margin:6px 0 0;padding-left:22px}
+details summary{cursor:pointer;font-weight:800;color:var(--ungu)}
+.trik{border-left:4px solid #f59e0b;background:#fffbeb;border-radius:10px;padding:8px 12px;margin:8px 0}.trik>b{display:block}
+.latihan{border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:8px 0}
+.latihan .jwb{background:#eefaf2;border-radius:10px;padding:6px 10px;margin-top:6px;font-size:14.5px}
+.kunci-box{background:linear-gradient(135deg,#fffbea,#fff);border:2px dashed #ffd21f;border-radius:18px;padding:14px 16px}
+.kunci-box ul{margin:6px 0 10px;padding-left:20px}.kunci-box li{filter:blur(0);color:#475569}
+.kabur{filter:blur(4px);user-select:none;pointer-events:none;color:#94a3b8}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:14px;padding:10px 16px;font-weight:800;font-size:14.5px;background:var(--ungu);color:#fff;text-decoration:none}
+.btn.emas{background:#ffd21f;color:#3b2f00}.btn.lembut{background:var(--ungu-l);color:var(--ungu)}
+.pc{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;line-height:1.1;margin:0 2px}.pc>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.pc-u{margin-right:1px}
+.catatan{font-size:13px;color:var(--muted)}
+.memuat{text-align:center;padding:50px 16px;color:var(--muted)}
+/* Bagian Premium hanya dibaca di layar; tidak ikut tercetak kecuali guru Kelas Premium memakai tombol cetaknya sendiri. */
+@media print{.bar,.pilih,.jangan-cetak,#k-premium{display:none!important}body{background:#fff}.kartu{box-shadow:none;border:0}}
+</style>
+</head>
+<body>
+<div class="bar"><a class="merk" id="kembali" href="./"><img src="logo.svg" alt=""><span><small>KELAS INTENSIF TKA</small><b>Materi per Indikator</b></span></a><span class="kanan" id="bar-kanan"></span></div>
+<main class="wadah">
+  <div class="kartu jangan-cetak">
+    <p class="sub" style="margin-bottom:8px">Pilih indikator (Matematika, 10 indikator yang paling sering salah):</p>
+    <nav class="pilih" id="pilih"></nav>
+  </div>
+  <div id="isi"><div class="memuat">Memuat materi…</div></div>
+  <div class="kartu" id="k-premium" hidden></div>
+</main>
+<script src="konfigurasi.js?v=4"></script>
+<script src="tka.js?v=18"></script>
+<script src="bank/jalur.js?v=4"></script>
+<script src="bank/materi.js?v=1"></script>
+<script>
+const $ = id => document.getElementById(id), esc = TKA.esc, pc = TKA.pecahan;
+const par = new URLSearchParams(location.search);
+const M = MATERI_TKA.mapel.mat, KODE = (par.get('kelas') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+let NO = +par.get('no'); if (!M.isi[NO]) NO = M.urut[0];
+/** Perangkat guru = kelas ini tersimpan beserta PIN di dasbor guru perangkat ini. */
+const GURU = !!KODE && (TKA.simpan.get('tka-guru-kelas', []) || []).some(k => k.kode === KODE && k.pin);
+let PREMIUM = false, KELAS = null, PREM = null;
+
+const tautan = no => 'materi.html?no=' + no + (KODE ? '&kelas=' + KODE : '');
+$('kembali').href = KODE ? (GURU ? 'guru.html' : 'belajar.html?kelas=' + KODE) : './#latihan';
+$('pilih').innerHTML = M.urut.map(no => '<a href="' + tautan(no) + '" class="' + (no === NO ? 'aktif' : '') + '">' + no + '. ' + esc(M.isi[no].judul) + '</a>').join('');
+setTimeout(() => { const a = $('pilih').querySelector('.aktif'); if (a) a.scrollIntoView({ inline: 'center', block: 'nearest' }); }, 50);
+
+function gambarGratis() {
+  const d = M.isi[NO];
+  document.title = d.judul + ' · Materi Kelas Intensif TKA';
+  $('isi').innerHTML =
+    '<div class="kartu"><p class="sub">Matematika · ' + esc(d.elemen) + ' · indikator ' + d.no + '</p><h1>' + esc(d.judul) + '</h1><p class="sub">' + esc(d.indikator) + '</p>' +
+    '<p class="catatan" style="margin:6px 0 0">Hanya ' + d.p + '% jawaban siswa pengguna aplikasi ini yang benar pada indikator ini (data ' + esc(MATERI_TKA.per) + '). Ayo kuasai pelan-pelan! 💪</p></div>' +
+    '<div class="kartu"><h2>📘 Ringkasan materi</h2><ul class="ringkas">' + d.ringkas.map(x => '<li>' + pc(x) + '</li>').join('') + '</ul>' +
+    '<div class="gbr">' + d.gambar + '</div><div class="awas">⚠️ <b>Hati-hati:</b> ' + pc(d.awas) + '</div></div>' +
+    '<div class="kartu"><h2>✏️ Contoh soal</h2>' + d.contoh.map((c, i) => '<div class="contoh"><b class="lbl">Contoh ' + (i + 1) + '</b><div>' + pc(c.soal) + '</div>' +
+      '<details open><summary>Cara mengerjakan</summary><ol>' + c.langkah.map(l => '<li>' + pc(l) + '</li>').join('') + '</ol></details></div>').join('') + '</div>';
+}
+
+function premiumTerkunci() {
+  const d = M.isi[NO], el = $('k-premium');
+  const pesan = GURU
+    ? 'Buka <b>trik lengkap</b> dan <b>lembar latihan cetak</b> beserta kuncinya dengan Kelas Premium. Silakan <b>coba gratis 14 hari</b> dari dasbor guru, atau aktifkan Premium (Rp50.000 per kelas per tahun ajaran).'
+    : KODE ? 'Bagian ini terbuka bila kelasmu memakai <b>Kelas Premium</b>. Ringkasan dan contoh di atas tetap bisa kamu pelajari sepuasnya 😊'
+    : 'Bagian ini tersedia untuk siswa di <b>Kelas Intensif TKA Premium</b>. Guru dapat membuat kelas secara gratis di halaman guru, lalu mencoba Premium 14 hari.';
+  el.innerHTML = '<h2>⭐ Trik cepat &amp; aman · Latihan</h2><div class="kunci-box"><b>🔒 Khusus Kelas Premium</b>' +
+    '<ul>' + d.pratinjau.trik.map((t, i) => '<li>' + (i === 0 ? esc(t) : '<span class="kabur">' + esc(t) + '</span>') + '</li>').join('') + '</ul>' +
+    '<p style="margin:0 0 8px;font-size:14.5px">Berisi ' + d.pratinjau.trik.length + ' trik hitung cepat &amp; aman dan ' + d.pratinjau.latihan + ' soal latihan beserta jawaban dan caranya.</p>' +
+    '<p style="margin:0;font-size:14.5px">' + pesan + '</p>' + (GURU ? '<p style="margin:10px 0 0"><a class="btn emas" href="guru.html">🎁 Buka dasbor guru</a></p>' : '') + '</div>';
+  el.hidden = false;
+}
+
+function bukaSandi(s) {
+  const bin = atob(s.split('').reverse().join('')), u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return JSON.parse(new TextDecoder().decode(u));
+}
+function muatPremium() {
+  if (PREM) return Promise.resolve(PREM);
+  return new Promise((ok, gagal) => {
+    const s = document.createElement('script'); s.src = 'bank/materi-premium.js?v=1';
+    s.onload = () => { try { PREM = bukaSandi(MATERI_PREMIUM_TKA).mat; ok(PREM); } catch (e) { gagal(e); } };
+    s.onerror = () => gagal(new Error('Bagian Premium gagal dimuat. Periksa internet, lalu muat ulang.'));
+    document.head.appendChild(s);
+  });
+}
+async function premiumTerbuka() {
+  const el = $('k-premium');
+  el.innerHTML = '<div class="memuat">Memuat bagian Premium…</div>'; el.hidden = false;
+  let p; try { p = (await muatPremium())[NO]; } catch (e) { el.innerHTML = '<p>⚠️ ' + esc(e.message) + '</p>'; return; }
+  el.innerHTML = '<h2>⭐ Trik cepat &amp; aman</h2>' + p.trik.map(t => '<div class="trik"><b>' + pc(esc(t.judul)) + '</b>' + pc(t.isi) + '</div>').join('') +
+    '<h2 style="margin-top:18px">📝 Latihan</h2>' + (p.tabelLatihan ? '<div class="gbr">' + p.tabelLatihan + '</div>' : '') +
+    p.latihan.map((q, i) => '<div class="latihan"><b>' + (i + 1) + '.</b> ' + pc(q.soal) + '<details><summary>Lihat jawaban</summary><div class="jwb"><b>' + pc(esc(q.jawab)) + '</b><br>Cara: ' + pc(esc(q.cara)) + '</div></details></div>').join('') +
+    (GURU ? '<p class="jangan-cetak" style="margin:14px 0 0"><button class="btn" type="button" id="cetak-lembar">🖨️ Cetak lembar latihan (soal + kunci)</button></p><p class="catatan">Tombol cetak hanya tampil di perangkat guru. Siswa membaca bagian ini di layar.</p>'
+      : '<p class="catatan">Kerjakan dulu di buku tulismu, baru buka jawabannya. Bagian ini dibaca di layar saja.</p>');
+  const b = $('cetak-lembar'); if (b) b.onclick = () => cetakLembar(p);
+}
+
+/** Lembar latihan untuk guru Kelas Premium: soal (halaman 1) dan kunci (halaman berikutnya). */
+function cetakLembar(p) {
+  const d = M.isi[NO], kop = 'KELAS INTENSIF TKA' + (KELAS ? ' · ' + esc(KELAS.kelas) + ' · ' + esc(KELAS.sekolah) : '');
+  const css = 'body{font-family:system-ui,sans-serif;max-width:780px;margin:auto;padding:24px;line-height:1.6;color:#16202a}h1{font-size:20px;margin:4px 0}small{color:#5b6b7f;font-weight:700;letter-spacing:.05em}ol li{margin:10px 0}.garis{border-bottom:1px dotted #94a3b8;height:26px}' +
+    '.pc{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;line-height:1.1;margin:0 2px}.pc>span:first-child{border-bottom:1.5px solid currentColor}.mt-tabel{border-collapse:collapse;margin:8px 0}.mt-tabel th,.mt-tabel td{border:1px solid #cbd5e1;padding:4px 10px}' +
+    '.alat{position:sticky;top:0;background:#fffbeb;border-bottom:1px solid #f5d58a;padding:8px 12px;margin:-24px -24px 16px}@media print{.alat{display:none}}';
+  const html = '<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Lembar latihan · ' + esc(d.judul) + '</title><style>' + css + '</style></head><body>' +
+    '<div class="alat"><button onclick="print()" style="font:inherit;font-weight:700;padding:6px 14px">🖨️ Cetak / Simpan PDF</button></div>' +
+    '<small>' + kop + '</small><h1>Lembar Latihan · ' + esc(d.judul) + '</h1><p>Nama: ............................................ Kelas: ..........</p>' + (p.tabelLatihan || '') +
+    '<ol>' + p.latihan.map(q => '<li>' + pc(q.soal) + '<div class="garis"></div><div class="garis"></div></li>').join('') + '</ol>' +
+    '<div style="break-before:page;page-break-before:always"></div><small>' + kop + ' · UNTUK GURU</small><h1>Kunci · ' + esc(d.judul) + '</h1>' +
+    '<ol>' + p.latihan.map(q => '<li><b>' + pc(esc(q.jawab)) + '</b><br>' + pc(esc(q.cara)) + '</li>').join('') + '</ol></body></html>';
+  const w = window.open('', '_blank'); if (!w) { alert('Izinkan jendela pop-up untuk membuka lembar latihan.'); return; }
+  w.location.replace(URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' })));
+}
+
+gambarGratis();
+(async () => {
+  if (!KODE) { premiumTerkunci(); return; }
+  const r = await TKA.api({ aksi: 'cekKelas', kode: KODE });
+  if (r.ok) { KELAS = r; PREMIUM = !!r.premium; $('bar-kanan').textContent = r.kelas + (GURU ? ' · Guru' : ''); }
+  if (PREMIUM) premiumTerbuka(); else premiumTerkunci();
+})();
+</script>
+</body>
+</html>
