@@ -260,15 +260,14 @@ async function buatUsulan(){
     '.bt-baris{display:grid;grid-template-columns:1fr 130px 130px;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}' +
     '.bt-baris select{font-size:13px;padding:6px}.bt-nama{font-size:13.5px;min-width:0}' +
     '@media (max-width:520px){.bt-baris{grid-template-columns:1fr 1fr}.bt-nama{grid-column:1/-1}}' +
-    '.bt-neon{background:#d4ff00!important;color:#14210a!important;font-weight:800!important;border:2px solid #9be000!important;' +
-    'box-shadow:0 0 6px #c6ff00,0 0 16px rgba(198,255,0,.75)!important;animation:btDenyut 1.8s ease-in-out 5}' +
-    '.bt-neon:hover,.bt-neon:focus-visible{background:#e6ff4d!important;box-shadow:0 0 10px #c6ff00,0 0 24px rgba(198,255,0,.9)!important}' +
-    '.bt-panduan>summary{list-style:none;display:inline-block;background:#ff3fd1;color:#1b0016;font-weight:800;padding:8px 14px;border-radius:999px;' +
-    'border:2px solid #ff8ae6;box-shadow:0 0 6px #ff3fd1,0 0 16px rgba(255,63,209,.7);animation:btDenyutPink 1.8s ease-in-out 5}' +
+    '.bt-neon{background:linear-gradient(135deg,#7c3aed,#2563eb)!important;color:#fff!important;font-weight:800!important;border:0!important;' +
+    'text-shadow:0 1px 1px rgba(0,0,0,.25);box-shadow:0 2px 10px rgba(99,102,241,.45)!important;animation:btDenyut 2.6s ease-in-out 5}' +
+    '.bt-neon:hover,.bt-neon:focus-visible{background:linear-gradient(135deg,#6d28d9,#1d4ed8)!important;box-shadow:0 3px 16px rgba(99,102,241,.6)!important}' +
+    '.bt-panduan>summary{list-style:none;display:inline-block;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-weight:800;padding:8px 14px;border-radius:999px;' +
+    'border:0;text-shadow:0 1px 1px rgba(0,0,0,.25);box-shadow:0 2px 10px rgba(99,102,241,.45);animation:btDenyut 2.6s ease-in-out 5}' +
     '.bt-panduan>summary::-webkit-details-marker{display:none}.bt-panduan[open]>summary{animation:none}' +
-    '.bt-panduan>summary:hover,.bt-panduan>summary:focus-visible{background:#ff6fdc}' +
-    '@keyframes btDenyut{50%{box-shadow:0 0 12px #c6ff00,0 0 30px rgba(198,255,0,1)}}' +
-    '@keyframes btDenyutPink{50%{box-shadow:0 0 12px #ff3fd1,0 0 30px rgba(255,63,209,1)}}' +
+    '.bt-panduan>summary:hover,.bt-panduan>summary:focus-visible{background:linear-gradient(135deg,#6d28d9,#1d4ed8)}' +
+    '@keyframes btDenyut{50%{box-shadow:0 2px 18px rgba(99,102,241,.75)}}' +
     '@media (prefers-reduced-motion:reduce){.bt-neon,.bt-panduan>summary{animation:none}}' +
     '</style>');
   document.body.insertAdjacentHTML('beforeend',
