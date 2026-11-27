@@ -174,6 +174,27 @@ function btBaris(jenis){
 }
 function btIsiLama(b){ return BT.jenis === 'eks' ? String(b.e.keterangan || '').trim() : String((WK_HADIR[b.s.id] || {}).catatan || '').trim(); }
 
+function btPanduan(jenis){
+  const eks = jenis === 'eks';
+  return '<details class="bt-panduan" style="margin:0 0 10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px">' +
+    '<summary style="cursor:pointer;font-weight:600">📖 Cara pakai dan saran</summary>' +
+    '<p style="margin:8px 0 4px"><b>Cara pakai</b></p><ol style="margin:0 0 6px 18px;padding:0;font-size:13.5px;line-height:1.5">' +
+    (eks ? '<li>Pastikan setiap siswa sudah punya kegiatan dan predikat di tabel ekstrakurikuler.</li>'
+         : '<li>Isi dulu angka sakit, izin, dan tanpa keterangan bila ada.</li>') +
+    '<li>Untuk siswa yang ingin ditonjolkan, pilih 1–2 sifat yang paling terlihat. Boleh dikosongkan.</li>' +
+    '<li>Klik <b>Buat usulan</b>. Usulan langsung masuk ke kotak isian di tabel.</li>' +
+    '<li>Baca setiap usulan dan ubah bila kurang sesuai dengan pengamatan Bapak/Ibu.</li>' +
+    '<li>Klik <b>' + (eks ? 'Simpan ekstrakurikuler' : 'Simpan ketidakhadiran &amp; catatan') + '</b>. Sebelum tombol ini diklik, usulan belum tersimpan.</li></ol>' +
+    '<p style="margin:8px 0 4px"><b>Saran</b></p><ul style="margin:0 0 4px 18px;padding:0;font-size:13.5px;line-height:1.5">' +
+    '<li>Memilih sifat membuat kalimat lebih khas untuk setiap anak.</li>' +
+    '<li>Usulan hanya bantuan. Bapak/Ibu tetap penentu isi rapor.</li>' +
+    '<li>Untuk anak yang masih perlu dukungan, pilih <i>Perlu motivasi</i> atau <i>Perlu pendampingan</i>. Kalimatnya tetap santun dan membangun.</li>' +
+    '<li>Kotak yang sudah Bapak/Ibu ketik tidak diganti, kecuali mencentang <i>Ganti juga</i>.</li>' +
+    '<li>Dengan kunci Gemini, kalimat lebih beragam. Tanpa kunci, fitur tetap bisa dipakai dengan kalimat bawaan.</li>' +
+    '<li>Nama siswa tidak dikirim ke Gemini.</li>' +
+    '<li>Kerjakan satu kelas sampai selesai dan simpan sebelum pindah halaman.</li></ul></details>';
+}
+
 function bukaBantuTulis(jenis){
   if (!WK) return;
   BT = { jenis, baris: btBaris(jenis) };
@@ -181,13 +202,13 @@ function bukaBantuTulis(jenis){
   $('#bt-judul').textContent = jenis === 'eks' ? '✨ Bantu tulis keterangan ekstrakurikuler' : '✨ Bantu tulis catatan wali kelas';
   $('#bt-msg').textContent = ''; $('#bt-msg').className = 'msg';
   if (!BT.baris.length) {
-    $('#bt-isi').innerHTML = '<p class="hint">Belum ada siswa dengan ekstrakurikuler dan predikat. Pilih kegiatan dan predikat dulu, lalu buka Bantu tulis lagi.</p>';
+    $('#bt-isi').innerHTML = btPanduan(jenis) + '<p class="hint">Belum ada siswa dengan ekstrakurikuler dan predikat. Pilih kegiatan dan predikat dulu, lalu buka Bantu tulis lagi.</p>';
     $('#bt-buat').classList.add('hidden'); d.showModal(); return;
   }
   $('#bt-buat').classList.remove('hidden');
   const adaKunci = !!ls.get(KUNCI_GEMINI), sudahDiisi = BT.baris.filter(btIsiLama).length;
   const opsiSifat = pilih => '<option value="">—</option>' + BT_SIFAT.map(x => '<option value="' + x.k + '"' + (x.k === pilih ? ' selected' : '') + '>' + esc(x.label) + '</option>').join('');
-  $('#bt-isi').innerHTML =
+  $('#bt-isi').innerHTML = btPanduan(jenis) +
     '<p class="hint" style="margin:0 0 8px">Pilih 1–2 sifat untuk siswa yang ingin ditonjolkan (boleh dikosongkan). Nama siswa <b>tidak</b> dikirim ke Gemini. ' +
     'Hasilnya berupa usulan di kotak isian; baca dan ubah bila perlu, lalu klik <b>Simpan</b>.</p>' +
     (sudahDiisi ? '<label class="check" style="margin:0 0 8px"><input type="checkbox" id="bt-timpa"> <span>Ganti juga ' + sudahDiisi + ' kotak yang sudah Anda ketik (bawaan: tidak diganti)</span></label>' : '') +
@@ -246,7 +267,7 @@ async function buatUsulan(){
     '<button class="btn ghost" type="button" id="bt-tutup">Batal</button></div></dialog>');
   const tombol = (jenis, sesudah) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'btn ghost small'; b.style.width = 'auto'; b.id = 'bt-buka-' + jenis; b.textContent = '✨ Bantu tulis';
+    b.type = 'button'; b.className = 'btn ghost small'; b.style.width = 'auto'; b.id = 'bt-buka-' + jenis; b.textContent = '✨ Bantu tulis'; b.title = 'Usulan kalimat otomatis. Baca dan ubah bila perlu, lalu simpan.';
     b.addEventListener('click', () => bukaBantuTulis(jenis));
     $(sesudah).insertAdjacentElement('afterend', b);
   };
