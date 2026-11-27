@@ -176,8 +176,9 @@ function btIsiLama(b){ return BT.jenis === 'eks' ? String(b.e.keterangan || '').
 
 function btPanduan(jenis){
   const eks = jenis === 'eks';
-  return '<details class="bt-panduan" style="margin:0 0 10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px">' +
-    '<summary style="cursor:pointer;font-weight:600">📖 Cara pakai dan saran</summary>' +
+  return '<details class="bt-panduan" style="margin:0 0 10px">' +
+    '<summary style="cursor:pointer">📖 Cara pakai dan saran (klik untuk membaca)</summary>' +
+    '<div style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px">' +
     '<p style="margin:8px 0 4px"><b>Cara pakai</b></p><ol style="margin:0 0 6px 18px;padding:0;font-size:13.5px;line-height:1.5">' +
     (eks ? '<li>Pastikan setiap siswa sudah punya kegiatan dan predikat di tabel ekstrakurikuler.</li>'
          : '<li>Isi dulu angka sakit, izin, dan tanpa keterangan bila ada.</li>') +
@@ -192,7 +193,7 @@ function btPanduan(jenis){
     '<li>Kotak yang sudah Bapak/Ibu ketik tidak diganti, kecuali mencentang <i>Ganti juga</i>.</li>' +
     '<li>Dengan kunci Gemini, kalimat lebih beragam. Tanpa kunci, fitur tetap bisa dipakai dengan kalimat bawaan.</li>' +
     '<li>Nama siswa tidak dikirim ke Gemini.</li>' +
-    '<li>Kerjakan satu kelas sampai selesai dan simpan sebelum pindah halaman.</li></ul></details>';
+    '<li>Kerjakan satu kelas sampai selesai dan simpan sebelum pindah halaman.</li></ul></div></details>';
 }
 
 function bukaBantuTulis(jenis){
@@ -259,6 +260,16 @@ async function buatUsulan(){
     '.bt-baris{display:grid;grid-template-columns:1fr 130px 130px;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}' +
     '.bt-baris select{font-size:13px;padding:6px}.bt-nama{font-size:13.5px;min-width:0}' +
     '@media (max-width:520px){.bt-baris{grid-template-columns:1fr 1fr}.bt-nama{grid-column:1/-1}}' +
+    '.bt-neon{background:#d4ff00!important;color:#14210a!important;font-weight:800!important;border:2px solid #9be000!important;' +
+    'box-shadow:0 0 6px #c6ff00,0 0 16px rgba(198,255,0,.75)!important;animation:btDenyut 1.8s ease-in-out 5}' +
+    '.bt-neon:hover,.bt-neon:focus-visible{background:#e6ff4d!important;box-shadow:0 0 10px #c6ff00,0 0 24px rgba(198,255,0,.9)!important}' +
+    '.bt-panduan>summary{list-style:none;display:inline-block;background:#ff3fd1;color:#1b0016;font-weight:800;padding:8px 14px;border-radius:999px;' +
+    'border:2px solid #ff8ae6;box-shadow:0 0 6px #ff3fd1,0 0 16px rgba(255,63,209,.7);animation:btDenyutPink 1.8s ease-in-out 5}' +
+    '.bt-panduan>summary::-webkit-details-marker{display:none}.bt-panduan[open]>summary{animation:none}' +
+    '.bt-panduan>summary:hover,.bt-panduan>summary:focus-visible{background:#ff6fdc}' +
+    '@keyframes btDenyut{50%{box-shadow:0 0 12px #c6ff00,0 0 30px rgba(198,255,0,1)}}' +
+    '@keyframes btDenyutPink{50%{box-shadow:0 0 12px #ff3fd1,0 0 30px rgba(255,63,209,1)}}' +
+    '@media (prefers-reduced-motion:reduce){.bt-neon,.bt-panduan>summary{animation:none}}' +
     '</style>');
   document.body.insertAdjacentHTML('beforeend',
     '<dialog id="bt-dialog" class="profil" aria-labelledby="bt-judul"><div class="kepala"><small>USULAN KALIMAT</small><h3 id="bt-judul">✨ Bantu tulis</h3>' +
@@ -267,7 +278,7 @@ async function buatUsulan(){
     '<button class="btn ghost" type="button" id="bt-tutup">Batal</button></div></dialog>');
   const tombol = (jenis, sesudah) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'btn ghost small'; b.style.width = 'auto'; b.id = 'bt-buka-' + jenis; b.textContent = '✨ Bantu tulis'; b.title = 'Usulan kalimat otomatis. Baca dan ubah bila perlu, lalu simpan.';
+    b.type = 'button'; b.className = 'btn small bt-neon'; b.style.width = 'auto'; b.id = 'bt-buka-' + jenis; b.textContent = '✨ Bantu tulis'; b.title = 'Usulan kalimat otomatis. Baca dan ubah bila perlu, lalu simpan.';
     b.addEventListener('click', () => bukaBantuTulis(jenis));
     $(sesudah).insertAdjacentElement('afterend', b);
   };
