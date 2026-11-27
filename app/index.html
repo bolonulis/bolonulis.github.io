@@ -1199,7 +1199,8 @@ const PANTAU = {
    - Loket cadangan baru dipakai setelah terbukti menjalankan kode versi VERSI_KODE_MIN atau lebih baru
      (diperiksa sekali per 30 menit lewat aksi "loket"); loket yang tertinggal versi dilewati.
    - Bila sebuah loket menjawab "penuh" (bukan JSON: ditolak Google sebelum kode berjalan), permintaan yang sama
-     diulang sekali di loket lain. Aman, karena permintaan yang ditolak itu belum dijalankan sama sekali.
+     diulang di loket berikutnya setelah jeda acak ½–3 dtk; bila masih penuh, sekali lagi setelah 2–5 dtk (paling
+     banyak 3 percobaan). Aman, karena permintaan yang ditolak itu belum dijalankan sama sekali.
    - Aksi yang mengirim email, membuat berkas Drive, atau hanya ada di kode server terbaru (pakaiProgramKok) selalu
      lewat loket utama, sehingga loket cadangan yang belum diperbarui tidak perlu dilewati semuanya. */
 const LOKET_CADANGAN = [
@@ -1329,15 +1330,26 @@ async function api(body){
   finally { if (tampilTunggu) TUNGGU.selesai(); }
 }
 
+/* Jeda acak (milidetik) saat loket penuh: sebelum pindah loket, dan sebelum satu percobaan ulang terakhir. */
+const JEDA_LOKET = { pindah: [500, 3000], ulang: [2000, 5000] };
+const jedaAcak = ([a, b]) => new Promise(r => setTimeout(r, a + Math.random() * (b - a)));
+
 async function apiInti(body){
   if (!API_URL) return { ok:false, pesan:'Sistem belum tersambung ke Apps Script.' };
   const mulai = Date.now(), urut = await LOKET.urutan(body.aksi);
-  let res = await kirimKeLoket(LOKET.url(urut[0]), body);
-  if (res.sibuk && urut.length > 1) {
-    // Loket ini penuh: ditolak sebelum kode berjalan, jadi aman diulang sekali di loket lain.
+  let k = 0, res = await kirimKeLoket(LOKET.url(urut[0]), body);
+  if (res.sibuk) {
+    // Loket penuh: ditolak Google sebelum kode berjalan, jadi aman diulang (data tidak menjadi ganda).
+    // Jeda acak dulu agar perangkat yang ditolak bersamaan tidak menyerbu loket berikutnya pada detik yang sama.
     if (urut[0] !== 0) LOKET.tandai(urut[0], false);
     PANTAU.catat('sibuk', body.aksi);
-    res = await kirimKeLoket(LOKET.url(urut[1]), body);
+    if (urut.length > 1) { await jedaAcak(JEDA_LOKET.pindah); k = 1; res = await kirimKeLoket(LOKET.url(urut[k]), body); }
+    if (res.sibuk) {
+      // Masih penuh: tunggu sedikit lebih lama, lalu coba sekali lagi sendiri sebelum memberi tahu guru.
+      const sub = $('#tunggu-sub'); if (sub) sub.textContent = 'Server sedang ramai. Mencoba lagi otomatis, data Anda aman.';
+      await jedaAcak(JEDA_LOKET.ulang); k = Math.min(k + 1, urut.length - 1);
+      res = await kirimKeLoket(LOKET.url(urut[k]), body);
+    }
   }
   if (body.aksi !== 'laporSibuk') {
     if (res.sibuk || res.batasWaktu) PANTAU.catat('sibuk', body.aksi);
