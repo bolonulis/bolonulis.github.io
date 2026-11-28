@@ -351,6 +351,18 @@ table.leger td.j{text-align:center;font-weight:800}
 #area-cetak .surat .foto{position:absolute;left:-43.9mm;top:12.7mm;width:22.8mm;height:29.6mm;border:1pt solid #1f3864}
 #area-cetak .surat.halaman{break-after:page}#area-cetak .surat.halaman:last-child{break-after:auto}
 #area-cetak .leger{page:leger;font-size:8.5pt}#area-cetak .leger th,#area-cetak .leger td{padding:2pt 3pt}
+  /* Rekap e-Rapor kokurikuler: kotak paling atas untuk operator, gradasi ungu→biru seperti tombol Bantu tulis */
+  .er-operator{margin:0 0 14px}
+  .er-operator>summary{list-style:none;cursor:pointer;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-radius:12px;padding:12px 14px;margin:-4px;
+    text-shadow:0 1px 1px rgba(0,0,0,.25);box-shadow:0 2px 10px rgba(99,102,241,.45);animation:erDenyut 2.6s ease-in-out 5}
+  .er-operator>summary::-webkit-details-marker{display:none}
+  .er-operator>summary .sub{color:#e0e7ff}
+  .er-operator[open]>summary{animation:none;margin-bottom:6px}
+  .er-operator>summary:hover,.er-operator>summary:focus-visible{background:linear-gradient(135deg,#6d28d9,#1d4ed8)}
+  .er-label{display:inline-block;background:#fff;color:#4c1d95;font-weight:800;font-size:12px;letter-spacing:.06em;border-radius:999px;padding:2px 9px;margin-right:6px;text-shadow:none;vertical-align:1px}
+  .er-buka{display:inline-block;font-size:12.5px;font-weight:700;color:#fff;opacity:.9;margin-left:4px}.er-operator[open] .er-buka{display:none}
+  @keyframes erDenyut{50%{box-shadow:0 2px 18px rgba(99,102,241,.75)}}
+  @media (prefers-reduced-motion:reduce){.er-operator>summary{animation:none}}
 </style>
 </head>
 <body>
@@ -594,6 +606,23 @@ table.leger td.j{text-align:center;font-weight:800}
     <div class="bar">
       <div><button class="link back" type="button" data-ke="beranda">← Beranda</button><h2>Kokurikuler</h2><div class="sub" id="kk-sub"></div></div>
     </div>
+    <details class="card er-operator" id="kk-er-box">
+      <summary><span class="er-label">UNTUK OPERATOR</span> <b>📋 Rekap untuk e-Rapor per fase</b> <span class="sub">— Daftar Tema, Kegiatan Kokurikuler, dan Kelompok Kokurikuler</span> <span class="er-buka">▾ ketuk untuk membuka</span></summary>
+      <div class="panduan" style="margin-top:10px">Rekap ini mengikuti menu <b>Data Kokurikuler</b> di e-Rapor: <b>Daftar Tema</b>, lalu <b>Kegiatan Kokurikuler</b> (pilih tema dan fase, isi Nomor Urut,
+        Nama Kegiatan, Tujuan Akhir, lalu Profil Lulusan), lalu <b>Kelompok Kokurikuler</b>. Klik 📋 di sebelah isian untuk menyalin, lalu tempel (Ctrl+V) di kotak yang sama di e-Rapor.
+        Kegiatan yang sama di dua kelas satu fase cukup diisi sekali.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label for="kk-er-fase">Fase</label><select id="kk-er-fase"><option value="A">Fase A (Kelas I–II)</option><option value="B">Fase B (Kelas III–IV)</option><option value="C">Fase C (Kelas V–VI)</option></select></div>
+        <div><label for="kk-er-sem">Semester</label><select id="kk-er-sem"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
+      </div>
+      <div class="toolbar">
+        <button class="btn small" type="button" id="kk-er-tampil">Tampilkan rekap</button>
+        <button class="btn ghost small hidden" type="button" id="kk-er-salin">📋 Salin seluruh tabel kegiatan</button>
+        <button class="btn ghost small hidden" type="button" id="kk-er-excel">⬇️ Unduh Excel</button>
+      </div>
+      <div class="msg" id="kk-er-msg"></div>
+      <div id="kk-er-isi"></div>
+    </details>
     <div class="card">
       <div class="grid2">
         <div><label for="kk-rombel">Rombel</label><select id="kk-rombel"></select></div>
@@ -651,23 +680,6 @@ table.leger td.j{text-align:center;font-weight:800}
         </details>
       </div>
     </div>
-    <details class="card" id="kk-er-box" style="margin-top:14px">
-      <summary><b>📋 Rekap untuk e-Rapor per fase</b> <span class="sub">— Daftar Tema, Kegiatan Kokurikuler, dan Kelompok Kokurikuler</span></summary>
-      <div class="panduan" style="margin-top:10px">Rekap ini mengikuti menu <b>Data Kokurikuler</b> di e-Rapor: <b>Daftar Tema</b>, lalu <b>Kegiatan Kokurikuler</b> (pilih tema dan fase, isi Nomor Urut,
-        Nama Kegiatan, Tujuan Akhir, lalu Profil Lulusan), lalu <b>Kelompok Kokurikuler</b>. Klik 📋 di sebelah isian untuk menyalin, lalu tempel (Ctrl+V) di kotak yang sama di e-Rapor.
-        Kegiatan yang sama di dua kelas satu fase cukup diisi sekali.</div>
-      <div class="grid2" style="margin-top:10px">
-        <div><label for="kk-er-fase">Fase</label><select id="kk-er-fase"><option value="A">Fase A (Kelas I–II)</option><option value="B">Fase B (Kelas III–IV)</option><option value="C">Fase C (Kelas V–VI)</option></select></div>
-        <div><label for="kk-er-sem">Semester</label><select id="kk-er-sem"><option value="1">Semester 1 (Ganjil)</option><option value="2">Semester 2 (Genap)</option></select></div>
-      </div>
-      <div class="toolbar">
-        <button class="btn small" type="button" id="kk-er-tampil">Tampilkan rekap</button>
-        <button class="btn ghost small hidden" type="button" id="kk-er-salin">📋 Salin seluruh tabel kegiatan</button>
-        <button class="btn ghost small hidden" type="button" id="kk-er-excel">⬇️ Unduh Excel</button>
-      </div>
-      <div class="msg" id="kk-er-msg"></div>
-      <div id="kk-er-isi"></div>
-    </details>
   </section>
 
   <!-- WALI KELAS -->
