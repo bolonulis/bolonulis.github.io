@@ -1333,6 +1333,8 @@ async function api(body){
 /* Jeda acak (milidetik) saat loket penuh: sebelum pindah loket, dan sebelum satu percobaan ulang terakhir. */
 const JEDA_LOKET = { pindah: [500, 3000], ulang: [2000, 5000] };
 const jedaAcak = ([a, b]) => new Promise(r => setTimeout(r, a + Math.random() * (b - a)));
+/* Aksi yang hanya membaca data (tidak menulis, tidak mengirim email): boleh diulang sekali bila sambungan putus. */
+const AKSI_BACA_ULANG = /^(info|cekKode|statistik|testimoni|posterPublik|ebookPublik|sesi|dataSekolah|siswaRombel|mapelSekolah|unduhExcel|tpKelas|tpBawaan|tpEkspor|tpPembaruan|nilaiRombel|kokRombel|programInfo|programBuka|waliRombel|rekapRombel|lulusData|taBaruPratinjau)$/;
 
 async function apiInti(body){
   if (!API_URL) return { ok:false, pesan:'Sistem belum tersambung ke Apps Script.' };
@@ -1350,6 +1352,12 @@ async function apiInti(body){
       await jedaAcak(JEDA_LOKET.ulang); k = Math.min(k + 1, urut.length - 1);
       res = await kirimKeLoket(LOKET.url(urut[k]), body);
     }
+  }
+  if (res.putus && !res.batasWaktu && AKSI_BACA_ULANG.test(body.aksi || '')) {
+    // Sambungan putus sesaat saat hanya MEMBACA data: aman diulang sekali di loket berikutnya.
+    // Menyimpan tidak pernah diulang otomatis (bisa saja sudah tersimpan).
+    await jedaAcak(JEDA_LOKET.ulang); k = (k + 1) % urut.length;
+    res = await kirimKeLoket(LOKET.url(urut[k]), body);
   }
   if (body.aksi !== 'laporSibuk') {
     if (res.sibuk || res.batasWaktu) PANTAU.catat('sibuk', body.aksi);
